@@ -19,6 +19,8 @@ jobs:
     timeout-minutes: 35
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: "false"
+      SLC_SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      SLC_SOURCE_REF: ${{ github.head_ref || github.ref_name }}
 
     steps:
       - uses: actions/checkout@v5

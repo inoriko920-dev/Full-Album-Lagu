@@ -28,6 +28,7 @@ function createMainWindow(): BrowserWindow {
   const screenshotPath = readArgValue("screenshot");
   const slcProbe = readArgValue("slc-probe");
   const slcEvidencePath = readArgValue("slc-evidence");
+  const slcScreenshotPath = readArgValue("slc-screenshot");
   const isUiCapture = uiTestScreen !== undefined;
   const isSlcProbe = slcProbe !== undefined;
 
@@ -274,6 +275,17 @@ function createMainWindow(): BrowserWindow {
           platform: process.platform,
           arch: process.arch,
         });
+
+        if (slcScreenshotPath) {
+          const screenshotTarget = resolve(slcScreenshotPath);
+          await mkdir(dirname(screenshotTarget), { recursive: true });
+          const screenshot = await window.webContents.capturePage();
+          if (screenshot.isEmpty()) {
+            throw new Error(`SLC screenshot is empty for ${slcProbe}.`);
+          }
+          await writeFile(screenshotTarget, screenshot.toPNG());
+        }
+
         console.log(`SLC probe PASS: ${slcProbe} -> ${slcEvidencePath}`);
         window.destroy();
         app.exit(0);
