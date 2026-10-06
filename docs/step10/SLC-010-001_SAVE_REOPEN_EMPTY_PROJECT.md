@@ -1,6 +1,6 @@
 # SLC-010-001 — Save & Reopen Empty Project
 
-Status: READY / STEP 10
+Status: VERIFIED / PASS_WITH_PROVISIONAL
 Owner: SOL
 Baseline: `main@49417d7fb2e10115b2a698fcf0d74be40ff1aee1`
 Target: Windows 11 x64 / Electron
@@ -121,3 +121,16 @@ Normal Git revert of SLC-010-001 commits. No project migration or destructive ex
 
 ## Astra Review Trigger
 Required only if implementation would change a protected architecture pillar, UI freeze, project format strategy, or Electron/renderer security boundary. The planned slice follows existing STEP 06/07 boundaries and therefore does not trigger an architecture change by itself.
+
+## Final Verification
+- Tested source SHA: `8425849ca1300a2f35fdb9490f04f4b78fbb9b7e`
+- PR verification run: `37526403614`
+- Job: `112484540995`
+- SLC evidence artifact: `Lagu-Full-Album-S10-SLC-010-001-Evidence`
+- Artifact ID: `11441669149`
+- Artifact digest: `sha256:4bc87fbfcf2137f7e0d643425c8028c6dbacfaea6c67ac76b6ff4e9062453bc5`
+- Real project output SHA-256: `9bd9f34be707efd9c7dea9ef8fdfd668d16cf70260490f24d6a605b5d02c133a`
+- Windows package artifact ID: `11442058480`
+- Visual regression artifact ID: `11442373095`
+
+All required automated gates passed. The slice verdict is `PASS_WITH_PROVISIONAL` because CI intentionally injects the deterministic save path and does not automate the native Windows save-dialog interaction itself. The same production path-selection dependency feeds the same IPC/use-case/store pipeline, so this does not block STEP 11.

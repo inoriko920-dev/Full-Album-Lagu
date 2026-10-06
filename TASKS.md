@@ -6,54 +6,40 @@
 - S08-T03 CI Foundation & Windows Packaging Smoke — VERIFIED / PASS
 
 ## STEP 09 — COMPLETED / PASS_WITH_TOLERANCE
+- S09-T01 Global App Shell + Shared Layout Skeleton — VERIFIED / PASS_WITH_TOLERANCE
+- S09-T02 Design Tokens + Shared Components Minimum — VERIFIED / PASS
+- S09-T03 First Frozen Reference Screen + Screenshot Baseline — VERIFIED / PASS_WITH_TOLERANCE
 
-### S09-T01 - Global App Shell + Shared Layout Skeleton
-- Owner: SOL
-- Status: DONE
-- Evidence: VERIFIED
-- Gate: PASS_WITH_TOLERANCE
-- Record: `docs/ui/evidence/S09_T01_APP_SHELL_EVIDENCE.md`
-
-### S09-T02 - Design Tokens + Shared Components Minimum
-- Owner: SOL
-- Status: DONE
-- Evidence: VERIFIED
-- Gate: PASS
-- Record: `docs/ui/evidence/S09_T02_DESIGN_SYSTEM_EVIDENCE.md`
-
-### S09-T03 - First Frozen Reference Screen + Screenshot Baseline
-- Owner: SOL
-- Priority: P1
-- Risk: MEDIUM
-- Status: DONE
-- Work status: IMPLEMENTED
-- Evidence status: VERIFIED
-- Gate: PASS_WITH_TOLERANCE
-- Tested SHA: `190741e4c7366a3a59880f7d364252c08a6fd497`
-- CI run/job: `37520683978` / `112464996428` — PASS
-- Frozen reference: `UI-IMG-002A`, `rId11`, `media/image3.jpg`, 520x325, SHA-256 `071836f564d6f23e51c223edbf9a7992bd2278c7a09fac1f473996b68621b2d7`
-- Production baseline: `SCR-002A.png`, 1600x1000, SHA-256 `fbb8d14690cf201d4e342a39d25c7a97c118966ebe10228c55f365574f3ada7b`
-- Baseline: `docs/ui/manifests/UI_SCREEN_BASELINES.json`
-- Artifact ID: `11440930725`
-- Evidence: `docs/ui/evidence/S09_T03_FROZEN_REFERENCE_BASELINE_EVIDENCE.md`
-- Full verify, runtime audit, Windows package, packaged smoke and portable ZIP: PASS.
-- Out of scope honored: no real Gemini SDK, media engine, persistence, FFmpeg/render engine, or STEP 10 workflow.
-
-## STEP 10 — IN PROGRESS
+## STEP 10 — COMPLETED / PASS_WITH_PROVISIONAL
 
 ### SLC-010-001 — Save & Reopen Empty Project
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: IN_PROGRESS
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Verdict: PASS_WITH_PROVISIONAL
 - Baseline: `49417d7fb2e10115b2a698fcf0d74be40ff1aee1`
+- Tested source SHA: `8425849ca1300a2f35fdb9490f04f4b78fbb9b7e`
 - Charter: `docs/step10/SLC-010-001_SAVE_REOPEN_EMPTY_PROJECT.md`
-- Goal: prove one real UI -> ProjectSession -> preload/IPC -> application -> persistence -> JSON output -> reopen flow.
-- Happy path: Save -> atomic project JSON -> close -> reopen -> same project identity/state.
-- Negative path: cancelled save -> no output / no crash / editor remains usable.
-- Required evidence: unit + contract + component + integration + real Electron E2E + Windows CI/package smoke.
-- Out of scope: Gemini, FFmpeg, media import, autosave/recovery generations, broad feature work.
-- Gate: OPEN
+- Evidence: `docs/step10/evidence/SLC-010-001_REPORT.md`
+- CI run/job: `37526403614` / `112484540995` — PASS
+- SLC artifact ID: `11441669149`
+- SLC artifact digest: `sha256:4bc87fbfcf2137f7e0d643425c8028c6dbacfaea6c67ac76b6ff4e9062453bc5`
+- Real project output SHA-256: `9bd9f34be707efd9c7dea9ef8fdfd668d16cf70260490f24d6a605b5d02c133a`
+- Windows package artifact ID: `11442058480`
+- Windows portable ZIP SHA-256: `ddbb520c4f0521597261c5e963e3d535d47e50767fa22b5e9b03b6c7aef2ad38`
+- Happy path: UI Save -> atomic JSON -> exit -> reopen -> same project state — PASS.
+- Negative path: save cancellation -> explicit cancelled state/no crash — PASS.
+- Corrupt JSON rejection without source modification — PASS.
+- Unicode + spaces path — PASS.
+- Architecture boundary: renderer has no filesystem/dialog/main-infrastructure ownership — PASS.
+- UI Freeze: unchanged — PASS.
+- Provisional: native save-dialog clicking itself is not CI-automated; deterministic path injection is used around the same production persistence pipeline.
+- Out of scope honored: media import, Gemini, FFmpeg/render, autosave/recovery, broad feature waves.
 
-## NEXT
-Close SLC-010-001 and STEP 10 before preparing STEP 11.
+## NEXT — STEP 11
+Status: NOT_STARTED.
+
+First action after user says `lanjutkan`: ASTRA normalizes the Feature Registry + dependency graph, then defines one small READY Wave Charter. Do not implement a broad feature set before that planning checkpoint.
