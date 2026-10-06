@@ -290,7 +290,6 @@ export function AppShell() {
         <PreviewPanel />
         <GeminiRail />
         <TimelinePanel />
-
       </div>
     </main>
   );
