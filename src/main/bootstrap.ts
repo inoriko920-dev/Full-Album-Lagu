@@ -250,7 +250,7 @@ function createMainWindow(): BrowserWindow {
                 ) {
                   reject(
                     new Error(
-                      `SLC renderer entered error state: persistence=${persistenceState}; source=${projectSource}`,
+                      "SLC renderer entered error state: persistence=" + persistenceState + "; source=" + projectSource,
                     ),
                   );
                   return;
@@ -259,7 +259,7 @@ function createMainWindow(): BrowserWindow {
 
               attempt += 1;
               if (attempt >= 200) {
-                reject(new Error(`Timed out waiting for SLC probe ${mode}.`));
+                reject(new Error("Timed out waiting for SLC probe " + mode + "."));
                 return;
               }
               setTimeout(inspect, 50);
