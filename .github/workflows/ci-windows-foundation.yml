@@ -28,6 +28,24 @@ jobs:
           node-version: "22"
           cache: "npm"
 
+      - name: Extract frozen UI-IMG-002A reference
+        shell: pwsh
+        run: |
+          ./scripts/extract-ui-reference.ps1 `
+            -DocxPath "docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx" `
+            -ImageId "UI-IMG-002A" `
+            -OutputPath "artifacts/ui/reference/UI-IMG-002A-reference.png"
+
+      - name: Upload frozen UI-IMG-002A reference
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-S09-T03-Frozen-Reference
+          path: |
+            artifacts/ui/reference/UI-IMG-002A-reference.png
+            artifacts/ui/reference/UI-IMG-002A-reference.png.json
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Clean install
         run: npm ci
 
