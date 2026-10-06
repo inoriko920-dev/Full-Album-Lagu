@@ -1,2 +1,0 @@
-Verify package-lock.json with clean npm ci and full foundation gates.
-Retry 2: enforce LF checkout with .gitattributes.
