@@ -22,12 +22,7 @@ function MediaPanel() {
           <h2>Media</h2>
         </div>
       </div>
-      <ActionButton
-        variant="primary"
-        label="Impor Audio"
-        icon="upload"
-        wide
-      />
+      <ActionButton variant="primary" label="Impor Audio" icon="upload" wide />
       <div className="empty-card">
         <span className="empty-card__icon">
           <AppIcon name="music" size={28} />
@@ -331,11 +326,7 @@ export function AppShell() {
           <ActionButton variant="toolbar" label="Template" icon="template" />
           <span className="toolbar-divider" />
           <ActionButton variant="toolbar" label="Simpan" icon="save" />
-          <ActionButton
-            variant="toolbarPrimary"
-            label="Render"
-            icon="render"
-          />
+          <ActionButton variant="toolbarPrimary" label="Render" icon="render" />
         </div>
       </header>
 

@@ -9,11 +9,7 @@ afterEach(() => cleanup());
 describe("shared UI primitives", () => {
   it("renders the frozen toolbar primary class contract", () => {
     render(
-      <ActionButton
-        variant="toolbarPrimary"
-        label="Render"
-        icon="render"
-      />,
+      <ActionButton variant="toolbarPrimary" label="Render" icon="render" />,
     );
     const button = screen.getByRole("button", { name: "Render" });
     expect(button).toHaveClass("toolbar-button", "toolbar-button--primary");
@@ -29,6 +25,9 @@ describe("shared UI primitives", () => {
 
   it("keeps decorative icons out of the accessibility tree", () => {
     const { container } = render(<AppIcon name="gemini" />);
-    expect(container.querySelector("svg")).toHaveAttribute("aria-hidden", "true");
+    expect(container.querySelector("svg")).toHaveAttribute(
+      "aria-hidden",
+      "true",
+    );
   });
 });

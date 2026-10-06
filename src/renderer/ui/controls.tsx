@@ -2,13 +2,12 @@ import type { ButtonHTMLAttributes } from "react";
 import { AppIcon, type IconName } from "./AppIcon";
 
 type ActionButtonVariant =
-  | "toolbar"
-  | "toolbarPrimary"
-  | "primary"
-  | "secondary";
+  "toolbar" | "toolbarPrimary" | "primary" | "secondary";
 
-interface ActionButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
+interface ActionButtonProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "children"
+> {
   variant: ActionButtonVariant;
   label: string;
   icon?: IconName;
@@ -58,8 +57,10 @@ export function ActionButton({
   );
 }
 
-interface IconButtonProps
-  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
+interface IconButtonProps extends Omit<
+  ButtonHTMLAttributes<HTMLButtonElement>,
+  "children"
+> {
   icon: IconName;
   iconSize?: number;
   play?: boolean;
