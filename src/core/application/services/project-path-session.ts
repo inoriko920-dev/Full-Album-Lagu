@@ -1,6 +1,5 @@
 export type ProjectPathState =
-  | { kind: "unsaved" }
-  | { kind: "known-path"; path: string };
+  { kind: "unsaved" } | { kind: "known-path"; path: string };
 
 export class ProjectPathSession {
   #currentPath: string | null = null;

@@ -5,12 +5,12 @@ import {
 } from "../../src/core/contracts/project-lifecycle";
 
 describe("project lifecycle contract", () => {
-  it.each<ProjectLocation>([
-    { kind: "unsaved" },
-    { kind: "known-path" },
-  ])("accepts public location state %#", (location) => {
-    expect(projectLocationSchema.parse(location)).toEqual(location);
-  });
+  it.each<ProjectLocation>([{ kind: "unsaved" }, { kind: "known-path" }])(
+    "accepts public location state %#",
+    (location) => {
+      expect(projectLocationSchema.parse(location)).toEqual(location);
+    },
+  );
 
   it("does not expose a filesystem path through the renderer contract", () => {
     expect(

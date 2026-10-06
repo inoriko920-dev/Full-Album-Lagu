@@ -14,9 +14,7 @@ describe("ProjectPathSession", () => {
       kind: "known-path",
       path: "D:/Album Project/Proyek Ω.lfa.json",
     });
-    expect(session.getCurrentPath()).toBe(
-      "D:/Album Project/Proyek Ω.lfa.json",
-    );
+    expect(session.getCurrentPath()).toBe("D:/Album Project/Proyek Ω.lfa.json");
   });
 
   it("rejects empty paths and can return to the unsaved state", () => {
