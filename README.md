@@ -1,6 +1,6 @@
 # Lagu Full Album
 
-**Status:** Software Factory STEP 08 Repository Foundation is complete with gate **PASS_WITH_PROVISIONAL**. STEP 09 App Shell / UI Implementation is next.
+**Status:** Software Factory STEP 09 App Shell / UI Implementation is in progress. S09-T01 and S09-T02 are verified; S09-T03 is next.
 
 Lagu Full Album is a Windows 11 x64 desktop application for producing full-album MP4 videos from multiple audio tracks, artwork/background media, visualizers, transitions and track metadata. The editor remains fully manual-capable; a permanent right-side **Gemini Agent** is designed as a structured copilot over the same project state and command/history system.
 
@@ -14,8 +14,10 @@ Lagu Full Album is a Windows 11 x64 desktop application for producing full-album
 - Electron + React + TypeScript foundation: verified.
 - Machine-readable UI Reference/Freeze manifests and integrity gate: verified.
 - Persistent Windows CI + packaged executable smoke + foundation portable ZIP artifact: verified.
-- Product feature implementation: **not started**.
-- Next task: `S09-T01 Global App Shell + Shared Layout Skeleton`.
+- Frozen UI shell implementation: S09-T01 verified.
+- Minimal renderer design tokens/shared controls: S09-T02 verified with pixel-identical SCR-002A output.
+- Real media/Gemini/render product engines: **not started**.
+- Next task: `S09-T03 First Frozen Reference Screen + Screenshot Baseline`.
 
 ## Foundation evidence
 Authoritative STEP 08 evidence is recorded in:
@@ -56,4 +58,4 @@ The production UI must follow the frozen pack; no silent redesign.
 - Source media is referenced, not modified.
 
 ## Current implementation boundary
-The app still contains a foundation-only shell. STEP 09 will begin implementing the frozen UI using fixture data. SoundVisualizer, Gemini, FFmpeg, real project workflows and release-grade packaging remain later work.
+The app now contains the first real frozen editor shell using fixture data plus a minimal shared token/control layer. SoundVisualizer, Gemini, FFmpeg, real project workflows and release-grade packaging remain later work.

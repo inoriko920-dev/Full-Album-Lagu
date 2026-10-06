@@ -1,0 +1,28 @@
+:root {
+  font-family: "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+  color: #111827;
+  background: #f3f5f8;
+  font-synthesis: none;
+
+  --primary: #2563eb;
+  --primary-hover: #1d4ed8;
+  --primary-pressed: #1e40af;
+  --app-bg: #f3f5f8;
+  --surface: #ffffff;
+  --subtle-surface: #f8fafc;
+  --selected: #eaf2ff;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border: #d7dee8;
+  --focus: #60a5fa;
+  --success: #15803d;
+  --warning: #b45309;
+  --error: #b42318;
+  --panel-radius: 6px;
+  --control-radius: 6px;
+  --dialog-radius: 8px;
+  --toolbar-height: 56px;
+  --control-height: 34px;
+  --icon-button-size: 30px;
+}

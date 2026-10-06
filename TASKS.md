@@ -78,14 +78,35 @@
 - Owner: SOL
 - Priority: P1
 - Risk: LOW
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: S09-T01 shell baseline.
 - Goal: codify only the tokens/shared primitives proven necessary by frozen UI states; avoid speculative component framework work.
+- Implemented:
+  - renderer-level `src/renderer/ui/tokens.css` extracted from the existing frozen shell;
+  - typed shared `AppIcon` primitive;
+  - minimal shared `ActionButton` and `IconButton` controls;
+  - SCR-002A refactored to consume primitives without changing hierarchy/copy/state;
+  - shared-control component tests and design-token contract tests.
+- Verification:
+  - branch SHA `8c20acbcc4c33858cb25c6da1d53690b6881255b`;
+  - Windows CI run `37517598647` — PASS;
+  - job `112454487220`;
+  - format/lint/type/architecture/security/path/UI-reference gates — PASS;
+  - unit/contract/component tests — PASS;
+  - runtime high-severity audit — PASS;
+  - Windows package/smoke/portable ZIP — PASS;
+  - real SCR-002A capture remains 1600x1000;
+  - screenshot SHA-256 `acb71b2ee816215cf1104c8ea4d78a0a55e9bf0e1e31545a52c354c3c3b638fa`, byte-identical to S09-T01.
+- Evidence: `docs/ui/evidence/S09_T02_DESIGN_SYSTEM_EVIDENCE.md`.
+- Out of scope honored: no speculative component library, new product behavior, Gemini SDK, media/render engine, FFmpeg, or persistence.
 
 ## S09-T03 - First Frozen Reference Screen + Screenshot Baseline
 - Owner: SOL
 - Priority: P1
 - Risk: MEDIUM
-- Status: PLANNED_AFTER_S09-T02
+- Status: READY
 - Dependency: S09-T01/T02.
 - Goal: implement the first bounded frozen reference state and establish actual-vs-reference screenshot evidence without redesign.
