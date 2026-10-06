@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import type { ProjectLocation } from "../../../core/contracts/project-lifecycle";
 import type {
   ProjectPersistenceErrorCode,
   SaveProjectResult,
@@ -10,7 +11,11 @@ import {
 
 export type ProjectSourceState = "new" | "loaded" | "load-error";
 export type ProjectPersistenceState =
-  "idle" | "saving" | "saved" | "cancelled" | "error";
+  | "idle"
+  | "saving"
+  | "saved"
+  | "cancelled"
+  | "error";
 
 function createSessionProject(): ProjectDocument {
   const projectId =
@@ -25,6 +30,7 @@ export interface ProjectSessionView {
   sourceState: ProjectSourceState;
   persistenceState: ProjectPersistenceState;
   errorCode: ProjectPersistenceErrorCode | null;
+  location: ProjectLocation;
   save(): Promise<SaveProjectResult>;
 }
 
@@ -37,6 +43,9 @@ export function useProjectSession(): ProjectSessionView {
     useState<ProjectPersistenceState>("idle");
   const [errorCode, setErrorCode] =
     useState<ProjectPersistenceErrorCode | null>(null);
+  const [location, setLocation] = useState<ProjectLocation>({
+    kind: "unsaved",
+  });
 
   useEffect(() => {
     let alive = true;
@@ -49,6 +58,7 @@ export function useProjectSession(): ProjectSessionView {
         if (result.status === "loaded") {
           setProject(result.project);
           setSourceState("loaded");
+          setLocation(result.location);
           setErrorCode(null);
         } else if (result.status === "error") {
           setSourceState("load-error");
@@ -78,6 +88,7 @@ export function useProjectSession(): ProjectSessionView {
       const result = await window.lfa.saveProject({ project });
       if (result.status === "saved") {
         setPersistenceState("saved");
+        setLocation(result.location);
       } else if (result.status === "cancelled") {
         setPersistenceState("cancelled");
       } else {
@@ -103,6 +114,7 @@ export function useProjectSession(): ProjectSessionView {
     sourceState,
     persistenceState,
     errorCode,
+    location,
     save,
   };
 }

@@ -1,5 +1,6 @@
 import { dialog } from "electron";
 import { resolve } from "node:path";
+import { ProjectPathSession } from "../core/application/services/project-path-session";
 import {
   LoadProjectUseCase,
   SaveProjectUseCase,
@@ -18,6 +19,7 @@ export interface CompositionRoot {
 
 export function createCompositionRoot(argv: string[]): CompositionRoot {
   const projectStore = new JsonProjectStore();
+  const pathSession = new ProjectPathSession();
   const saveProject = new SaveProjectUseCase(projectStore);
   const loadProject = new LoadProjectUseCase(projectStore);
   const fixedSavePath = readArgValue(argv, "slc-save-path");
@@ -43,6 +45,7 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     saveProject,
     loadProject,
     selectSavePath,
+    pathSession,
   };
 
   if (startupProjectPath) {

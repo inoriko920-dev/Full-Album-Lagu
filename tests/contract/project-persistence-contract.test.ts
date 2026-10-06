@@ -27,13 +27,23 @@ describe("project persistence IPC contract", () => {
     ).toBe(true);
   });
 
+  it("requires a public location state on successful save", () => {
+    expect(
+      saveProjectResultSchema.safeParse({
+        status: "saved",
+        projectRevision: 0,
+        location: { kind: "known-path" },
+      }).success,
+    ).toBe(true);
+  });
+
   it("keeps save cancellation explicit", () => {
     expect(saveProjectResultSchema.parse({ status: "cancelled" })).toEqual({
       status: "cancelled",
     });
   });
 
-  it("validates a loaded startup project", () => {
+  it("validates a loaded startup project with known-path state", () => {
     expect(
       startupProjectResultSchema.safeParse({
         status: "loaded",
@@ -44,6 +54,7 @@ describe("project persistence IPC contract", () => {
           revision: 0,
           tracks: [],
         },
+        location: { kind: "known-path" },
       }).success,
     ).toBe(true);
   });

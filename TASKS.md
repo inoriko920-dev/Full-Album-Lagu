@@ -23,7 +23,9 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: IN_PROGRESS
+- Work status: IMPLEMENTED
+- Evidence status: PENDING_CI
 - Start condition: user says `lanjutkan` after planning source-of-truth commit.
 - Scope: lifecycle contracts + session current-path ownership only.
 - Out of scope: autosave implementation, media import, track timeline, Gemini, FFmpeg/render, UI redesign.

@@ -14,6 +14,7 @@ import { AppShell } from "../../src/renderer/app/AppShell";
 const saveProjectMock = vi.fn<LfaBridge["saveProject"]>(async () => ({
   status: "saved" as const,
   projectRevision: 0,
+  location: { kind: "known-path" as const },
 }));
 const getStartupProjectMock = vi.fn<LfaBridge["getStartupProject"]>(
   async () => ({ status: "none" as const }),
@@ -88,14 +89,18 @@ describe("AppShell", () => {
     ).toBeInTheDocument();
   });
 
-  it("routes Save through ProjectSession and the typed bridge", async () => {
+  it("routes Save through ProjectSession and tracks only public path state", async () => {
     render(<AppShell />);
+
+    const shell = document.querySelector(".app-shell");
+    expect(shell).toHaveAttribute("data-project-location", "unsaved");
 
     fireEvent.click(screen.getByRole("button", { name: "Simpan" }));
 
     await waitFor(() => {
       expect(saveProjectMock).toHaveBeenCalledTimes(1);
       expect(screen.getByText("Proyek tersimpan.")).toBeInTheDocument();
+      expect(shell).toHaveAttribute("data-project-location", "known-path");
     });
 
     expect(saveProjectMock.mock.calls[0]?.[0]).toMatchObject({
