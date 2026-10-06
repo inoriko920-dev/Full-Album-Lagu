@@ -3,18 +3,24 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 08 - Repository Foundation
-- Completed task: S08-T01 - Source-of-Truth & Governance Bootstrap
-- S08-T01 work status: IMPLEMENTED
-- S08-T01 evidence status: VERIFIED
+- Completed task: S08-T02 - Repository Skeleton & Quality Tooling
+- S08-T02 work status: IMPLEMENTED
+- S08-T02 evidence status: VERIFIED
+- S08-T02 gate: PASS_WITH_PROVISIONAL
+- Verified foundation HEAD before status-close commit: `dbf3c7f65374fb4c508c0e502f8aade365a282db`
+- Clean-lock GitHub Actions run: `37502197633` - PASS
 - Last completed planning STEP: STEP 07
-- STEP 07 gate: PASS_WITH_PROVISIONAL
 - UI: FROZEN - Final UI Reference v1.1 / UI Freeze v1.0
-- UI repository reference: `docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx` with all 29 approved images
 - Architecture: STEP 06 v1.0
 - Code Constitution: v1.0
 - Product feature code: NOT STARTED
-- Pre-STEP08 repository baseline: EMPTY_REPOSITORY / NO_HEAD
+- Foundation shell: Electron + React + TypeScript strict, secure preload/IPC boundary, tests/build/architecture/path/secret gates.
+- Exact top-level foundation package baseline: RESOLVED and recorded in `docs/architecture/adr/ADR-0013-foundation-toolchain-baseline.md`.
+- Runtime dependency audit: `npm audit --omit=dev --audit-level=high` PASS.
+- Provisional / open:
+  - dev/tooling dependency graph reports 8 moderate advisories and deprecated transitive packages; track/harden during CI/dependency maintenance without hiding them;
+  - exact FFmpeg/FFprobe Windows binary/encoder/license bundle remains unresolved;
+  - exact Gemini SDK/model remains unresolved until integration STEP.
 - Protected decisions: permanent Gemini right rail; Gemini-only max 100 keys; one ProjectSession/CommandEngine; JSON project; portable Windows ZIP; main/renderer trust boundary; final MP4 render.
-- Provisional: exact Electron/build versions; exact FFmpeg binary/encoder/license; exact Gemini SDK/model.
-- Current blocker for S08-T02: none.
-- Next exact action: S08-T02 Repository Skeleton & Quality Tooling, only after the user says "lanjutkan".
+- Current blocker for S08-T03: none.
+- Next exact action: S08-T03 CI Foundation & Windows Packaging Smoke, only after the user says "lanjutkan".

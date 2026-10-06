@@ -7,28 +7,42 @@
 - Status: DONE
 - Work status: IMPLEMENTED
 - Evidence status: VERIFIED
-- Goal: convert the empty repository into a documentation-governed project without product code.
-- Out of scope honored: no package.json, Electron source, UI implementation, SoundVisualizer source import, Gemini integration, FFmpeg binary, or feature behavior.
-- Acceptance evidence:
-  - current planning DOCX compact copies 00-09 present;
-  - superseded STEP 03/04 retained under archive and clearly marked;
-  - Final UI Reference repository DOCX contains all 29 approved images;
-  - complete Software Factory V2 text guide present;
-  - AGENTS / PROJECT_STATE / PLAN / TASKS / CURRENT_HANDOFF present;
-  - architecture/ownership/dependency/upstream documents present;
-  - no product source/dependency/build/cache/user data introduced.
-- Key evidence commits include initial repository bootstrap, governance baseline, UI reference binary, factory guide and archive commits; inspect git history for exact chain.
-- Rollback: normal Git revert only; never silently remove source-of-truth history.
+- Gate: PASS
+- Goal: convert the empty repository into a documentation-governed project before code.
+- Evidence: current planning/reference/factory/handoff/governance source of truth is committed; superseded UI planning archived; 29-image UI reference committed.
 
 ## S08-T02 - Repository Skeleton & Quality Tooling
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
-- Goal: create the architecture-compliant Electron + React + TypeScript skeleton and enforce quality boundaries without product-feature implementation.
-- Out of scope: frozen product screens, SoundVisualizer feature integration, real Gemini integration, FFmpeg release binary, product workflow behavior.
-- Required acceptance: reproducible lockfile/install, strict TS, minimal secure Electron shell, architecture/path/secret gates, unit foundation, build succeeds.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS_WITH_PROVISIONAL
+- Verified foundation commit: `98333b5196ec0bdc3cff867c33cbd639f6d95bf6`
+- Clean-lock evidence commit: `dbf3c7f65374fb4c508c0e502f8aade365a282db`
+- GitHub Actions clean-lock run: `37502197633`
+- Acceptance evidence:
+  - exact `package-lock.json` committed;
+  - `npm ci` PASS on `windows-latest`;
+  - formatting, ESLint, TypeScript strict, architecture check, secret scan and portable-path scan PASS;
+  - unit: 1/1 PASS;
+  - contract: 2/2 PASS;
+  - component: 1/1 PASS;
+  - main/preload/renderer/render foundation builds PASS;
+  - runtime audit `npm audit --omit=dev --audit-level=high` PASS;
+  - Electron renderer boundary uses context isolation, Node integration disabled and a narrow typed preload;
+  - no product feature implementation, SoundVisualizer import, Gemini SDK or FFmpeg binary was introduced.
+- Provisional:
+  - full dev/tooling install currently reports 8 moderate advisories plus deprecated transitive packages from tooling; do not hide or auto-force-upgrade them. Reassess in S08-T03/dependency maintenance with compatibility evidence.
+  - FFmpeg/FFprobe distribution and Gemini SDK/model remain later bounded decisions.
+- Rollback: revert foundation commits; preserve STEP 08 source-of-truth/governance history.
 
 ## S08-T03 - CI Foundation & Windows Packaging Smoke
 - Owner: SOL
-- Status: BLOCKED by S08-T02.
+- Priority: P1
+- Risk: MEDIUM
+- Status: READY
+- Goal: make persistent GitHub Actions clean-machine verification authoritative and prove the foundation creates/starts a Windows x64 unpacked + portable ZIP artifact.
+- Out of scope: product UI, product feature behavior, SoundVisualizer feature integration, Gemini real integration, FFmpeg render binary.
+- Start condition: user says `lanjutkan`.
