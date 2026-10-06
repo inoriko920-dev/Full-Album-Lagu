@@ -23,7 +23,7 @@ jobs:
         shell: pwsh
         run: |
           npm install --save-exact react@latest react-dom@latest zod@latest
-          npm install --save-dev --save-exact electron@43.6.0 vite@latest @vitejs/plugin-react@latest typescript@latest esbuild@latest vitest@latest @testing-library/react@latest @testing-library/jest-dom@latest jsdom@latest @types/node@latest @types/react@latest @types/react-dom@latest eslint@latest @eslint/js@latest typescript-eslint@latest eslint-plugin-react-hooks@latest globals@latest prettier@latest electron-builder@latest
+          npm install --save-dev --save-exact electron@43.6.0 vite@latest @vitejs/plugin-react@latest typescript@6 esbuild@latest vitest@latest @testing-library/react@latest @testing-library/jest-dom@latest jsdom@latest @types/node@latest @types/react@latest @types/react-dom@latest eslint@latest @eslint/js@latest typescript-eslint@latest eslint-plugin-react-hooks@latest globals@latest prettier@latest electron-builder@latest
 
       - name: Format foundation source
         run: npm run format
