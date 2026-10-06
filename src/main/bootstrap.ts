@@ -51,7 +51,8 @@ function createMainWindow(): BrowserWindow {
 
   if (isUiCapture && screenshotPath) {
     window.webContents.once("did-finish-load", async () => {
-      const readiness = (await window.webContents.executeJavaScript(`
+      try {
+        const readiness = (await window.webContents.executeJavaScript(`
         new Promise((resolve, reject) => {
           let attempt = 0;
           const inspect = () => {
@@ -130,12 +131,29 @@ function createMainWindow(): BrowserWindow {
         ),
         "utf8",
       );
-      console.log(
-        `UI screenshot PASS: ${UI_TEST_SCREEN} -> ${target}; DOM ${readiness.shellWidth}x${readiness.shellHeight}; text=${readiness.textLength}`,
-      );
-      window.destroy();
-      app.exit(0);
+        console.log(
+          `UI screenshot PASS: ${UI_TEST_SCREEN} -> ${target}; DOM ${readiness.shellWidth}x${readiness.shellHeight}; text=${readiness.textLength}`,
+        );
+        window.destroy();
+        app.exit(0);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(`UI screenshot FAIL: ${message}`);
+        if (!window.isDestroyed()) window.destroy();
+        app.exit(7);
+      }
     });
+
+    window.webContents.once(
+      "did-fail-load",
+      (_event, errorCode, errorDescription, validatedUrl) => {
+        console.error(
+          `UI renderer load FAIL: ${errorCode} ${errorDescription} ${validatedUrl}`,
+        );
+        if (!window.isDestroyed()) window.destroy();
+        app.exit(8);
+      },
+    );
   }
 
   const devUrl = process.env.LFA_DEV_SERVER_URL;
