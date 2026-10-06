@@ -1,5 +1,6 @@
 import type { FoundationInfo } from "./foundation-info";
 import type {
+  OpenProjectResult,
   SaveProjectRequest,
   SaveProjectResult,
   StartupProjectResult,
@@ -8,5 +9,7 @@ import type {
 export interface LfaBridge {
   getFoundationInfo(): Promise<FoundationInfo>;
   saveProject(request: SaveProjectRequest): Promise<SaveProjectResult>;
+  saveProjectAs(request: SaveProjectRequest): Promise<SaveProjectResult>;
+  openProject(): Promise<OpenProjectResult>;
   getStartupProject(): Promise<StartupProjectResult>;
 }
