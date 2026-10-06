@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useProjectSession } from "../state/project-session/use-project-session";
 import { AppIcon } from "../ui/AppIcon";
 import { ActionButton, IconButton } from "../ui/controls";
 import "./app-shell.css";
@@ -11,7 +12,7 @@ const WORK_RAIL_TABS: Array<{ id: WorkRailTab; label: string }> = [
   { id: "inspector", label: "Inspector" },
 ];
 
-const FIXTURE_VERSION = "S09-T03-SCR-002A-v1";
+const FIXTURE_VERSION = "S10-SLC-010-001-SCR-002A-v1";
 
 function MediaPanel() {
   return (
@@ -257,9 +258,18 @@ function TimelinePanel() {
 
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<WorkRailTab>("media");
+  const projectSession = useProjectSession();
 
   return (
-    <main className="app-shell" data-fixture-version={FIXTURE_VERSION}>
+    <main
+      className="app-shell"
+      data-fixture-version={FIXTURE_VERSION}
+      data-project-id={projectSession.project.projectId}
+      data-project-name={projectSession.project.name}
+      data-project-revision={projectSession.project.revision}
+      data-project-source={projectSession.sourceState}
+      data-persistence-state={projectSession.persistenceState}
+    >
       <header className="top-toolbar">
         <div className="project-identity">
           <span className="app-mark">
@@ -267,7 +277,7 @@ export function AppShell() {
           </span>
           <div>
             <span className="app-name">Lagu Full Album</span>
-            <strong>Proyek Baru</strong>
+            <strong>{projectSession.project.name}</strong>
           </div>
         </div>
         <div className="toolbar-actions" aria-label="Aksi proyek">
@@ -280,9 +290,27 @@ export function AppShell() {
           />
           <ActionButton variant="toolbar" label="Template" icon="template" />
           <span className="toolbar-divider" />
-          <ActionButton variant="toolbar" label="Simpan" icon="save" />
+          <ActionButton
+            variant="toolbar"
+            label="Simpan"
+            icon="save"
+            data-action="save-project"
+            disabled={projectSession.persistenceState === "saving"}
+            onClick={() => void projectSession.save()}
+          />
           <ActionButton variant="toolbarPrimary" label="Render" icon="render" />
         </div>
+        <span className="sr-only" role="status" aria-live="polite">
+          {projectSession.persistenceState === "saved"
+            ? "Proyek tersimpan."
+            : projectSession.persistenceState === "cancelled"
+              ? "Penyimpanan dibatalkan."
+              : projectSession.persistenceState === "error"
+                ? "Proyek gagal disimpan."
+                : projectSession.sourceState === "load-error"
+                  ? "Proyek gagal dibuka."
+                  : ""}
+        </span>
       </header>
 
       <div className="workspace-grid">
