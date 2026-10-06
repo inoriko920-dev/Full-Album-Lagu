@@ -4,10 +4,39 @@ import {
   fireEvent,
   render,
   screen,
+  waitFor,
   within,
 } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import type { LfaBridge } from "../../src/core/contracts/lfa-bridge";
 import { AppShell } from "../../src/renderer/app/AppShell";
+
+const saveProjectMock = vi.fn(async () => ({
+  status: "saved" as const,
+  projectRevision: 0,
+}));
+const getStartupProjectMock = vi.fn(async () => ({ status: "none" as const }));
+const getFoundationInfoMock = vi.fn(async () => ({
+  platform: "win32",
+  arch: "x64",
+  phase: "foundation" as const,
+}));
+
+const bridge: LfaBridge = {
+  getFoundationInfo: getFoundationInfoMock,
+  saveProject: saveProjectMock,
+  getStartupProject: getStartupProjectMock,
+};
+
+beforeEach(() => {
+  Object.defineProperty(window, "lfa", {
+    configurable: true,
+    value: bridge,
+  });
+  saveProjectMock.mockClear();
+  getStartupProjectMock.mockClear();
+  getFoundationInfoMock.mockClear();
+});
 
 afterEach(() => {
   cleanup();
@@ -53,5 +82,25 @@ describe("AppShell", () => {
     expect(
       screen.getByRole("complementary", { name: "Gemini Agent" }),
     ).toBeInTheDocument();
+  });
+
+  it("routes Save through ProjectSession and the typed bridge", async () => {
+    render(<AppShell />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Simpan" }));
+
+    await waitFor(() => {
+      expect(saveProjectMock).toHaveBeenCalledTimes(1);
+      expect(screen.getByText("Proyek tersimpan.")).toBeInTheDocument();
+    });
+
+    expect(saveProjectMock.mock.calls[0]?.[0]).toMatchObject({
+      project: {
+        schemaVersion: 1,
+        name: "Proyek Baru",
+        revision: 0,
+        tracks: [],
+      },
+    });
   });
 });
