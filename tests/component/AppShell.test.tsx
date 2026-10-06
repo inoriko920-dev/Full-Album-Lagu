@@ -17,7 +17,7 @@ describe("AppShell", () => {
   it("renders the frozen SCR-002A empty editor shell", () => {
     render(<AppShell />);
 
-    expect(screen.getAllByText("Proyek Baru")).toHaveLength(2);
+    expect(screen.getAllByText("Proyek Baru")).toHaveLength(3);
     expect(screen.getByRole("button", { name: "Impor Audio" })).toBeEnabled();
     expect(
       screen.getByRole("button", { name: "Auto Susun Album" }),
