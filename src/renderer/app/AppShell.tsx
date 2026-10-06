@@ -352,19 +352,39 @@ function PreviewPanel() {
       </div>
       <div className="transport-bar" aria-label="Kontrol playback">
         <div className="transport-controls">
-          <button type="button" className="icon-button" disabled aria-label="Track sebelumnya">
+          <button
+            type="button"
+            className="icon-button"
+            disabled
+            aria-label="Track sebelumnya"
+          >
             <AppIcon name="previous" size={17} />
           </button>
-          <button type="button" className="icon-button icon-button--play" disabled aria-label="Putar">
+          <button
+            type="button"
+            className="icon-button icon-button--play"
+            disabled
+            aria-label="Putar"
+          >
             <AppIcon name="play" size={18} />
           </button>
-          <button type="button" className="icon-button" disabled aria-label="Track berikutnya">
+          <button
+            type="button"
+            className="icon-button"
+            disabled
+            aria-label="Track berikutnya"
+          >
             <AppIcon name="next" size={17} />
           </button>
         </div>
         <span className="timecode">00:00:00 / 00:00:00</span>
         <div className="transport-tail">
-          <button type="button" className="icon-button" disabled aria-label="Volume">
+          <button
+            type="button"
+            className="icon-button"
+            disabled
+            aria-label="Volume"
+          >
             <AppIcon name="volume" size={17} />
           </button>
           <span className="transport-separator" />
@@ -385,7 +405,11 @@ function GeminiRail() {
           </span>
           <h2>Gemini Agent</h2>
         </div>
-        <button className="icon-button icon-button--plain" type="button" aria-label="Pengaturan Gemini">
+        <button
+          className="icon-button icon-button--plain"
+          type="button"
+          aria-label="Pengaturan Gemini"
+        >
           <AppIcon name="settings" size={17} />
         </button>
       </div>
@@ -394,7 +418,10 @@ function GeminiRail() {
           <span className="status-dot status-dot--muted" />
           <span>Gemini • Belum dikonfigurasi • 0/100 key</span>
         </div>
-        <button className="secondary-action secondary-action--compact" type="button">
+        <button
+          className="secondary-action secondary-action--compact"
+          type="button"
+        >
           Kelola API
         </button>
       </div>
@@ -417,17 +444,26 @@ function GeminiRail() {
         </button>
         <div className="gemini-note">
           <strong>Privasi</strong>
-          <span>API key disimpan aman di perangkat dan tidak masuk ke file proyek.</span>
+          <span>
+            API key disimpan aman di perangkat dan tidak masuk ke file proyek.
+          </span>
         </div>
       </div>
       <div className="gemini-composer" aria-label="Composer Gemini tidak aktif">
         <div className="gemini-input" aria-disabled="true">
           <span>Minta Gemini mengedit proyek…</span>
-          <button type="button" className="send-button" disabled aria-label="Kirim perintah">
+          <button
+            type="button"
+            className="send-button"
+            disabled
+            aria-label="Kirim perintah"
+          >
             <AppIcon name="send" size={16} />
           </button>
         </div>
-        <span className="composer-hint">Tambahkan API key untuk mengaktifkan Gemini Agent.</span>
+        <span className="composer-hint">
+          Tambahkan API key untuk mengaktifkan Gemini Agent.
+        </span>
       </div>
     </aside>
   );

@@ -8,9 +8,7 @@ describe("AppShell", () => {
     render(<AppShell />);
 
     expect(screen.getByText("Proyek Baru")).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Impor Audio" }),
-    ).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Impor Audio" })).toBeEnabled();
     expect(
       screen.getByRole("button", { name: "Auto Susun Album" }),
     ).toBeDisabled();

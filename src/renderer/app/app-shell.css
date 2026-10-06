@@ -841,7 +841,8 @@ button:disabled {
   overflow: hidden;
   color: var(--text-secondary);
   background:
-    linear-gradient(to right, rgb(215 222 232 / 28%) 1px, transparent 1px) 0 0 / 12.5% 100%,
+    linear-gradient(to right, rgb(215 222 232 / 28%) 1px, transparent 1px) 0 0 /
+      12.5% 100%,
     #ffffff;
 }
 
