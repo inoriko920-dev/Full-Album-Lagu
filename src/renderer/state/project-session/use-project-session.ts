@@ -45,18 +45,25 @@ export function useProjectSession(): ProjectSessionView {
   useEffect(() => {
     let alive = true;
 
-    void window.lfa.getStartupProject().then((result) => {
-      if (!alive) return;
+    void window.lfa
+      .getStartupProject()
+      .then((result) => {
+        if (!alive) return;
 
-      if (result.status === "loaded") {
-        setProject(result.project);
-        setSourceState("loaded");
-        setErrorCode(null);
-      } else if (result.status === "error") {
+        if (result.status === "loaded") {
+          setProject(result.project);
+          setSourceState("loaded");
+          setErrorCode(null);
+        } else if (result.status === "error") {
+          setSourceState("load-error");
+          setErrorCode(result.code);
+        }
+      })
+      .catch(() => {
+        if (!alive) return;
         setSourceState("load-error");
-        setErrorCode(result.code);
-      }
-    });
+        setErrorCode("PROJECT_READ_FAILED");
+      });
 
     return () => {
       alive = false;
@@ -71,17 +78,28 @@ export function useProjectSession(): ProjectSessionView {
     setPersistenceState("saving");
     setErrorCode(null);
 
-    const result = await window.lfa.saveProject({ project });
-    if (result.status === "saved") {
-      setPersistenceState("saved");
-    } else if (result.status === "cancelled") {
-      setPersistenceState("cancelled");
-    } else {
+    try {
+      const result = await window.lfa.saveProject({ project });
+      if (result.status === "saved") {
+        setPersistenceState("saved");
+      } else if (result.status === "cancelled") {
+        setPersistenceState("cancelled");
+      } else {
+        setPersistenceState("error");
+        setErrorCode(result.code);
+      }
+
+      return result;
+    } catch {
+      const result: SaveProjectResult = {
+        status: "error",
+        code: "PROJECT_WRITE_FAILED",
+        message: "Project file could not be saved.",
+      };
       setPersistenceState("error");
       setErrorCode(result.code);
+      return result;
     }
-
-    return result;
   }, [persistenceState, project]);
 
   return {

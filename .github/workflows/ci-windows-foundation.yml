@@ -45,6 +45,19 @@ jobs:
       - name: Runtime dependency audit
         run: npm audit --omit=dev --audit-level=high
 
+      - name: Run STEP 10 SLC-010-001 save/reopen E2E
+        run: npm run e2e:slc:save-reopen
+
+      - name: Upload STEP 10 SLC evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-S10-SLC-010-001-Evidence
+          path: |
+            artifacts/slc/SLC-010-001/**
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Capture SCR-002A real-app screenshot
         run: npm run ui:screenshot:scr002a
 
