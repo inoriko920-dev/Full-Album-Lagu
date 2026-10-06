@@ -8,7 +8,13 @@ afterEach(() => cleanup());
 
 describe("shared UI primitives", () => {
   it("renders the frozen toolbar primary class contract", () => {
-    render(<ActionButton variant="toolbarPrimary" label="Render" icon="render" />);
+    render(
+      <ActionButton
+        variant="toolbarPrimary"
+        label="Render"
+        icon="render"
+      />,
+    );
     const button = screen.getByRole("button", { name: "Render" });
     expect(button).toHaveClass("toolbar-button", "toolbar-button--primary");
     expect(button.querySelector("svg")).toHaveAttribute("aria-hidden", "true");

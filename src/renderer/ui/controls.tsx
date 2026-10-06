@@ -1,9 +1,14 @@
 import type { ButtonHTMLAttributes } from "react";
 import { AppIcon, type IconName } from "./AppIcon";
 
-type ActionButtonVariant = "toolbar" | "toolbarPrimary" | "primary" | "secondary";
+type ActionButtonVariant =
+  | "toolbar"
+  | "toolbarPrimary"
+  | "primary"
+  | "secondary";
 
-interface ActionButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
+interface ActionButtonProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
   variant: ActionButtonVariant;
   label: string;
   icon?: IconName;
@@ -34,9 +39,12 @@ export function ActionButton({
     wide && variant === "primary" ? "primary-action--wide" : "",
     compact && variant === "secondary" ? "secondary-action--compact" : "",
     className ?? "",
-  ].filter(Boolean).join(" ");
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  const iconSize = variant === "toolbar" || variant === "toolbarPrimary" ? 16 : 17;
+  const iconSize =
+    variant === "toolbar" || variant === "toolbarPrimary" ? 16 : 17;
 
   return (
     <button
@@ -50,7 +58,8 @@ export function ActionButton({
   );
 }
 
-interface IconButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
+interface IconButtonProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children"> {
   icon: IconName;
   iconSize?: number;
   play?: boolean;
@@ -71,7 +80,9 @@ export function IconButton({
     play ? "icon-button--play" : "",
     bordered ? "icon-button--plain" : "",
     className ?? "",
-  ].filter(Boolean).join(" ");
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
     <button className={classes} type={type} {...buttonProps}>
