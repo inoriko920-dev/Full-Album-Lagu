@@ -40,15 +40,47 @@
 - Existing STEP 10 save/reopen E2E, frozen UI baseline, runtime audit, Windows package/smoke and portable ZIP all PASS.
 - Evidence: `docs/step11/evidence/T11_W01_01_LIFECYCLE_CONTRACTS_EVIDENCE.md`.
 - Out of scope honored: Open, Save As, known-path Save behavior, autosave/recovery, media, Gemini, FFmpeg/render and UI redesign.
-- Next task after PASS: T11-W01-02, but never in the same turn without a new `lanjutkan`.
 
 ## T11-W01-02 — Open / Save As / Known-Path Save
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: T11-W01-01 PASS.
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
+- Windows CI run: `37534906938` — PASS
+- CI job: `112513587662`
+- Lifecycle evidence artifact: `11446750441`
+- Scope delivered:
+  - typed `project:open` and `project:save-as` channels;
+  - application-owned lifecycle service for Open / Save As / known-path Save;
+  - known-path Save bypasses Save As selection;
+  - Save As success updates path ownership only after successful persistence;
+  - Save As cancel preserves existing path;
+  - Open success validates/loads first, then changes path ownership;
+  - Open cancel/error preserves current path;
+  - production native Open/Save As dialogs plus deterministic CI path/cancel seams;
+  - renderer contracts still expose no raw filesystem path.
+- Verification:
+  - integration tests use real `JsonProjectStore` with spaces + Unicode paths;
+  - deterministic Windows Electron E2E: 6 scenarios, all PASS;
+  - assertions PASS: known-path Save bypass, Save As success/cancel, Open success/cancel/error, Unicode/spaces, sanitized public evidence;
+  - STEP 10 SLC PASS;
+  - frozen SCR-002A baseline PASS;
+  - runtime high-severity audit PASS;
+  - Windows package/smoke/portable ZIP PASS.
+- Evidence: `docs/step11/evidence/T11_W01_02_PROJECT_LIFECYCLE_EVIDENCE.md`.
+- Out of scope honored: dirty state, autosave/recovery, recovery UX, media, Gemini, FFmpeg/render, frozen UI redesign.
 
 ## T11-W01-03 — Dirty State & Autosave Recovery Store
-- Status: BLOCKED_BY T11-W01-02
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: T11-W01-02 PASS.
 
 ## T11-W01-04 — Frozen UI States + Recovery UX Wiring
 - Status: BLOCKED_BY T11-W01-03
