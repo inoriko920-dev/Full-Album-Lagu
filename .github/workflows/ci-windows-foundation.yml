@@ -1,10 +1,14 @@
-name: Windows Foundation CI
+name: Windows CI
 
 on:
   push:
     branches: [main]
   pull_request:
   workflow_dispatch:
+
+concurrency:
+  group: windows-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -27,11 +31,87 @@ jobs:
       - name: Clean install
         run: npm ci
 
-      - name: Foundation verification
+      - name: Foundation and UI verification
         run: npm run verify
 
       - name: Runtime dependency audit
         run: npm audit --omit=dev --audit-level=high
+
+      - name: Capture SCR-002A real-app screenshot
+        run: npm run ui:screenshot:scr002a
+
+      - name: Verify UI screenshot evidence
+        shell: pwsh
+        run: |
+          $shot = "artifacts/ui/SCR-002A.png"
+          $dom = "artifacts/ui/SCR-002A-dom.json"
+          if (!(Test-Path $shot)) {
+            throw "UI screenshot missing: $shot"
+          }
+          if (!(Test-Path $dom)) {
+            throw "UI DOM evidence missing: $dom"
+          }
+
+          $item = Get-Item $shot
+          if ($item.Length -lt 2000) {
+            throw "UI screenshot is unexpectedly small: $($item.Length) bytes"
+          }
+
+          $domEvidence = Get-Content $dom -Raw | ConvertFrom-Json
+          if (
+            $domEvidence.innerViewport.width -ne 1600 -or
+            $domEvidence.innerViewport.height -ne 1000
+          ) {
+            throw "SCR-002A renderer viewport is $($domEvidence.innerViewport.width)x$($domEvidence.innerViewport.height), expected 1600x1000."
+          }
+          if (
+            $domEvidence.shell.width -ne 1600 -or
+            $domEvidence.shell.height -ne 1000
+          ) {
+            throw "SCR-002A app shell is $($domEvidence.shell.width)x$($domEvidence.shell.height), expected 1600x1000."
+          }
+          if (
+            $domEvidence.capture.width -ne 1600 -or
+            $domEvidence.capture.height -ne 1000
+          ) {
+            throw "SCR-002A PNG capture is $($domEvidence.capture.width)x$($domEvidence.capture.height), expected 1600x1000."
+          }
+          if (
+            !$domEvidence.hasGeminiAgent -or
+            !$domEvidence.hasPreviewEmpty -or
+            !$domEvidence.hasTimelineEmpty
+          ) {
+            throw "SCR-002A required frozen regions were not present in the rendered DOM."
+          }
+
+          @(
+            "Screen: SCR-002A",
+            "Image ID: UI-IMG-002A",
+            "Prompt ID: PROMPT-UI-SCR-002A",
+            "Reference Pack: LFA-UI-REFERENCE-v1.1",
+            "UI Freeze: LFA-UI-FREEZE-v1.0",
+            "Implementation SHA: $env:GITHUB_SHA",
+            "Viewport: 1600x1000 @ 100%",
+            "PNG bytes: $($item.Length)",
+            "DOM shell: $($domEvidence.shell.width)x$($domEvidence.shell.height)",
+            "Capture: $($domEvidence.capture.width)x$($domEvidence.capture.height)"
+          ) | Set-Content -Encoding utf8 artifacts/ui/SCR-002A-evidence.txt
+
+          Get-Item $shot | Format-List FullName,Length
+          Get-Content $dom
+          Get-Content artifacts/ui/SCR-002A-evidence.txt
+
+      - name: Upload S09-T01 UI evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-S09-T01-UI-Evidence
+          path: |
+            artifacts/ui/SCR-002A.png
+            artifacts/ui/SCR-002A-dom.json
+            artifacts/ui/SCR-002A-evidence.txt
+          if-no-files-found: warn
+          retention-days: 14
 
       - name: Package Windows x64 directory
         run: npm run package:windows
