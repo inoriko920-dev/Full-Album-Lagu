@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   verify-package-smoke:
@@ -22,8 +22,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
 
       - uses: actions/setup-node@v5
         with:
@@ -36,36 +34,10 @@ jobs:
           ./scripts/extract-ui-reference.ps1 `
             -DocxPath "docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx" `
             -ImageId "UI-IMG-002A" `
-            -OutputPath "artifacts/ui/reference/UI-IMG-002A-reference.png"
-
-      - name: Upload frozen UI-IMG-002A reference
-        uses: actions/upload-artifact@v4
-        with:
-          name: Lagu-Full-Album-S09-T03-Frozen-Reference
-          path: |
-            artifacts/ui/reference/UI-IMG-002A-reference.png
-            artifacts/ui/reference/UI-IMG-002A-reference.png.json
-          if-no-files-found: error
-          retention-days: 14
+            -OutputPath "artifacts/ui/reference/UI-IMG-002A-reference.jpg"
 
       - name: Clean install
         run: npm ci
-
-      - name: Format S09-T03 renderer
-        run: npm run format
-
-      - name: Commit formatted S09-T03 renderer
-        if: github.event_name == 'pull_request'
-        shell: pwsh
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/renderer/app/AppShell.tsx src/renderer/app/app-shell.css
-          git diff --cached --quiet
-          if ($LASTEXITCODE -ne 0) {
-            git commit -m "style(ui): apply Prettier to S09-T03"
-            git push origin "HEAD:${{ github.head_ref }}"
-          }
 
       - name: Foundation and UI verification
         run: npm run verify
@@ -137,15 +109,29 @@ jobs:
           Get-Content $dom
           Get-Content artifacts/ui/SCR-002A-evidence.txt
 
-      - name: Upload S09-T01 UI evidence
+      - name: Verify frozen visual baseline
+        shell: pwsh
+        run: |
+          ./scripts/build-ui-comparison.ps1 `
+            -ReferencePath "artifacts/ui/reference/UI-IMG-002A-reference.jpg" `
+            -ActualPath "artifacts/ui/SCR-002A.png" `
+            -ManifestPath "docs/ui/manifests/UI_SCREEN_BASELINES.json" `
+            -OutputDir "artifacts/ui/comparison" `
+            -ScreenId "SCR-002A"
+
+      - name: Upload S09-T03 visual baseline evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: Lagu-Full-Album-S09-T01-UI-Evidence
+          name: Lagu-Full-Album-S09-T03-Visual-Baseline
           path: |
+            artifacts/ui/reference/UI-IMG-002A-reference.jpg
+            artifacts/ui/reference/UI-IMG-002A-reference.jpg.json
             artifacts/ui/SCR-002A.png
             artifacts/ui/SCR-002A-dom.json
             artifacts/ui/SCR-002A-evidence.txt
+            artifacts/ui/comparison/SCR-002A-side-by-side.png
+            artifacts/ui/comparison/SCR-002A-comparison.json
           if-no-files-found: warn
           retention-days: 14
 
