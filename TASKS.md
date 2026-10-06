@@ -78,7 +78,9 @@
 - Owner: SOL
 - Priority: P1
 - Risk: LOW
-- Status: READY
+- Status: IN_PROGRESS
+- Work status: IMPLEMENTED
+- Evidence status: PENDING_CI
 - Dependency: S09-T01 shell baseline.
 - Goal: codify only the tokens/shared primitives proven necessary by frozen UI states; avoid speculative component framework work.
 
