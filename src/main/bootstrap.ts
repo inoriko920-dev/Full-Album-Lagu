@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from "electron";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
+import { createCompositionRoot } from "./composition-root";
 import { registerIpcHandlers } from "./ipc/register-ipc";
 
 const PACKAGED_SMOKE_FLAG = "--smoke-test";
@@ -13,10 +14,23 @@ function readArgValue(name: string): string | undefined {
   return value?.slice(prefix.length);
 }
 
+async function writeJsonEvidence(
+  path: string,
+  payload: Record<string, unknown>,
+): Promise<void> {
+  const target = resolve(path);
+  await mkdir(dirname(target), { recursive: true });
+  await writeFile(target, JSON.stringify(payload, null, 2), "utf8");
+}
+
 function createMainWindow(): BrowserWindow {
   const uiTestScreen = readArgValue("ui-test");
   const screenshotPath = readArgValue("screenshot");
+  const slcProbe = readArgValue("slc-probe");
+  const slcEvidencePath = readArgValue("slc-evidence");
+  const slcScreenshotPath = readArgValue("slc-screenshot");
   const isUiCapture = uiTestScreen !== undefined;
+  const isSlcProbe = slcProbe !== undefined;
 
   if (isUiCapture && uiTestScreen !== UI_TEST_SCREEN) {
     throw new Error(`Unsupported UI test screen: ${uiTestScreen}`);
@@ -24,6 +38,10 @@ function createMainWindow(): BrowserWindow {
 
   if (isUiCapture && !screenshotPath) {
     throw new Error("--screenshot=<path> is required with --ui-test.");
+  }
+
+  if (isSlcProbe && !slcEvidencePath) {
+    throw new Error("--slc-evidence=<path> is required with --slc-probe.");
   }
 
   const window = new BrowserWindow({
@@ -41,14 +59,14 @@ function createMainWindow(): BrowserWindow {
       nodeIntegration: false,
       sandbox: true,
       webSecurity: true,
-      backgroundThrottling: !isUiCapture,
+      backgroundThrottling: !isUiCapture && !isSlcProbe,
     },
   });
 
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   window.webContents.on("will-navigate", (event) => event.preventDefault());
 
-  if (!isUiCapture) {
+  if (!isUiCapture && !isSlcProbe) {
     window.once("ready-to-show", () => window.show());
   }
 
@@ -171,18 +189,125 @@ function createMainWindow(): BrowserWindow {
         app.exit(7);
       }
     });
-
-    window.webContents.once(
-      "did-fail-load",
-      (_event, errorCode, errorDescription, validatedUrl) => {
-        console.error(
-          `UI renderer load FAIL: ${errorCode} ${errorDescription} ${validatedUrl}`,
-        );
-        if (!window.isDestroyed()) window.destroy();
-        app.exit(8);
-      },
-    );
   }
+
+  if (isSlcProbe && slcEvidencePath) {
+    window.webContents.once("did-finish-load", async () => {
+      try {
+        const probeResult = (await window.webContents.executeJavaScript(`
+          new Promise((resolve, reject) => {
+            let attempt = 0;
+            let saveClicked = false;
+            const mode = ${JSON.stringify(slcProbe)};
+
+            const inspect = () => {
+              const shell = document.querySelector(".app-shell");
+              const saveButton = document.querySelector(
+                'button[data-action="save-project"]',
+              );
+
+              if (shell) {
+                if (
+                  (mode === "save" || mode === "save-cancel") &&
+                  !saveClicked &&
+                  saveButton
+                ) {
+                  saveClicked = true;
+                  saveButton.click();
+                }
+
+                const persistenceState =
+                  shell.getAttribute("data-persistence-state");
+                const projectSource = shell.getAttribute("data-project-source");
+                const projectId = shell.getAttribute("data-project-id");
+                const projectName = shell.getAttribute("data-project-name");
+                const projectRevision =
+                  shell.getAttribute("data-project-revision");
+
+                const saveReady =
+                  mode === "save" && persistenceState === "saved";
+                const cancelReady =
+                  mode === "save-cancel" &&
+                  persistenceState === "cancelled";
+                const openReady =
+                  mode === "open" && projectSource === "loaded";
+
+                if (saveReady || cancelReady || openReady) {
+                  resolve({
+                    mode,
+                    persistenceState,
+                    projectSource,
+                    projectId,
+                    projectName,
+                    projectRevision: Number(projectRevision),
+                    bodyTextLength: document.body.innerText.length,
+                  });
+                  return;
+                }
+
+                if (
+                  persistenceState === "error" ||
+                  projectSource === "load-error"
+                ) {
+                  reject(
+                    new Error(
+                      "SLC renderer entered error state: persistence=" + persistenceState + "; source=" + projectSource,
+                    ),
+                  );
+                  return;
+                }
+              }
+
+              attempt += 1;
+              if (attempt >= 200) {
+                reject(new Error("Timed out waiting for SLC probe " + mode + "."));
+                return;
+              }
+              setTimeout(inspect, 50);
+            };
+
+            inspect();
+          })
+        `)) as Record<string, unknown>;
+
+        await writeJsonEvidence(slcEvidencePath, {
+          ...probeResult,
+          platform: process.platform,
+          arch: process.arch,
+        });
+
+        if (slcScreenshotPath) {
+          const screenshotTarget = resolve(slcScreenshotPath);
+          await mkdir(dirname(screenshotTarget), { recursive: true });
+          const screenshot = await window.webContents.capturePage();
+          if (screenshot.isEmpty()) {
+            throw new Error(`SLC screenshot is empty for ${slcProbe}.`);
+          }
+          await writeFile(screenshotTarget, screenshot.toPNG());
+        }
+
+        console.log(`SLC probe PASS: ${slcProbe} -> ${slcEvidencePath}`);
+        window.destroy();
+        app.exit(0);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(`SLC probe FAIL: ${message}`);
+        if (!window.isDestroyed()) window.destroy();
+        app.exit(9);
+      }
+    });
+  }
+
+  window.webContents.once(
+    "did-fail-load",
+    (_event, errorCode, errorDescription, validatedUrl) => {
+      console.error(
+        `UI renderer load FAIL: ${errorCode} ${errorDescription} ${validatedUrl}`,
+      );
+      if (!window.isDestroyed()) window.destroy();
+      app.exit(8);
+    },
+  );
 
   const devUrl = process.env.LFA_DEV_SERVER_URL;
   if (devUrl) void window.loadURL(devUrl);
@@ -191,7 +316,8 @@ function createMainWindow(): BrowserWindow {
   return window;
 }
 
-registerIpcHandlers();
+const compositionRoot = createCompositionRoot(process.argv);
+registerIpcHandlers(compositionRoot.projectIpc);
 
 app.whenReady().then(() => {
   if (process.argv.includes(PACKAGED_SMOKE_FLAG)) {

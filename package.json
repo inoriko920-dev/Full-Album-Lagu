@@ -2,7 +2,7 @@
   "name": "lagu-full-album",
   "version": "0.0.0-foundation",
   "private": true,
-  "description": "Lagu Full Album Windows desktop app — STEP 09 UI shell implementation in progress.",
+  "description": "Lagu Full Album Windows desktop app — STEP 10 vertical slice in progress.",
   "main": "dist/main/bootstrap.cjs",
   "type": "module",
   "engines": {
@@ -28,9 +28,11 @@
     "build": "npm run clean && npm run build:main && npm run build:preload && npm run build:renderer && npm run build:render",
     "package:windows": "npm run build && electron-builder --win dir --x64 --publish never",
     "smoke:packaged:windows": "node scripts/smoke-packaged-windows.mjs",
-    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run arch:check && npm run verify:secrets && npm run verify:paths && npm run verify:ui-reference && npm run test:unit && npm run test:contract && npm run test:component && npm run build",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run arch:check && npm run verify:secrets && npm run verify:paths && npm run verify:ui-reference && npm run test:unit && npm run test:contract && npm run test:component && npm run test:integration && npm run build",
     "verify:ui-reference": "node scripts/verify-ui-reference-pack.mjs",
-    "ui:screenshot:scr002a": "electron dist/main/bootstrap.cjs --ui-test=SCR-002A --screenshot=artifacts/ui/SCR-002A.png"
+    "ui:screenshot:scr002a": "electron dist/main/bootstrap.cjs --ui-test=SCR-002A --screenshot=artifacts/ui/SCR-002A.png",
+    "test:integration": "vitest run tests/integration",
+    "e2e:slc:save-reopen": "node scripts/run-slc-save-reopen.mjs"
   },
   "dependencies": {
     "react": "19.3.0",

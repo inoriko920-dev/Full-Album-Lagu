@@ -1,0 +1,27 @@
+{
+  "slcId": "SLC-010-001",
+  "verdict": "PASS_WITH_PROVISIONAL",
+  "testedSourceSha": "8425849ca1300a2f35fdb9490f04f4b78fbb9b7e",
+  "workflowSha": "d4c5ef1b41e41a128f192edc92cf1af40801ec0b",
+  "runId": 37526403614,
+  "jobId": 112484540995,
+  "evidenceArtifactId": 11441669149,
+  "evidenceArtifactDigest": "sha256:4bc87fbfcf2137f7e0d643425c8028c6dbacfaea6c67ac76b6ff4e9062453bc5",
+  "projectOutputSha256": "9bd9f34be707efd9c7dea9ef8fdfd668d16cf70260490f24d6a605b5d02c133a",
+  "checks": {
+    "quality": "PASS",
+    "unit": "PASS",
+    "contract": "PASS",
+    "component": "PASS",
+    "integration": "PASS",
+    "realElectronE2E": "PASS",
+    "negativeSaveCancel": "PASS",
+    "corruptJsonProtection": "PASS",
+    "runtimeAuditHigh": "PASS",
+    "uiVisualBaseline": "PASS",
+    "windowsPackageSmoke": "PASS"
+  },
+  "provisional": [
+    "Native Windows save-dialog clicking is not automated in hosted CI; a deterministic selected path is injected at composition time."
+  ]
+}

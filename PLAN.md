@@ -1,19 +1,33 @@
 # IMPLEMENTATION PLAN
 
-## STEP 08 - Repository Foundation — COMPLETE
-1. S08-T01 Source-of-Truth & Governance Bootstrap — VERIFIED / PASS.
-2. S08-T02 Repository Skeleton & Quality Tooling — VERIFIED / PASS_WITH_PROVISIONAL.
-3. S08-T03 CI Foundation & Windows Packaging Smoke — VERIFIED / PASS.
+## STEP 08 — Repository Foundation — COMPLETE
+Gate: **PASS_WITH_PROVISIONAL**.
 
-STEP 08 overall gate: **PASS_WITH_PROVISIONAL**. The repository, frozen UI pack, dependency lock, canonical quality gates, persistent Windows CI, packaged startup smoke and foundation artifact are established. Remaining provisional dependency/tool/provider items are reversible or owned by later steps and do not block UI shell implementation.
+## STEP 09 — App Shell / UI Implementation — COMPLETE
+Gate: **PASS_WITH_TOLERANCE**.
+- S09-T01 Global App Shell — complete.
+- S09-T02 Design Tokens + Shared Components — complete.
+- S09-T03 Frozen Reference Screenshot Baseline — complete.
 
-## STEP 09 - App Shell / UI Implementation — NEXT
-Start only after explicit user instruction.
-1. S09-T01 Global App Shell + Shared Layout Skeleton — READY.
-2. S09-T02 Design Tokens + Shared Components Minimum — planned after S09-T01.
-3. S09-T03 First Frozen Reference Screen + Screenshot Baseline — planned after S09-T02.
+## STEP 10 — Minimum End-to-End Vertical Slice — COMPLETE
+Verdict: **PASS_WITH_PROVISIONAL**.
+
+Proven SLC: `SLC-010-001 Save & Reopen Empty Project`.
+
+The slice proves a real Electron path from the frozen UI through ProjectSession, typed preload/IPC, application use cases and a main-process persistence adapter to an atomic schema-v1 JSON file, followed by close/reopen into the same renderer project state. Save cancellation is the representative end-to-end negative path.
+
+Provisional: native save-dialog clicking is not automated in CI; CI injects the chosen path while retaining the same production persistence pipeline.
+
+## STEP 11 — Feature Implementation Waves — NEXT
+Do not start until explicit user instruction.
+
+Start with ASTRA:
+1. normalize FEATURE_REGISTRY from Product Definition + proven STEP 10 capabilities;
+2. build dependency graph;
+3. choose one small Wave 01 with clear scope IN/OUT, acceptance, tests, evidence and rollback;
+4. hand the READY wave/tasks to SOL for serial implementation.
 
 ## Later
-STEP 10 minimum end-to-end vertical slice; STEP 11 feature waves; STEP 12 Gemini/external integration; STEP 13 QA; STEP 14 RC/package; STEP 15 final release/backup/maintenance.
+STEP 12 external/Gemini integration; STEP 13 QA/hardening; STEP 14 release candidate/package; STEP 15 final release/backup/maintenance.
 
 No STEP is skipped because implementation looks easy.
