@@ -1,41 +1,59 @@
 # CURRENT HANDOFF
 
 ## Project
-Lagu Full Album - `inoriko920-dev/Full-Album-Lagu`
+Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Read first
-AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX 00-09 -> Final UI Reference (29 images) -> Software Factory guide -> Architecture -> Code Constitution -> Repository Map -> Module Ownership -> Dependency Rules.
+AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX 00-09 -> machine-readable UI manifests -> Final UI Reference -> Software Factory guide -> Architecture -> Code Constitution -> Repository Map -> Module Ownership -> Dependency Rules -> current task.
 
-## Current Software Factory step
-STEP 08 Repository Foundation.
+## Completed Software Factory step
+**STEP 08 Repository Foundation = PASS_WITH_PROVISIONAL / COMPLETED.**
 
-## Completed inside STEP 08
-- **S08-T01 Source-of-Truth & Governance Bootstrap = PASS / VERIFIED.**
-- **S08-T02 Repository Skeleton & Quality Tooling = PASS_WITH_PROVISIONAL / VERIFIED.**
+Completed:
+- S08-T01 Source-of-Truth & Governance Bootstrap = VERIFIED / PASS.
+- S08-T02 Repository Skeleton & Quality Tooling = VERIFIED / PASS_WITH_PROVISIONAL.
+- S08-T03 CI Foundation & Windows Packaging Smoke = VERIFIED / PASS.
 
-## S08-T02 verified evidence
-- Exact foundation lockfile committed.
-- Clean install: `npm ci` PASS on Windows GitHub Actions.
-- Full foundation gate `npm run verify` PASS.
-- Runtime dependency audit `npm audit --omit=dev --audit-level=high` PASS.
-- Architecture check, secret scan, portable-path scan, unit/contract/component tests and all four build targets PASS.
-- Clean-lock run: `37502197633`.
-- Evidence file: `docs/architecture/S08_T02_LOCKFILE_VERIFICATION.md`.
-- Product feature implementation remains NOT STARTED.
+## STEP 08 authoritative evidence
+- Last verified implementation SHA: `84e81bd8c86e62c0c7705307c471b3c720f822c4`
+- Windows CI run: `37504790643`
+- Job: `112410556606`
+- `npm ci`: PASS
+- `npm run verify`: PASS
+- runtime high-severity audit: PASS
+- UI Reference Pack verifier: PASS
+- packaged Windows x64 executable smoke: PASS
+- portable ZIP creation/checksum: PASS
+- artifact upload: PASS
+- evidence: `docs/architecture/S08_T03_CI_PACKAGING_EVIDENCE.md`
 
-## Exact foundation baseline
-Electron 43.6.0, React/React DOM 19.3.0, TypeScript 6.0.3, Vite 8.3.3, Zod 4.6.5, Vitest 5.0.3 plus exact supporting packages recorded in ADR-0013 and package-lock.
+## Frozen UI pack — exact repository authority
+- Reference manifest: `docs/ui/manifests/UI_REFERENCE_MANIFEST.json`
+- Freeze manifest: `docs/ui/manifests/UI_FREEZE_MANIFEST.json`
+- Pack ID: `LFA-UI-REFERENCE-v1.1`
+- Freeze ID: `LFA-UI-FREEZE-v1.0`
+- Approved visual states: 29
+- Prompt pack: `docs/source-of-truth/planning/current/05_STEP_04_UI_DESIGN_SYSTEM_PROMPT_PACK_LAGU_FULL_ALBUM_v1_1_REVISED_GEMINI_AGENT_REPO_COMPACT.docx`
+- Visual reference: `docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx`
+- UI Freeze: `docs/source-of-truth/planning/current/07_STEP_05_UI_FREEZE_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx`
 
-## Provisional / risks
-- Full dev/tooling dependency graph reports 8 moderate advisories and deprecated transitives; runtime high-level audit is clean. Do not use `npm audit fix --force` blindly.
-- FFmpeg/FFprobe binary/vendor/encoder/license bundle is still not adopted.
-- Gemini SDK/model is still not adopted.
+STEP 09 must not redesign this pack silently.
 
-## Not done
-No product UI, SoundVisualizer feature integration, Gemini implementation, FFmpeg render integration, real album workflow or Windows portable packaging smoke yet.
+## Foundation artifact
+- Name: `Lagu-Full-Album-Windows-x64-Foundation`
+- Artifact ID: `11431018177`
+- Inner ZIP SHA-256: `c2c4638448c6856602c16cb331fe4a9805e5875a528c03c3c75cd2d1a5d074f6`
+- This is foundation evidence, **not** final release/STEP 14 packaging.
 
-## Protected
-Permanent Gemini right rail; left Media|Layer|Inspector; Gemini-only max 100; manual editor works without AI; unified ProjectSession/CommandEngine/Undo; JSON project; portable Windows x64 ZIP; MP4 video output; OS-protected secrets.
+## Provisional / known limitations
+- Eight moderate dev/tooling advisories and deprecated transitives remain tracked; runtime high-severity audit passes.
+- FFmpeg/FFprobe binary/vendor/encoder/license choice belongs to later render integration.
+- Gemini SDK/model choice belongs to STEP 12.
+- Hosted packaged-process smoke does not prove full GUI/GPU/media behavior; visual screenshot parity begins in STEP 09.
 
 ## Next exact action
-S08-T03 CI Foundation & Windows Packaging Smoke. Do not start until the user says `lanjutkan`.
+**STEP 09 / S09-T01 — Global App Shell + Shared Layout Skeleton.**
+
+Implement only the frozen shell with fixture data: left `Media | Layer | Inspector`, center Preview, permanent right `Gemini Agent`, bottom Album Timeline. Do not implement product engines/integrations and do not redesign.
+
+Do not start until the user says `lanjutkan`.

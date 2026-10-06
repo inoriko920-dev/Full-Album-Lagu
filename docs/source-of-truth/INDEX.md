@@ -12,9 +12,12 @@
 9. `planning/current/08_STEP_06_ARCHITECTURE_TECHNOLOGY_DECISION_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx`
 10. `planning/current/09_STEP_07_CODE_CONSTITUTION_REPOSITORY_ARCHITECTURE_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx`
 11. `factory/SOFTWARE_FACTORY_V2_COMPLETE_GUIDE.txt`
-12. `../../architecture/ARCHITECTURE.md`
-13. `../../architecture/CODE_CONSTITUTION.md`
-14. `../../handoff/CURRENT_HANDOFF.md`
+12. `../../ui/manifests/UI_REFERENCE_MANIFEST.json`
+13. `../../ui/manifests/UI_FREEZE_MANIFEST.json`
+14. `../../architecture/ARCHITECTURE.md`
+15. `../../architecture/CODE_CONSTITUTION.md`
+16. `../../architecture/S08_T03_CI_PACKAGING_EVIDENCE.md`
+17. `../../handoff/CURRENT_HANDOFF.md`
 
 ## Current vs archive
 `planning/current/` is authoritative. `planning/archive/` is history only.
@@ -29,6 +32,11 @@ Their compact DOCX copies remain under `planning/archive/` so later AI can recon
 The repository stores compact DOCX copies so planning remains directly available to future AI sessions. The current UI reference DOCX contains all **29 approved visual states** with compressed embedded images. Compression may reduce image quality but does not change layout/state authority.
 
 Original artifact SHA-256 values and the mapping between original files and repository copies are recorded in `SOURCE_OF_TRUTH_MANIFEST.md`.
+
+## Machine-readable UI integrity
+`docs/ui/manifests/UI_REFERENCE_MANIFEST.json` and `docs/ui/manifests/UI_FREEZE_MANIFEST.json` are the operational STEP 08 mapping layer for the frozen UI pack. `npm run verify:ui-reference` verifies the exact Git blob identities of the prompt pack, visual reference, source manifest and UI Freeze document, plus the 29-state declaration.
+
+These manifests do not replace the DOCX planning/reference authority; they make its repository identity verifiable by CI.
 
 ## UI authority
 Visual layout/hierarchy/state -> Final UI Reference + STEP 05 UI Freeze.
