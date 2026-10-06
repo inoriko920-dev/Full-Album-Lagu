@@ -1,21 +1,22 @@
 # AGENTS.md - Lagu Full Album
 
-This file is the mandatory entry point for any AI/session modifying this repository.
+This is the mandatory entry point for any AI/session modifying this repository.
 
 ## Read before changing anything
 1. `PROJECT_STATE.md`
 2. `docs/handoff/CURRENT_HANDOFF.md`
 3. `docs/source-of-truth/INDEX.md`
 4. Current planning DOCX under `docs/source-of-truth/planning/current/`
-5. `docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT.docx`
-6. `docs/architecture/ARCHITECTURE.md`
-7. `docs/architecture/CODE_CONSTITUTION.md`
-8. `docs/architecture/REPOSITORY_MAP.md`
-9. `docs/architecture/MODULE_OWNERSHIP_MAP.md`
-10. `docs/architecture/DEPENDENCY_RULES.md`
-11. relevant ADR/upstream/task documents.
+5. `docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx`
+6. `docs/source-of-truth/factory/SOFTWARE_FACTORY_V2_COMPLETE_GUIDE.txt`
+7. `docs/architecture/ARCHITECTURE.md`
+8. `docs/architecture/CODE_CONSTITUTION.md`
+9. `docs/architecture/REPOSITORY_MAP.md`
+10. `docs/architecture/MODULE_OWNERSHIP_MAP.md`
+11. `docs/architecture/DEPENDENCY_RULES.md`
+12. relevant upstream/task/ADR material.
 
-Do not code from chat memory alone.
+Do not code from chat memory alone. Do not use `planning/archive/` as current requirements.
 
 ## Project identity
 - Product: Lagu Full Album
@@ -43,14 +44,14 @@ Before creating a file/service/helper:
 1. search exact concept + synonyms;
 2. search related interfaces/services/tests/config/docs;
 3. search imports/call sites/registrations/reverse dependencies;
-4. read Repository Map, Module Ownership, Dependency Rules;
+4. read Repository Map, Module Ownership and Dependency Rules;
 5. read owner tests/contracts and relevant ADR;
 6. explain why the canonical owner is insufficient before creating a second owner.
 
 Modify the canonical owner first.
 
 ## Forbidden
-- No feature coding while STEP 08 governance/documentation gate is incomplete.
+- No feature coding before the active Software Factory gate allows it.
 - No CommandEngine bypass.
 - No renderer access to filesystem, child process, safeStorage, or Gemini SDK.
 - No hardcoded C:/D:/checkout path or global FFmpeg/Node/Python dependency.
