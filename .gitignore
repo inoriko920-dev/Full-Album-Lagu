@@ -1,0 +1,45 @@
+# Node / build
+node_modules/
+dist/
+out/
+build-output/
+coverage/
+playwright-report/
+test-results/
+*.log
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+
+# App/user runtime
+.userData/
+userData/
+cache/
+logs/
+temp/
+tmp/
+*.partial
+
+# User projects/media - never commit runtime user content
+*.lfa.local.json
+projects-local/
+media-local/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Native/package caches
+*.node
+.npm/
+.electron/
+.electron-gyp/
