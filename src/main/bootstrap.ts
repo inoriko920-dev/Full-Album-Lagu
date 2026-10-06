@@ -51,15 +51,88 @@ function createMainWindow(): BrowserWindow {
 
   if (isUiCapture && screenshotPath) {
     window.webContents.once("did-finish-load", async () => {
-      await window.webContents.executeJavaScript(
-        "new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)))",
-      );
+      const readiness = (await window.webContents.executeJavaScript(`
+        new Promise((resolve, reject) => {
+          let attempt = 0;
+          const inspect = () => {
+            const shell = document.querySelector(".app-shell");
+            const bodyText = document.body.innerText;
+            if (
+              shell &&
+              bodyText.includes("Gemini Agent") &&
+              bodyText.includes("Belum ada visual") &&
+              bodyText.includes("Belum ada track")
+            ) {
+              const rect = shell.getBoundingClientRect();
+              requestAnimationFrame(() =>
+                requestAnimationFrame(() =>
+                  resolve({
+                    shellWidth: Math.round(rect.width),
+                    shellHeight: Math.round(rect.height),
+                    textLength: bodyText.length,
+                    hasGeminiAgent: bodyText.includes("Gemini Agent"),
+                    hasPreviewEmpty: bodyText.includes("Belum ada visual"),
+                    hasTimelineEmpty: bodyText.includes("Belum ada track"),
+                  }),
+                ),
+              );
+              return;
+            }
+
+            attempt += 1;
+            if (attempt >= 100) {
+              reject(new Error("Timed out waiting for SCR-002A renderer readiness."));
+              return;
+            }
+            setTimeout(inspect, 50);
+          };
+          inspect();
+        })
+      `)) as {
+        shellWidth: number;
+        shellHeight: number;
+        textLength: number;
+        hasGeminiAgent: boolean;
+        hasPreviewEmpty: boolean;
+        hasTimelineEmpty: boolean;
+      };
+
+      window.setContentSize(1600, 1000, false);
+      window.show();
+      window.focus();
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, 300));
 
       const target = resolve(screenshotPath);
+      const evidenceTarget = target.replace(/\.png$/i, "-dom.json");
       await mkdir(dirname(target), { recursive: true });
-      const screenshot = await window.webContents.capturePage();
+
+      const screenshot = await window.webContents.capturePage({
+        x: 0,
+        y: 0,
+        width: 1600,
+        height: 1000,
+      });
+      if (screenshot.isEmpty()) {
+        throw new Error("Electron returned an empty SCR-002A screenshot.");
+      }
+
       await writeFile(target, screenshot.toPNG());
-      console.log(`UI screenshot PASS: ${UI_TEST_SCREEN} -> ${target}`);
+      await writeFile(
+        evidenceTarget,
+        JSON.stringify(
+          {
+            screen: UI_TEST_SCREEN,
+            viewport: { width: 1600, height: 1000, zoom: 1 },
+            ...readiness,
+          },
+          null,
+          2,
+        ),
+        "utf8",
+      );
+      console.log(
+        `UI screenshot PASS: ${UI_TEST_SCREEN} -> ${target}; DOM ${readiness.shellWidth}x${readiness.shellHeight}; text=${readiness.textLength}`,
+      );
       window.destroy();
       app.exit(0);
     });
