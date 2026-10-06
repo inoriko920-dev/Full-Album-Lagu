@@ -1,0 +1,12 @@
+appId: dev.inoriko920.lagufullalbum
+productName: Lagu Full Album
+directories:
+  output: out
+files:
+  - dist/**
+  - package.json
+asar: true
+win:
+  target:
+    - dir
+  artifactName: "${productName}-${version}-windows-x64-${arch}.${ext}"

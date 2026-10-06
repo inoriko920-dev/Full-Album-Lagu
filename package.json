@@ -1,0 +1,29 @@
+{
+  "name": "lagu-full-album",
+  "version": "0.0.0-foundation",
+  "private": true,
+  "description": "Foundation shell for Lagu Full Album. Product features are implemented in later Software Factory steps.",
+  "main": "dist/main/bootstrap.cjs",
+  "type": "module",
+  "engines": { "node": ">=22 <23" },
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "dev": "npm run build && electron dist/main/bootstrap.cjs",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"scripts/**/*.mjs\" package.json \"tsconfig*.json\" vite.config.ts eslint.config.js electron-builder.yml index.html resources/tools/manifest.json",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"scripts/**/*.mjs\" package.json \"tsconfig*.json\" vite.config.ts eslint.config.js electron-builder.yml index.html resources/tools/manifest.json",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "arch:check": "node scripts/verify-architecture.mjs",
+    "verify:secrets": "node scripts/verify-no-secrets.mjs",
+    "verify:paths": "node scripts/verify-portable-paths.mjs",
+    "test:unit": "vitest run tests/unit",
+    "test:contract": "vitest run tests/contract",
+    "test:component": "vitest run tests/component --environment jsdom",
+    "build:main": "esbuild src/main/bootstrap.ts --bundle --platform=node --format=cjs --target=node22 --external:electron --outfile=dist/main/bootstrap.cjs",
+    "build:preload": "esbuild src/preload/index.ts --bundle --platform=node --format=cjs --target=node22 --external:electron --outfile=dist/preload/index.cjs",
+    "build:renderer": "vite build",
+    "build:render": "esbuild src/render/entry.ts --bundle --platform=browser --format=esm --target=es2022 --outfile=dist/render/entry.js",
+    "build": "npm run clean && npm run build:main && npm run build:preload && npm run build:renderer && npm run build:render",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run arch:check && npm run verify:secrets && npm run verify:paths && npm run test:unit && npm run test:contract && npm run test:component && npm run build"
+  }
+}
