@@ -39,7 +39,21 @@
 - Full verify, runtime audit, Windows package, packaged smoke and portable ZIP: PASS.
 - Out of scope honored: no real Gemini SDK, media engine, persistence, FFmpeg/render engine, or STEP 10 workflow.
 
-## NEXT
-**STEP 10 — Minimum End-to-End Vertical Slice**
+## STEP 10 — IN PROGRESS
 
-Status: NOT_STARTED. Do not start until the user says `lanjutkan`.
+### SLC-010-001 — Save & Reopen Empty Project
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: IN_PROGRESS
+- Baseline: `49417d7fb2e10115b2a698fcf0d74be40ff1aee1`
+- Charter: `docs/step10/SLC-010-001_SAVE_REOPEN_EMPTY_PROJECT.md`
+- Goal: prove one real UI -> ProjectSession -> preload/IPC -> application -> persistence -> JSON output -> reopen flow.
+- Happy path: Save -> atomic project JSON -> close -> reopen -> same project identity/state.
+- Negative path: cancelled save -> no output / no crash / editor remains usable.
+- Required evidence: unit + contract + component + integration + real Electron E2E + Windows CI/package smoke.
+- Out of scope: Gemini, FFmpeg, media import, autosave/recovery generations, broad feature work.
+- Gate: OPEN
+
+## NEXT
+Close SLC-010-001 and STEP 10 before preparing STEP 11.

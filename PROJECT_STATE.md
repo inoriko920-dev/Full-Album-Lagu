@@ -2,9 +2,10 @@
 
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
-- Current Software Factory STEP: STEP 09 - App Shell / UI Implementation
-- STEP 09 status: **COMPLETED**
-- STEP 09 gate: **PASS_WITH_TOLERANCE**
+- Current Software Factory STEP: STEP 10 - Minimum End-to-End Vertical Slice
+- STEP 10 status: **IN_PROGRESS**
+- STEP 10 gate: **OPEN**
+- STEP 09 status: **COMPLETED / PASS_WITH_TOLERANCE**
 - Completed: S09-T01, S09-T02, S09-T03.
 - UI Reference Pack: `LFA-UI-REFERENCE-v1.1` — FROZEN / 29 approved states.
 - UI Freeze: `LFA-UI-FREEZE-v1.0` — FROZEN.
@@ -40,7 +41,11 @@ PASS_WITH_TOLERANCE is used because the frozen DOCX stores a 520x325 lossy gener
 ## Open work
 Real media/project/persistence/playback/visualizer/render/Gemini behavior is not proven by STEP 09. FFmpeg and Gemini integration remain later-step work.
 
-## Next exact action
-**STEP 10 — Minimum End-to-End Vertical Slice.**
+## Active STEP 10 slice
+- SLC: `SLC-010-001 Save & Reopen Empty Project`
+- Charter: `docs/step10/SLC-010-001_SAVE_REOPEN_EMPTY_PROJECT.md`
+- Baseline: `49417d7fb2e10115b2a698fcf0d74be40ff1aee1`
+- Status: READY -> implementation in progress.
 
-Do not start until the user says `lanjutkan`.
+## Next exact action
+Implement and verify SLC-010-001 only. Do not enter STEP 11 before STEP 10 gate is closed.
