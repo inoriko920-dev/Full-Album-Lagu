@@ -18,11 +18,13 @@ const saveProjectMock = vi.fn<LfaBridge["saveProject"]>(async () => ({
 const getStartupProjectMock = vi.fn<LfaBridge["getStartupProject"]>(
   async () => ({ status: "none" as const }),
 );
-const getFoundationInfoMock = vi.fn<LfaBridge["getFoundationInfo"]>(async () => ({
-  platform: "win32",
-  arch: "x64",
-  phase: "foundation" as const,
-}));
+const getFoundationInfoMock = vi.fn<LfaBridge["getFoundationInfo"]>(
+  async () => ({
+    platform: "win32",
+    arch: "x64",
+    phase: "foundation" as const,
+  }),
+);
 
 const bridge: LfaBridge = {
   getFoundationInfo: getFoundationInfoMock,
