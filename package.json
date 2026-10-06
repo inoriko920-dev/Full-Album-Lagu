@@ -26,6 +26,8 @@
     "build:renderer": "vite build",
     "build:render": "esbuild src/render/entry.ts --bundle --platform=browser --format=esm --target=es2022 --outfile=dist/render/entry.js",
     "build": "npm run clean && npm run build:main && npm run build:preload && npm run build:renderer && npm run build:render",
+    "package:windows": "npm run build && electron-builder --win dir --x64 --publish never",
+    "smoke:packaged:windows": "node scripts/smoke-packaged-windows.mjs",
     "verify": "npm run format:check && npm run lint && npm run typecheck && npm run arch:check && npm run verify:secrets && npm run verify:paths && npm run test:unit && npm run test:contract && npm run test:component && npm run build"
   },
   "dependencies": {

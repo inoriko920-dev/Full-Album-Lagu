@@ -36,13 +36,20 @@
 - Provisional:
   - full dev/tooling install currently reports 8 moderate advisories plus deprecated transitive packages from tooling; do not hide or auto-force-upgrade them. Reassess in S08-T03/dependency maintenance with compatibility evidence.
   - FFmpeg/FFprobe distribution and Gemini SDK/model remain later bounded decisions.
-- Rollback: revert foundation commits; preserve STEP 08 source-of-truth/governance history.
 
 ## S08-T03 - CI Foundation & Windows Packaging Smoke
 - Owner: SOL
 - Priority: P1
 - Risk: MEDIUM
-- Status: READY
+- Status: IN_PROGRESS
+- Work status: IMPLEMENTED
+- Evidence status: PENDING_CI
 - Goal: make persistent GitHub Actions clean-machine verification authoritative and prove the foundation creates/starts a Windows x64 unpacked + portable ZIP artifact.
-- Out of scope: product UI, product feature behavior, SoundVisualizer feature integration, Gemini real integration, FFmpeg render binary.
-- Start condition: user says `lanjutkan`.
+- Implemented:
+  - persistent Windows CI workflow;
+  - clean install + full foundation verification + runtime audit;
+  - electron-builder Windows x64 directory package;
+  - packaged executable smoke flag and smoke runner;
+  - explicit multi-file portable ZIP + SHA256 artifact upload.
+- Out of scope honored: no product UI, product feature behavior, SoundVisualizer feature integration, Gemini real integration or FFmpeg render binary.
+- Gate remains open until the new persistent CI run and uploaded artifact are verified.

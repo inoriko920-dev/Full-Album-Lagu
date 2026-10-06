@@ -2,6 +2,8 @@ import { app, BrowserWindow } from "electron";
 import { join } from "node:path";
 import { registerIpcHandlers } from "./ipc/register-ipc";
 
+const PACKAGED_SMOKE_FLAG = "--smoke-test";
+
 function createMainWindow(): BrowserWindow {
   const window = new BrowserWindow({
     width: 1200,
@@ -32,6 +34,11 @@ function createMainWindow(): BrowserWindow {
 registerIpcHandlers();
 
 app.whenReady().then(() => {
+  if (process.argv.includes(PACKAGED_SMOKE_FLAG)) {
+    app.exit(0);
+    return;
+  }
+
   createMainWindow();
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createMainWindow();
