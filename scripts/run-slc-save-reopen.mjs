@@ -146,9 +146,7 @@ await writeFile(
 
 if (failed.length > 0) {
   throw new Error(
-    `SLC-010-001 failed assertions: ${failed
-      .map(([name]) => name)
-      .join(", ")}`,
+    `SLC-010-001 failed assertions: ${failed.map(([name]) => name).join(", ")}`,
   );
 }
 

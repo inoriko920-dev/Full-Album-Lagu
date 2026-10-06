@@ -10,11 +10,7 @@ import {
 
 export type ProjectSourceState = "new" | "loaded" | "load-error";
 export type ProjectPersistenceState =
-  | "idle"
-  | "saving"
-  | "saved"
-  | "cancelled"
-  | "error";
+  "idle" | "saving" | "saved" | "cancelled" | "error";
 
 function createSessionProject(): ProjectDocument {
   const projectId =

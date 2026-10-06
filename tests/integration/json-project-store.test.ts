@@ -1,10 +1,4 @@
-import {
-  mkdtemp,
-  readFile,
-  readdir,
-  rm,
-  writeFile,
-} from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -15,9 +9,9 @@ const cleanupPaths: string[] = [];
 
 afterEach(async () => {
   await Promise.all(
-    cleanupPaths.splice(0).map((path) =>
-      rm(path, { recursive: true, force: true }),
-    ),
+    cleanupPaths
+      .splice(0)
+      .map((path) => rm(path, { recursive: true, force: true })),
   );
 });
 
@@ -39,9 +33,7 @@ describe("JsonProjectStore", () => {
     expect(loaded).toEqual(project);
     expect(JSON.parse(await readFile(projectPath, "utf8"))).toEqual(project);
 
-    const directoryEntries = await readdir(
-      join(root, "Folder Dengan Spasi Ω"),
-    );
+    const directoryEntries = await readdir(join(root, "Folder Dengan Spasi Ω"));
     expect(directoryEntries).toEqual(["Proyek Baru.lfa.json"]);
   });
 
