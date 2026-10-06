@@ -29,8 +29,11 @@ function createMainWindow(): BrowserWindow {
   const slcProbe = readArgValue("slc-probe");
   const slcEvidencePath = readArgValue("slc-evidence");
   const slcScreenshotPath = readArgValue("slc-screenshot");
+  const w11Probe = readArgValue("w11-probe");
+  const w11EvidencePath = readArgValue("w11-evidence");
   const isUiCapture = uiTestScreen !== undefined;
   const isSlcProbe = slcProbe !== undefined;
+  const isW11Probe = w11Probe !== undefined;
 
   if (isUiCapture && uiTestScreen !== UI_TEST_SCREEN) {
     throw new Error(`Unsupported UI test screen: ${uiTestScreen}`);
@@ -42,6 +45,10 @@ function createMainWindow(): BrowserWindow {
 
   if (isSlcProbe && !slcEvidencePath) {
     throw new Error("--slc-evidence=<path> is required with --slc-probe.");
+  }
+
+  if (isW11Probe && !w11EvidencePath) {
+    throw new Error("--w11-evidence=<path> is required with --w11-probe.");
   }
 
   const window = new BrowserWindow({
@@ -59,14 +66,14 @@ function createMainWindow(): BrowserWindow {
       nodeIntegration: false,
       sandbox: true,
       webSecurity: true,
-      backgroundThrottling: !isUiCapture && !isSlcProbe,
+      backgroundThrottling: !isUiCapture && !isSlcProbe && !isW11Probe,
     },
   });
 
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   window.webContents.on("will-navigate", (event) => event.preventDefault());
 
-  if (!isUiCapture && !isSlcProbe) {
+  if (!isUiCapture && !isSlcProbe && !isW11Probe) {
     window.once("ready-to-show", () => window.show());
   }
 
@@ -294,6 +301,202 @@ function createMainWindow(): BrowserWindow {
         console.error(`SLC probe FAIL: ${message}`);
         if (!window.isDestroyed()) window.destroy();
         app.exit(9);
+      }
+    });
+  }
+
+  if (isW11Probe && w11EvidencePath) {
+    window.webContents.once("did-finish-load", async () => {
+      try {
+        const result = (await window.webContents.executeJavaScript(`
+          (async () => {
+            const mode = ${JSON.stringify(w11Probe)};
+            const startup = await window.lfa.getStartupProject();
+
+            if (startup.status !== "loaded") {
+              throw new Error("W11 lifecycle probe requires a loaded startup project.");
+            }
+
+            const nextProject = (project, revision, name) => ({
+              ...project,
+              revision,
+              name,
+            });
+
+            if (mode === "known-save") {
+              const project = nextProject(
+                startup.project,
+                startup.project.revision + 1,
+                "Known Save Ω",
+              );
+              const save = await window.lfa.saveProject({ project });
+              return {
+                mode,
+                startupStatus: startup.status,
+                saveStatus: save.status,
+                saveRevision:
+                  save.status === "saved" ? save.projectRevision : null,
+                location:
+                  save.status === "saved" ? save.location.kind : null,
+                projectId: project.projectId,
+                projectRevision: project.revision,
+              };
+            }
+
+            if (mode === "save-as-valid") {
+              const saveAsProject = nextProject(
+                startup.project,
+                startup.project.revision + 1,
+                "Save As Ω",
+              );
+              const saveAs = await window.lfa.saveProjectAs({
+                project: saveAsProject,
+              });
+              if (saveAs.status !== "saved") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  saveAsStatus: saveAs.status,
+                };
+              }
+
+              const knownSaveProject = nextProject(
+                saveAsProject,
+                saveAsProject.revision + 1,
+                "Save As Then Save Ω",
+              );
+              const save = await window.lfa.saveProject({
+                project: knownSaveProject,
+              });
+              return {
+                mode,
+                startupStatus: startup.status,
+                saveAsStatus: saveAs.status,
+                saveStatus: save.status,
+                location:
+                  save.status === "saved" ? save.location.kind : null,
+                projectId: knownSaveProject.projectId,
+                projectRevision: knownSaveProject.revision,
+              };
+            }
+
+            if (mode === "save-as-cancel") {
+              const saveAs = await window.lfa.saveProjectAs({
+                project: startup.project,
+              });
+              const afterCancel = nextProject(
+                startup.project,
+                startup.project.revision + 1,
+                "After Save As Cancel Ω",
+              );
+              const save = await window.lfa.saveProject({
+                project: afterCancel,
+              });
+              return {
+                mode,
+                startupStatus: startup.status,
+                saveAsStatus: saveAs.status,
+                saveStatus: save.status,
+                location:
+                  save.status === "saved" ? save.location.kind : null,
+                projectId: afterCancel.projectId,
+                projectRevision: afterCancel.revision,
+              };
+            }
+
+            if (mode === "open-cancel") {
+              const opened = await window.lfa.openProject();
+              const afterCancel = nextProject(
+                startup.project,
+                startup.project.revision + 1,
+                "After Open Cancel Ω",
+              );
+              const save = await window.lfa.saveProject({
+                project: afterCancel,
+              });
+              return {
+                mode,
+                startupStatus: startup.status,
+                openStatus: opened.status,
+                saveStatus: save.status,
+                location:
+                  save.status === "saved" ? save.location.kind : null,
+                projectId: afterCancel.projectId,
+                projectRevision: afterCancel.revision,
+              };
+            }
+
+            if (mode === "open-valid") {
+              const opened = await window.lfa.openProject();
+              if (opened.status !== "opened") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  openStatus: opened.status,
+                };
+              }
+
+              const revised = nextProject(
+                opened.project,
+                opened.project.revision + 1,
+                "Opened Then Saved Ω",
+              );
+              const save = await window.lfa.saveProject({ project: revised });
+              return {
+                mode,
+                startupStatus: startup.status,
+                openStatus: opened.status,
+                openedProjectId: opened.project.projectId,
+                saveStatus: save.status,
+                location:
+                  save.status === "saved" ? save.location.kind : null,
+                projectId: revised.projectId,
+                projectRevision: revised.revision,
+              };
+            }
+
+            if (mode === "open-error") {
+              const opened = await window.lfa.openProject();
+              const afterError = nextProject(
+                startup.project,
+                startup.project.revision + 1,
+                "After Open Error Ω",
+              );
+              const save = await window.lfa.saveProject({
+                project: afterError,
+              });
+              return {
+                mode,
+                startupStatus: startup.status,
+                openStatus: opened.status,
+                openCode:
+                  opened.status === "error" ? opened.code : null,
+                saveStatus: save.status,
+                location:
+                  save.status === "saved" ? save.location.kind : null,
+                projectId: afterError.projectId,
+                projectRevision: afterError.revision,
+              };
+            }
+
+            throw new Error("Unsupported W11 lifecycle probe mode: " + mode);
+          })()
+        `)) as Record<string, unknown>;
+
+        await writeJsonEvidence(w11EvidencePath, {
+          ...result,
+          platform: process.platform,
+          arch: process.arch,
+        });
+
+        console.log(`W11 lifecycle probe PASS: ${w11Probe}`);
+        window.destroy();
+        app.exit(0);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(`W11 lifecycle probe FAIL: ${message}`);
+        if (!window.isDestroyed()) window.destroy();
+        app.exit(10);
       }
     });
   }

@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. STEP 11 planning is complete and **T11-W01-01 is now implemented and verified**. W11-01 remains in progress.
+STEP 10 is complete. STEP 11 planning is complete. **T11-W01-01 and T11-W01-02 are implemented and verified.** W11-01 remains in progress.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -16,31 +16,36 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Wave charter: `docs/step11/WAVE_11_01_CHARTER.md`
 - Task cards: `docs/step11/TASK_CARDS_W11_01.md`
 
-## Registry / sequencing
-FTR-001..FTR-023 are normalized. W11-01 is first because project lifecycle/recovery extends the already-proven STEP 10 persistence seam and unlocks later media/timeline/editor work without pulling Gemini/FFmpeg forward.
-
-## READY wave
+## Active wave
 **W11-01 Project Lifecycle & Recovery Core**
 - Features: FTR-001 Project Lifecycle + FTR-002 Autosave & Crash Recovery + FTR-018 Error/Offline cross-cut.
-- Status: READY.
+- Status: IN_PROGRESS.
 - DoR: PASS.
 
-## Completed STEP 11 task
-**T11-W01-01 Lifecycle Contracts & Session Path Ownership — PASS / VERIFIED.**
-
-Evidence:
+## Completed STEP 11 tasks
+### T11-W01-01 Lifecycle Contracts & Session Path Ownership — PASS / VERIFIED
 - branch SHA: `a1ab0388c655c399f7347d40ba0acec5fc178bc8`;
 - Windows CI: `37532835161` PASS;
-- job: `112506354661`;
 - main-owned `ProjectPathSession`;
-- renderer-visible location contract contains only `unsaved | known-path`, never a raw path;
+- renderer-visible location contract contains only `unsaved | known-path`, never a raw path.
+
+### T11-W01-02 Open / Save As / Known-Path Save — PASS / VERIFIED
+- verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`;
+- Windows CI: `37534906938` PASS;
+- job: `112513587662`;
+- lifecycle evidence artifact: `11446750441`;
+- known-path Save bypasses Save As selector;
+- Save As success/cancel behavior verified;
+- Open success/cancel/missing-file behavior verified;
+- Unicode + spaces paths verified on Windows;
+- raw filesystem paths remain main-owned and omitted from public evidence;
 - STEP 10 SLC, frozen UI baseline, package/smoke and portable ZIP remain green;
-- evidence: `docs/step11/evidence/T11_W01_01_LIFECYCLE_CONTRACTS_EVIDENCE.md`.
+- evidence: `docs/step11/evidence/T11_W01_02_PROJECT_LIFECYCLE_EVIDENCE.md`.
 
 ## Next exact task
-**T11-W01-02 Open / Save As / Known-Path Save** — SOL only.
+**T11-W01-03 Dirty State & Autosave Recovery Store** — SOL only.
 
-Do not implement autosave/recovery store, media, Gemini, or render in the same turn. Start T11-W01-02 only after the user explicitly says `lanjutkan`.
+Do not implement recovery UI wiring, media, Gemini, or render in the same turn. Start T11-W01-03 only after the user explicitly says `lanjutkan`.
 
 ## Protected boundaries
-Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Frozen UI cannot be silently redesigned. Gemini and FFmpeg concrete integrations remain STEP 12 owned.
+Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Recovery artifacts must remain separate from the primary project file and must never masquerade as a successful user Save. Frozen UI cannot be silently redesigned. Gemini and FFmpeg concrete integrations remain STEP 12 owned.

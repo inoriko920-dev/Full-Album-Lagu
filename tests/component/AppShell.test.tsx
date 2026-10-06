@@ -16,6 +16,12 @@ const saveProjectMock = vi.fn<LfaBridge["saveProject"]>(async () => ({
   projectRevision: 0,
   location: { kind: "known-path" as const },
 }));
+const saveProjectAsMock = vi.fn<LfaBridge["saveProjectAs"]>(async () => ({
+  status: "cancelled" as const,
+}));
+const openProjectMock = vi.fn<LfaBridge["openProject"]>(async () => ({
+  status: "cancelled" as const,
+}));
 const getStartupProjectMock = vi.fn<LfaBridge["getStartupProject"]>(
   async () => ({ status: "none" as const }),
 );
@@ -30,6 +36,8 @@ const getFoundationInfoMock = vi.fn<LfaBridge["getFoundationInfo"]>(
 const bridge: LfaBridge = {
   getFoundationInfo: getFoundationInfoMock,
   saveProject: saveProjectMock,
+  saveProjectAs: saveProjectAsMock,
+  openProject: openProjectMock,
   getStartupProject: getStartupProjectMock,
 };
 
@@ -39,6 +47,8 @@ beforeEach(() => {
     value: bridge,
   });
   saveProjectMock.mockClear();
+  saveProjectAsMock.mockClear();
+  openProjectMock.mockClear();
   getStartupProjectMock.mockClear();
   getFoundationInfoMock.mockClear();
 });

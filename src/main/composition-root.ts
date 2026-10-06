@@ -1,5 +1,6 @@
 import { dialog } from "electron";
 import { resolve } from "node:path";
+import { ProjectLifecycleService } from "../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../core/application/services/project-path-session";
 import {
   LoadProjectUseCase,
@@ -22,8 +23,14 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
   const pathSession = new ProjectPathSession();
   const saveProject = new SaveProjectUseCase(projectStore);
   const loadProject = new LoadProjectUseCase(projectStore);
-  const fixedSavePath = readArgValue(argv, "slc-save-path");
-  const cancelSave = argv.includes("--slc-save-cancel");
+
+  const fixedSavePath =
+    readArgValue(argv, "w11-save-as-path") ??
+    readArgValue(argv, "slc-save-path");
+  const cancelSave =
+    argv.includes("--w11-save-as-cancel") || argv.includes("--slc-save-cancel");
+  const fixedOpenPath = readArgValue(argv, "w11-open-path");
+  const cancelOpen = argv.includes("--w11-open-cancel");
   const startupProjectPath = readArgValue(argv, "open-project");
 
   const selectSavePath = async (): Promise<string | null> => {
@@ -41,10 +48,31 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     return result.filePath;
   };
 
-  const projectIpc: ProjectIpcDependencies = {
+  const selectOpenPath = async (): Promise<string | null> => {
+    if (cancelOpen) return null;
+    if (fixedOpenPath) return resolve(fixedOpenPath);
+
+    const result = await dialog.showOpenDialog({
+      title: "Buka Proyek",
+      filters: [{ name: "Lagu Full Album Project", extensions: ["lfa.json"] }],
+      properties: ["openFile"],
+    });
+
+    if (result.canceled || result.filePaths.length === 0) return null;
+    return result.filePaths[0] ?? null;
+  };
+
+  const lifecycle = new ProjectLifecycleService(
     saveProject,
     loadProject,
+    pathSession,
     selectSavePath,
+    selectOpenPath,
+  );
+
+  const projectIpc: ProjectIpcDependencies = {
+    lifecycle,
+    loadProject,
     pathSession,
   };
 

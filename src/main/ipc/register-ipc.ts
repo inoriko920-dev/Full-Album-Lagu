@@ -1,17 +1,18 @@
 import { ipcMain } from "electron";
 import { ProjectStoreError } from "../../core/application/ports/project-store";
+import type { ProjectLifecycleService } from "../../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../../core/application/services/project-path-session";
-import type {
-  LoadProjectUseCase,
-  SaveProjectUseCase,
-} from "../../core/application/services/project-persistence";
+import type { LoadProjectUseCase } from "../../core/application/services/project-persistence";
 import {
   FOUNDATION_INFO_CHANNEL,
   foundationInfoSchema,
 } from "../../core/contracts/foundation-info";
 import {
+  PROJECT_OPEN_CHANNEL,
+  PROJECT_SAVE_AS_CHANNEL,
   PROJECT_SAVE_CHANNEL,
   PROJECT_STARTUP_CHANNEL,
+  openProjectResultSchema,
   saveProjectRequestSchema,
   saveProjectResultSchema,
   startupProjectResultSchema,
@@ -19,9 +20,8 @@ import {
 } from "../../core/contracts/project-persistence";
 
 export interface ProjectIpcDependencies {
-  saveProject: SaveProjectUseCase;
+  lifecycle: ProjectLifecycleService;
   loadProject: LoadProjectUseCase;
-  selectSavePath: () => Promise<string | null>;
   pathSession: ProjectPathSession;
   startupProjectPath?: string;
 }
@@ -71,21 +71,18 @@ export function registerIpcHandlers(
       });
     }
 
-    const selectedPath = await projectDependencies.selectSavePath();
-    if (!selectedPath) {
-      return saveProjectResultSchema.parse({ status: "cancelled" });
-    }
-
     try {
-      await projectDependencies.saveProject.execute(
-        selectedPath,
+      const outcome = await projectDependencies.lifecycle.save(
         request.data.project,
       );
-      projectDependencies.pathSession.setKnownPath(selectedPath);
+
+      if (outcome.status === "cancelled") {
+        return saveProjectResultSchema.parse({ status: "cancelled" });
+      }
 
       return saveProjectResultSchema.parse({
         status: "saved",
-        projectRevision: request.data.project.revision,
+        projectRevision: outcome.projectRevision,
         location: { kind: "known-path" },
       });
     } catch (error) {
@@ -94,6 +91,65 @@ export function registerIpcHandlers(
           error,
           "PROJECT_WRITE_FAILED",
           "Project file could not be saved.",
+        ),
+      );
+    }
+  });
+
+  ipcMain.handle(PROJECT_SAVE_AS_CHANNEL, async (_event, payload: unknown) => {
+    const request = saveProjectRequestSchema.safeParse(payload);
+    if (!request.success) {
+      return saveProjectResultSchema.parse({
+        status: "error",
+        code: "PROJECT_INVALID",
+        message: "Project data is invalid.",
+      });
+    }
+
+    try {
+      const outcome = await projectDependencies.lifecycle.saveAs(
+        request.data.project,
+      );
+
+      if (outcome.status === "cancelled") {
+        return saveProjectResultSchema.parse({ status: "cancelled" });
+      }
+
+      return saveProjectResultSchema.parse({
+        status: "saved",
+        projectRevision: outcome.projectRevision,
+        location: { kind: "known-path" },
+      });
+    } catch (error) {
+      return saveProjectResultSchema.parse(
+        mapProjectError(
+          error,
+          "PROJECT_WRITE_FAILED",
+          "Project file could not be saved.",
+        ),
+      );
+    }
+  });
+
+  ipcMain.handle(PROJECT_OPEN_CHANNEL, async () => {
+    try {
+      const outcome = await projectDependencies.lifecycle.open();
+
+      if (outcome.status === "cancelled") {
+        return openProjectResultSchema.parse({ status: "cancelled" });
+      }
+
+      return openProjectResultSchema.parse({
+        status: "opened",
+        project: outcome.project,
+        location: { kind: "known-path" },
+      });
+    } catch (error) {
+      return openProjectResultSchema.parse(
+        mapProjectError(
+          error,
+          "PROJECT_READ_FAILED",
+          "Project file could not be opened.",
         ),
       );
     }
