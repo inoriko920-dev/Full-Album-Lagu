@@ -45,3 +45,9 @@ Generated image wording never overrides locked product behavior; final render re
 
 ## Conflict precedence
 Latest explicit user decision -> current Product Definition/planning -> UI Freeze/Final UI Reference -> Architecture/Code Constitution -> operational summaries/handoff.
+
+## STEP 11 current planning
+- `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+- Operational companions: `../../step11/FEATURE_REGISTRY.md`, `../../step11/DEPENDENCY_GRAPH.md`, `../../step11/WAVE_11_01_CHARTER.md`, `../../step11/TASK_CARDS_W11_01.md`.
+- Baseline analyzed: `main@da5b6786d0daa472c474a33ffd83a5834af24f82`.
+- Status: planning PASS; W11-01 READY; STEP 11 implementation NOT STARTED.

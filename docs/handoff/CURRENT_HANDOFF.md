@@ -1,69 +1,34 @@
 # CURRENT HANDOFF
 
-## Project / repository
+## Project
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-**STEP 10 Minimum End-to-End Vertical Slice = COMPLETED / PASS_WITH_PROVISIONAL.**
+STEP 10 is complete. STEP 11 ASTRA planning has normalized the complete Feature Registry and dependency order. **No STEP 11 implementation has started.**
 
-## Proven SLC
-- SLC-ID: `SLC-010-001`
-- Name: Save & Reopen Empty Project
-- Tested source SHA: `f83be0af076bc6dba9f1d8a8fdd2e9342ccc2998`
-- Final main verification run/job: `37527340961` / `112487575482`
-- SLC artifact ID: `11443565012`
-- Evidence: `docs/step10/evidence/SLC-010-001_REPORT.md`
+## Mandatory read order
+AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
 
-## Architecture confirmed
-- Renderer owns live ProjectSession/UI state, not filesystem.
-- Typed preload/IPC is the renderer/main boundary.
-- Application use cases depend on a ProjectStore port.
-- JsonProjectStore is the main-process persistence owner.
-- JSON project schema is versioned and runtime-validated.
-- Save writes through temp-file + atomic rename.
-- Startup load validates before the renderer accepts state.
-- Frozen UI remains intact; manual operation works without Gemini.
+## STEP 11 planning authority
+- DOCX: `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+- Operational registry: `docs/step11/FEATURE_REGISTRY.md`
+- Dependency graph: `docs/step11/DEPENDENCY_GRAPH.md`
+- Wave charter: `docs/step11/WAVE_11_01_CHARTER.md`
+- Task cards: `docs/step11/TASK_CARDS_W11_01.md`
 
-## Architecture provisional
-- Native save-dialog interaction is implemented but not directly automated in CI. CI injects the selected path for deterministic E2E.
-- Autosave/recovery generations and migration policy beyond schema v1 remain unimplemented.
-- Media, FFmpeg/render and Gemini boundaries remain unproven by STEP 10.
+## Registry / sequencing
+FTR-001..FTR-023 are normalized. W11-01 is first because project lifecycle/recovery extends the already-proven STEP 10 persistence seam and unlocks later media/timeline/editor work without pulling Gemini/FFmpeg forward.
 
-## Reusable components / patterns
-- `ProjectDocument` schema + factory.
-- `ProjectStore` port + mapped persistence errors.
-- `SaveProjectUseCase` / `LoadProjectUseCase`.
-- `JsonProjectStore` atomic-save pattern.
-- narrow `LfaBridge` persistence contracts.
-- renderer `ProjectSession` persistence state mapping.
-- real Electron probe/evidence harness with Unicode/space fixture path.
+## READY wave
+**W11-01 Project Lifecycle & Recovery Core**
+- Features: FTR-001 Project Lifecycle + FTR-002 Autosave & Crash Recovery + FTR-018 Error/Offline cross-cut.
+- Status: READY.
+- DoR: PASS.
 
-## Do-not-copy shortcuts / fakes
-- Do not move filesystem/dialog logic into renderer.
-- Do not treat SLC CLI path injection as a product feature or general PathService.
-- Do not reuse test probe flags as end-user workflow.
-- Do not infer media/render/Gemini readiness from the persistence slice.
-- Do not bypass future CommandEngine for project mutations.
+## Next exact task
+**T11-W01-01 Lifecycle Contracts & Session Path Ownership** — SOL only.
 
-## Known limitations
-- Empty project only; no media round-trip yet.
-- Native dialog click not automated.
-- No autosave/recovery generations, file locking or schema migration.
-- No real audio import/probe/relink/playback/visualizer.
-- No FFmpeg final render.
-- No Gemini provider/vault/key rotation.
+Do not implement T11-W01-02, autosave/recovery store, media, Gemini, or render in the same turn. Start T11-W01-01 only after the user explicitly says `lanjutkan`.
 
-## Feature-wave candidates for ASTRA review
-- Project Lifecycle & Recovery: Open/Save As/autosave/recovery around the proven persistence path.
-- Media Intake: real audio import + validation/probe/relink.
-- Album Timeline Core: real tracks, ordering and deterministic Auto Susun.
-- Visual Preview: retained visual-engine adapter and track-aware preview.
-- Render Pipeline: immutable snapshot -> render renderer -> FFmpeg/MP4.
-- Gemini Automation: provider/vault/key pool + structured commands after manual workflows are stable.
-
-These are candidates, not an implementation order. STEP 11 ASTRA must normalize the Feature Registry/dependencies before choosing Wave 01.
-
-## First READY action
-**STEP 11 / ASTRA — Feature Registry + Dependency Graph + Wave 01 Charter.**
-
-Do not start until the user says `lanjutkan`.
+## Protected boundaries
+Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Frozen UI cannot be silently redesigned. Gemini and FFmpeg concrete integrations remain STEP 12 owned.

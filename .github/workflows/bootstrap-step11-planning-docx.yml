@@ -1,0 +1,42 @@
+name: Bootstrap STEP 11 Planning DOCX
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".bootstrap-step11/part-04.txt"
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct-step11-docx:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Reconstruct STEP 11 planning DOCX
+        shell: bash
+        run: |
+          set -euo pipefail
+          target="docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx"
+          mkdir -p "$(dirname "$target")"
+          cat .bootstrap-step11/part-*.txt | base64 -d > "$target"
+          test -s "$target"
+          unzip -t "$target"
+          actual="$(sha256sum "$target" | awk '{print $1}')"
+          expected="da46849c181c341b02e5539d5a64c418c2da3360ab5b7908c6cce9f544d660d6"
+          test "$actual" = "$expected"
+
+      - name: Commit source-of-truth DOCX and remove transport
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm -r .bootstrap-step11
+          git rm .github/workflows/bootstrap-step11-planning-docx.yml
+          git add docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx
+          git commit -m "docs(step11): add planning source-of-truth DOCX"
+          git push
