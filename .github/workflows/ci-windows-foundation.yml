@@ -1,4 +1,4 @@
-name: Windows Foundation CI
+name: Windows CI
 
 on:
   push:
@@ -27,11 +27,47 @@ jobs:
       - name: Clean install
         run: npm ci
 
-      - name: Foundation verification
+      - name: Foundation and UI verification
         run: npm run verify
 
       - name: Runtime dependency audit
         run: npm audit --omit=dev --audit-level=high
+
+      - name: Capture SCR-002A real-app screenshot
+        run: npm run ui:screenshot:scr002a
+
+      - name: Verify UI screenshot evidence
+        shell: pwsh
+        run: |
+          $shot = "artifacts/ui/SCR-002A.png"
+          if (!(Test-Path $shot)) {
+            throw "UI screenshot missing: $shot"
+          }
+          $item = Get-Item $shot
+          if ($item.Length -lt 50000) {
+            throw "UI screenshot is unexpectedly small: $($item.Length) bytes"
+          }
+          @(
+            "Screen: SCR-002A",
+            "Image ID: UI-IMG-002A",
+            "Prompt ID: PROMPT-UI-SCR-002A",
+            "Reference Pack: LFA-UI-REFERENCE-v1.1",
+            "UI Freeze: LFA-UI-FREEZE-v1.0",
+            "Implementation SHA: $env:GITHUB_SHA",
+            "Viewport: 1600x1000 @ 100%"
+          ) | Set-Content -Encoding utf8 artifacts/ui/SCR-002A-evidence.txt
+          Get-Item $shot | Format-List FullName,Length
+          Get-Content artifacts/ui/SCR-002A-evidence.txt
+
+      - name: Upload S09-T01 UI evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-S09-T01-UI-Evidence
+          path: |
+            artifacts/ui/SCR-002A.png
+            artifacts/ui/SCR-002A-evidence.txt
+          if-no-files-found: error
+          retention-days: 14
 
       - name: Package Windows x64 directory
         run: npm run package:windows
