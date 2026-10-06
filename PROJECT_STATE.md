@@ -6,12 +6,13 @@
 - Active role at current checkpoint: ASTRA
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: FEATURE_REGISTRY + DEPENDENCY_GRAPH + W11-01 CHARTER = PASS
-- STEP 11 implementation: NOT STARTED
+- STEP 11 implementation: IN_PROGRESS
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - First READY wave: `W11-01 Project Lifecycle & Recovery Core`
 - Wave features: FTR-001 + FTR-002 + FTR-018 cross-cut
-- First READY implementation task: `T11-W01-01 Lifecycle Contracts & Session Path Ownership`
+- Completed implementation task: `T11-W01-01 Lifecycle Contracts & Session Path Ownership` — PASS
+- Next READY implementation task: `T11-W01-02 Open / Save As / Known-Path Save`
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - STEP 10 tested SHA: `f83be0af076bc6dba9f1d8a8fdd2e9342ccc2998`
@@ -19,7 +20,7 @@
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — planning only.** W11-01 is Definition-of-Ready complete. No STEP 11 feature coding has started at this checkpoint.
+**PASS — T11-W01-01 verified.** Lifecycle contracts and main-owned current-path session are implemented without exposing raw filesystem paths to the renderer. W11-01 remains in progress.
 
 ## Protected decisions
 Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works without AI; one Project State/official mutation path; JSON versioned project; track-boundary model; portable Windows ZIP; final MP4; OS-protected secrets; frozen UI cannot be silently redesigned.
@@ -30,4 +31,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After this STEP 11 planning pack is committed to repository source-of-truth and the user says `lanjutkan`: switch to SOL and execute **T11-W01-01 only**. Do not start T11-W01-02 in the same turn.
+After the user says `lanjutkan`: execute **T11-W01-02 Open / Save As / Known-Path Save only**. Do not start T11-W01-03 in the same turn.
