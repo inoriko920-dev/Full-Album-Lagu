@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { projectDocumentSchema } from "../domain/project-document";
+import { projectLocationSchema } from "./project-lifecycle";
 
 export const PROJECT_SAVE_CHANNEL = "project:save" as const;
 export const PROJECT_STARTUP_CHANNEL = "project:get-startup" as const;
@@ -16,10 +17,13 @@ export const projectPersistenceErrorCodeSchema = z.enum([
 ]);
 
 export const saveProjectResultSchema = z.discriminatedUnion("status", [
-  z.object({
-    status: z.literal("saved"),
-    projectRevision: z.number().int().nonnegative(),
-  }),
+  z
+    .object({
+      status: z.literal("saved"),
+      projectRevision: z.number().int().nonnegative(),
+      location: projectLocationSchema,
+    })
+    .strict(),
   z.object({
     status: z.literal("cancelled"),
   }),
@@ -34,10 +38,13 @@ export const startupProjectResultSchema = z.discriminatedUnion("status", [
   z.object({
     status: z.literal("none"),
   }),
-  z.object({
-    status: z.literal("loaded"),
-    project: projectDocumentSchema,
-  }),
+  z
+    .object({
+      status: z.literal("loaded"),
+      project: projectDocumentSchema,
+      location: projectLocationSchema,
+    })
+    .strict(),
   z.object({
     status: z.literal("error"),
     code: projectPersistenceErrorCodeSchema,

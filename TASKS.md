@@ -23,15 +23,29 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
-- Start condition: user says `lanjutkan` after planning source-of-truth commit.
-- Scope: lifecycle contracts + session current-path ownership only.
-- Out of scope: autosave implementation, media import, track timeline, Gemini, FFmpeg/render, UI redesign.
-- Acceptance: typed lifecycle contract; renderer has no direct filesystem/dialog access; existing STEP 10 seam/tests preserved; mandatory unit/contract/component tests PASS.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified branch SHA: `a1ab0388c655c399f7347d40ba0acec5fc178bc8`
+- Windows CI run: `37532835161` — PASS
+- CI job: `112506354661`
+- Scope delivered:
+  - public typed location contract: `unsaved | known-path`;
+  - composition-owned `ProjectPathSession` is canonical owner of the actual current path;
+  - raw filesystem path is not exposed through renderer lifecycle contract;
+  - successful STEP 10 save/startup load records known-path ownership;
+  - renderer ProjectSession tracks only public location state;
+  - unit + contract + component seam tests added.
+- Existing STEP 10 save/reopen E2E, frozen UI baseline, runtime audit, Windows package/smoke and portable ZIP all PASS.
+- Evidence: `docs/step11/evidence/T11_W01_01_LIFECYCLE_CONTRACTS_EVIDENCE.md`.
+- Out of scope honored: Open, Save As, known-path Save behavior, autosave/recovery, media, Gemini, FFmpeg/render and UI redesign.
 - Next task after PASS: T11-W01-02, but never in the same turn without a new `lanjutkan`.
 
 ## T11-W01-02 — Open / Save As / Known-Path Save
-- Status: BLOCKED_BY T11-W01-01
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: T11-W01-01 PASS.
 
 ## T11-W01-03 — Dirty State & Autosave Recovery Store
 - Status: BLOCKED_BY T11-W01-02

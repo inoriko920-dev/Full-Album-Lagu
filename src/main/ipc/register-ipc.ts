@@ -1,5 +1,6 @@
 import { ipcMain } from "electron";
 import { ProjectStoreError } from "../../core/application/ports/project-store";
+import { ProjectPathSession } from "../../core/application/services/project-path-session";
 import type {
   LoadProjectUseCase,
   SaveProjectUseCase,
@@ -21,6 +22,7 @@ export interface ProjectIpcDependencies {
   saveProject: SaveProjectUseCase;
   loadProject: LoadProjectUseCase;
   selectSavePath: () => Promise<string | null>;
+  pathSession: ProjectPathSession;
   startupProjectPath?: string;
 }
 
@@ -79,9 +81,12 @@ export function registerIpcHandlers(
         selectedPath,
         request.data.project,
       );
+      projectDependencies.pathSession.setKnownPath(selectedPath);
+
       return saveProjectResultSchema.parse({
         status: "saved",
         projectRevision: request.data.project.revision,
+        location: { kind: "known-path" },
       });
     } catch (error) {
       return saveProjectResultSchema.parse(
@@ -103,9 +108,14 @@ export function registerIpcHandlers(
       const project = await projectDependencies.loadProject.execute(
         projectDependencies.startupProjectPath,
       );
+      projectDependencies.pathSession.setKnownPath(
+        projectDependencies.startupProjectPath,
+      );
+
       return startupProjectResultSchema.parse({
         status: "loaded",
         project,
+        location: { kind: "known-path" },
       });
     } catch (error) {
       return startupProjectResultSchema.parse(

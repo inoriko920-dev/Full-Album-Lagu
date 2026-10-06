@@ -268,6 +268,7 @@ export function AppShell() {
       data-project-name={projectSession.project.name}
       data-project-revision={projectSession.project.revision}
       data-project-source={projectSession.sourceState}
+      data-project-location={projectSession.location.kind}
       data-persistence-state={projectSession.persistenceState}
     >
       <header className="top-toolbar">
