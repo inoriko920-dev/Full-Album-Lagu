@@ -31,6 +31,17 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: Format diagnostic workspace
+        run: npm run format
+
+      - name: Upload formatted bootstrap diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: S09-T01-Formatted-Bootstrap
+          path: src/main/bootstrap.ts
+          if-no-files-found: error
+          retention-days: 2
+
       - name: Foundation and UI verification
         run: npm run verify
 
