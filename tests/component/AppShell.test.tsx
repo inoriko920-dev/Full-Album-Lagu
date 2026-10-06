@@ -18,7 +18,7 @@ describe("AppShell", () => {
     render(<AppShell />);
 
     expect(screen.getAllByText("Proyek Baru")).toHaveLength(3);
-    expect(screen.getByRole("button", { name: "Impor Audio" })).toBeEnabled();
+    const projectActions = screen.getByLabelText("Aksi proyek");\n    expect(\n      within(projectActions).getByRole("button", { name: "Impor Audio" }),\n    ).toBeEnabled();
     expect(
       screen.getByRole("button", { name: "Auto Susun Album" }),
     ).toBeDisabled();
