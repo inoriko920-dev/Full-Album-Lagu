@@ -1,13 +1,17 @@
 import "@testing-library/jest-dom/vitest";
-import { fireEvent, render, screen, within } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import { AppShell } from "../../src/renderer/app/AppShell";
+
+afterEach(() => {
+  cleanup();
+});
 
 describe("AppShell", () => {
   it("renders the frozen SCR-002A empty editor shell", () => {
     render(<AppShell />);
 
-    expect(screen.getByText("Proyek Baru")).toBeInTheDocument();
+    expect(screen.getAllByText("Proyek Baru")).toHaveLength(2);
     expect(screen.getByRole("button", { name: "Impor Audio" })).toBeEnabled();
     expect(
       screen.getByRole("button", { name: "Auto Susun Album" }),
