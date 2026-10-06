@@ -12,7 +12,11 @@ function gitBlobSha(buffer) {
 }
 
 async function verifyFileRef(label, ref) {
-  if (!ref || typeof ref.path !== "string" || typeof ref.gitBlobSha !== "string") {
+  if (
+    !ref ||
+    typeof ref.path !== "string" ||
+    typeof ref.gitBlobSha !== "string"
+  ) {
     throw new Error(`${label} is missing path/gitBlobSha.`);
   }
 
@@ -42,11 +46,15 @@ if (freeze.status !== "FROZEN") {
 }
 
 if (reference.visualReference?.approvedVisualStateCount !== 29) {
-  throw new Error("UI reference pack must declare exactly 29 approved visual states.");
+  throw new Error(
+    "UI reference pack must declare exactly 29 approved visual states.",
+  );
 }
 
 if (freeze.referencePackId !== reference.packId) {
-  throw new Error("UI freeze manifest does not point to the active reference pack.");
+  throw new Error(
+    "UI freeze manifest does not point to the active reference pack.",
+  );
 }
 
 await verifyFileRef("promptPack", reference.promptPack);
