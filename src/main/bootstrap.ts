@@ -33,6 +33,7 @@ function createMainWindow(): BrowserWindow {
     minHeight: 800,
     useContentSize: isUiCapture,
     show: false,
+    paintWhenInitiallyHidden: true,
     backgroundColor: "#F3F5F8",
     webPreferences: {
       preload: join(__dirname, "../preload/index.cjs"),
@@ -40,7 +41,6 @@ function createMainWindow(): BrowserWindow {
       nodeIntegration: false,
       sandbox: true,
       webSecurity: true,
-      offscreen: isUiCapture,
       backgroundThrottling: !isUiCapture,
     },
   });
