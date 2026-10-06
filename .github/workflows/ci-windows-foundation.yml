@@ -46,7 +46,21 @@ jobs:
           $zip = "artifacts/Lagu-Full-Album-0.0.0-foundation-windows-x64.zip"
           Compress-Archive -Path "out/win-unpacked/*" -DestinationPath $zip -CompressionLevel Optimal -Force
           $hash = Get-FileHash $zip -Algorithm SHA256
-          "${($hash.Hash).ToLower()}  ${(Split-Path $zip -Leaf)}" | Set-Content -Encoding ascii artifacts/SHA256SUMS.txt
+          $checksumLine = "$($hash.Hash.ToLower())  $(Split-Path $zip -Leaf)"
+          if ($checksumLine -notmatch '^[0-9a-f]{64}  .+\.zip
+
+      - name: Upload Windows portable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-Windows-x64-Foundation
+          path: |
+            artifacts/Lagu-Full-Album-0.0.0-foundation-windows-x64.zip
+            artifacts/SHA256SUMS.txt
+          if-no-files-found: error
+          retention-days: 14) {
+            throw "Invalid SHA256SUMS line: $checksumLine"
+          }
+          $checksumLine | Set-Content -Encoding ascii artifacts/SHA256SUMS.txt
           Get-Item $zip | Format-List FullName,Length
           Get-Content artifacts/SHA256SUMS.txt
 
