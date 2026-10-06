@@ -11,12 +11,14 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { LfaBridge } from "../../src/core/contracts/lfa-bridge";
 import { AppShell } from "../../src/renderer/app/AppShell";
 
-const saveProjectMock = vi.fn(async () => ({
+const saveProjectMock = vi.fn<LfaBridge["saveProject"]>(async () => ({
   status: "saved" as const,
   projectRevision: 0,
 }));
-const getStartupProjectMock = vi.fn(async () => ({ status: "none" as const }));
-const getFoundationInfoMock = vi.fn(async () => ({
+const getStartupProjectMock = vi.fn<LfaBridge["getStartupProject"]>(
+  async () => ({ status: "none" as const }),
+);
+const getFoundationInfoMock = vi.fn<LfaBridge["getFoundationInfo"]>(async () => ({
   platform: "win32",
   arch: "x64",
   phase: "foundation" as const,
