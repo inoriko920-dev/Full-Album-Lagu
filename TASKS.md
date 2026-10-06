@@ -48,7 +48,10 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS_WITH_TOLERANCE
 - Baseline: STEP 08 completed; start from latest `main` after reading current handoff and frozen UI manifests.
 - UI authority:
   - `docs/ui/manifests/UI_REFERENCE_MANIFEST.json`
@@ -59,12 +62,15 @@
 - Scope: layout regions, sizing, shell navigation/state, shared frame, deterministic fixture content needed to inspect the shell.
 - Out of scope: real media engine, render engine, SoundVisualizer feature integration, Gemini SDK/API, FFmpeg, project persistence/workflows.
 - Acceptance:
-  - no silent redesign;
-  - renderer trust boundary remains intact;
-  - shell works without API key/cloud;
-  - component tests cover major shell regions/state;
-  - CI remains green;
-  - actual production screenshot evidence is captured and compared against the frozen reference before task closure.
+  - no silent redesign — PASS;
+  - renderer trust boundary remains intact — PASS;
+  - shell works without API key/cloud — PASS;
+  - component tests cover major shell regions/state — PASS;
+  - CI candidate run `37514665767` — PASS;
+  - production screenshot `SCR-002A.png` at 1600x1000 captured and reviewed — PASS_WITH_TOLERANCE.
+- Evidence artifact: `Lagu-Full-Album-S09-T01-UI-Evidence`, artifact ID `11437311307`.
+- Evidence record: `docs/ui/evidence/S09_T01_APP_SHELL_EVIDENCE.md`.
+- Tolerance: hierarchy/copy/state match the frozen contract; automated pixel-diff against the embedded DOCX bitmap is deferred to S09-T03.
 - Rollback: normal Git revert of the task commits.
 - Astra review trigger: any material change to frozen hierarchy, rail placement, interaction model, architecture pillar or product copy authority.
 
@@ -72,7 +78,7 @@
 - Owner: SOL
 - Priority: P1
 - Risk: LOW
-- Status: PLANNED_AFTER_S09-T01
+- Status: READY
 - Dependency: S09-T01 shell baseline.
 - Goal: codify only the tokens/shared primitives proven necessary by frozen UI states; avoid speculative component framework work.
 
