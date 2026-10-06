@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - '.bootstrap-ui-ref/part-06.txt'
+      - '.bootstrap-ui-ref/part-04.txt'
 
 permissions:
   contents: write
@@ -19,10 +19,10 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p docs/source-of-truth/ui
-          cat .bootstrap-ui-ref/part-*.txt | base64 -d > docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx
-          test -s docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx
-          unzip -t docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx
-          test "$(unzip -Z1 docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx 'word/media/*' | wc -l)" -eq 29
+          cat .bootstrap-ui-ref/part-*.txt | base64 -d > docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_VISUAL_MICRO.docx
+          test -s docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_VISUAL_MICRO.docx
+          unzip -t docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_VISUAL_MICRO.docx
+          test "$(unzip -Z1 docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_VISUAL_MICRO.docx 'word/media/*' | wc -l)" -eq 29
       - name: Commit visual source-of-truth and remove temporary transport
         shell: bash
         run: |
@@ -31,6 +31,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git rm -r .bootstrap-ui-ref
           git rm .github/workflows/bootstrap-ui-reference.yml
-          git add docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx
+          git add docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_VISUAL_MICRO.docx
           git commit -m "docs: add 29-image UI reference source of truth"
           git push
