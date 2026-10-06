@@ -28,8 +28,7 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     readArgValue(argv, "w11-save-as-path") ??
     readArgValue(argv, "slc-save-path");
   const cancelSave =
-    argv.includes("--w11-save-as-cancel") ||
-    argv.includes("--slc-save-cancel");
+    argv.includes("--w11-save-as-cancel") || argv.includes("--slc-save-cancel");
   const fixedOpenPath = readArgValue(argv, "w11-open-path");
   const cancelOpen = argv.includes("--w11-open-cancel");
   const startupProjectPath = readArgValue(argv, "open-project");

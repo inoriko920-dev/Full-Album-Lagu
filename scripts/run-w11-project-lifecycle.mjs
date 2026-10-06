@@ -133,9 +133,7 @@ const knownSaveFile = await load(knownSave.currentPath);
 const saveAsValid = await runScenario("save-as-valid", {
   mode: "save-as-valid",
   seedAlternate: false,
-  args: ({ alternatePath }) => [
-    `--w11-save-as-path=${alternatePath}`,
-  ],
+  args: ({ alternatePath }) => [`--w11-save-as-path=${alternatePath}`],
 });
 const saveAsValidCurrent = await load(saveAsValid.currentPath);
 const saveAsValidAlternate = await load(saveAsValid.alternatePath);
@@ -204,7 +202,8 @@ const assertions = {
   validOpenMovesKnownPath:
     openValid.evidence.openStatus === "opened" &&
     openValid.evidence.saveStatus === "saved" &&
-    openValid.evidence.openedProjectId === openValid.alternateProject.projectId &&
+    openValid.evidence.openedProjectId ===
+      openValid.alternateProject.projectId &&
     openValidCurrent.revision === 0 &&
     openValidAlternate.revision === 5 &&
     openValidAlternate.name === "Opened Then Saved Ω",
@@ -216,23 +215,21 @@ const assertions = {
     openErrorCurrent.revision === 1 &&
     openErrorCurrent.name === "After Open Error Ω",
 
-  unicodeAndSpacesExercised:
-    [
-      knownSave.currentPath,
-      saveAsValid.alternatePath,
-      openValid.alternatePath,
-      openError.missingPath,
-    ].every((path) => path.includes(" ") && path.includes("Ω")),
+  unicodeAndSpacesExercised: [
+    knownSave.currentPath,
+    saveAsValid.alternatePath,
+    openValid.alternatePath,
+    openError.missingPath,
+  ].every((path) => path.includes(" ") && path.includes("Ω")),
 
-  publicEvidenceContainsNoRawPaths:
-    [
-      knownSave.evidence,
-      saveAsValid.evidence,
-      saveAsCancel.evidence,
-      openCancel.evidence,
-      openValid.evidence,
-      openError.evidence,
-    ].every((item) => !Object.keys(item).some((key) => /path/i.test(key))),
+  publicEvidenceContainsNoRawPaths: [
+    knownSave.evidence,
+    saveAsValid.evidence,
+    saveAsCancel.evidence,
+    openCancel.evidence,
+    openValid.evidence,
+    openError.evidence,
+  ].every((item) => !Object.keys(item).some((key) => /path/i.test(key))),
 };
 
 const failedAssertions = Object.entries(assertions)

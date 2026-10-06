@@ -87,19 +87,17 @@ describe("ProjectLifecycleService", () => {
       async () => null,
       async () => null,
     );
-    oldPathHolder.path = join(
-      harness.root,
-      "Proyek Lama Ω",
-      "utama.lfa.json",
-    );
+    oldPathHolder.path = join(harness.root, "Proyek Lama Ω", "utama.lfa.json");
 
     const project = createEmptyProject("lifecycle-save-as-cancel");
     await harness.store.save(oldPathHolder.path, project);
     harness.pathSession.setKnownPath(oldPathHolder.path);
 
-    expect(await harness.lifecycle.saveAs({ ...project, revision: 1 })).toEqual({
-      status: "cancelled",
-    });
+    expect(await harness.lifecycle.saveAs({ ...project, revision: 1 })).toEqual(
+      {
+        status: "cancelled",
+      },
+    );
     expect(harness.pathSession.getCurrentPath()).toBe(oldPathHolder.path);
 
     const afterCancel = { ...project, revision: 2 };

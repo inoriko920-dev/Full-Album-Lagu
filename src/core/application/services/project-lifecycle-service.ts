@@ -1,9 +1,6 @@
 import type { ProjectDocument } from "../../domain/project-document";
 import { ProjectPathSession } from "./project-path-session";
-import {
-  LoadProjectUseCase,
-  SaveProjectUseCase,
-} from "./project-persistence";
+import { LoadProjectUseCase, SaveProjectUseCase } from "./project-persistence";
 
 export type ProjectPathSelector = () => Promise<string | null>;
 
