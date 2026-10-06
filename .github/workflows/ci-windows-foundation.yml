@@ -52,7 +52,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/core/application/services/project-lifecycle-service.ts src/main/bootstrap.ts src/main/composition-root.ts tests/integration/project-lifecycle-service.test.ts scripts/run-w11-project-lifecycle.mjs
+          git add src/core/application/services/project-lifecycle-service.ts src/main/bootstrap.ts src/main/composition-root.ts tests/component/AppShell.test.tsx tests/integration/project-lifecycle-service.test.ts scripts/run-w11-project-lifecycle.mjs
           git diff --cached --quiet
           if ($LASTEXITCODE -ne 0) {
             git commit -m "style(lifecycle): apply Prettier to T11-W01-02"
