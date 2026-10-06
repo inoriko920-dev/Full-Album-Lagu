@@ -27,6 +27,20 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: Format diagnostic workspace
+        run: npm run format
+
+      - name: Upload formatted source diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: S09-T01-Prettier-Diagnostic
+          path: |
+            src/renderer/app/AppShell.tsx
+            src/renderer/app/app-shell.css
+            tests/component/AppShell.test.tsx
+          if-no-files-found: error
+          retention-days: 2
+
       - name: Foundation and UI verification
         run: npm run verify
 
