@@ -21,13 +21,6 @@ function project(projectId, name, revision = 0) {
   };
 }
 
-async function writeProject(path, value) {
-  await mkdir(join(path, ".."), { recursive: true }).catch(() => undefined);
-  await mkdir(new URL(".", `file:///${path.replaceAll("\\", "/")}`).pathname, {
-    recursive: true,
-  }).catch(() => undefined);
-}
-
 async function seed(path, value) {
   await mkdir(resolve(path, ".."), { recursive: true });
   await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
