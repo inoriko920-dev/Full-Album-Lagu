@@ -1,0 +1,1 @@
+Verify package-lock.json with clean npm ci and full foundation gates.
