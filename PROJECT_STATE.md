@@ -3,44 +3,44 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 09 - App Shell / UI Implementation
-- STEP 09 status: IN_PROGRESS
-- STEP 09 gate: OPEN
-- Completed tasks:
-  - S08-T01 Source-of-Truth & Governance Bootstrap — VERIFIED / PASS
-  - S08-T02 Repository Skeleton & Quality Tooling — VERIFIED / PASS_WITH_PROVISIONAL
-  - S08-T03 CI Foundation & Windows Packaging Smoke — VERIFIED / PASS
-  - S09-T01 Global App Shell + Shared Layout Skeleton — VERIFIED / PASS_WITH_TOLERANCE
-  - S09-T02 Design Tokens + Shared Components Minimum — VERIFIED / PASS
-- S09-T02 verified branch SHA: `8c20acbcc4c33858cb25c6da1d53690b6881255b`
-- S09-T02 Windows CI run: `37517598647` — PASS
-- S09-T02 CI job: `112454487220`
-- S09-T02 UI evidence artifact ID: `11437611756`
-- SCR-002A PNG SHA-256 after S09-T02: `acb71b2ee816215cf1104c8ea4d78a0a55e9bf0e1e31545a52c354c3c3b638fa`
-- SCR-002A PNG is byte-identical to the S09-T01 screenshot baseline.
-- UI Reference Pack: `LFA-UI-REFERENCE-v1.1` — FROZEN / INTEGRITY PASS / 29 approved visual states
-- UI Freeze: `LFA-UI-FREEZE-v1.0` — FROZEN
-- Architecture: STEP 06 v1.0
-- Code Constitution: v1.0
-- Runtime dependency audit: `npm audit --omit=dev --audit-level=high` PASS.
-- Protected decisions preserved: permanent Gemini right rail; Gemini-only max 100 keys; one ProjectSession/CommandEngine; JSON project; portable Windows ZIP; main/renderer trust boundary; final MP4 render.
+- STEP 09 status: **COMPLETED**
+- STEP 09 gate: **PASS_WITH_TOLERANCE**
+- Completed: S09-T01, S09-T02, S09-T03.
+- UI Reference Pack: `LFA-UI-REFERENCE-v1.1` — FROZEN / 29 approved states.
+- UI Freeze: `LFA-UI-FREEZE-v1.0` — FROZEN.
+- Architecture: STEP 06 v1.0.
+- Code Constitution: v1.0.
 
-## S09-T02 result
-The existing frozen-shell visual variables are now renderer-level design tokens in `src/renderer/ui/tokens.css`. The repeated SVG icon set is a typed `AppIcon` primitive, while repeated toolbar/action/icon controls use minimal shared React controls. No speculative UI framework or unrelated abstraction was introduced.
+## S09-T03 verified baseline
+- Tested implementation SHA: `190741e4c7366a3a59880f7d364252c08a6fd497`
+- Windows CI run: `37520683978` — PASS
+- Job: `112464996428`
+- Visual artifact: `Lagu-Full-Album-S09-T03-Visual-Baseline`
+- Artifact ID: `11440930725`
+- Artifact digest: `sha256:bc4c6cd71e9028795e3ea56f5a84205a9d95bc51487fa64743bf353ee69e91c4`
 
-The existing SCR-002A shell was refactored to consume these primitives without changing frozen hierarchy, copy, state ownership, or output geometry. Component and token contract tests were added.
+Frozen `UI-IMG-002A` was extracted directly from the Final UI Reference DOCX:
+- source Git blob: `39ba5ef29d92cfe4d8759ad317a0cdaa911de981`
+- relationship: `rId11`
+- target: `media/image3.jpg`
+- dimensions: 520x325
+- SHA-256: `071836f564d6f23e51c223edbf9a7992bd2278c7a09fac1f473996b68621b2d7`
 
-## Visual preservation evidence
-The S09-T02 real Electron capture is 1600x1000 and byte-identical to the S09-T01 capture. Both PNGs have SHA-256:
+Approved real Electron `SCR-002A`:
+- 1600x1000 @ 100%
+- SHA-256: `fbb8d14690cf201d4e342a39d25c7a97c118966ebe10228c55f365574f3ada7b`
+- baseline manifest: `docs/ui/manifests/UI_SCREEN_BASELINES.json`
+- evidence: `docs/ui/evidence/S09_T03_FROZEN_REFERENCE_BASELINE_EVIDENCE.md`
 
-`acb71b2ee816215cf1104c8ea4d78a0a55e9bf0e1e31545a52c354c3c3b638fa`
+The shell preserves left `Media | Layer | Inspector`, center Preview, permanent right `Gemini Agent`, and bottom `Album Timeline`. Manual operation remains available with Gemini unconfigured.
 
-This proves the design-system refactor did not alter the rendered SCR-002A pixels.
+## Gate rationale
+PASS_WITH_TOLERANCE is used because the frozen DOCX stores a 520x325 lossy generated JPEG while production is a 1600x1000 renderer capture. CI hard-gates both source hashes, production geometry/DOM contract, and the approved production screenshot hash, and emits a side-by-side review artifact. No material silent redesign was found.
 
-## Provisional / open
-- Full dev/tooling dependency graph reports 8 moderate advisories and deprecated transitives. Owner: foundation/dependency maintenance.
-- Exact FFmpeg/FFprobe Windows binary, encoder and license bundle remains unresolved. Owner: later media/render integration.
-- Exact Gemini SDK/model remains unresolved. Owner: Gemini integration.
-- STEP 09 is not complete; the authoritative reference-screen baseline task remains.
+## Open work
+Real media/project/persistence/playback/visualizer/render/Gemini behavior is not proven by STEP 09. FFmpeg and Gemini integration remain later-step work.
 
 ## Next exact action
-STEP 09 / `S09-T03 First Frozen Reference Screen + Screenshot Baseline`. Do not start until the user says `lanjutkan`.
+**STEP 10 — Minimum End-to-End Vertical Slice.**
+
+Do not start until the user says `lanjutkan`.

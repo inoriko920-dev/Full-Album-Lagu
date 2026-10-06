@@ -11,38 +11,23 @@ const WORK_RAIL_TABS: Array<{ id: WorkRailTab; label: string }> = [
   { id: "inspector", label: "Inspector" },
 ];
 
-const FIXTURE_VERSION = "S09-T02-SCR-002A-v1";
+const FIXTURE_VERSION = "S09-T03-SCR-002A-v1";
 
 function MediaPanel() {
   return (
-    <div className="work-panel work-panel--empty" id="work-panel-media">
-      <div className="work-panel__header">
-        <div>
-          <p className="eyebrow">SUMBER PROYEK</p>
-          <h2>Media</h2>
-        </div>
-      </div>
-      <ActionButton variant="primary" label="Impor Audio" icon="upload" wide />
-      <div className="empty-card">
-        <span className="empty-card__icon">
+    <div className="work-panel work-panel--media" id="work-panel-media">
+      <div className="media-empty">
+        <span className="media-empty__icon">
           <AppIcon name="music" size={28} />
         </span>
-        <strong>Belum ada media</strong>
-        <p>Impor lagu untuk mulai menyusun album.</p>
-      </div>
-      <div className="media-types" aria-label="Jenis media yang tersedia">
-        <span>
-          <AppIcon name="music" size={15} />
-          Audio
-        </span>
-        <span>
-          <AppIcon name="image" size={15} />
-          Gambar
-        </span>
-        <span>
-          <AppIcon name="template" size={15} />
-          Template
-        </span>
+        <strong>Belum ada media audio</strong>
+        <p>Impor lagu untuk mulai membuat album.</p>
+        <ActionButton
+          variant="primary"
+          label="Impor Audio"
+          icon="upload"
+          wide
+        />
       </div>
     </div>
   );
@@ -129,18 +114,17 @@ function WorkRail({
 function PreviewPanel() {
   return (
     <section className="preview-panel" aria-label="Preview video">
-      <div className="section-heading">
-        <div>
-          <p className="eyebrow">PREVIEW</p>
-          <h2>Komposisi</h2>
-        </div>
-        <span className="aspect-chip">16:9</span>
-      </div>
       <div className="preview-stage">
         <div className="preview-frame">
+          <div className="preview-scenery" aria-hidden="true">
+            <span className="preview-scenery__sun" />
+            <span className="preview-scenery__mountain preview-scenery__mountain--far" />
+            <span className="preview-scenery__mountain preview-scenery__mountain--near" />
+            <span className="preview-scenery__lake" />
+          </div>
           <div className="preview-placeholder">
             <span className="preview-placeholder__icon">
-              <AppIcon name="image" size={34} />
+              <AppIcon name="image" size={27} />
             </span>
             <strong>Belum ada visual</strong>
             <span>Impor audio atau pilih template untuk memulai.</span>
@@ -148,6 +132,7 @@ function PreviewPanel() {
         </div>
       </div>
       <div className="transport-bar" aria-label="Kontrol playback">
+        <span className="timecode">00:00:00 / 00:00:00</span>
         <div className="transport-controls">
           <IconButton
             icon="previous"
@@ -169,7 +154,6 @@ function PreviewPanel() {
             aria-label="Track berikutnya"
           />
         </div>
-        <span className="timecode">00:00:00 / 00:00:00</span>
         <div className="transport-tail">
           <IconButton
             icon="volume"
@@ -195,29 +179,19 @@ function GeminiRail() {
           </span>
           <h2>Gemini Agent</h2>
         </div>
-        <IconButton
-          icon="settings"
-          iconSize={17}
-          bordered
-          aria-label="Pengaturan Gemini"
-        />
+        <ActionButton variant="secondary" label="Kelola API" compact />
       </div>
       <div className="gemini-status-row">
         <div className="gemini-status">
           <span className="status-dot status-dot--muted" />
           <span>Gemini • Belum dikonfigurasi • 0/100 key</span>
         </div>
-        <ActionButton variant="secondary" label="Kelola API" compact />
-      </div>
-      <div className="gemini-context">
-        <span>Konteks</span>
-        <strong>Proyek Baru</strong>
       </div>
       <div className="gemini-empty">
         <span className="gemini-empty__icon">
-          <AppIcon name="key" size={26} />
+          <AppIcon name="gemini" size={28} />
         </span>
-        <h3>Hubungkan Gemini saat diperlukan</h3>
+        <h3>Aktifkan Gemini untuk asisten AI Anda</h3>
         <p>
           Editor manual tetap dapat digunakan tanpa Gemini. Tambahkan API key
           untuk mengaktifkan bantuan berbasis perintah.
@@ -229,27 +203,11 @@ function GeminiRail() {
           wide
         />
         <div className="gemini-note">
-          <strong>Privasi</strong>
+          <AppIcon name="key" size={16} />
           <span>
             API key disimpan aman di perangkat dan tidak masuk ke file proyek.
           </span>
         </div>
-      </div>
-      <div className="gemini-composer" aria-label="Composer Gemini tidak aktif">
-        <div className="gemini-input" aria-disabled="true">
-          <span>Minta Gemini mengedit proyek…</span>
-          <button
-            type="button"
-            className="send-button"
-            disabled
-            aria-label="Kirim perintah"
-          >
-            <AppIcon name="send" size={16} />
-          </button>
-        </div>
-        <span className="composer-hint">
-          Tambahkan API key untuk mengaktifkan Gemini Agent.
-        </span>
       </div>
     </aside>
   );
@@ -280,18 +238,15 @@ function TimelinePanel() {
         <span>00:30</span>
         <span>00:40</span>
         <span>00:50</span>
+        <span>01:00</span>
+        <span>01:10</span>
       </div>
       <div className="timeline-body">
-        <div className="timeline-lane-label">
-          <span className="lane-index">01</span>
-          <div>
-            <strong>Track 01</strong>
-            <span>Belum ada audio</span>
-          </div>
-        </div>
+        <div className="playhead playhead--zero" />
         <div className="timeline-empty">
-          <div className="playhead playhead--zero" />
-          <span className="timeline-empty__line" />
+          <span className="timeline-empty__icon">
+            <AppIcon name="timeline" size={25} />
+          </span>
           <strong>Belum ada track</strong>
           <span>Impor audio untuk mulai menyusun album.</span>
         </div>
@@ -335,20 +290,6 @@ export function AppShell() {
         <PreviewPanel />
         <GeminiRail />
         <TimelinePanel />
-        <footer className="status-bar">
-          <div className="status-bar__left">
-            <span className="status-pill">
-              <span className="status-dot status-dot--neutral" />
-              Proyek Baru
-            </span>
-            <span>Belum disimpan</span>
-          </div>
-          <div className="status-bar__right">
-            <span>0 track</span>
-            <span>00:00</span>
-            <span>Preview 16:9</span>
-          </div>
-        </footer>
       </div>
     </main>
   );
