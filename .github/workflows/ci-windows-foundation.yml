@@ -11,7 +11,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   verify-package-smoke:
@@ -22,8 +22,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
 
       - uses: actions/setup-node@v5
         with:
@@ -32,22 +30,6 @@ jobs:
 
       - name: Clean install
         run: npm ci
-
-      - name: Format diagnostic workspace
-        run: npm run format
-
-      - name: Commit formatted UI sources
-        if: github.event_name == 'pull_request'
-        shell: pwsh
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/renderer/app/AppShell.tsx src/renderer/app/app-shell.css tests/component/AppShell.test.tsx
-          git diff --cached --quiet
-          if ($LASTEXITCODE -ne 0) {
-            git commit -m "style(ui): apply Prettier"
-            git push origin "HEAD:${{ github.head_ref }}"
-          }
 
       - name: Foundation and UI verification
         run: npm run verify
@@ -69,17 +51,39 @@ jobs:
           if (!(Test-Path $dom)) {
             throw "UI DOM evidence missing: $dom"
           }
+
           $item = Get-Item $shot
           if ($item.Length -lt 2000) {
             throw "UI screenshot is unexpectedly small: $($item.Length) bytes"
           }
+
           $domEvidence = Get-Content $dom -Raw | ConvertFrom-Json
-          if ($domEvidence.shellWidth -lt 1500 -or $domEvidence.shellHeight -lt 900) {
-            throw "SCR-002A shell did not render at the expected canonical viewport."
+          if (
+            $domEvidence.innerViewport.width -ne 1600 -or
+            $domEvidence.innerViewport.height -ne 1000
+          ) {
+            throw "SCR-002A renderer viewport is $($domEvidence.innerViewport.width)x$($domEvidence.innerViewport.height), expected 1600x1000."
           }
-          if (!$domEvidence.hasGeminiAgent -or !$domEvidence.hasPreviewEmpty -or !$domEvidence.hasTimelineEmpty) {
+          if (
+            $domEvidence.shell.width -ne 1600 -or
+            $domEvidence.shell.height -ne 1000
+          ) {
+            throw "SCR-002A app shell is $($domEvidence.shell.width)x$($domEvidence.shell.height), expected 1600x1000."
+          }
+          if (
+            $domEvidence.capture.width -ne 1600 -or
+            $domEvidence.capture.height -ne 1000
+          ) {
+            throw "SCR-002A PNG capture is $($domEvidence.capture.width)x$($domEvidence.capture.height), expected 1600x1000."
+          }
+          if (
+            !$domEvidence.hasGeminiAgent -or
+            !$domEvidence.hasPreviewEmpty -or
+            !$domEvidence.hasTimelineEmpty
+          ) {
             throw "SCR-002A required frozen regions were not present in the rendered DOM."
           }
+
           @(
             "Screen: SCR-002A",
             "Image ID: UI-IMG-002A",
@@ -89,13 +93,16 @@ jobs:
             "Implementation SHA: $env:GITHUB_SHA",
             "Viewport: 1600x1000 @ 100%",
             "PNG bytes: $($item.Length)",
-            "DOM shell: $($domEvidence.shellWidth)x$($domEvidence.shellHeight)"
+            "DOM shell: $($domEvidence.shell.width)x$($domEvidence.shell.height)",
+            "Capture: $($domEvidence.capture.width)x$($domEvidence.capture.height)"
           ) | Set-Content -Encoding utf8 artifacts/ui/SCR-002A-evidence.txt
+
           Get-Item $shot | Format-List FullName,Length
           Get-Content $dom
           Get-Content artifacts/ui/SCR-002A-evidence.txt
 
       - name: Upload S09-T01 UI evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: Lagu-Full-Album-S09-T01-UI-Evidence
@@ -103,7 +110,7 @@ jobs:
             artifacts/ui/SCR-002A.png
             artifacts/ui/SCR-002A-dom.json
             artifacts/ui/SCR-002A-evidence.txt
-          if-no-files-found: error
+          if-no-files-found: warn
           retention-days: 14
 
       - name: Package Windows x64 directory

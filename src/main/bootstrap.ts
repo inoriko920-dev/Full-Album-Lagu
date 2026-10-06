@@ -5,6 +5,7 @@ import { registerIpcHandlers } from "./ipc/register-ipc";
 
 const PACKAGED_SMOKE_FLAG = "--smoke-test";
 const UI_TEST_SCREEN = "SCR-002A";
+const CANONICAL_VIEWPORT = { width: 1600, height: 1000 } as const;
 
 function readArgValue(name: string): string | undefined {
   const prefix = `--${name}=`;
@@ -26,12 +27,12 @@ function createMainWindow(): BrowserWindow {
   }
 
   const window = new BrowserWindow({
-    width: isUiCapture ? 1600 : 1440,
-    height: isUiCapture ? 1000 : 900,
+    width: isUiCapture ? CANONICAL_VIEWPORT.width : 1440,
+    height: isUiCapture ? CANONICAL_VIEWPORT.height : 900,
     minWidth: 1280,
     minHeight: 800,
     useContentSize: isUiCapture,
-    show: isUiCapture,
+    show: false,
     backgroundColor: "#F3F5F8",
     webPreferences: {
       preload: join(__dirname, "../preload/index.cjs"),
@@ -39,6 +40,8 @@ function createMainWindow(): BrowserWindow {
       nodeIntegration: false,
       sandbox: true,
       webSecurity: true,
+      offscreen: isUiCapture,
+      backgroundThrottling: !isUiCapture,
     },
   });
 
@@ -52,88 +55,113 @@ function createMainWindow(): BrowserWindow {
   if (isUiCapture && screenshotPath) {
     window.webContents.once("did-finish-load", async () => {
       try {
-        const readiness = (await window.webContents.executeJavaScript(`
-        new Promise((resolve, reject) => {
-          let attempt = 0;
-          const inspect = () => {
-            const shell = document.querySelector(".app-shell");
-            const bodyText = document.body.innerText;
-            if (
-              shell &&
-              bodyText.includes("Gemini Agent") &&
-              bodyText.includes("Belum ada visual") &&
-              bodyText.includes("Belum ada track")
-            ) {
-              const rect = shell.getBoundingClientRect();
-              requestAnimationFrame(() =>
-                requestAnimationFrame(() =>
-                  resolve({
-                    shellWidth: Math.round(rect.width),
-                    shellHeight: Math.round(rect.height),
-                    textLength: bodyText.length,
-                    hasGeminiAgent: bodyText.includes("Gemini Agent"),
-                    hasPreviewEmpty: bodyText.includes("Belum ada visual"),
-                    hasTimelineEmpty: bodyText.includes("Belum ada track"),
-                  }),
-                ),
-              );
-              return;
-            }
-
-            attempt += 1;
-            if (attempt >= 100) {
-              reject(new Error("Timed out waiting for SCR-002A renderer readiness."));
-              return;
-            }
-            setTimeout(inspect, 50);
-          };
-          inspect();
-        })
-      `)) as {
-        shellWidth: number;
-        shellHeight: number;
-        textLength: number;
-        hasGeminiAgent: boolean;
-        hasPreviewEmpty: boolean;
-        hasTimelineEmpty: boolean;
-      };
-
-      window.setContentSize(1600, 1000, false);
-      window.show();
-      window.focus();
-      await new Promise((resolveDelay) => setTimeout(resolveDelay, 300));
-
-      const target = resolve(screenshotPath);
-      const evidenceTarget = target.replace(/\.png$/i, "-dom.json");
-      await mkdir(dirname(target), { recursive: true });
-
-      const screenshot = await window.webContents.capturePage({
-        x: 0,
-        y: 0,
-        width: 1600,
-        height: 1000,
-      });
-      if (screenshot.isEmpty()) {
-        throw new Error("Electron returned an empty SCR-002A screenshot.");
-      }
-
-      await writeFile(target, screenshot.toPNG());
-      await writeFile(
-        evidenceTarget,
-        JSON.stringify(
-          {
-            screen: UI_TEST_SCREEN,
-            viewport: { width: 1600, height: 1000, zoom: 1 },
-            ...readiness,
-          },
-          null,
-          2,
-        ),
-        "utf8",
-      );
-        console.log(
-          `UI screenshot PASS: ${UI_TEST_SCREEN} -> ${target}; DOM ${readiness.shellWidth}x${readiness.shellHeight}; text=${readiness.textLength}`,
+        window.setContentSize(
+          CANONICAL_VIEWPORT.width,
+          CANONICAL_VIEWPORT.height,
+          false,
         );
+        window.webContents.setZoomFactor(1);
+
+        const readiness = (await window.webContents.executeJavaScript(`
+          new Promise((resolve, reject) => {
+            let attempt = 0;
+            const inspect = () => {
+              const shell = document.querySelector(".app-shell");
+              const bodyText = document.body.innerText;
+              if (
+                shell &&
+                bodyText.includes("Gemini Agent") &&
+                bodyText.includes("Belum ada visual") &&
+                bodyText.includes("Belum ada track")
+              ) {
+                const rect = shell.getBoundingClientRect();
+                requestAnimationFrame(() =>
+                  requestAnimationFrame(() =>
+                    resolve({
+                      innerWidth: window.innerWidth,
+                      innerHeight: window.innerHeight,
+                      shellWidth: Math.round(rect.width),
+                      shellHeight: Math.round(rect.height),
+                      textLength: bodyText.length,
+                      hasGeminiAgent: bodyText.includes("Gemini Agent"),
+                      hasPreviewEmpty: bodyText.includes("Belum ada visual"),
+                      hasTimelineEmpty: bodyText.includes("Belum ada track"),
+                    }),
+                  ),
+                );
+                return;
+              }
+
+              attempt += 1;
+              if (attempt >= 100) {
+                reject(
+                  new Error("Timed out waiting for SCR-002A renderer readiness."),
+                );
+                return;
+              }
+              setTimeout(inspect, 50);
+            };
+            inspect();
+          })
+        `)) as {
+          innerWidth: number;
+          innerHeight: number;
+          shellWidth: number;
+          shellHeight: number;
+          textLength: number;
+          hasGeminiAgent: boolean;
+          hasPreviewEmpty: boolean;
+          hasTimelineEmpty: boolean;
+        };
+
+        const target = resolve(screenshotPath);
+        const evidenceTarget = target.replace(/\.png$/i, "-dom.json");
+        await mkdir(dirname(target), { recursive: true });
+
+        const screenshot = await window.webContents.capturePage();
+        if (screenshot.isEmpty()) {
+          throw new Error("Electron returned an empty SCR-002A screenshot.");
+        }
+
+        const captureSize = screenshot.getSize();
+        await writeFile(target, screenshot.toPNG());
+        await writeFile(
+          evidenceTarget,
+          JSON.stringify(
+            {
+              screen: UI_TEST_SCREEN,
+              requestedViewport: CANONICAL_VIEWPORT,
+              innerViewport: {
+                width: readiness.innerWidth,
+                height: readiness.innerHeight,
+              },
+              shell: {
+                width: readiness.shellWidth,
+                height: readiness.shellHeight,
+              },
+              capture: captureSize,
+              zoom: window.webContents.getZoomFactor(),
+              textLength: readiness.textLength,
+              hasGeminiAgent: readiness.hasGeminiAgent,
+              hasPreviewEmpty: readiness.hasPreviewEmpty,
+              hasTimelineEmpty: readiness.hasTimelineEmpty,
+            },
+            null,
+            2,
+          ),
+          "utf8",
+        );
+
+        console.log(
+          [
+            `UI screenshot PASS: ${UI_TEST_SCREEN} -> ${target}`,
+            `viewport=${readiness.innerWidth}x${readiness.innerHeight}`,
+            `shell=${readiness.shellWidth}x${readiness.shellHeight}`,
+            `capture=${captureSize.width}x${captureSize.height}`,
+            `text=${readiness.textLength}`,
+          ].join("; "),
+        );
+
         window.destroy();
         app.exit(0);
       } catch (error) {
