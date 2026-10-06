@@ -21,15 +21,15 @@
 - Evidence status: VERIFIED
 - Verdict: PASS_WITH_PROVISIONAL
 - Baseline: `49417d7fb2e10115b2a698fcf0d74be40ff1aee1`
-- Tested source SHA: `8425849ca1300a2f35fdb9490f04f4b78fbb9b7e`
+- Tested source SHA: `f83be0af076bc6dba9f1d8a8fdd2e9342ccc2998`
 - Charter: `docs/step10/SLC-010-001_SAVE_REOPEN_EMPTY_PROJECT.md`
 - Evidence: `docs/step10/evidence/SLC-010-001_REPORT.md`
-- CI run/job: `37526403614` / `112484540995` — PASS
-- SLC artifact ID: `11441669149`
-- SLC artifact digest: `sha256:4bc87fbfcf2137f7e0d643425c8028c6dbacfaea6c67ac76b6ff4e9062453bc5`
-- Real project output SHA-256: `9bd9f34be707efd9c7dea9ef8fdfd668d16cf70260490f24d6a605b5d02c133a`
-- Windows package artifact ID: `11442058480`
-- Windows portable ZIP SHA-256: `ddbb520c4f0521597261c5e963e3d535d47e50767fa22b5e9b03b6c7aef2ad38`
+- CI run/job: `37527340961` / `112487575482` — PASS
+- SLC artifact ID: `11443565012`
+- SLC artifact digest: `sha256:d73ee15ea2db48261db1db52f794eb2766dd0a4530ada5bb3cda5bfda3b8d08a`
+- Real project output SHA-256: `bf60b59804a4e5af85a3e0e6b07439d0000c5deaf400893b1f0aa6528bdae08a`
+- Windows package artifact ID: `11442836595`
+- Windows portable ZIP SHA-256: `b18dc369035eb0c1e4a5f7c8fb49b78001976ddcffca4fbc2e5fd338b49bb033`
 - Happy path: UI Save -> atomic JSON -> exit -> reopen -> same project state — PASS.
 - Negative path: save cancellation -> explicit cancelled state/no crash — PASS.
 - Corrupt JSON rejection without source modification — PASS.

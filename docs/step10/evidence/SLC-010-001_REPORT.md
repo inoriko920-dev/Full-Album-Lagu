@@ -4,11 +4,11 @@ Verdict: **PASS_WITH_PROVISIONAL**
 
 ## Identity
 - Repository: `inoriko920-dev/Full-Album-Lagu`
-- Source ref: `step10/slc-save-reopen`
-- Tested source SHA: `8425849ca1300a2f35fdb9490f04f4b78fbb9b7e`
-- Pull-request workflow SHA: `d4c5ef1b41e41a128f192edc92cf1af40801ec0b`
-- Windows CI run: `37526403614`
-- Job: `112484540995`
+- Source ref: `main`
+- Tested source SHA: `f83be0af076bc6dba9f1d8a8fdd2e9342ccc2998`
+- Workflow SHA: `f83be0af076bc6dba9f1d8a8fdd2e9342ccc2998`
+- Windows CI run: `37527340961`
+- Job: `112487575482`
 - Platform: Windows x64
 - Node: v22.23.3
 
@@ -28,7 +28,7 @@ Verdict: **PASS_WITH_PROVISIONAL**
 
 Real project output:
 - bytes: 138
-- SHA-256: `9bd9f34be707efd9c7dea9ef8fdfd668d16cf70260490f24d6a605b5d02c133a`
+- SHA-256: `bf60b59804a4e5af85a3e0e6b07439d0000c5deaf400893b1f0aa6528bdae08a`
 
 ## Negative path
 Representative failure path: **SAVE_CANCELLED**.
@@ -61,12 +61,12 @@ Additional integration negative path:
 
 ## Artifacts
 - SLC evidence: `Lagu-Full-Album-S10-SLC-010-001-Evidence`
-  - ID: `11441669149`
-  - digest: `sha256:4bc87fbfcf2137f7e0d643425c8028c6dbacfaea6c67ac76b6ff4e9062453bc5`
+  - ID: `11443565012`
+  - digest: `sha256:d73ee15ea2db48261db1db52f794eb2766dd0a4530ada5bb3cda5bfda3b8d08a`
   - contains `SLC_REPORT.md`, `TEST_SUMMARY.json`, `BUILD_MANIFEST.json`, `KNOWN_LIMITATIONS.md`, save/reopen/cancel renderer JSON, three real Electron screenshots, sanitized step log, and the real project output.
-- S09 visual-regression artifact: ID `11442373095`.
-- Windows portable artifact: ID `11442058480`.
-- Windows portable ZIP SHA-256: `ddbb520c4f0521597261c5e963e3d535d47e50767fa22b5e9b03b6c7aef2ad38`.
+- S09 visual-regression artifact: ID `11442418404`.
+- Windows portable artifact: ID `11442836595`.
+- Windows portable ZIP SHA-256: `b18dc369035eb0c1e4a5f7c8fb49b78001976ddcffca4fbc2e5fd338b49bb033`.
 
 ## Provisional
 The native Windows save dialog is production code but its mouse/keyboard interaction is not automated on the hosted runner. The E2E injects the deterministic selected path at composition time while still exercising the same UI Save intent, typed IPC, application use case and real filesystem adapter. This is explicitly retained as provisional and does not block the next feature-wave planning step.

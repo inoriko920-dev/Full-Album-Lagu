@@ -9,9 +9,9 @@ Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 ## Proven SLC
 - SLC-ID: `SLC-010-001`
 - Name: Save & Reopen Empty Project
-- Tested source SHA: `8425849ca1300a2f35fdb9490f04f4b78fbb9b7e`
-- PR verification run/job: `37526403614` / `112484540995`
-- SLC artifact ID: `11441669149`
+- Tested source SHA: `f83be0af076bc6dba9f1d8a8fdd2e9342ccc2998`
+- Final main verification run/job: `37527340961` / `112487575482`
+- SLC artifact ID: `11443565012`
 - Evidence: `docs/step10/evidence/SLC-010-001_REPORT.md`
 
 ## Architecture confirmed
