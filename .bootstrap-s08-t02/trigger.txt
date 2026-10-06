@@ -1,3 +1,0 @@
-S08-T02 foundation bootstrap. Remove this transport file after the workflow commits the verified exact lockfile.
-Retry 2: TypeScript pinned to latest 6.0.x compatible with typescript-eslint.
-Retry 3: add Vite CSS side-effect import declarations.

@@ -14,8 +14,8 @@ function createMainWindow(): BrowserWindow {
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
-      webSecurity: true
-    }
+      webSecurity: true,
+    },
   });
 
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));

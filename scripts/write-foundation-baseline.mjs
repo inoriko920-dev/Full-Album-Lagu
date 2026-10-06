@@ -4,16 +4,19 @@ import { join } from "node:path";
 const packageJson = JSON.parse(await readFile("package.json", "utf8"));
 const names = [
   ...Object.keys(packageJson.dependencies ?? {}),
-  ...Object.keys(packageJson.devDependencies ?? {})
+  ...Object.keys(packageJson.devDependencies ?? {}),
 ].sort();
 
 const rows = [];
 for (const name of names) {
-  const metadata = JSON.parse(await readFile(join("node_modules", name, "package.json"), "utf8"));
+  const metadata = JSON.parse(
+    await readFile(join("node_modules", name, "package.json"), "utf8"),
+  );
   rows.push({
     name,
     version: metadata.version,
-    license: typeof metadata.license === "string" ? metadata.license : "SEE_PACKAGE"
+    license:
+      typeof metadata.license === "string" ? metadata.license : "SEE_PACKAGE",
   });
 }
 
@@ -31,8 +34,8 @@ await writeFile(
     "",
     ...rows.map((row) => `- \`${row.name}@${row.version}\` — ${row.license}`),
     "",
-    "Changing the Electron/React/TypeScript pillar or introducing a new framework requires ASTRA review. Normal patch/security updates still require the full foundation gate."
-  ].join("\n") + "\n"
+    "Changing the Electron/React/TypeScript pillar or introducing a new framework requires ASTRA review. Normal patch/security updates still require the full foundation gate.",
+  ].join("\n") + "\n",
 );
 
 await writeFile(
@@ -44,7 +47,9 @@ await writeFile(
     "",
     "| Package | Version | Declared license |",
     "| --- | --- | --- |",
-    ...rows.map((row) => `| \`${row.name}\` | \`${row.version}\` | ${row.license} |`),
-    ""
-  ].join("\n")
+    ...rows.map(
+      (row) => `| \`${row.name}\` | \`${row.version}\` | ${row.license} |`,
+    ),
+    "",
+  ].join("\n"),
 );

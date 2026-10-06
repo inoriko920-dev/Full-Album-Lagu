@@ -2,8 +2,23 @@ import { readFile, readdir } from "node:fs/promises";
 import { extname, join } from "node:path";
 
 const roots = ["src", "tests", "scripts", "resources"];
-const rootFiles = ["package.json", "vite.config.ts", "eslint.config.js", "electron-builder.yml"];
-const allowedExt = new Set([".ts", ".tsx", ".js", ".mjs", ".json", ".yml", ".yaml", ".md", ".css"]);
+const rootFiles = [
+  "package.json",
+  "vite.config.ts",
+  "eslint.config.js",
+  "electron-builder.yml",
+];
+const allowedExt = new Set([
+  ".ts",
+  ".tsx",
+  ".js",
+  ".mjs",
+  ".json",
+  ".yml",
+  ".yaml",
+  ".md",
+  ".css",
+]);
 
 async function collect(path) {
   const entries = await readdir(path, { withFileTypes: true }).catch(() => []);
@@ -21,7 +36,10 @@ for (const root of roots) files.push(...(await collect(root)));
 files.push(...rootFiles);
 
 const googleKey = new RegExp(["AI", "za", "[0-9A-Za-z_-]{30,}"].join(""), "g");
-const privateKeyHeader = new RegExp(["BEGIN", " PRIVATE", " KEY"].join(""), "g");
+const privateKeyHeader = new RegExp(
+  ["BEGIN", " PRIVATE", " KEY"].join(""),
+  "g",
+);
 const findings = [];
 
 for (const file of files) {

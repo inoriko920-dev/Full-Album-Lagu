@@ -31,9 +31,24 @@ export function FoundationApp() {
           product features intentionally begin in later Software Factory steps.
         </p>
         <dl>
-          <div><dt>Phase</dt><dd>{info?.phase ?? "loading"}</dd></div>
-          <div><dt>Runtime</dt><dd>{info ? `${info.platform} / ${info.arch}` : error ? "unavailable" : "loading"}</dd></div>
-          <div><dt>Node integration</dt><dd>disabled</dd></div>
+          <div>
+            <dt>Phase</dt>
+            <dd>{info?.phase ?? "loading"}</dd>
+          </div>
+          <div>
+            <dt>Runtime</dt>
+            <dd>
+              {info
+                ? `${info.platform} / ${info.arch}`
+                : error
+                  ? "unavailable"
+                  : "loading"}
+            </dd>
+          </div>
+          <div>
+            <dt>Node integration</dt>
+            <dd>disabled</dd>
+          </div>
         </dl>
       </section>
     </main>

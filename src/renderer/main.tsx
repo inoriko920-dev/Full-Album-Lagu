@@ -8,5 +8,5 @@ if (!rootElement) throw new Error("Renderer root element is missing.");
 createRoot(rootElement).render(
   <StrictMode>
     <FoundationApp />
-  </StrictMode>
+  </StrictMode>,
 );

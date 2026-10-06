@@ -14,16 +14,28 @@ async function walk(path) {
 }
 await walk(root);
 
-const importPattern = /(?:import|export)\s+(?:[^"'()]*?\s+from\s+)?["']([^"']+)["']/g;
+const importPattern =
+  /(?:import|export)\s+(?:[^"'()]*?\s+from\s+)?["']([^"']+)["']/g;
 const violations = [];
 const graph = new Map();
-const repoPath = (file) => normalize(relative(process.cwd(), file)).replaceAll("\\", "/");
+const repoPath = (file) =>
+  normalize(relative(process.cwd(), file)).replaceAll("\\", "/");
 
 function resolveRelative(fromFile, specifier) {
   if (!specifier.startsWith(".")) return null;
   const base = resolve(fromFile, "..", specifier);
-  const candidates = [base, `${base}.ts`, `${base}.tsx`, join(base, "index.ts"), join(base, "index.tsx")];
-  return candidates.find((candidate) => files.some((known) => normalize(known) === normalize(candidate))) ?? null;
+  const candidates = [
+    base,
+    `${base}.ts`,
+    `${base}.tsx`,
+    join(base, "index.ts"),
+    join(base, "index.tsx"),
+  ];
+  return (
+    candidates.find((candidate) =>
+      files.some((known) => normalize(known) === normalize(candidate)),
+    ) ?? null
+  );
 }
 
 for (const file of files) {
@@ -37,29 +49,56 @@ for (const file of files) {
     const target = resolveRelative(file, specifier);
     if (target) deps.push(target);
 
-    if (path.startsWith("src/renderer/") &&
-        (specifier === "electron" || specifier.startsWith("node:") || specifier.startsWith("@google/genai") ||
-         (target && repoPath(target).startsWith("src/main/")))) {
+    if (
+      path.startsWith("src/renderer/") &&
+      (specifier === "electron" ||
+        specifier.startsWith("node:") ||
+        specifier.startsWith("@google/genai") ||
+        (target && repoPath(target).startsWith("src/main/")))
+    ) {
       violations.push(`${path}: renderer forbidden import ${specifier}`);
     }
 
-    if (path.startsWith("src/core/domain/") &&
-        (specifier === "react" || specifier === "electron" || specifier.startsWith("node:") ||
-         specifier.startsWith("@google/genai") ||
-         (target && (repoPath(target).startsWith("src/main/") || repoPath(target).startsWith("src/renderer/"))))) {
+    if (
+      path.startsWith("src/core/domain/") &&
+      (specifier === "react" ||
+        specifier === "electron" ||
+        specifier.startsWith("node:") ||
+        specifier.startsWith("@google/genai") ||
+        (target &&
+          (repoPath(target).startsWith("src/main/") ||
+            repoPath(target).startsWith("src/renderer/"))))
+    ) {
       violations.push(`${path}: domain forbidden import ${specifier}`);
     }
 
-    if (path.startsWith("src/main/infrastructure/") && target && repoPath(target).startsWith("src/renderer/")) {
-      violations.push(`${path}: infrastructure cannot import renderer ${specifier}`);
+    if (
+      path.startsWith("src/main/infrastructure/") &&
+      target &&
+      repoPath(target).startsWith("src/renderer/")
+    ) {
+      violations.push(
+        `${path}: infrastructure cannot import renderer ${specifier}`,
+      );
     }
 
-    if (path.startsWith("src/preload/") && target && repoPath(target).startsWith("src/main/infrastructure/")) {
-      violations.push(`${path}: preload cannot import main infrastructure ${specifier}`);
+    if (
+      path.startsWith("src/preload/") &&
+      target &&
+      repoPath(target).startsWith("src/main/infrastructure/")
+    ) {
+      violations.push(
+        `${path}: preload cannot import main infrastructure ${specifier}`,
+      );
     }
 
-    if (specifier === "node:child_process" && !path.startsWith("src/main/infrastructure/tools/")) {
-      violations.push(`${path}: child_process belongs to ToolProcessGateway owner`);
+    if (
+      specifier === "node:child_process" &&
+      !path.startsWith("src/main/infrastructure/tools/")
+    ) {
+      violations.push(
+        `${path}: child_process belongs to ToolProcessGateway owner`,
+      );
     }
   }
   graph.set(file, deps);
@@ -70,7 +109,9 @@ const visited = new Set();
 function visit(file, stack) {
   if (visiting.has(file)) {
     const cycleStart = stack.indexOf(file);
-    violations.push(`circular dependency: ${[...stack.slice(cycleStart), file].map(repoPath).join(" -> ")}`);
+    violations.push(
+      `circular dependency: ${[...stack.slice(cycleStart), file].map(repoPath).join(" -> ")}`,
+    );
     return;
   }
   if (visited.has(file)) return;

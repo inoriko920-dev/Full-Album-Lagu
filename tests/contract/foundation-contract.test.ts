@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   FOUNDATION_INFO_CHANNEL,
-  foundationInfoSchema
+  foundationInfoSchema,
 } from "../../src/core/contracts/foundation-info";
 
 describe("foundation IPC contract", () => {
@@ -10,6 +10,12 @@ describe("foundation IPC contract", () => {
   });
 
   it("rejects a payload outside the foundation phase", () => {
-    expect(foundationInfoSchema.safeParse({ platform: "win32", arch: "x64", phase: "product" }).success).toBe(false);
+    expect(
+      foundationInfoSchema.safeParse({
+        platform: "win32",
+        arch: "x64",
+        phase: "product",
+      }).success,
+    ).toBe(false);
   });
 });

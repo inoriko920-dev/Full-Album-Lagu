@@ -1,7 +1,7 @@
 import { ipcMain } from "electron";
 import {
   FOUNDATION_INFO_CHANNEL,
-  foundationInfoSchema
+  foundationInfoSchema,
 } from "../../core/contracts/foundation-info";
 
 export function registerIpcHandlers(): void {
@@ -9,7 +9,7 @@ export function registerIpcHandlers(): void {
     foundationInfoSchema.parse({
       platform: process.platform,
       arch: process.arch,
-      phase: "foundation"
-    })
+      phase: "foundation",
+    }),
   );
 }

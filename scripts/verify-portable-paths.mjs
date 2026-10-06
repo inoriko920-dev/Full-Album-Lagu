@@ -3,7 +3,16 @@ import { extname, join } from "node:path";
 
 const roots = ["src", "resources"];
 const rootFiles = ["vite.config.ts", "electron-builder.yml"];
-const allowedExt = new Set([".ts", ".tsx", ".js", ".mjs", ".json", ".yml", ".yaml", ".css"]);
+const allowedExt = new Set([
+  ".ts",
+  ".tsx",
+  ".js",
+  ".mjs",
+  ".json",
+  ".yml",
+  ".yaml",
+  ".css",
+]);
 const drivePattern = new RegExp(String.raw`\b[A-Za-z]:[\\/]`);
 const userHomePattern = new RegExp(String.raw`(?:/Users/|/home/)[^\s"'\x60]+`);
 const findings = [];
@@ -25,7 +34,8 @@ files.push(...rootFiles);
 
 for (const file of files) {
   const text = await readFile(file, "utf8");
-  if (drivePattern.test(text) || userHomePattern.test(text)) findings.push(file);
+  if (drivePattern.test(text) || userHomePattern.test(text))
+    findings.push(file);
 }
 
 if (findings.length > 0) {

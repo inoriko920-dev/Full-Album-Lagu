@@ -6,6 +6,6 @@ export default defineConfig({
   build: {
     outDir: "dist/renderer",
     emptyOutDir: false,
-    sourcemap: true
-  }
+    sourcemap: true,
+  },
 });
