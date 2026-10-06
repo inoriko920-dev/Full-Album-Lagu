@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "freezeId": "LFA-UI-FREEZE-v1.0",
+  "status": "FROZEN",
+  "freezeDocument": {
+    "path": "docs/source-of-truth/planning/current/07_STEP_05_UI_FREEZE_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx",
+    "gitBlobSha": "2c23871bf1d16299e63db33d112d91e02506b7e6"
+  },
+  "referencePackId": "LFA-UI-REFERENCE-v1.1",
+  "lockedShellFacts": [
+    "Left rail: Media | Layer | Inspector",
+    "Center: Preview",
+    "Permanent right rail: Gemini Agent",
+    "Bottom: Album Timeline",
+    "UI language: Bahasa Indonesia"
+  ],
+  "implementationRule": "STEP 09 must implement from this frozen pack and must not redesign silently."
+}

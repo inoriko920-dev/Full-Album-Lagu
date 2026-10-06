@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "packId": "LFA-UI-REFERENCE-v1.1",
+  "status": "FROZEN",
+  "promptPack": {
+    "path": "docs/source-of-truth/planning/current/05_STEP_04_UI_DESIGN_SYSTEM_PROMPT_PACK_LAGU_FULL_ALBUM_v1_1_REVISED_GEMINI_AGENT_REPO_COMPACT.docx",
+    "gitBlobSha": "76e43bf121d2ec2ecdbe007ae0fa43e05e2748c9"
+  },
+  "visualReference": {
+    "path": "docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx",
+    "gitBlobSha": "39ba5ef29d92cfe4d8759ad317a0cdaa911de981",
+    "approvedVisualStateCount": 29
+  },
+  "sourceManifest": {
+    "path": "docs/source-of-truth/SOURCE_OF_TRUTH_MANIFEST.md",
+    "gitBlobSha": "7a9be2de4029f0a8162956b0a207b5124925ccd2"
+  },
+  "authority": "Visual layout, hierarchy, and state come from the final UI reference; canonical behavior and copy remain governed by current product/planning and UI Freeze."
+}
