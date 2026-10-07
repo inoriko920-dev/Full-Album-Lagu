@@ -24,6 +24,7 @@ import {
   createTrackSetEnabledCommand,
 } from "../../../core/application/services/project-track-commands";
 import type { ArtworkBindingTarget } from "../../../core/contracts/artwork-intake";
+import type { ArtworkImportResult } from "../../../core/contracts/artwork-intake";
 import type { ProjectLocation } from "../../../core/contracts/project-lifecycle";
 import type {
   MediaBatchSummary,
@@ -446,6 +447,24 @@ export function useProjectSession(): ProjectSessionView {
     [history, publishHistorySnapshot, syncMediaProjection],
   );
 
+  const autoArrangeAlbum = useCallback((): AutoArrangeUiResult => {
+    const before = history.snapshot();
+
+    try {
+      const plan = createAutoArrangePlan(before.project, before.stateToken);
+      const result = history.executeBatch(createAutoArrangeCommandBatch(plan));
+
+      if (result.status === "rejected") return "rejected";
+      if (result.status === "noop") return "noop";
+
+      const snapshot = publishHistorySnapshot();
+      syncMediaProjection(snapshot.project);
+      return "applied";
+    } catch {
+      return "rejected";
+    }
+  }, [history, publishHistorySnapshot, syncMediaProjection]);
+
   const selectedTrackProjection = useCallback(
     (trackId: string | null): SelectedTrackProjection =>
       resolveSelectedTrackProjection(projectRef.current, trackId),
@@ -477,6 +496,20 @@ export function useProjectSession(): ProjectSessionView {
     [history, publishHistorySnapshot],
   );
 
+  const applyTrackMetadataDraft = useCallback(
+    (draft: TrackMetadataDraft): boolean => {
+      try {
+        return applyTrackMetadataOverrides(
+          draft.trackId,
+          overridesFromTrackMetadataDraft(draft),
+        );
+      } catch {
+        return false;
+      }
+    },
+    [applyTrackMetadataOverrides],
+  );
+
   const clearTrackMetadataOverrides = useCallback(
     (
       trackId: string,
@@ -497,6 +530,82 @@ export function useProjectSession(): ProjectSessionView {
       return result.status === "applied";
     },
     [history, publishHistorySnapshot],
+  );
+
+  const importTrackArtwork = useCallback(
+    async (trackId: string): Promise<ArtworkImportResult> => {
+      const before = history.snapshot();
+      let result: ArtworkImportResult;
+
+      try {
+        result = await window.lfa.importArtwork({
+          project: before.project,
+          target: { kind: "track", trackId },
+        });
+      } catch {
+        return {
+          status: "error",
+          code: "MEDIA_PROBE_FAILED",
+          message: "Artwork tidak dapat diproses dengan aman.",
+        };
+      }
+
+      if (result.status !== "imported") return result;
+
+      const current = history.snapshot();
+      if (
+        current.project.revision !== before.project.revision ||
+        current.stateToken !== before.stateToken
+      ) {
+        return {
+          status: "error",
+          code: "MEDIA_PROBE_FAILED",
+          message:
+            "Proyek berubah saat artwork dipilih. Pilih artwork kembali agar perubahan tidak tertimpa.",
+        };
+      }
+
+      const committed = history.commitExternalProject({
+        kind: "artwork.import-bind",
+        label: `Impor dan pasang artwork track ${trackId}`,
+        origin: "manual",
+        project: result.project,
+      });
+
+      if (committed.status !== "applied") {
+        return {
+          status: "error",
+          code: "MEDIA_PROBE_FAILED",
+          message: "Artwork tidak dapat diterapkan ke proyek dengan aman.",
+        };
+      }
+
+      const snapshot = publishHistorySnapshot();
+      syncMediaProjection(snapshot.project);
+      return { ...result, project: snapshot.project };
+    },
+    [history, publishHistorySnapshot, syncMediaProjection],
+  );
+
+  const clearTrackArtwork = useCallback(
+    (trackId: string): boolean => {
+      const before = history.snapshot();
+      const result = history.execute(
+        createSetTrackArtworkCommand({
+          trackId,
+          expectedBaseRevision: before.project.revision,
+          expectedStateToken: before.stateToken,
+        }),
+      );
+
+      if (result.status === "rejected") return false;
+      if (result.status === "applied") {
+        const snapshot = publishHistorySnapshot();
+        syncMediaProjection(snapshot.project);
+      }
+      return result.status === "applied";
+    },
+    [history, publishHistorySnapshot, syncMediaProjection],
   );
 
   const applyTrackMetadataDraft = useCallback(
