@@ -3,10 +3,10 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: ASTRA
+- Active role at current checkpoint: SOL
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 planning/implementation COMPLETE; W11-02 ASTRA planning = PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 implementation not started
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 T11-W02-01 COMPLETE / PASS
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-01 Project Lifecycle & Recovery Core`
@@ -27,6 +27,7 @@
   - `T11-W01-03 Dirty State & Autosave Recovery Store` — PASS
   - `T11-W01-04 Frozen UI States + Recovery UX Wiring` — PASS
   - `T11-W01-05 Wave E2E, Drift Review & Evidence Pack` — PASS
+  - `T11-W02-01 Media Domain, Contracts & Project Compatibility` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -44,13 +45,25 @@
 - T11-W01-05 canonical CI job: `112651361529`
 - W11-01 closure evidence: `docs/step11/evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`
 - W11-01 drift review: `docs/step11/evidence/W11_01_ARCHITECTURE_DRIFT_REVIEW.md`
-- Next READY implementation task after this planning package merges: `T11-W02-01 Media Domain, Contracts & Project Compatibility` — SOL
+- T11-W02-01 verified implementation head: `bc63f368af86d9c6f418a683b7fee47d4093a4df`
+- T11-W02-01 Windows CI: `37586453731` — PASS
+- T11-W02-01 CI job: `112677579172`
+- T11-W02-01 evidence: `docs/step11/evidence/T11_W02_01_MEDIA_DOMAIN_CONTRACTS_EVIDENCE.md`
+- Next READY implementation task: `T11-W02-02 Picker/Drop Discovery, Batch Queue, Progress & Cancel` — SOL
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — W11-02 ASTRA PLANNING COMPLETE.** FTR-003 + FTR-016 + FTR-018 are mapped into an explicit media-intake/relink charter, 18 acceptance criteria, 6 sequential SOL task cards, architecture ownership, dependency decision, performance/cancellation policy, frozen UI authority, and test/evidence gates. No media feature code was introduced during planning.
+**PASS — T11-W02-01 MEDIA DOMAIN, CONTRACTS & PROJECT COMPATIBILITY VERIFIED.** Schema version remains 1; legacy W11-01 projects round-trip through the real JsonProjectStore unchanged; additive mediaAssets/audioAssetId round-trip without a version bump; typed path-free public media/relink contracts and narrow internal source/probe ports are established; required unavailable media produces sanitized readiness blockers. No renderer filesystem capability or new runtime dependency was introduced.
+
+## T11-W02-01 verification
+- Verified implementation head: `bc63f368af86d9c6f418a683b7fee47d4093a4df`.
+- Windows CI run: `37586453731` — PASS.
+- CI job: `112677579172`.
+- Full verify + runtime audit + STEP 10 SLC + W11-01 lifecycle/recovery + frozen visual + Windows package/smoke/ZIP: PASS.
+- Evidence: `docs/step11/evidence/T11_W02_01_MEDIA_DOMAIN_CONTRACTS_EVIDENCE.md`.
+- T11-W02-02 is now READY; later W11-02 tasks remain blocked.
 
 ## W11-02 planning decisions
 - One canonical Media Intake pipeline for picker, drag-drop file and drag-drop folder.
@@ -73,4 +86,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: execute **T11-W02-01 Media Domain, Contracts & Project Compatibility only** as SOL. Do not start T11-W02-02 in the same turn.
+After the user says `lanjutkan`: execute **T11-W02-02 Picker/Drop Discovery, Batch Queue, Progress & Cancel only** as SOL. Do not start T11-W02-03 in the same turn.
