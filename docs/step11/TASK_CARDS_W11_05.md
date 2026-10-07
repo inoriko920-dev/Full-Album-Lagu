@@ -39,7 +39,7 @@ Serial implementation only.
 - Evidence:
   - `docs/step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`
 - Exit gate: **PASS / VERIFIED**.
-- Dependency unlock: **T11-W05-02 READY**. T11-W05-03..07 remain BLOCKED.
+- Historical dependency result at W05-01 closure: W05-02 was unlocked. Current checkpoint: **T11-W05-02 PASS / VERIFIED; T11-W05-03 READY**; T11-W05-04..07 remain BLOCKED.
 ## T11-W05-02 — Manual Layer Commands + Gesture/History Semantics
 - Owner: SOL
 - Priority: P0
