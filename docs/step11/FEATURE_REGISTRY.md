@@ -3,7 +3,7 @@
 Planning role: **ASTRA**  
 Planning baseline analyzed: `main@da5b6786d0daa472c474a33ffd83a5834af24f82`  
 Status: **NORMALIZED / W11-01 COMPLETE; W11-02 IN PROGRESS**  
-Implementation status: **W11-01 COMPLETE / PASS; W11-02 T11-W02-01/02/03 PASS; T11-W02-04 READY**
+Implementation status: **W11-01 COMPLETE / PASS; W11-02 T11-W02-01..04 PASS; T11-W02-05 READY**
 
 The complete planning authority is the companion DOCX:
 `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
@@ -25,7 +25,7 @@ The complete planning authority is the companion DOCX:
 | FTR-013 | Unified Command History / Undo-Redo | F-012; FR-034..035 | MUST | project state contracts | PLANNED W11-03 |
 | FTR-014 | Gemini Agent + AI Risk/Plan Policy | F-013/F-014; FR-036..041 | MUST | FTR-013,FTR-015 | DEFER STEP 12 |
 | FTR-015 | Gemini Credential Vault & Failover | F-015/F-016; FR-042..047 | MUST | OS secure storage / provider | DEFER STEP 12 |
-| FTR-016 | Missing Media Detection & Relink | F-017; FR-049..050 | MUST | FTR-003 | READY W11-02 |
+| FTR-016 | Missing Media Detection & Relink | F-017; FR-049..050 | MUST | FTR-003 | CORE VERIFIED W11-02; UI NEXT |
 | FTR-017 | MP4 Render & Preflight | F-018; FR-051..054 | MUST | most visual/media capabilities + STEP 12 tool integration | PLANNED W11-08 |
 | FTR-018 | Error/Diagnostics/Offline Cross-Cutting | F-019/F-020; FR-048,055..056 | MUST | all waves | W11-01 PASS / W11-02 READY CROSS-CUT |
 | FTR-019 | Background Video | F-021; FR-057 | SHOULD | media/render capability | CONDITIONAL |
@@ -53,5 +53,6 @@ The complete planning authority is the companion DOCX:
 - T11-W02-01 media domain/contracts/project compatibility: PASS / VERIFIED.
 - T11-W02-02 picker/drop discovery, bounded queue/progress/cancel: PASS / VERIFIED.
 - T11-W02-03 audio probe/validation/metadata/deterministic initial order: PASS / VERIFIED.
+- T11-W02-04 missing-media scan + deterministic relink core: PASS / VERIFIED.
 - W11-02 planning authority: `WAVE_11_02_CHARTER.md`, `TASK_CARDS_W11_02.md`, `W11_02_ACCEPTANCE_MATRIX.md` and source-of-truth planning DOCX.
-- Next implementation task: T11-W02-04 only.
+- Next implementation task: T11-W02-05 only.
