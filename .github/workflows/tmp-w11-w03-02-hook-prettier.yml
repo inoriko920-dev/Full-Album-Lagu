@@ -1,0 +1,35 @@
+name: Temporary W11-03-02 Hook Prettier
+
+on:
+  push:
+    branches:
+      - sol/t11-w03-02-session-checkpoint
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: ${{ !contains(github.event.head_commit.message, '[hook-prettier]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: sol/t11-w03-02-session-checkpoint
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --write src/renderer/state/project-session/use-project-session.ts
+      - name: Commit exact hook formatting
+        shell: bash
+        run: |
+          if git diff --quiet -- src/renderer/state/project-session/use-project-session.ts; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/renderer/state/project-session/use-project-session.ts
+          git commit -m "chore: format session hook [hook-prettier]"
+          git push origin HEAD:sol/t11-w03-02-session-checkpoint
