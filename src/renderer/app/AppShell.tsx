@@ -1,4 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  isProjectTrackEnabled,
+  projectAlbumTimeline,
+} from "../../core/domain/album-timeline";
 import { useProjectSession } from "../state/project-session/use-project-session";
 import { AppIcon } from "../ui/AppIcon";
 import { ActionButton, IconButton } from "../ui/controls";
@@ -14,10 +18,22 @@ const WORK_RAIL_TABS: Array<{ id: WorkRailTab; label: string }> = [
 
 const FIXTURE_VERSION = "S10-SLC-010-001-SCR-002A-v1";
 
+function formatTimelineTime(milliseconds: number | undefined): string {
+  if (milliseconds === undefined) return "--:--";
+  const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+}
+
 function MediaPanel({
   projectSession,
+  selectedTrackId,
+  onSelectTrack,
 }: {
   projectSession: ReturnType<typeof useProjectSession>;
+  selectedTrackId: string | null;
+  onSelectTrack: (trackId: string) => void;
 }) {
   const tracks = projectSession.project.tracks;
   const busy = ["selecting", "discovering", "probing", "committing"].includes(
@@ -171,41 +187,105 @@ function MediaPanel({
             asset?.availability === "missing" ||
             asset?.availability === "invalid" ||
             asset?.availability === "unsupported";
+          const enabled = isProjectTrackEnabled(track);
+          const selected = selectedTrackId === track.id;
+          const status = !enabled
+            ? "Nonaktif"
+            : asset?.availability === "missing"
+              ? "File tidak ditemukan"
+              : asset?.availability === "invalid"
+                ? "File perlu diperiksa"
+                : asset?.availability === "unsupported"
+                  ? "Format tidak didukung"
+                  : (asset?.metadata?.artist ?? "Audio siap");
 
           return (
             <article
-              className={`media-row${needsRelink ? " media-row--attention" : ""}`}
+              className={[
+                "media-row",
+                needsRelink ? "media-row--attention" : "",
+                selected ? "is-selected" : "",
+                !enabled ? "media-row--disabled" : "",
+              ]
+                .filter(Boolean)
+                .join(" ")}
+              data-media-track-id={track.id}
               key={track.id}
             >
-              <span className="media-row__index">
-                {String(index + 1).padStart(2, "0")}
-              </span>
-              <span className="media-row__icon">
-                <AppIcon name="music" size={16} />
-              </span>
-              <span className="media-row__copy">
-                <strong>{track.title}</strong>
-                <small>
-                  {asset?.availability === "missing"
-                    ? "File tidak ditemukan"
-                    : asset?.availability === "invalid"
-                      ? "File perlu diperiksa"
-                      : asset?.availability === "unsupported"
-                        ? "Format tidak didukung"
-                        : (asset?.metadata?.artist ?? "Audio siap")}
-                </small>
-              </span>
-              {needsRelink && track.audioAssetId ? (
-                <ActionButton
-                  variant="secondary"
-                  label="Relink"
-                  compact
-                  disabled={projectSession.relinkActionState === "working"}
-                  onClick={() =>
-                    void projectSession.relinkMediaAsset(track.audioAssetId!)
-                  }
-                />
-              ) : null}
+              <button
+                className="media-row__main"
+                type="button"
+                aria-pressed={selected}
+                onClick={() => onSelectTrack(track.id)}
+              >
+                <span className="media-row__index">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="media-row__icon">
+                  <AppIcon name="music" size={16} />
+                </span>
+                <span className="media-row__copy">
+                  <strong>{track.title}</strong>
+                  <small>{status}</small>
+                </span>
+              </button>
+
+              <div className="media-row__controls">
+                <label
+                  className="track-enabled-toggle"
+                  title={enabled ? "Nonaktifkan track" : "Aktifkan track"}
+                >
+                  <input
+                    type="checkbox"
+                    checked={enabled}
+                    aria-label={`Aktifkan track ${track.title}`}
+                    onChange={(event) =>
+                      projectSession.setTrackEnabled(
+                        track.id,
+                        event.currentTarget.checked,
+                      )
+                    }
+                  />
+                  <span>{enabled ? "Aktif" : "Nonaktif"}</span>
+                </label>
+
+                <div className="track-order-controls" aria-label="Urutan track">
+                  <button
+                    className="track-order-button"
+                    type="button"
+                    aria-label={`Pindahkan ${track.title} ke atas`}
+                    disabled={index === 0}
+                    onClick={() =>
+                      projectSession.reorderTrack(track.id, index - 1)
+                    }
+                  >
+                    ↑
+                  </button>
+                  <button
+                    className="track-order-button"
+                    type="button"
+                    aria-label={`Pindahkan ${track.title} ke bawah`}
+                    disabled={index === tracks.length - 1}
+                    onClick={() =>
+                      projectSession.reorderTrack(track.id, index + 1)
+                    }
+                  >
+                    ↓
+                  </button>
+                </div>
+
+                {needsRelink && track.audioAssetId ? (
+                  <ActionButton
+                    variant="secondary"
+                    label="Relink"
+                    compact
+                    disabled={projectSession.relinkActionState === "working"}
+                    onClick={() =>
+                      void projectSession.relinkMediaAsset(track.audioAssetId!)
+                    }
+                  />
+                ) : null}
+              </div>
             </article>
           );
         })}
@@ -258,10 +338,14 @@ function WorkRail({
   activeTab,
   onTabChange,
   projectSession,
+  selectedTrackId,
+  onSelectTrack,
 }: {
   activeTab: WorkRailTab;
   onTabChange: (tab: WorkRailTab) => void;
   projectSession: ReturnType<typeof useProjectSession>;
+  selectedTrackId: string | null;
+  onSelectTrack: (trackId: string) => void;
 }) {
   return (
     <aside className="work-rail" aria-label="Panel kerja manual">
@@ -287,7 +371,11 @@ function WorkRail({
         aria-labelledby={`work-tab-${activeTab}`}
       >
         {activeTab === "media" ? (
-          <MediaPanel projectSession={projectSession} />
+          <MediaPanel
+            projectSession={projectSession}
+            selectedTrackId={selectedTrackId}
+            onSelectTrack={onSelectTrack}
+          />
         ) : null}
         {activeTab === "layer" ? <LayerPanel /> : null}
         {activeTab === "inspector" ? <InspectorPanel /> : null}
@@ -400,24 +488,50 @@ function GeminiRail() {
 
 function TimelinePanel({
   projectSession,
+  selectedTrackId,
+  onSelectTrack,
+  zoom,
+  onZoomChange,
 }: {
   projectSession: ReturnType<typeof useProjectSession>;
+  selectedTrackId: string | null;
+  onSelectTrack: (trackId: string) => void;
+  zoom: number;
+  onZoomChange: (zoom: number) => void;
 }) {
   const tracks = projectSession.project.tracks;
+  const projection = projectAlbumTimeline(projectSession.project);
+  const trackWidth = Math.round((150 * zoom) / 100);
 
   return (
-    <section className="timeline-panel" aria-label="Album Timeline">
+    <section
+      className="timeline-panel"
+      aria-label="Album Timeline"
+      data-timeline-zoom={zoom}
+    >
       <div className="timeline-header">
         <div className="timeline-title">
           <AppIcon name="timeline" size={17} />
           <strong>Album Timeline</strong>
         </div>
         <div className="timeline-tools" aria-label="Alat timeline">
-          <button className="text-tool" type="button" disabled>
+          <button
+            className="text-tool"
+            type="button"
+            aria-label="Perkecil timeline"
+            disabled={tracks.length === 0 || zoom <= 75}
+            onClick={() => onZoomChange(Math.max(75, zoom - 25))}
+          >
             −
           </button>
-          <span>100%</span>
-          <button className="text-tool" type="button" disabled>
+          <span>{zoom}%</span>
+          <button
+            className="text-tool"
+            type="button"
+            aria-label="Perbesar timeline"
+            disabled={tracks.length === 0 || zoom >= 150}
+            onClick={() => onZoomChange(Math.min(150, zoom + 25))}
+          >
             +
           </button>
         </div>
@@ -445,17 +559,49 @@ function TimelinePanel({
         ) : (
           <div className="timeline-track-strip" aria-label="Track album">
             {tracks.map((track, index) => {
+              const item = projection.items[index];
               const asset = projectSession.project.mediaAssets?.find(
-                (item) => item.id === track.audioAssetId,
+                (candidate) => candidate.id === track.audioAssetId,
               );
+              const enabled = isProjectTrackEnabled(track);
+              const selected = selectedTrackId === track.id;
+              const timingLabel =
+                item?.status === "resolved"
+                  ? `${formatTimelineTime(item.startMs)} – ${formatTimelineTime(item.endMs)}`
+                  : item?.status === "disabled"
+                    ? "Nonaktif"
+                    : item?.unresolvedReason === "duration-unavailable"
+                      ? "Durasi belum tersedia"
+                      : "Boundary menunggu";
+
               return (
-                <div
-                  className={`timeline-track${asset?.availability === "missing" ? " timeline-track--missing" : ""}`}
+                <button
+                  className={[
+                    "timeline-track",
+                    selected ? "is-selected" : "",
+                    !enabled ? "timeline-track--disabled" : "",
+                    enabled && asset?.availability !== "ready"
+                      ? "timeline-track--attention"
+                      : "",
+                  ]
+                    .filter(Boolean)
+                    .join(" ")}
+                  data-timeline-track-id={track.id}
                   key={track.id}
+                  type="button"
+                  aria-pressed={selected}
+                  onClick={() => onSelectTrack(track.id)}
+                  style={{
+                    width: `${trackWidth}px`,
+                    minWidth: `${trackWidth}px`,
+                  }}
                 >
-                  <span>{index + 1}</span>
-                  <strong>{track.title}</strong>
-                </div>
+                  <span className="timeline-track__index">{index + 1}</span>
+                  <span className="timeline-track__copy">
+                    <strong>{track.title}</strong>
+                    <small>{timingLabel}</small>
+                  </span>
+                </button>
               );
             })}
           </div>
@@ -815,7 +961,26 @@ function MissingMediaDialog({
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<WorkRailTab>("media");
   const [missingDialogOpen, setMissingDialogOpen] = useState(false);
+  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
+  const [timelineZoom, setTimelineZoom] = useState(100);
   const projectSession = useProjectSession();
+
+  useEffect(() => {
+    if (
+      selectedTrackId !== null &&
+      !projectSession.project.tracks.some(
+        (track) => track.id === selectedTrackId,
+      )
+    ) {
+      setSelectedTrackId(null);
+    }
+  }, [projectSession.project.tracks, selectedTrackId]);
+
+  const showHistoryControls =
+    projectSession.project.tracks.length > 0 ||
+    projectSession.canUndo ||
+    projectSession.canRedo;
+
   const hasNotice =
     projectSession.recoveryState.status !== "none" ||
     projectSession.sourceState === "load-error" ||
@@ -839,6 +1004,10 @@ export function AppShell() {
       data-media-state={projectSession.mediaOperationState}
       data-missing-media-count={projectSession.missingMediaItems.length}
       data-media-ready={projectSession.mediaReadiness.ready ? "true" : "false"}
+      data-selected-track-id={selectedTrackId ?? ""}
+      data-timeline-zoom={timelineZoom}
+      data-can-undo={projectSession.canUndo ? "true" : "false"}
+      data-can-redo={projectSession.canRedo ? "true" : "false"}
     >
       <header className="top-toolbar">
         <div className="project-identity">
@@ -870,6 +1039,22 @@ export function AppShell() {
             disabled
           />
           <ActionButton variant="toolbar" label="Template" icon="template" />
+          {showHistoryControls ? (
+            <>
+              <ActionButton
+                variant="toolbar"
+                label="Undo"
+                disabled={!projectSession.canUndo}
+                onClick={() => projectSession.undo()}
+              />
+              <ActionButton
+                variant="toolbar"
+                label="Redo"
+                disabled={!projectSession.canRedo}
+                onClick={() => projectSession.redo()}
+              />
+            </>
+          ) : null}
           <span className="toolbar-divider" />
           <ActionButton
             variant="toolbar"
@@ -909,10 +1094,18 @@ export function AppShell() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           projectSession={projectSession}
+          selectedTrackId={selectedTrackId}
+          onSelectTrack={setSelectedTrackId}
         />
         <PreviewPanel />
         <GeminiRail />
-        <TimelinePanel projectSession={projectSession} />
+        <TimelinePanel
+          projectSession={projectSession}
+          selectedTrackId={selectedTrackId}
+          onSelectTrack={setSelectedTrackId}
+          zoom={timelineZoom}
+          onZoomChange={setTimelineZoom}
+        />
       </div>
 
       {missingDialogOpen ? (
