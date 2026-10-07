@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 is IN PROGRESS; T11-W02-01 is COMPLETE / PASS and T11-W02-02 is READY.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 is IN PROGRESS; T11-W02-01 and T11-W02-02 are COMPLETE / PASS, and T11-W02-03 is READY.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -89,18 +89,20 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Planning: ASTRA COMPLETE / PASS; DoR PASS.
 - Features: FTR-003 + FTR-016 + FTR-018 cross-cut.
 - T11-W02-01: COMPLETE / PASS / VERIFIED.
-- Verified implementation head: `bc63f368af86d9c6f418a683b7fee47d4093a4df`.
-- Windows CI: `37586453731` PASS; job `112677579172`.
-- Evidence: `docs/step11/evidence/T11_W02_01_MEDIA_DOMAIN_CONTRACTS_EVIDENCE.md`.
-- Schema remains version 1 with additive mediaAssets/audioAssetId.
-- Legacy W11-01 project persistence round-trip remains compatible.
-- Public media/relink contracts are path-free; internal media source/probe ports are narrow.
-- No media picker/probe/relink/UI implementation has started beyond the T11-W02-01 foundation.
+- T11-W02-02: COMPLETE / PASS / VERIFIED.
+- T11-W02-02 verified implementation head: `ad9df0bd20703dbd1ab67c1ca673cdc65f8a3731`.
+- Windows CI: `37589834065` PASS; job `112688415921`.
+- Evidence: `docs/step11/evidence/T11_W02_02_PICKER_DROP_DISCOVERY_EVIDENCE.md`.
+- Native picker/folder selection is main-owned; drop native paths are resolved in preload.
+- Picker, dropped files and folder roots use one main-owned recursive discovery service.
+- Discovery is deterministic, canonical-path deduplicated, bounded, cancellable and path-sanitized publicly.
+- 20+/100+, duplicate, Unicode/spaces and non-destructive discovery tests PASS.
+- No audio metadata/probe implementation has started; `music-metadata` remains a T11-W02-03 implementation-time decision.
 
 ## Next exact task
-**T11-W02-02 Picker/Drop Discovery, Batch Queue, Progress & Cancel** — SOL only.
+**T11-W02-03 Audio Probe, Validation, Metadata & Deterministic Initial Order** — SOL only.
 
-Implement only native multi-file selection, drag/drop path handoff, recursive deterministic folder discovery, batch dedupe, bounded queue/progress/cancel. Do not start audio metadata probing, deterministic metadata ordering, relink core, UI wiring, T11-W02-03, or W11-03 in the same turn.
+Implement only the planned metadata dependency gate, audio probing/validation/classification, duration/common tags, deterministic initial ordering independent of async completion, and compatible media/project commit. Do not start missing-media scan/relink, frozen media UI wiring, T11-W02-04, or W11-03 in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
