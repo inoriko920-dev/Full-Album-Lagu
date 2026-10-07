@@ -50,6 +50,10 @@ export type ProjectCommandExecutionResult =
 export type ProjectHistoryActionResult =
   { status: "applied"; entry: ProjectHistoryEntry } | { status: "unavailable" };
 
+export type ProjectSystemReconciliationResult =
+  | { status: "applied" }
+  | { status: "noop" };
+
 export interface ProjectHistoryEntry {
   id: string;
   kind: string;
@@ -168,6 +172,43 @@ export class ProjectCommandEngine {
 
   redoEntries(): ProjectHistoryEntry[] {
     return this.future.map((node) => ({ ...node.entry }));
+  }
+
+  reconcileSystemProject(
+    projectInput: ProjectDocument,
+  ): ProjectSystemReconciliationResult {
+    const candidate = projectDocumentSchema.parse(projectInput);
+
+    if (
+      candidate.schemaVersion !== this.currentProject.schemaVersion ||
+      candidate.projectId !== this.currentProject.projectId
+    ) {
+      throw new Error(
+        "System reconciliation must target the current project identity.",
+      );
+    }
+
+    const reconciledProject = projectDocumentSchema.parse({
+      ...candidate,
+      revision: this.currentProject.revision,
+    });
+
+    if (semanticallyEqual(this.currentProject, reconciledProject)) {
+      return { status: "noop" };
+    }
+
+    this.currentProject = reconciledProject;
+
+    for (const node of [...this.past, ...this.future]) {
+      if (node.entry.beforeStateToken === this.currentStateToken) {
+        node.beforeProject = cloneProject(reconciledProject);
+      }
+      if (node.entry.afterStateToken === this.currentStateToken) {
+        node.afterProject = cloneProject(reconciledProject);
+      }
+    }
+
+    return { status: "applied" };
   }
 
   execute(command: ProjectCommand): ProjectCommandExecutionResult {
