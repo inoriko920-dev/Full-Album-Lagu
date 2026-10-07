@@ -665,3 +665,65 @@
   - `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`
 - **W11-04 = COMPLETE / PASS.**
 - W11-05 is unlocked for **ASTRA planning only**; implementation remains blocked until its planning/DoR gate passes.
+
+
+## ASTRA-W11-05-PLAN — Manual Layer Editor + Templates Charter
+- Owner: ASTRA
+- Priority: P0
+- Risk: HIGH
+- Status: DONE
+- Work status: PLANNING_COMPLETE
+- Evidence status: DOCX + operational Markdown
+- Gate: PASS
+- Baseline analyzed: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`
+- Features: FTR-007 + FTR-011 + FTR-013/FTR-018 cross-cut.
+- DoR: PASS.
+- Acceptance planned: AC-W11-05-01..25.
+- Planning authority:
+  - `docs/source-of-truth/planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+  - `docs/step11/WAVE_11_05_CHARTER.md`
+  - `docs/step11/TASK_CARDS_W11_05.md`
+  - `docs/step11/W11_05_ACCEPTANCE_MATRIX.md`
+  - `docs/step11/W11_05_DOR.md`
+- UI authority: frozen SCR-002C, SCR-003A, SCR-003B, DLG-008; no new UI prompt/image stage.
+- Governance repair: missing historical compact STEP 11 registry/dependency DOCX restored as visibly labelled reconstructed repository copy.
+- Implementation code changed: NO.
+
+## T11-W05-01 — Visual Scene + Layer Schema & Pure Projection
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: READY_AFTER_PLANNING_MERGE
+- Dependency: ASTRA-W11-05-PLAN PASS.
+- Scope/acceptance authority: `docs/step11/TASK_CARDS_W11_05.md`.
+- Later W11-05 tasks remain serially blocked.
+
+## T11-W05-02 — Manual Layer Commands + Gesture/History Semantics
+- Owner: SOL
+- Status: BLOCKED
+- Dependency: T11-W05-01 PASS / VERIFIED.
+
+## T11-W05-03 — Template Document + Local Store + Trial/Apply Core
+- Owner: SOL
+- Status: BLOCKED
+- Dependency: T11-W05-02 PASS / VERIFIED.
+
+## T11-W05-04 — Static Scene Preview + Selection/Inspector Projection
+- Owner: SOL
+- Status: BLOCKED
+- Dependency: T11-W05-03 PASS / VERIFIED.
+
+## T11-W05-05 — Frozen Layer + Inspector UI Wiring
+- Owner: SOL
+- Status: BLOCKED
+- Dependency: T11-W05-04 PASS / VERIFIED.
+
+## T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring
+- Owner: SOL
+- Status: BLOCKED
+- Dependency: T11-W05-05 PASS / VERIFIED.
+
+## T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure
+- Owner: SOL
+- Status: BLOCKED
+- Dependency: T11-W05-06 PASS / VERIFIED.

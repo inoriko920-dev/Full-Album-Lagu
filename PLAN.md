@@ -82,7 +82,19 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Proof: Windows CI `37672986946` / #304 PASS; AC-W11-04-01..22 ALL PASS; 12-track canonical W04 full-flow PASS; 128-track live renderer Auto Susun PASS in 79 ms; source fingerprints unchanged; `docs/step11/evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md`.
 - Architecture/UI/trust-boundary drift: **PASS — NO MATERIAL DRIFT**; `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`.
 - **W11-04 COMPLETE / PASS.**
-- Next exact task after user `lanjutkan`: **ASTRA W11-05 Manual Layer Editor + Templates planning only**. No W11-05 coding until its planning/DoR source-of-truth passes.
+- **W11-05 Manual Layer Editor + Templates ASTRA planning — COMPLETE / PASS.**
+- Planning baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`.
+- Planning authority:
+  - `docs/source-of-truth/planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+  - `docs/step11/WAVE_11_05_CHARTER.md`
+  - `docs/step11/TASK_CARDS_W11_05.md`
+  - `docs/step11/W11_05_ACCEPTANCE_MATRIX.md`
+  - `docs/step11/W11_05_DOR.md`
+- DoR: **PASS**; AC-W11-05-01..25 defined.
+- Frozen UI references SCR-002C / SCR-003A / SCR-003B / DLG-008 are sufficient; **no new UI prompt/image stage is required**.
+- Serial order: T11-W05-01 -> 02 -> 03 -> 04 -> 05 -> 06 -> 07.
+- Only **T11-W05-01 — Visual Scene + Layer Schema & Pure Projection** is authorized next after planning merge.
+- W11-06 audio-reactive/playback, W11-07 animation/transitions, and STEP 12 Gemini/FFmpeg remain blocked.
 - Existing frozen Auto Susun/Inspector/Media/Timeline surfaces are authoritative; no new UI prompt/image generation is required now.
 - If a required W11-04 visual state cannot be represented by the frozen pack, implementation must STOP and return to ASTRA/UI governance.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.

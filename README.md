@@ -1,19 +1,21 @@
 # Lagu Full Album
 
-**Status:** Software Factory STEP 10 Minimum End-to-End Vertical Slice is complete with **PASS_WITH_PROVISIONAL**. STEP 11 Feature Implementation Waves is next.
+**Status:** Software Factory **STEP 11 — Feature Implementation Waves** is in progress. W11-01..04 are COMPLETE / PASS; **W11-05 Manual Layer Editor + Templates planning is COMPLETE / PASS** and implementation has not started.
 
 Lagu Full Album is a Windows 11 x64 desktop application for producing full-album MP4 videos. The manual editor is primary; a permanent right-side Gemini Agent is designed as a copilot over the same project state and command/history system.
 
 ## Current maturity
 - Product definition, discovery, UI freeze, architecture and code constitution: complete.
 - Repository foundation + Windows CI/package smoke: verified.
-- Frozen UI pack: 29 approved visual states.
-- S09-T01 real editor shell: verified.
-- S09-T02 shared design tokens/controls: verified.
-- S09-T03 frozen-reference extraction + production screenshot baseline: verified.
-- First production reference state `SCR-002A / UI-IMG-002A`: PASS_WITH_TOLERANCE.
-- Real media/Gemini/render engines: not yet implemented.
-- Next: **STEP 10 — Minimum End-to-End Vertical Slice**.
+- STEP 10 vertical slice: COMPLETE / PASS_WITH_PROVISIONAL.
+- W11-01 Project Lifecycle & Recovery: COMPLETE / PASS.
+- W11-02 Media Intake & Relink: COMPLETE / PASS.
+- W11-03 Album Timeline + Unified Command History: COMPLETE / PASS.
+- W11-04 Auto Susun + Track Binding: COMPLETE / PASS.
+- W11-05 Manual Layer Editor + Templates: **planning COMPLETE / PASS; implementation NOT STARTED**.
+- Frozen UI pack: 29 approved visual states; W11-05 reuses SCR-002C, SCR-003A, SCR-003B and DLG-008 without a new UI prompt/image stage.
+- Gemini/provider, FFmpeg integration and final render runtime remain later gated work.
+- Next after planning merge: **SOL T11-W05-01 — Visual Scene + Layer Schema & Pure Projection only**.
 
 ## UI authority
 - `docs/ui/manifests/UI_REFERENCE_MANIFEST.json`
@@ -41,4 +43,4 @@ CI now extracts the exact frozen `UI-IMG-002A` from the reference DOCX, hash-che
 - Source media is referenced, not modified.
 
 ## Implementation boundary
-STEP 09 proves the frozen UI shell and screenshot baseline using deterministic fixture state. STEP 10 begins the smallest real end-to-end workflow; real project lifecycle, media import, persistence, Auto Susun, playback, visualizer, render pipeline and Gemini connectivity remain later work.
+The repository is now in STEP 11. Project lifecycle, media intake/relink, album timeline/history, Auto Susun and track metadata/artwork binding are already verified. W11-05 is restricted to static visual-scene/layer editing and a local visual-only template workflow. Playback/audio-reactive visuals remain W11-06; keyframes/transitions remain W11-07; Gemini/provider and FFmpeg integration remain STEP 12/later gates.
