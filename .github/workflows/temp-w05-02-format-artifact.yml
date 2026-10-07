@@ -1,0 +1,30 @@
+name: Temporary W05-02 Format Artifact
+
+on:
+  pull_request:
+    paths:
+      - "src/core/application/services/project-layer-commands.ts"
+      - "tests/unit/project-layer-commands.test.ts"
+      - ".github/workflows/temp-w05-02-format-artifact.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - run: npx prettier --write src/core/application/services/project-layer-commands.ts tests/unit/project-layer-commands.test.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: w05-02-formatted-files
+          path: |
+            src/core/application/services/project-layer-commands.ts
+            tests/unit/project-layer-commands.test.ts
+          if-no-files-found: error
