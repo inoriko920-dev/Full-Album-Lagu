@@ -56,7 +56,9 @@ export const lfaBridge: LfaBridge = {
   },
 
   async pickMediaFolder() {
-    const payload: unknown = await ipcRenderer.invoke(MEDIA_PICK_FOLDER_CHANNEL);
+    const payload: unknown = await ipcRenderer.invoke(
+      MEDIA_PICK_FOLDER_CHANNEL,
+    );
     return mediaDiscoveryStartResultSchema.parse(payload);
   },
 
