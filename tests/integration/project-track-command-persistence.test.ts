@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -25,6 +25,8 @@ describe("track application command persistence", () => {
   it("survives Save/Close/Reopen with Unicode + spaces and leaves source audio unchanged", async () => {
     const root = await mkdtemp(join(tmpdir(), "lfa timeline Ω "));
     cleanupPaths.push(root);
+
+    await mkdir(join(root, "Audio Dengan Spasi Ω"), { recursive: true });
 
     const sourcePaths = [
       join(root, "Audio Dengan Spasi Ω", "01 Satu.wav"),
