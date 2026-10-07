@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL T11-W05-01 COMPLETE / PASS; next authorized task is SOL T11-W05-02 only
+- Active role at current checkpoint: SOL T11-W05-02 COMPLETE / PASS; next authorized task is SOL T11-W05-03 only
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01 PASS / VERIFIED; T11-W05-02 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-04 Auto Susun + Track Binding`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Current wave: `W11-05 Manual Layer Editor + Templates` — T11-W05-01 PASS / VERIFIED; T11-W05-02 READY
+- Current wave: `W11-05 Manual Layer Editor + Templates` — T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -46,6 +46,7 @@
   - `T11-W04-05 Frozen Auto Susun + Inspector UI Wiring` — PASS
   - `T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure` — PASS
   - `T11-W05-01 Visual Scene + Layer Schema & Pure Projection` — PASS
+  - `T11-W05-02 Manual Layer Commands + Gesture/History Semantics` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -327,7 +328,7 @@
 - Acceptance matrix: `docs/step11/W11_05_ACCEPTANCE_MATRIX.md`.
 - DoR: `docs/step11/W11_05_DOR.md` — PASS.
 - Acceptance planned: AC-W11-05-01..25.
-- Serial tasks: T11-W05-01 PASS / VERIFIED; T11-W05-02 READY; T11-W05-03..07 BLOCKED.
+- Serial tasks: T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY; T11-W05-04..07 BLOCKED.
 - Frozen UI authority is sufficient: SCR-002C, SCR-003A, SCR-003B and DLG-008/UI-IMG-012. No new UI prompt/image generation is required.
 - W11-05 owns static visual scene/layer state + local visual-only template workflow.
 - Audio-reactive/playback remains W11-06; keyframes/transitions remain W11-07; Gemini/FFmpeg remains STEP 12.
