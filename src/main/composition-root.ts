@@ -178,7 +178,18 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
 
     const extensions =
       kind === "audio"
-        ? ["mp3", "wav", "flac", "m4a", "aac", "ogg", "opus", "wma", "aiff", "aif"]
+        ? [
+            "mp3",
+            "wav",
+            "flac",
+            "m4a",
+            "aac",
+            "ogg",
+            "opus",
+            "wma",
+            "aiff",
+            "aif",
+          ]
         : kind === "image"
           ? ["png", "jpg", "jpeg", "webp", "bmp", "gif", "tif", "tiff"]
           : ["mp4", "mov", "mkv", "webm", "avi", "m4v"];

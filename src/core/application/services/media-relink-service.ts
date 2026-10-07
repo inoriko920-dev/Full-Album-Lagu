@@ -1,10 +1,6 @@
 import { extname } from "node:path";
-import type {
-  MediaDiscoveryPort,
-} from "../ports/media-discovery-port";
-import type {
-  MediaProbePort,
-} from "../ports/media-probe-port";
+import type { MediaDiscoveryPort } from "../ports/media-discovery-port";
+import type { MediaProbePort } from "../ports/media-probe-port";
 import type {
   MediaSourceDescriptor,
   MediaSourcePort,
@@ -311,7 +307,9 @@ export class MediaRelinkService {
       });
 
       const highestScore = scored[0]?.score;
-      const best = scored.filter((candidate) => candidate.score === highestScore);
+      const best = scored.filter(
+        (candidate) => candidate.score === highestScore,
+      );
 
       if (best.length !== 1) {
         results.push({
@@ -372,7 +370,9 @@ export class MediaRelinkService {
     };
   }
 
-  private async enumerateFolder(folderPath: string): Promise<FolderCandidate[]> {
+  private async enumerateFolder(
+    folderPath: string,
+  ): Promise<FolderCandidate[]> {
     const root = await this.discoveryPort.inspectPath(folderPath);
     if (root.kind !== "directory") {
       throw new Error("Relink folder is not a readable directory.");

@@ -35,8 +35,7 @@ function markFound(asset: MediaAssetReference): MediaAssetReference {
   if (
     asset.availability !== "missing" &&
     !(
-      asset.availability === "invalid" &&
-      asset.errorCode === "MEDIA_UNREADABLE"
+      asset.availability === "invalid" && asset.errorCode === "MEDIA_UNREADABLE"
     )
   ) {
     return asset;
@@ -44,8 +43,7 @@ function markFound(asset: MediaAssetReference): MediaAssetReference {
 
   if (
     asset.kind === "audio" &&
-    (asset.metadata?.durationMs === undefined ||
-      asset.metadata.durationMs <= 0)
+    (asset.metadata?.durationMs === undefined || asset.metadata.durationMs <= 0)
   ) {
     return {
       ...asset,
@@ -96,9 +94,8 @@ async function mapBounded<T, R>(
   };
 
   await Promise.all(
-    Array.from(
-      { length: Math.min(concurrency, values.length) },
-      () => runWorker(),
+    Array.from({ length: Math.min(concurrency, values.length) }, () =>
+      runWorker(),
     ),
   );
 
@@ -133,9 +130,7 @@ export class MissingMediaService {
 
     const scannedProject = projectDocumentSchema.parse({
       ...project,
-      ...(project.mediaAssets === undefined
-        ? {}
-        : { mediaAssets: nextAssets }),
+      ...(project.mediaAssets === undefined ? {} : { mediaAssets: nextAssets }),
     });
 
     const items = nextAssets

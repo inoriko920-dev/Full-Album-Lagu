@@ -1,8 +1,5 @@
 import { z } from "zod";
-import {
-  mediaIssueCodeSchema,
-  mediaKindSchema,
-} from "../domain/media-asset";
+import { mediaIssueCodeSchema, mediaKindSchema } from "../domain/media-asset";
 import { projectDocumentSchema } from "../domain/project-document";
 import { mediaRelinkResultSchema } from "./media-intake";
 
@@ -61,27 +58,30 @@ export const singleRelinkRequestSchema = z
   })
   .strict();
 
-export const singleRelinkOperationResultSchema = z.discriminatedUnion("status", [
-  z
-    .object({
-      status: z.literal("relinked"),
-      project: projectDocumentSchema,
-      result: mediaRelinkResultSchema,
-    })
-    .strict(),
-  z
-    .object({
-      status: z.literal("cancelled"),
-      result: mediaRelinkResultSchema,
-    })
-    .strict(),
-  z
-    .object({
-      status: z.literal("error"),
-      result: mediaRelinkResultSchema,
-    })
-    .strict(),
-]);
+export const singleRelinkOperationResultSchema = z.discriminatedUnion(
+  "status",
+  [
+    z
+      .object({
+        status: z.literal("relinked"),
+        project: projectDocumentSchema,
+        result: mediaRelinkResultSchema,
+      })
+      .strict(),
+    z
+      .object({
+        status: z.literal("cancelled"),
+        result: mediaRelinkResultSchema,
+      })
+      .strict(),
+    z
+      .object({
+        status: z.literal("error"),
+        result: mediaRelinkResultSchema,
+      })
+      .strict(),
+  ],
+);
 
 export const folderRelinkRequestSchema = z
   .object({
@@ -89,28 +89,31 @@ export const folderRelinkRequestSchema = z
   })
   .strict();
 
-export const folderRelinkOperationResultSchema = z.discriminatedUnion("status", [
-  z
-    .object({
-      status: z.literal("completed"),
-      project: projectDocumentSchema,
-      results: z.array(mediaRelinkResultSchema),
-    })
-    .strict(),
-  z
-    .object({
-      status: z.literal("cancelled"),
-      code: z.literal("RELINK_CANCELLED"),
-    })
-    .strict(),
-  z
-    .object({
-      status: z.literal("error"),
-      code: z.literal("RELINK_FAILED"),
-      message: z.string().trim().min(1).max(1000),
-    })
-    .strict(),
-]);
+export const folderRelinkOperationResultSchema = z.discriminatedUnion(
+  "status",
+  [
+    z
+      .object({
+        status: z.literal("completed"),
+        project: projectDocumentSchema,
+        results: z.array(mediaRelinkResultSchema),
+      })
+      .strict(),
+    z
+      .object({
+        status: z.literal("cancelled"),
+        code: z.literal("RELINK_CANCELLED"),
+      })
+      .strict(),
+    z
+      .object({
+        status: z.literal("error"),
+        code: z.literal("RELINK_FAILED"),
+        message: z.string().trim().min(1).max(1000),
+      })
+      .strict(),
+  ],
+);
 
 export type MissingMediaScanRequest = z.infer<
   typeof missingMediaScanRequestSchema

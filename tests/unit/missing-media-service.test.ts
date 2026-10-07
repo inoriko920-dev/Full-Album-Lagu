@@ -116,7 +116,9 @@ describe("MissingMediaService", () => {
 
     const result = await new MissingMediaService(port).scan(input);
     expect(
-      result.project.mediaAssets?.find((asset) => asset.id === "audio-required"),
+      result.project.mediaAssets?.find(
+        (asset) => asset.id === "audio-required",
+      ),
     ).toMatchObject({
       availability: "ready",
       metadata: { durationMs: 5000 },
