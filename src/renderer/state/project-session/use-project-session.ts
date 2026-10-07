@@ -1,5 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
+import { isProjectDirty } from "../../../core/application/services/project-dirty-state";
 import type { ProjectLocation } from "../../../core/contracts/project-lifecycle";
+import type {
+  RecoveryErrorCode,
+  RecoveryStatusResult,
+} from "../../../core/contracts/project-recovery";
 import type {
   ProjectPersistenceErrorCode,
   SaveProjectResult,
@@ -12,6 +17,8 @@ import {
 export type ProjectSourceState = "new" | "loaded" | "load-error";
 export type ProjectPersistenceState =
   "idle" | "saving" | "saved" | "cancelled" | "error";
+
+const AUTOSAVE_INTERVAL_MS = 15_000;
 
 function createSessionProject(): ProjectDocument {
   const projectId =
@@ -26,7 +33,11 @@ export interface ProjectSessionView {
   sourceState: ProjectSourceState;
   persistenceState: ProjectPersistenceState;
   errorCode: ProjectPersistenceErrorCode | null;
+  recoveryErrorCode: RecoveryErrorCode | null;
+  recoveryState: RecoveryStatusResult;
   location: ProjectLocation;
+  dirty: boolean;
+  savedRevision: number;
   save(): Promise<SaveProjectResult>;
 }
 
@@ -39,38 +50,104 @@ export function useProjectSession(): ProjectSessionView {
     useState<ProjectPersistenceState>("idle");
   const [errorCode, setErrorCode] =
     useState<ProjectPersistenceErrorCode | null>(null);
+  const [recoveryErrorCode, setRecoveryErrorCode] =
+    useState<RecoveryErrorCode | null>(null);
+  const [recoveryState, setRecoveryState] = useState<RecoveryStatusResult>({
+    status: "none",
+  });
   const [location, setLocation] = useState<ProjectLocation>({
     kind: "unsaved",
   });
+  const [savedRevision, setSavedRevision] = useState(0);
+
+  const dirty = isProjectDirty(project.revision, savedRevision);
 
   useEffect(() => {
     let alive = true;
 
-    void window.lfa
-      .getStartupProject()
-      .then((result) => {
-        if (!alive) return;
+    const loadStartup = async () => {
+      const result = await window.lfa.getStartupProject();
+      if (!alive) return;
 
-        if (result.status === "loaded") {
-          setProject(result.project);
-          setSourceState("loaded");
-          setLocation(result.location);
-          setErrorCode(null);
-        } else if (result.status === "error") {
-          setSourceState("load-error");
-          setErrorCode(result.code);
+      if (result.status === "loaded") {
+        setProject(result.project);
+        setSavedRevision(result.project.revision);
+        setSourceState("loaded");
+        setLocation(result.location);
+        setErrorCode(null);
+
+        try {
+          const recovery = await window.lfa.getRecoveryStatus({
+            primaryProject: result.project,
+          });
+          if (!alive) return;
+          setRecoveryState(recovery);
+          setRecoveryErrorCode(
+            recovery.status === "invalid" ? recovery.code : null,
+          );
+        } catch {
+          if (!alive) return;
+          setRecoveryState({
+            status: "invalid",
+            code: "RECOVERY_INVALID",
+            message: "Recovery status could not be determined safely.",
+          });
+          setRecoveryErrorCode("RECOVERY_INVALID");
         }
-      })
-      .catch(() => {
-        if (!alive) return;
+      } else if (result.status === "error") {
         setSourceState("load-error");
-        setErrorCode("PROJECT_READ_FAILED");
-      });
+        setErrorCode(result.code);
+      }
+    };
+
+    void loadStartup().catch(() => {
+      if (!alive) return;
+      setSourceState("load-error");
+      setErrorCode("PROJECT_READ_FAILED");
+    });
 
     return () => {
       alive = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!dirty || sourceState === "load-error") {
+      return;
+    }
+
+    let alive = true;
+    let running = false;
+
+    const autosave = async () => {
+      if (running) return;
+      running = true;
+
+      try {
+        const result = await window.lfa.autosaveProject({
+          project,
+          savedRevision,
+        });
+
+        if (!alive) return;
+        setRecoveryErrorCode(result.status === "error" ? result.code : null);
+      } catch {
+        if (!alive) return;
+        setRecoveryErrorCode("AUTOSAVE_WRITE_FAILED");
+      } finally {
+        running = false;
+      }
+    };
+
+    const timer = window.setInterval(() => {
+      void autosave();
+    }, AUTOSAVE_INTERVAL_MS);
+
+    return () => {
+      alive = false;
+      window.clearInterval(timer);
+    };
+  }, [dirty, project, savedRevision, sourceState]);
 
   const save = useCallback(async (): Promise<SaveProjectResult> => {
     if (persistenceState === "saving") {
@@ -84,6 +161,7 @@ export function useProjectSession(): ProjectSessionView {
       const result = await window.lfa.saveProject({ project });
       if (result.status === "saved") {
         setPersistenceState("saved");
+        setSavedRevision(result.projectRevision);
         setLocation(result.location);
       } else if (result.status === "cancelled") {
         setPersistenceState("cancelled");
@@ -110,7 +188,11 @@ export function useProjectSession(): ProjectSessionView {
     sourceState,
     persistenceState,
     errorCode,
+    recoveryErrorCode,
+    recoveryState,
     location,
+    dirty,
+    savedRevision,
     save,
   };
 }

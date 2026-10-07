@@ -479,6 +479,80 @@ function createMainWindow(): BrowserWindow {
               };
             }
 
+            if (mode === "recovery-autosave") {
+              const project = nextProject(
+                startup.project,
+                startup.project.revision + 1,
+                "Autosave Recovery Ω",
+              );
+              const autosave = await window.lfa.autosaveProject({
+                project,
+                savedRevision: startup.project.revision,
+              });
+              return {
+                mode,
+                startupStatus: startup.status,
+                autosaveStatus: autosave.status,
+                generation:
+                  autosave.status === "saved" ? autosave.generation : null,
+                projectRevision: project.revision,
+              };
+            }
+
+            if (mode === "recovery-detect") {
+              const recovery = await window.lfa.getRecoveryStatus({
+                primaryProject: startup.project,
+              });
+              return {
+                mode,
+                startupStatus: startup.status,
+                recoveryStatus: recovery.status,
+                recoveryCode:
+                  recovery.status === "stale" ||
+                  recovery.status === "invalid"
+                    ? recovery.code
+                    : null,
+                generation:
+                  recovery.status === "available"
+                    ? recovery.generation
+                    : null,
+                recoveryRevision:
+                  recovery.status === "available"
+                    ? recovery.project.revision
+                    : null,
+              };
+            }
+
+            if (mode === "recovery-accept") {
+              const accepted = await window.lfa.acceptRecovery({
+                primaryProject: startup.project,
+              });
+              return {
+                mode,
+                startupStatus: startup.status,
+                acceptStatus: accepted.status,
+                generation:
+                  accepted.status === "recovered"
+                    ? accepted.generation
+                    : null,
+                recoveryRevision:
+                  accepted.status === "recovered"
+                    ? accepted.project.revision
+                    : null,
+              };
+            }
+
+            if (mode === "recovery-discard") {
+              const discarded = await window.lfa.discardRecovery({
+                projectId: startup.project.projectId,
+              });
+              return {
+                mode,
+                startupStatus: startup.status,
+                discardStatus: discarded.status,
+              };
+            }
+
             throw new Error("Unsupported W11 lifecycle probe mode: " + mode);
           })()
         `)) as Record<string, unknown>;

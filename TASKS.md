@@ -78,12 +78,40 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: T11-W01-02 PASS.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified branch SHA: `99071af5ddbc568db11db5b3eb4a5ab75aac2686`
+- Windows CI run: `37570463026` — PASS
+- CI job: `112627715745`
+- Recovery evidence artifact: `11460358149`
+- Scope delivered:
+  - revision-based dirty/saved state;
+  - separate recovery artifact schema and generation;
+  - atomic main-owned recovery store;
+  - dirty-only periodic autosave scheduling;
+  - newer-valid/stale/corrupt recovery detection;
+  - accept/discard recovery core without primary overwrite;
+  - interrupted temporary recovery safety;
+  - typed preload/IPC recovery boundary with no raw paths.
+- Verification:
+  - full verify suite PASS;
+  - recovery unit/contract/integration tests PASS;
+  - deterministic Windows recovery E2E PASS;
+  - STEP 10 SLC + T11-W01-02 regression PASS;
+  - frozen SCR-002A baseline PASS;
+  - Windows package/smoke/portable ZIP PASS.
+- Evidence: `docs/step11/evidence/T11_W01_03_DIRTY_AUTOSAVE_RECOVERY_EVIDENCE.md`.
+- Out of scope honored: recovery UX wiring, media, Gemini, FFmpeg/render and frozen UI redesign.
 
 ## T11-W01-04 — Frozen UI States + Recovery UX Wiring
-- Status: BLOCKED_BY T11-W01-03
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: T11-W01-03 PASS.
 
 ## T11-W01-05 — Wave E2E, Drift Review & Evidence Pack
 - Status: BLOCKED_BY T11-W01-04

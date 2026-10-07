@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. STEP 11 planning is complete. **T11-W01-01 and T11-W01-02 are implemented and verified.** W11-01 remains in progress.
+STEP 10 is complete. STEP 11 planning is complete. **T11-W01-01, T11-W01-02, and T11-W01-03 are implemented and verified.** W11-01 remains in progress.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -42,10 +42,23 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - STEP 10 SLC, frozen UI baseline, package/smoke and portable ZIP remain green;
 - evidence: `docs/step11/evidence/T11_W01_02_PROJECT_LIFECYCLE_EVIDENCE.md`.
 
-## Next exact task
-**T11-W01-03 Dirty State & Autosave Recovery Store** — SOL only.
+### T11-W01-03 Dirty State & Autosave Recovery Store — PASS / VERIFIED
+- verified branch SHA: `99071af5ddbc568db11db5b3eb4a5ab75aac2686`;
+- Windows CI: `37570463026` PASS;
+- job: `112627715745`;
+- recovery evidence artifact: `11460358149`;
+- dirty state is revision-based against last successful user Save;
+- recovery snapshot/generation is separate from the primary project;
+- dirty autosave, newer recovery detection, stale/corrupt/interrupted safety verified;
+- accept/discard recovery core preserves the primary file;
+- renderer remains filesystem-free and public recovery contracts expose no raw path;
+- STEP 10 SLC, T11-W01-02 lifecycle, frozen UI baseline, package/smoke and portable ZIP remain green;
+- evidence: `docs/step11/evidence/T11_W01_03_DIRTY_AUTOSAVE_RECOVERY_EVIDENCE.md`.
 
-Do not implement recovery UI wiring, media, Gemini, or render in the same turn. Start T11-W01-03 only after the user explicitly says `lanjutkan`.
+## Next exact task
+**T11-W01-04 Frozen UI States + Recovery UX Wiring** — SOL only.
+
+Do not start T11-W01-05, media, Gemini, or render in the same turn. Start T11-W01-04 only after the user explicitly says `lanjutkan`.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Recovery artifacts must remain separate from the primary project file and must never masquerade as a successful user Save. Frozen UI cannot be silently redesigned. Gemini and FFmpeg concrete integrations remain STEP 12 owned.

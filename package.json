@@ -33,7 +33,8 @@
     "ui:screenshot:scr002a": "electron dist/main/bootstrap.cjs --ui-test=SCR-002A --screenshot=artifacts/ui/SCR-002A.png",
     "test:integration": "vitest run tests/integration",
     "e2e:slc:save-reopen": "node scripts/run-slc-save-reopen.mjs",
-    "e2e:w11:lifecycle": "node scripts/run-w11-project-lifecycle.mjs"
+    "e2e:w11:lifecycle": "node scripts/run-w11-project-lifecycle.mjs",
+    "e2e:w11:recovery": "node scripts/run-w11-recovery.mjs"
   },
   "dependencies": {
     "react": "19.3.0",

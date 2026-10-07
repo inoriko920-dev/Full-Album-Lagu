@@ -1,5 +1,15 @@
 import type { FoundationInfo } from "./foundation-info";
 import type {
+  AutosaveRecoveryRequest,
+  AutosaveRecoveryResult,
+  RecoveryAcceptRequest,
+  RecoveryAcceptResult,
+  RecoveryDiscardRequest,
+  RecoveryDiscardResult,
+  RecoveryStatusRequest,
+  RecoveryStatusResult,
+} from "./project-recovery";
+import type {
   OpenProjectResult,
   SaveProjectRequest,
   SaveProjectResult,
@@ -12,4 +22,14 @@ export interface LfaBridge {
   saveProjectAs(request: SaveProjectRequest): Promise<SaveProjectResult>;
   openProject(): Promise<OpenProjectResult>;
   getStartupProject(): Promise<StartupProjectResult>;
+  autosaveProject(
+    request: AutosaveRecoveryRequest,
+  ): Promise<AutosaveRecoveryResult>;
+  getRecoveryStatus(
+    request: RecoveryStatusRequest,
+  ): Promise<RecoveryStatusResult>;
+  acceptRecovery(request: RecoveryAcceptRequest): Promise<RecoveryAcceptResult>;
+  discardRecovery(
+    request: RecoveryDiscardRequest,
+  ): Promise<RecoveryDiscardResult>;
 }

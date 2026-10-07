@@ -25,6 +25,19 @@ const openProjectMock = vi.fn<LfaBridge["openProject"]>(async () => ({
 const getStartupProjectMock = vi.fn<LfaBridge["getStartupProject"]>(
   async () => ({ status: "none" as const }),
 );
+const autosaveProjectMock = vi.fn<LfaBridge["autosaveProject"]>(async () => ({
+  status: "skipped" as const,
+  reason: "clean" as const,
+}));
+const getRecoveryStatusMock = vi.fn<LfaBridge["getRecoveryStatus"]>(
+  async () => ({ status: "none" as const }),
+);
+const acceptRecoveryMock = vi.fn<LfaBridge["acceptRecovery"]>(async () => ({
+  status: "none" as const,
+}));
+const discardRecoveryMock = vi.fn<LfaBridge["discardRecovery"]>(async () => ({
+  status: "none" as const,
+}));
 const getFoundationInfoMock = vi.fn<LfaBridge["getFoundationInfo"]>(
   async () => ({
     platform: "win32",
@@ -39,6 +52,10 @@ const bridge: LfaBridge = {
   saveProjectAs: saveProjectAsMock,
   openProject: openProjectMock,
   getStartupProject: getStartupProjectMock,
+  autosaveProject: autosaveProjectMock,
+  getRecoveryStatus: getRecoveryStatusMock,
+  acceptRecovery: acceptRecoveryMock,
+  discardRecovery: discardRecoveryMock,
 };
 
 beforeEach(() => {
@@ -50,6 +67,10 @@ beforeEach(() => {
   saveProjectAsMock.mockClear();
   openProjectMock.mockClear();
   getStartupProjectMock.mockClear();
+  autosaveProjectMock.mockClear();
+  getRecoveryStatusMock.mockClear();
+  acceptRecoveryMock.mockClear();
+  discardRecoveryMock.mockClear();
   getFoundationInfoMock.mockClear();
 });
 
