@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   isProjectTrackEnabled,
   projectAlbumTimeline,
@@ -314,7 +314,287 @@ function LayerPanel() {
   );
 }
 
-function InspectorPanel() {
+function provenanceLabel(value: string): string {
+  switch (value) {
+    case "manual-override":
+      return "Override manual";
+    case "audio-metadata":
+      return "Metadata audio";
+    case "track-fallback":
+      return "Nama track";
+    case "filename-fallback":
+      return "Nama file";
+    case "project-fallback":
+      return "Nama proyek";
+    case "canonical-position":
+      return "Posisi album";
+    case "album-default":
+      return "Default album";
+    default:
+      return "Fallback";
+  }
+}
+
+function SelectedTrackInspector({
+  projectSession,
+  trackId,
+}: {
+  projectSession: ReturnType<typeof useProjectSession>;
+  trackId: string;
+}) {
+  const projection = projectSession.selectedTrackProjection(trackId);
+  const [draft, setDraft] = useState(() =>
+    projectSession.createTrackMetadataDraft(trackId),
+  );
+  const [feedback, setFeedback] = useState("");
+  const overrideKey =
+    projection.status === "selected"
+      ? JSON.stringify(projection.explicitOverrides)
+      : "none";
+
+  useEffect(() => {
+    setDraft(projectSession.createTrackMetadataDraft(trackId));
+    setFeedback("");
+  }, [overrideKey, projectSession.createTrackMetadataDraft, trackId]);
+
+  if (projection.status !== "selected") return null;
+
+  const artworkAssetId = projection.presentation.artwork.assetId;
+  const artworkAsset = projectSession.project.mediaAssets?.find(
+    (asset) => asset.id === artworkAssetId,
+  );
+  const albumArtworkId =
+    projectSession.project.albumPresentation?.defaultArtworkAssetId;
+  const albumArtwork = projectSession.project.mediaAssets?.find(
+    (asset) => asset.id === albumArtworkId,
+  );
+  const busy = projectSession.artworkActionState === "working";
+
+  const applyDraft = () => {
+    const result = projectSession.applyTrackMetadataDraft(draft);
+    setFeedback(
+      result === "applied"
+        ? "Metadata diterapkan."
+        : result === "noop"
+          ? "Metadata tidak berubah."
+          : "Metadata tidak valid.",
+    );
+  };
+
+  return (
+    <div
+      className="work-panel inspector-panel"
+      id="work-panel-inspector"
+      data-inspector-track-id={trackId}
+    >
+      <div className="work-panel__header">
+        <div>
+          <p className="eyebrow">PROPERTI MANUAL</p>
+          <h2>Inspector</h2>
+        </div>
+        <span className="inspector-track-badge">{trackId}</span>
+      </div>
+
+      <section className="inspector-section" aria-label="Metadata track">
+        <div className="inspector-section__header">
+          <strong>Metadata Track</strong>
+          <span>{projection.audioStatus}</span>
+        </div>
+
+        <label className="inspector-field">
+          <span>Judul</span>
+          <input
+            aria-label="Override judul"
+            value={draft.title}
+            placeholder={projection.presentation.title.value}
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                title: event.target.value,
+              }))
+            }
+          />
+          <small>
+            Aktif: {projection.presentation.title.value || "—"} •{" "}
+            {provenanceLabel(projection.presentation.title.provenance)}
+          </small>
+        </label>
+
+        <label className="inspector-field">
+          <span>Artis</span>
+          <input
+            aria-label="Override artis"
+            value={draft.artist}
+            placeholder={projection.presentation.artist.value || "—"}
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                artist: event.target.value,
+              }))
+            }
+          />
+          <small>
+            Aktif: {projection.presentation.artist.value || "—"} •{" "}
+            {provenanceLabel(projection.presentation.artist.provenance)}
+          </small>
+        </label>
+
+        <label className="inspector-field">
+          <span>Album</span>
+          <input
+            aria-label="Override album"
+            value={draft.album}
+            placeholder={projection.presentation.album.value}
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                album: event.target.value,
+              }))
+            }
+          />
+          <small>
+            Aktif: {projection.presentation.album.value || "—"} •{" "}
+            {provenanceLabel(projection.presentation.album.provenance)}
+          </small>
+        </label>
+
+        <label className="inspector-field">
+          <span>Tahun</span>
+          <input
+            aria-label="Override tahun"
+            inputMode="numeric"
+            value={draft.year}
+            placeholder={
+              projection.presentation.year.value === undefined
+                ? "—"
+                : String(projection.presentation.year.value)
+            }
+            onChange={(event) =>
+              setDraft((current) => ({
+                ...current,
+                year: event.target.value,
+              }))
+            }
+          />
+          <small>
+            Aktif: {projection.presentation.year.value ?? "—"} •{" "}
+            {provenanceLabel(projection.presentation.year.provenance)}
+          </small>
+        </label>
+
+        <div className="inspector-actions">
+          <ActionButton
+            variant="primary"
+            label="Terapkan Metadata"
+            onClick={applyDraft}
+          />
+          <ActionButton
+            variant="secondary"
+            label="Hapus Override Metadata"
+            onClick={() => {
+              const changed =
+                projectSession.clearTrackMetadataOverrides(trackId);
+              setFeedback(
+                changed
+                  ? "Override metadata dihapus."
+                  : "Tidak ada override metadata.",
+              );
+            }}
+          />
+        </div>
+        {feedback ? (
+          <p className="inspector-feedback" role="status">
+            {feedback}
+          </p>
+        ) : null}
+      </section>
+
+      <section className="inspector-section" aria-label="Artwork track">
+        <div className="inspector-section__header">
+          <strong>Artwork</strong>
+          <span>{provenanceLabel(projection.presentation.artwork.provenance)}</span>
+        </div>
+
+        <div className="inspector-artwork-row">
+          <div>
+            <span>Artwork Track</span>
+            <strong>{artworkAsset?.fileName ?? "Belum ada artwork"}</strong>
+          </div>
+          <div className="inspector-inline-actions">
+            <ActionButton
+              variant="secondary"
+              label="Pilih Artwork Track"
+              compact
+              disabled={busy}
+              onClick={() => void projectSession.importTrackArtwork(trackId)}
+            />
+            <ActionButton
+              variant="secondary"
+              label="Hapus Artwork Track"
+              compact
+              disabled={
+                busy ||
+                projection.presentation.artwork.provenance !==
+                  "manual-override"
+              }
+              onClick={() => projectSession.clearTrackArtwork(trackId)}
+            />
+          </div>
+        </div>
+
+        <div className="inspector-artwork-row">
+          <div>
+            <span>Default Album</span>
+            <strong>{albumArtwork?.fileName ?? "Belum ada default"}</strong>
+          </div>
+          <div className="inspector-inline-actions">
+            <ActionButton
+              variant="secondary"
+              label="Pilih Artwork Default Album"
+              compact
+              disabled={busy}
+              onClick={() => void projectSession.importAlbumArtwork()}
+            />
+            <ActionButton
+              variant="secondary"
+              label="Hapus Artwork Default Album"
+              compact
+              disabled={busy || albumArtworkId === undefined}
+              onClick={() => projectSession.clearAlbumArtwork()}
+            />
+          </div>
+        </div>
+
+        {projectSession.artworkActionState === "cancelled" ? (
+          <p className="inspector-feedback">Pemilihan artwork dibatalkan.</p>
+        ) : null}
+        {projectSession.artworkError ? (
+          <p className="inspector-feedback inspector-feedback--error">
+            {projectSession.artworkError.message}
+          </p>
+        ) : null}
+      </section>
+    </div>
+  );
+}
+
+function InspectorPanel({
+  projectSession,
+  selectedTrackId,
+}: {
+  projectSession: ReturnType<typeof useProjectSession>;
+  selectedTrackId: string | null;
+}) {
+  if (selectedTrackId !== null) {
+    return (
+      <SelectedTrackInspector
+        key={selectedTrackId}
+        projectSession={projectSession}
+        trackId={selectedTrackId}
+      />
+    );
+  }
+
   return (
     <div className="work-panel work-panel--empty" id="work-panel-inspector">
       <div className="work-panel__header">
@@ -378,7 +658,12 @@ function WorkRail({
           />
         ) : null}
         {activeTab === "layer" ? <LayerPanel /> : null}
-        {activeTab === "inspector" ? <InspectorPanel /> : null}
+        {activeTab === "inspector" ? (
+          <InspectorPanel
+            projectSession={projectSession}
+            selectedTrackId={selectedTrackId}
+          />
+        ) : null}
       </div>
     </aside>
   );
@@ -1006,6 +1291,8 @@ export function AppShell() {
       data-timeline-zoom={timelineZoom}
       data-can-undo={projectSession.canUndo ? "true" : "false"}
       data-can-redo={projectSession.canRedo ? "true" : "false"}
+      data-auto-arrange-state={projectSession.autoArrangeState}
+      data-artwork-state={projectSession.artworkActionState}
     >
       <header className="top-toolbar">
         <div className="project-identity">
@@ -1034,7 +1321,12 @@ export function AppShell() {
             variant="toolbar"
             label="Auto Susun Album"
             icon="magic"
-            disabled
+            disabled={
+              projectSession.project.tracks.length === 0 ||
+              projectSession.autoArrangeState === "planning" ||
+              projectSession.autoArrangeState === "applying"
+            }
+            onClick={() => projectSession.autoArrangeAlbum()}
           />
           <ActionButton variant="toolbar" label="Template" icon="template" />
           {showHistoryControls ? (
@@ -1069,6 +1361,19 @@ export function AppShell() {
             disabled={!projectSession.mediaReadiness.ready}
           />
         </div>
+        <span
+          className="sr-only"
+          aria-live="polite"
+          data-auto-arrange-announcer
+        >
+          {projectSession.autoArrangeState === "applied"
+            ? "Auto Susun Album diterapkan."
+            : projectSession.autoArrangeState === "noop"
+              ? "Urutan album sudah sesuai."
+              : projectSession.autoArrangeState === "error"
+                ? "Auto Susun Album gagal diterapkan."
+                : ""}
+        </span>
         <span className="sr-only" role="status" aria-live="polite">
           {projectSession.persistenceState === "saved"
             ? "Proyek tersimpan."
