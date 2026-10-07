@@ -314,9 +314,49 @@
   - `docs/step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`
 - W11-02 final status: COMPLETE / PASS.
 
-## NEXT — ASTRA W11-03 Planning Checkpoint
+## ASTRA-W11-03-PLAN — Album Timeline + Command History Charter
 - Owner: ASTRA
-- Status: READY FOR PLANNING ONLY
-- Scope: create W11-03 Album Timeline + Command History charter, task cards, acceptance matrix, DoR and detailed planning DOCX before any SOL implementation.
-- Features: FTR-004 + FTR-013 + FTR-018 cross-cut.
-- W11-03 SOL implementation remains blocked until ASTRA planning/source-of-truth gate PASS.
+- Priority: P0
+- Risk: HIGH
+- Status: DONE
+- Work status: PLANNING_COMPLETE
+- Evidence status: DOCX + operational Markdown
+- Gate: PASS
+- Baseline analyzed: `main@6f296f7cc8e8b81e86bde71f8cd3a32c0d0f1bd2`
+- Feature set: FTR-004 + FTR-013 + FTR-018 cross-cut.
+- Requirements: F-003 / FR-009..011; F-012 / FR-034..035; FR-048, FR-055..056.
+- DoR: PASS.
+- Planning authority:
+  - `docs/source-of-truth/planning/current/12_STEP_11_W11_03_ALBUM_TIMELINE_COMMAND_HISTORY_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+  - `docs/step11/WAVE_11_03_CHARTER.md`
+  - `docs/step11/TASK_CARDS_W11_03.md`
+  - `docs/step11/W11_03_ACCEPTANCE_MATRIX.md`
+  - `docs/step11/W11_03_DOR.md`
+- Decisions:
+  - canonical order = project tracks array;
+  - optional enabled state with legacy default true;
+  - cumulative boundaries derived, not persisted;
+  - one CommandEngine/history for all mutation origins;
+  - atomic batch = one revision + one Undo;
+  - logical saved-history checkpoint reconciles dirty/save/recovery;
+  - existing frozen timeline/UI states reused; no new image generation.
+- Implementation code changed: NO.
+
+## T11-W03-01 — Timeline Domain + CommandEngine Core
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: READY
+- Dependency: ASTRA-W11-03-PLAN PASS.
+- Scope:
+  - additive optional track enabled contract;
+  - pure deterministic timeline projection;
+  - CommandEngine / CommandBatch / bounded in-memory history core;
+  - monotonic revision + logical state-token foundation;
+  - unit/contract compatibility and 100+ deterministic tests.
+- Gate: must PASS / VERIFIED before T11-W03-02 starts.
+- Do not wire product UI or migrate all existing mutations in this task.
+
+## T11-W03-02..06
+- Status: BLOCKED serially by `docs/step11/TASK_CARDS_W11_03.md`.
+- W11-04 remains blocked until T11-W03-06 closes W11-03 COMPLETE / PASS.
