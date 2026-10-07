@@ -285,10 +285,12 @@ const assertions = {
 
   hundredPlusSourceMediaUnchanged: batchSourcesUnchanged,
 
-  unicodeAndSpacesExercised:
-    [flowProjectPath, movedReplacement, batchProjectPath, batchFiles[0]].every(
-      (path) => path.includes(" ") && path.includes("Ω"),
-    ),
+  unicodeAndSpacesExercised: [
+    flowProjectPath,
+    movedReplacement,
+    batchProjectPath,
+    batchFiles[0],
+  ].every((path) => path.includes(" ") && path.includes("Ω")),
 
   publicEvidenceContainsNoRawPaths: [
     importEvidence,
