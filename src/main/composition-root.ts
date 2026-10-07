@@ -1,11 +1,13 @@
-import { dialog } from "electron";
-import { resolve } from "node:path";
+import { app, dialog } from "electron";
+import { join, resolve } from "node:path";
 import { ProjectLifecycleService } from "../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../core/application/services/project-path-session";
 import {
   LoadProjectUseCase,
   SaveProjectUseCase,
 } from "../core/application/services/project-persistence";
+import { ProjectRecoveryService } from "../core/application/services/project-recovery-service";
+import { JsonProjectRecoveryStore } from "./infrastructure/persistence/json-project-recovery-store";
 import { JsonProjectStore } from "./infrastructure/persistence/json-project-store";
 import type { ProjectIpcDependencies } from "./ipc/register-ipc";
 
@@ -23,6 +25,14 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
   const pathSession = new ProjectPathSession();
   const saveProject = new SaveProjectUseCase(projectStore);
   const loadProject = new LoadProjectUseCase(projectStore);
+
+  const fixedRecoveryRoot = readArgValue(argv, "w11-recovery-dir");
+  const recoveryStore = new JsonProjectRecoveryStore(() =>
+    fixedRecoveryRoot
+      ? resolve(fixedRecoveryRoot)
+      : join(app.getPath("userData"), "recovery"),
+  );
+  const recoveryService = new ProjectRecoveryService(recoveryStore);
 
   const fixedSavePath =
     readArgValue(argv, "w11-save-as-path") ??
@@ -74,6 +84,7 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     lifecycle,
     loadProject,
     pathSession,
+    recoveryService,
   };
 
   if (startupProjectPath) {
