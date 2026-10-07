@@ -45,9 +45,43 @@ const getFoundationInfoMock = vi.fn<LfaBridge["getFoundationInfo"]>(
     phase: "foundation" as const,
   }),
 );
+const pickAudioFilesMock = vi.fn<LfaBridge["pickAudioFiles"]>(async () => ({
+  status: "cancelled" as const,
+  code: "MEDIA_SELECTION_CANCELLED" as const,
+}));
+const pickMediaFolderMock = vi.fn<LfaBridge["pickMediaFolder"]>(async () => ({
+  status: "cancelled" as const,
+  code: "MEDIA_SELECTION_CANCELLED" as const,
+}));
+const discoverDroppedMediaMock = vi.fn<LfaBridge["discoverDroppedMedia"]>(
+  async () => ({
+    status: "error" as const,
+    code: "MEDIA_DISCOVERY_FAILED" as const,
+    message: "Not used in frozen AppShell tests.",
+  }),
+);
+const getMediaDiscoveryStatusMock = vi.fn<
+  LfaBridge["getMediaDiscoveryStatus"]
+>(async (batchId) => ({
+  status: "error" as const,
+  batchId,
+  code: "MEDIA_DISCOVERY_FAILED" as const,
+  message: "Not used in frozen AppShell tests.",
+}));
+const cancelMediaDiscoveryMock = vi.fn<LfaBridge["cancelMediaDiscovery"]>(
+  async (batchId) => ({
+    status: "not-running" as const,
+    batchId,
+  }),
+);
 
 const bridge: LfaBridge = {
   getFoundationInfo: getFoundationInfoMock,
+  pickAudioFiles: pickAudioFilesMock,
+  pickMediaFolder: pickMediaFolderMock,
+  discoverDroppedMedia: discoverDroppedMediaMock,
+  getMediaDiscoveryStatus: getMediaDiscoveryStatusMock,
+  cancelMediaDiscovery: cancelMediaDiscoveryMock,
   saveProject: saveProjectMock,
   saveProjectAs: saveProjectAsMock,
   openProject: openProjectMock,
@@ -82,6 +116,11 @@ beforeEach(() => {
   acceptRecoveryMock.mockClear();
   discardRecoveryMock.mockClear();
   getFoundationInfoMock.mockClear();
+  pickAudioFilesMock.mockClear();
+  pickMediaFolderMock.mockClear();
+  discoverDroppedMediaMock.mockClear();
+  getMediaDiscoveryStatusMock.mockClear();
+  cancelMediaDiscoveryMock.mockClear();
 });
 
 afterEach(() => {
