@@ -430,7 +430,8 @@ export function useProjectSession(): ProjectSessionView {
           const invalidResult: SaveProjectResult = {
             status: "error",
             code: "PROJECT_WRITE_FAILED",
-            message: "Saved project revision did not match the requested checkpoint.",
+            message:
+              "Saved project revision did not match the requested checkpoint.",
           };
           setPersistenceState("error");
           setErrorCode(invalidResult.code);

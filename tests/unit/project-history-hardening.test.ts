@@ -88,9 +88,9 @@ describe("T11-W03-05 unified history hardening", () => {
         createEmptyProject(`origin-single-${origin}`),
       );
 
-      expect(engine.execute(renameCommand(`Album ${origin}`, origin)).status).toBe(
-        "applied",
-      );
+      expect(
+        engine.execute(renameCommand(`Album ${origin}`, origin)).status,
+      ).toBe("applied");
       expect(engine.historyEntries()).toEqual([
         expect.objectContaining({
           kind: "project.rename",
@@ -278,14 +278,14 @@ describe("T11-W03-05 unified history hardening", () => {
       createEmptyProject("late-save-checkpoint"),
     );
 
-    expect(
-      session.execute(renameCommand("Saved A", "manual")).status,
-    ).toBe("applied");
+    expect(session.execute(renameCommand("Saved A", "manual")).status).toBe(
+      "applied",
+    );
     const saveCheckpoint = session.snapshot();
 
-    expect(
-      session.execute(renameCommand("Newer B", "manual")).status,
-    ).toBe("applied");
+    expect(session.execute(renameCommand("Newer B", "manual")).status).toBe(
+      "applied",
+    );
 
     session.markSavedCheckpoint(
       saveCheckpoint.stateToken,
@@ -377,12 +377,12 @@ describe("T11-W03-05 unified history hardening", () => {
     session.undo();
     const clean = session.snapshot();
     expect(clean.dirty).toBe(false);
-    expect(
-      await recovery.autosave(clean.project, clean.savedRevision),
-    ).toEqual({
-      status: "skipped",
-      reason: "clean",
-    });
+    expect(await recovery.autosave(clean.project, clean.savedRevision)).toEqual(
+      {
+        status: "skipped",
+        reason: "clean",
+      },
+    );
   });
 
   it("keeps 128-track batch history and timeline deterministic through 60 Undo/Redo cycles", () => {
@@ -466,7 +466,9 @@ describe("T11-W03-05 unified history hardening", () => {
       redoDepth: 0,
       dirty: true,
     });
-    expect(redone.project.tracks.map((track) => track.id)).toEqual(changedOrder);
+    expect(redone.project.tracks.map((track) => track.id)).toEqual(
+      changedOrder,
+    );
     expect(projectAlbumTimeline(redone.project)).toMatchObject({
       complete: true,
       enabledTrackCount: 68,

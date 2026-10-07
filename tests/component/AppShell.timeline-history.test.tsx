@@ -751,5 +751,4 @@ describe("AppShell frozen timeline and global history wiring", () => {
       ),
     ).toEqual(["track-1", "track-3", "track-2"]);
   });
-
 });
