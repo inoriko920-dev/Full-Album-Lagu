@@ -5,7 +5,7 @@ Planning baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`
 Features: **FTR-007 Manual Layer Editor + FTR-011 Template Workflow**  
 Cross-cut: **FTR-013 Unified Command History + FTR-018 Error/Offline**  
 Planning status: **COMPLETE / PASS**  
-Implementation status: **IN PROGRESS — T11-W05-01 PASS / VERIFIED; T11-W05-02 READY**  
+Implementation status: **IN PROGRESS — T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY**  
 UI decision: **reuse frozen SCR-002C, SCR-003A, SCR-003B and DLG-008; no new UI prompt/image stage required**
 
 ## Source authority
@@ -276,7 +276,7 @@ A stale trial/apply rejects atomically and must be restarted.
 6. **T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring**
 7. **T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure**
 
-Execution is strictly serial. T11-W05-01 is PASS / VERIFIED; only T11-W05-02 is READY.
+Execution is strictly serial. T11-W05-01..02 are PASS / VERIFIED; only T11-W05-03 is READY.
 
 ## Stress targets
 
@@ -302,7 +302,7 @@ Every implementation task preserves:
 
 ## Planning verdict
 
-**PASS.** W11-05 planning remains authoritative. T11-W05-01 is PASS / VERIFIED; **only T11-W05-02** is authorized next for SOL. No new UI prompt/image stage is required.
+**PASS.** W11-05 planning remains authoritative. T11-W05-01..02 are PASS / VERIFIED; **only T11-W05-03** is authorized next for SOL. No new UI prompt/image stage is required.
 
 
 ## T11-W05-01 verified implementation
@@ -312,4 +312,17 @@ Every implementation task preserves:
 - Evidence: `evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
 - Additive schema-v1 visualScene, normalized logical canvas, stable IDs/canonical layer order, pure track-bound projection and persistence compatibility are proven.
 - Scope boundary remains intact: no manual commands/UI/template store/playback/keyframes/Gemini/FFmpeg were introduced.
-- Dependency unlock: T11-W05-02 READY; T11-W05-03..07 remain blocked.
+- Dependency unlock: T11-W05-02 PASS / VERIFIED; T11-W05-03 READY; T11-W05-04..07 remain blocked.
+
+
+## T11-W05-02 verified implementation
+- Status: PASS / VERIFIED.
+- Verified implementation head: `308a4800bcbfcf4e85828795e6573893622dd722`.
+- Windows CI: `37687361672` / #336 PASS.
+- Evidence: `evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md`.
+- Shared CommandEngine now owns stable-ID layer CRUD/reorder/transform/common/text-style mutations.
+- Locked/stale/duplicate/invalid targets reject atomically; semantic no-op creates no revision/history.
+- Transform gesture preview is session-only and commits once at gesture end.
+- 128-layer / 64-edit full Undo/Redo stress PASS.
+- Scope boundary remains intact: no renderer UI, template store/UI, playback, keyframes, Gemini or FFmpeg were introduced.
+- Dependency unlock: T11-W05-03 READY; T11-W05-04..07 remain blocked.
