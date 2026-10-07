@@ -52,13 +52,19 @@ jobs:
               return "\n".join(lines)
 
           manifest = []
+          missing = []
           for src in docs:
               p = Path(src)
+              if not p.exists():
+                  missing.append(src)
+                  manifest.append(f"MISSING\t{src}")
+                  continue
               text = extract_docx(p)
               dest = out / (p.stem + ".txt")
               dest.write_text(text, encoding="utf-8")
-              manifest.append(f"{src}\t{len(text)} chars\t{dest}")
+              manifest.append(f"OK\t{src}\t{len(text)} chars\t{dest}")
           (out / "MANIFEST.txt").write_text("\n".join(manifest), encoding="utf-8")
+          (out / "MISSING.txt").write_text("\n".join(missing), encoding="utf-8")
           PY
 
       - uses: actions/upload-artifact@v4
