@@ -593,8 +593,12 @@ export function useProjectSession(): ProjectSessionView {
           setLastRelinkResults([result.result]);
           setRelinkActionState("error");
           setMediaError({
-            code: result.result.code,
-            message: result.result.message,
+            code:
+              "code" in result.result ? result.result.code : "RELINK_FAILED",
+            message:
+              result.result.status === "error"
+                ? result.result.message
+                : "Media tidak dapat dihubungkan kembali.",
           });
         }
 
@@ -612,8 +616,8 @@ export function useProjectSession(): ProjectSessionView {
         setLastRelinkResults([result.result]);
         setRelinkActionState("error");
         setMediaError({
-          code: result.result.code,
-          message: result.result.message,
+          code: "RELINK_FAILED",
+          message: "Media tidak dapat dihubungkan kembali.",
         });
         return result;
       }
