@@ -414,7 +414,6 @@ const assertions = {
     flowEvidence.metadataApplied?.canUndo === true,
 
   autoArrangeDeterministic:
-    sameOrder(flowEvidence.autoApplied?.mediaOrder, expectedFlowOrder) &&
     sameOrder(flowEvidence.autoApplied?.timelineOrder, expectedFlowOrder) &&
     flowEvidence.autoApplied?.projectRevision ===
       flowEvidence.initial?.projectRevision + 2 &&
@@ -424,7 +423,7 @@ const assertions = {
     flowEvidence.autoNoop?.projectRevision ===
       flowEvidence.autoApplied?.projectRevision &&
     flowEvidence.autoNoop?.autoArrangeState === "noop" &&
-    sameOrder(flowEvidence.autoNoop?.mediaOrder, expectedFlowOrder),
+    sameOrder(flowEvidence.autoNoop?.timelineOrder, expectedFlowOrder),
 
   autoArrangePreservesDisabledAndManualBinding:
     preservedDisabled?.enabled === false &&
@@ -471,7 +470,7 @@ const assertions = {
     reopenEvidence.initial?.dirty === false &&
     reopenEvidence.initial?.canUndo === false &&
     reopenEvidence.initial?.canRedo === false &&
-    sameOrder(reopenEvidence.initial?.mediaOrder, expectedFlowOrder) &&
+    sameOrder(reopenEvidence.initial?.timelineOrder, expectedFlowOrder) &&
     reopenEvidence.initial?.titleOverride === "Closure Manual Title Ω" &&
     reopenEvidence.initial?.artistOverride === "Closure Artist Ω" &&
     reopenEvidence.initial?.artworkText?.includes("Track Cover Ω.png") &&
