@@ -703,7 +703,7 @@
 - Evidence: `docs/step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
 - Result: additive schema-v1 visualScene + normalized logical canvas + pure W11-04-bound projection verified.
 - Regression: 244 Vitest assertions + STEP 10/W11-01..04/frozen UI/package/smoke/ZIP PASS.
-- Dependency unlock: T11-W05-02 READY; later W11-05 tasks remain serially blocked.
+- Historical dependency result at T11-W05-01 closure: W05-02 was unlocked. Current checkpoint: T11-W05-02 PASS / VERIFIED; T11-W05-03 READY.
 ## T11-W05-02 — Manual Layer Commands + Gesture/History Semantics
 - Owner: SOL
 - Priority: P0
