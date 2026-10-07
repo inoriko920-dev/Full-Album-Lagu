@@ -56,6 +56,15 @@ Planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
 - Verified contribution: AC-10 main-owned PNG/JPEG/WebP optional source-preserving intake; AC-11 per-track artwork priority and clear-to-default/placeholder behavior; AC-12 missing optional artwork stays nonblocking while corrupt/unsupported intake fails safely; AC-13 one import+bind is one atomic manual history step with Undo/Redo; AC-18 artwork history semantics; AC-20 source-image byte/size/mtime immutability contribution; AC-21 architecture/secrets/portable-path/provider-free gates; AC-22 prior-wave/frozen-UI/package/smoke/ZIP regression contribution.
 - Full SHA-256/source-immutability matrix and final AC-W11-04-01..22 closure remain owned by T11-W04-06.
 
+## T11-W04-04 checkpoint evidence
+
+- T11-W04-04 status: **PASS / VERIFIED**.
+- Verified implementation head: `ea2b6230af036f9eed05232d5ef0cd96609abb7d`.
+- Windows CI: `37659863455` / #283 PASS; job `112924307870`.
+- Evidence: `evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`.
+- Verified contribution: AC-03 manual override priority/provenance integration; AC-11 artwork remains preserved while metadata fields are set/cleared; AC-14 Apply/Clear use manual command history while draft helpers remain session-only/non-dirty; AC-15 relink-refreshed audio metadata becomes the derived fallback when no manual override blocks the field; AC-16 explicit overrides persist through Save/Reopen without derived duplication; AC-18 Undo/Redo restores metadata semantic state and the logical saved checkpoint with monotonic revision; AC-21 architecture/secrets/portable-path/provider-free gates; AC-22 prior-wave/frozen-UI/package/smoke/ZIP regression contribution.
+- Final complete AC-W11-04-01..22 closure remains owned by T11-W04-06.
+
 ## Closure rule
 
 W11-04 is not COMPLETE because code exists. T11-W04-06 must provide final Windows evidence, map AC-W11-04-01..22 to PASS, and record an architecture/UI/trust-boundary drift review with **no material drift**.

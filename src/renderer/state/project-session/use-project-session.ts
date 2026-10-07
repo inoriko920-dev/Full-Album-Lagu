@@ -1,5 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  createClearTrackMetadataOverridesCommand,
+  createSetTrackMetadataOverridesCommand,
+  type TrackMetadataOverrideField,
+  type TrackMetadataOverrides,
+} from "../../../core/application/services/project-metadata-commands";
 import { ProjectSessionHistory } from "../../../core/application/services/project-session-history";
+import {
+  createTrackMetadataDraft as buildTrackMetadataDraft,
+  type TrackMetadataDraft,
+} from "../../../core/application/services/track-metadata-draft";
 import {
   createTrackReorderCommand,
   createTrackSetEnabledCommand,
@@ -29,6 +39,10 @@ import {
   createEmptyProject,
   type ProjectDocument,
 } from "../../../core/domain/project-document";
+import {
+  resolveSelectedTrackProjection,
+  type SelectedTrackProjection,
+} from "../../../core/domain/selected-track-projection";
 
 export type ProjectSourceState = "new" | "loaded" | "load-error";
 export type ProjectPersistenceState =
@@ -101,6 +115,16 @@ export interface ProjectSessionView {
   lastRelinkResults: MediaRelinkResult[];
   reorderTrack(trackId: string, toIndex: number): boolean;
   setTrackEnabled(trackId: string, enabled: boolean): boolean;
+  selectedTrackProjection(trackId: string | null): SelectedTrackProjection;
+  createTrackMetadataDraft(trackId: string): TrackMetadataDraft;
+  applyTrackMetadataOverrides(
+    trackId: string,
+    overrides: TrackMetadataOverrides,
+  ): boolean;
+  clearTrackMetadataOverrides(
+    trackId: string,
+    fields?: readonly TrackMetadataOverrideField[],
+  ): boolean;
   undo(): boolean;
   redo(): boolean;
   save(): Promise<SaveProjectResult>;
@@ -392,6 +416,59 @@ export function useProjectSession(): ProjectSessionView {
       return result.status === "applied";
     },
     [history, publishHistorySnapshot, syncMediaProjection],
+  );
+
+  const selectedTrackProjection = useCallback(
+    (trackId: string | null): SelectedTrackProjection =>
+      resolveSelectedTrackProjection(projectRef.current, trackId),
+    [],
+  );
+
+  const createTrackMetadataDraft = useCallback(
+    (trackId: string): TrackMetadataDraft =>
+      buildTrackMetadataDraft(projectRef.current, trackId),
+    [],
+  );
+
+  const applyTrackMetadataOverrides = useCallback(
+    (trackId: string, overrides: TrackMetadataOverrides): boolean => {
+      const before = history.snapshot();
+      const result = history.execute(
+        createSetTrackMetadataOverridesCommand({
+          trackId,
+          overrides,
+          expectedBaseRevision: before.project.revision,
+          expectedStateToken: before.stateToken,
+        }),
+      );
+
+      if (result.status === "rejected") return false;
+      if (result.status === "applied") publishHistorySnapshot();
+      return result.status === "applied";
+    },
+    [history, publishHistorySnapshot],
+  );
+
+  const clearTrackMetadataOverrides = useCallback(
+    (
+      trackId: string,
+      fields?: readonly TrackMetadataOverrideField[],
+    ): boolean => {
+      const before = history.snapshot();
+      const result = history.execute(
+        createClearTrackMetadataOverridesCommand({
+          trackId,
+          ...(fields === undefined ? {} : { fields }),
+          expectedBaseRevision: before.project.revision,
+          expectedStateToken: before.stateToken,
+        }),
+      );
+
+      if (result.status === "rejected") return false;
+      if (result.status === "applied") publishHistorySnapshot();
+      return result.status === "applied";
+    },
+    [history, publishHistorySnapshot],
   );
 
   const undo = useCallback((): boolean => {
@@ -889,6 +966,10 @@ export function useProjectSession(): ProjectSessionView {
     lastRelinkResults,
     reorderTrack,
     setTrackEnabled,
+    selectedTrackProjection,
+    createTrackMetadataDraft,
+    applyTrackMetadataOverrides,
+    clearTrackMetadataOverrides,
     undo,
     redo,
     save,

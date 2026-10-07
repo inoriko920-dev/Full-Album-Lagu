@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL (T11-W04-04 only; W11-04 implementation in progress)
+- Active role at current checkpoint: SOL (T11-W04-05 only; W11-04 implementation in progress)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 T11-W04-01..03 PASS / VERIFIED; T11-W04-04 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 T11-W04-01..04 PASS / VERIFIED; T11-W04-05 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-03 Album Timeline + Command History`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Current wave: `W11-04 Auto Susun + Track Binding` — T11-W04-01..03 PASS / VERIFIED; T11-W04-04 READY
+- Current wave: `W11-04 Auto Susun + Track Binding` — T11-W04-01..04 PASS / VERIFIED; T11-W04-05 READY
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -42,6 +42,7 @@
   - `T11-W04-01 Binding Schema + Resolver Contracts` — PASS
   - `T11-W04-02 Deterministic Auto Susun Planner + CommandBatch` — PASS
   - `T11-W04-03 Artwork Intake + Binding Commands` — PASS
+  - `T11-W04-04 Metadata Override + Dynamic Binding Integration` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -159,13 +160,19 @@
 - T11-W04-03 Windows portable artifact: `11500071293`
 - T11-W04-03 frozen visual artifact: `11498643123`
 - T11-W04-03 evidence: `docs/step11/evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`
-- Next authorized action: SOL `T11-W04-04 Metadata Override + Dynamic Binding Integration` only; T11-W04-05..06 remain blocked
+- T11-W04-04 verified implementation head: `ea2b6230af036f9eed05232d5ef0cd96609abb7d`
+- T11-W04-04 Windows CI: `37659863455` / run #283 — PASS
+- T11-W04-04 CI job: `112924307870`
+- T11-W04-04 Windows portable artifact: `11500660174`
+- T11-W04-04 frozen visual artifact: `11499639091`
+- T11-W04-04 evidence: `docs/step11/evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`
+- Next authorized action: SOL `T11-W04-05 Frozen Auto Susun + Inspector UI Wiring` only; T11-W04-06 remains blocked
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W04-03 Artwork Intake + Binding Commands VERIFIED.** Main-owned PNG/JPEG/WebP selection and signature validation, optional image lifecycle, album/per-track binding commands, atomic import+bind history, nonblocking missing artwork, relink identity and source-image byte/size/mtime immutability are verified. Windows CI #278 is fully green. T11-W04-04 is now the only READY implementation task.
+**PASS — T11-W04-04 Metadata Override + Dynamic Binding Integration VERIFIED.** Manual metadata set/clear commands, pure selected-track projection with provenance/audio status, session-only draft behavior, relink metadata fallback refresh, save/reopen persistence and logical saved-checkpoint Undo/Redo semantics are verified. Windows CI #283 is fully green. T11-W04-05 is now the only READY implementation task.
 
 ## T11-W04-02 verification
 - Verified implementation head: `e2bf67f6bd276748b3852a233873210aae9dfdf4`.
@@ -308,4 +315,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: remain **SOL** and execute **T11-W04-04 — Metadata Override + Dynamic Binding Integration only**. Implement explicit metadata Apply/Clear commands, derived fallback integration, relink/metadata refresh behavior and save/reopen semantics. Do not implement T11-W04-05 Inspector/UI wiring or later work in the same turn.
+After the user says `lanjutkan`: remain **SOL** and execute **T11-W04-05 — Frozen Auto Susun + Inspector UI Wiring only**. Wire the already-frozen Auto Susun and Inspector controls to the verified W04-02/W04-04 core, keep draft typing session-only until Apply, preserve Media/Timeline selection synchronization and global Undo/Redo, and do not implement W04-06 closure in the same turn.

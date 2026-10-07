@@ -607,14 +607,24 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W04-03 PASS / VERIFIED
+- Verified implementation head: `ea2b6230af036f9eed05232d5ef0cd96609abb7d`
+- Windows CI: `37659863455` / run #283 — PASS
+- CI job: `112924307870`
+- Windows portable artifact: `11500660174`
+- Frozen visual artifact: `11499639091`
+- Evidence: `docs/step11/evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`
 
 ## T11-W04-05 — Frozen Auto Susun + Inspector UI Wiring
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W04-04
+- Status: READY
+- Dependency: T11-W04-04 PASS / VERIFIED
 - UI rule: existing frozen pack is authoritative; if a required visual state is missing, STOP and return to ASTRA/UI governance.
 
 ## T11-W04-06 — Wave E2E, Stress, Drift Review & Evidence Closure

@@ -15,7 +15,7 @@ Dependency semantics:
 1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **COMPLETE / PASS**
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **COMPLETE / PASS**
-4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **IN PROGRESS; T11-W04-01..03 PASS / VERIFIED; T11-W04-04 READY**
+4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **IN PROGRESS; T11-W04-01..04 PASS / VERIFIED; T11-W04-05 READY**
 5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
 7. **W11-07 — Animation + Boundary Transitions** — FTR-009 + FTR-010
@@ -140,7 +140,7 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Features: FTR-005 + FTR-006; FTR-013/FTR-018 cross-cut.
 - Planning/DoR: PASS.
 - Acceptance: AC-W11-04-01..22.
-- Serial order: T11-W04-01 PASS -> T11-W04-02 PASS -> T11-W04-03 PASS -> T11-W04-04 READY -> T11-W04-05 BLOCKED -> T11-W04-06 BLOCKED.
+- Serial order: T11-W04-01 PASS -> T11-W04-02 PASS -> T11-W04-03 PASS -> T11-W04-04 PASS -> T11-W04-05 READY -> T11-W04-06 BLOCKED.
 - Auto Susun must be deterministic/offline and publish through the existing CommandEngine/CommandBatch seam.
 - Track binding/default artwork is additive schema-v1; resolved values remain derived.
 - Existing frozen UI is reused; no new UI prompt/image generation is required now.
@@ -167,4 +167,5 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - 128-track core stress is deterministic and all prior lifecycle/media/timeline/frozen UI/package regressions are green.
 - Evidence: `evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`.
 - T11-W04-03 verification: implementation head `f2e33b6ec6a08b3d92acbe4963a1cf73c7086825`; Windows CI `37657078199` / #278 PASS; evidence `evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`.
-- Dependency unlock: T11-W04-04 READY. T11-W04-05..06 remain blocked.
+- T11-W04-04 verification: implementation head `ea2b6230af036f9eed05232d5ef0cd96609abb7d`; Windows CI `37659863455` / #283 PASS; evidence `evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`.
+- Dependency unlock: T11-W04-05 READY. T11-W04-06 remains blocked.
