@@ -428,9 +428,36 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `96233d99ecf420ac1c3b583c959a63610c709c27`
+- Windows CI: `37634883632` / run #233 — PASS
+- CI job: `112838360903`
+- Windows portable artifact: `11489515325`
+- Frozen visual artifact: `11489775014`
+- Scope delivered:
+  - frozen Media + Album Timeline wired to shared ProjectSessionHistory / track command path;
+  - session-only selection shared across Media and Timeline without dirty/revision changes;
+  - session-only timeline zoom without project mutation;
+  - reorder and enable/disable controls use canonical CommandEngine mutations;
+  - global Undo/Redo disabled/enabled/action states;
+  - multi-track import remains one global UI Undo/Redo step;
+  - disabled-only missing audio immediately stops blocking Render/attention;
+  - boundary labels remain derived;
+  - permanent Gemini rail and exact empty SCR-002A remain unchanged.
+- Full Windows regression: PASS — STEP 10, W11-01, W11-02, exact frozen UI, package, smoke and portable ZIP.
+- Evidence: `docs/step11/evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`.
+- No new UI prompt/image generation; existing frozen references remain authoritative.
+- Out of scope honored: batch edge-case hardening, Auto Susun, templates, Gemini, FFmpeg/FFprobe, preview, layers, transitions, keyframes and render.
+
+## T11-W03-05 — Unified Batch History & Edge-Case Hardening
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
 - Status: READY
-- Dependency: T11-W03-03 PASS / VERIFIED.
+- Dependency: T11-W03-04 PASS / VERIFIED.
 - Scope authority: `docs/step11/TASK_CARDS_W11_03.md`.
-- Existing frozen UI references are authoritative; no new UI prompt/image generation.
-- T11-W03-05..06 remain BLOCKED serially.
+- T11-W03-06 remains BLOCKED serially.
 - W11-04 remains blocked until T11-W03-06 closes W11-03 COMPLETE / PASS.

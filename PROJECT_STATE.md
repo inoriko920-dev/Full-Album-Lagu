@@ -6,7 +6,7 @@
 - Active role at current checkpoint: SOL (next task only)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01..03 PASS / VERIFIED; T11-W03-04 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01..04 PASS / VERIFIED; T11-W03-05 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-02 Media Intake Foundation`
@@ -36,6 +36,7 @@
   - `T11-W03-01 Timeline Domain + CommandEngine Core` — PASS
   - `T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics` — PASS
   - `T11-W03-03 Reorder / Enable-Disable / Boundary Application Core` — PASS
+  - `T11-W03-04 Frozen Album Timeline + Global Undo/Redo UI Wiring` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -106,13 +107,29 @@
 - T11-W03-03 CI job: `112826044830`
 - T11-W03-03 Windows portable artifact: `11487030899`
 - T11-W03-03 evidence: `docs/step11/evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`
-- Next READY implementation task: `T11-W03-04 Frozen Album Timeline + Global Undo/Redo UI Wiring` — SOL
+- T11-W03-04 verified implementation head: `96233d99ecf420ac1c3b583c959a63610c709c27`
+- T11-W03-04 Windows CI: `37634883632` / run #233 — PASS
+- T11-W03-04 CI job: `112838360903`
+- T11-W03-04 Windows portable artifact: `11489515325`
+- T11-W03-04 frozen visual artifact: `11489775014`
+- T11-W03-04 evidence: `docs/step11/evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`
+- Next READY implementation task: `T11-W03-05 Unified Batch History & Edge-Case Hardening` — SOL
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W03-03 Reorder / Enable-Disable / Boundary Application Core VERIFIED.** Track reorder and enabled-state commands now run through the shared CommandEngine; effective media requirement follows enabled usage including shared assets; boundaries remain deterministic and derived; persistence/Unicode/source-immutability and 105-track coverage pass. Windows CI #225 is fully green including all prior lifecycle/media/frozen UI/package regressions. T11-W03-04 is now the only READY implementation task.
+**PASS — T11-W03-04 Frozen Album Timeline + Global Undo/Redo UI Wiring VERIFIED.** Existing frozen album/timeline surfaces now expose selection, reorder, enabled state, derived boundaries and global Undo/Redo through the single shared ProjectSessionHistory/CommandEngine path. Selection/zoom remain session-only and non-dirty, one multi-track import is one UI Undo, disabled-only missing audio no longer blocks Render, and exact empty SCR-002A remains unchanged. Windows CI #233 is fully green. T11-W03-05 is now the only READY implementation task.
+
+## T11-W03-04 verification
+- Verified implementation head: `96233d99ecf420ac1c3b583c959a63610c709c27`.
+- Windows CI: `37634883632` / #233 — PASS.
+- CI job: `112838360903`.
+- Windows portable artifact: `11489515325`.
+- Frozen visual artifact: `11489775014`.
+- Evidence: `docs/step11/evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`.
+- No new UI prompt/image was created; frozen reference hierarchy remains authoritative.
+- No batch hardening, provider/runtime integration, or later-wave feature was pulled forward.
 
 ## T11-W03-03 verification
 - Verified implementation head: `83fd9a0772c72c38a995ccd2609a910692a0e61a`.
@@ -189,4 +206,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: execute **T11-W03-04 — Frozen Album Timeline + Global Undo/Redo UI Wiring only** as SOL. Re-read the frozen UI references, W11-03 task card, and T11-W03-03 evidence first. Use the existing frozen images/reference documents; do not generate a new UI prompt/image and do not start T11-W03-05 in the same turn.
+After the user says `lanjutkan`: execute **T11-W03-05 — Unified Batch History & Edge-Case Hardening only** as SOL. Re-read the W11-03 task card and T11-W03-04 evidence first. Harden atomic batch/origin/history branches/save-recovery edge cases and 100+ stress proof. Do not start T11-W03-06 closure in the same turn.

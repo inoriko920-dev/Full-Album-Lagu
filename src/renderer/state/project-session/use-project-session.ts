@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ProjectSessionHistory } from "../../../core/application/services/project-session-history";
+import {
+  createTrackReorderCommand,
+  createTrackSetEnabledCommand,
+} from "../../../core/application/services/project-track-commands";
 import type { ProjectLocation } from "../../../core/contracts/project-lifecycle";
 import type {
   MediaBatchSummary,
@@ -20,6 +24,7 @@ import type {
   ProjectPersistenceErrorCode,
   SaveProjectResult,
 } from "../../../core/contracts/project-persistence";
+import { getProjectMediaReadiness } from "../../../core/domain/media-readiness";
 import {
   createEmptyProject,
   type ProjectDocument,
@@ -84,6 +89,8 @@ export interface ProjectSessionView {
   location: ProjectLocation;
   dirty: boolean;
   savedRevision: number;
+  canUndo: boolean;
+  canRedo: boolean;
   mediaOperationState: MediaOperationState;
   mediaProgress: MediaUiProgress | null;
   mediaSummary: MediaBatchSummary | null;
@@ -92,6 +99,10 @@ export interface ProjectSessionView {
   mediaReadiness: MediaReadiness;
   relinkActionState: RelinkActionState;
   lastRelinkResults: MediaRelinkResult[];
+  reorderTrack(trackId: string, toIndex: number): boolean;
+  setTrackEnabled(trackId: string, enabled: boolean): boolean;
+  undo(): boolean;
+  redo(): boolean;
   save(): Promise<SaveProjectResult>;
   acceptRecovery(): Promise<RecoveryAcceptResult>;
   discardRecovery(): Promise<RecoveryDiscardResult>;
@@ -166,6 +177,35 @@ export function useProjectSession(): ProjectSessionView {
     setHistorySnapshot(snapshot);
     return snapshot;
   }, [history]);
+
+  const syncMediaProjection = useCallback((targetProject: ProjectDocument) => {
+    const items: MissingMediaItem[] = (targetProject.mediaAssets ?? []).flatMap(
+      (asset) => {
+        if (
+          (asset.availability !== "missing" &&
+            asset.availability !== "invalid") ||
+          asset.errorCode === undefined ||
+          (asset.kind === "audio" && !asset.required)
+        ) {
+          return [];
+        }
+
+        return [
+          {
+            assetId: asset.id,
+            fileName: asset.fileName,
+            kind: asset.kind,
+            required: asset.required,
+            availability: asset.availability,
+            code: asset.errorCode,
+          },
+        ];
+      },
+    );
+
+    setMissingMediaItems(items);
+    setMediaReadiness(getProjectMediaReadiness(targetProject));
+  }, []);
 
   useEffect(() => {
     projectRef.current = project;
@@ -311,6 +351,66 @@ export function useProjectSession(): ProjectSessionView {
       window.clearInterval(timer);
     };
   }, [dirty, project, savedRevision, sourceState]);
+
+  const reorderTrack = useCallback(
+    (trackId: string, toIndex: number): boolean => {
+      const before = history.snapshot();
+      const result = history.execute(
+        createTrackReorderCommand({
+          trackId,
+          toIndex,
+          expectedBaseRevision: before.project.revision,
+          expectedStateToken: before.stateToken,
+        }),
+      );
+
+      if (result.status === "rejected") return false;
+
+      const snapshot = publishHistorySnapshot();
+      syncMediaProjection(snapshot.project);
+      return result.status === "applied";
+    },
+    [history, publishHistorySnapshot, syncMediaProjection],
+  );
+
+  const setTrackEnabled = useCallback(
+    (trackId: string, enabled: boolean): boolean => {
+      const before = history.snapshot();
+      const result = history.execute(
+        createTrackSetEnabledCommand({
+          trackId,
+          enabled,
+          expectedBaseRevision: before.project.revision,
+          expectedStateToken: before.stateToken,
+        }),
+      );
+
+      if (result.status === "rejected") return false;
+
+      const snapshot = publishHistorySnapshot();
+      syncMediaProjection(snapshot.project);
+      return result.status === "applied";
+    },
+    [history, publishHistorySnapshot, syncMediaProjection],
+  );
+
+  const undo = useCallback((): boolean => {
+    const result = history.undo();
+    if (result.status === "unavailable") return false;
+
+    const snapshot = publishHistorySnapshot();
+    syncMediaProjection(snapshot.project);
+    return true;
+  }, [history, publishHistorySnapshot, syncMediaProjection]);
+
+  const redo = useCallback((): boolean => {
+    const result = history.redo();
+    if (result.status === "unavailable") return false;
+
+    const snapshot = publishHistorySnapshot();
+    syncMediaProjection(snapshot.project);
+    return true;
+  }, [history, publishHistorySnapshot, syncMediaProjection]);
 
   const save = useCallback(async (): Promise<SaveProjectResult> => {
     if (persistenceState === "saving") {
@@ -741,6 +841,8 @@ export function useProjectSession(): ProjectSessionView {
     location,
     dirty,
     savedRevision,
+    canUndo: historySnapshot.canUndo,
+    canRedo: historySnapshot.canRedo,
     mediaOperationState,
     mediaProgress,
     mediaSummary,
@@ -749,6 +851,10 @@ export function useProjectSession(): ProjectSessionView {
     mediaReadiness,
     relinkActionState,
     lastRelinkResults,
+    reorderTrack,
+    setTrackEnabled,
+    undo,
+    redo,
     save,
     acceptRecovery,
     discardRecovery,
