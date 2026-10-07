@@ -1,0 +1,25 @@
+name: Temporary Prettier Preview
+
+on:
+  push:
+    branches:
+      - sol/t11-w02-02-discovery-queue
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format and print diff
+        shell: bash
+        run: |
+          npm run format
+          git diff --             src/core/contracts/lfa-bridge.ts             src/core/contracts/media-discovery.ts             src/main/composition-root.ts             src/main/ipc/register-ipc.ts
