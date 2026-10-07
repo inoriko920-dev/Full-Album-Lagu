@@ -220,7 +220,7 @@ describe("track application commands", () => {
         },
       ],
     });
-    expect(projectAlbumTimeline(reenabled).totalDurationMs).toBeUndefined();
+    expect(projectAlbumTimeline(reenabled).totalDurationMs).toBe(6000);
   });
 
   it("keeps a shared audio asset required while any referencing track remains enabled", () => {
