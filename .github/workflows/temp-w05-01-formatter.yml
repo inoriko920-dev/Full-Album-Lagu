@@ -1,0 +1,40 @@
+name: Temporary W05-01 Formatter
+
+on:
+  pull_request:
+    paths:
+      - "src/core/domain/visual-scene-schema.ts"
+      - "src/core/domain/visual-scene-projection.ts"
+      - "tests/unit/visual-scene.test.ts"
+      - ".github/workflows/temp-w05-01-formatter.yml"
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  format:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - run: npx prettier --write src/core/domain/visual-scene-schema.ts src/core/domain/visual-scene-projection.ts tests/unit/visual-scene.test.ts
+      - name: Commit formatted files if needed
+        shell: bash
+        run: |
+          if git diff --quiet -- src/core/domain/visual-scene-schema.ts src/core/domain/visual-scene-projection.ts tests/unit/visual-scene.test.ts; then
+            echo "Already formatted."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/core/domain/visual-scene-schema.ts src/core/domain/visual-scene-projection.ts tests/unit/visual-scene.test.ts
+          git commit -m "chore: format W05-01 visual scene files"
+          git push origin "HEAD:${{ github.head_ref }}"
