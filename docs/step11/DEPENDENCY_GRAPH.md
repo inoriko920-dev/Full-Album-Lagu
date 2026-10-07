@@ -12,8 +12,8 @@ Dependency semantics:
 
 ## Planned sequence
 
-1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **READY**
-2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018
+1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **COMPLETE / PASS**
+2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **NEXT PLANNING TARGET; SOL BLOCKED**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018
 4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006
 5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013
@@ -37,3 +37,10 @@ Dependency semantics:
 ## Why W11-01 first
 
 STEP 10 already proved one thin persistence path. W11-01 extends that seam into the minimum reliable lifecycle needed by every later feature: known-path Save, Save As, Open, dirty state, autosave snapshots and crash recovery. It is high-unlock, offline, deterministic, and does not require Gemini/FFmpeg/provider decisions.
+
+
+## W11-01 completion
+
+W11-01 dependency unlock is proven and closed. FTR-001 and FTR-002 are verified and may now serve as prerequisites for later waves. FTR-018 remains active cross-cutting work.
+
+W11-02 is the next sequence item, but implementation is not yet READY: ASTRA must first create/approve the W11-02 charter, acceptance mapping, task cards, and source-of-truth planning checkpoint.
