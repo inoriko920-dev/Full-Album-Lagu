@@ -31,14 +31,12 @@ export interface MetadataCommandExpectation {
   expectedStateToken?: ProjectStateToken;
 }
 
-export interface SetTrackMetadataOverridesCommandInput
-  extends MetadataCommandExpectation {
+export interface SetTrackMetadataOverridesCommandInput extends MetadataCommandExpectation {
   trackId: string;
   overrides: TrackMetadataOverrides;
 }
 
-export interface ClearTrackMetadataOverridesCommandInput
-  extends MetadataCommandExpectation {
+export interface ClearTrackMetadataOverridesCommandInput extends MetadataCommandExpectation {
   trackId: string;
   fields?: readonly TrackMetadataOverrideField[];
 }
@@ -116,18 +114,9 @@ function normalizeOverrides(
     }
   }
 
-  const titleOverride = normalizeTextOverride(
-    input.titleOverride,
-    "Title",
-  );
-  const artistOverride = normalizeTextOverride(
-    input.artistOverride,
-    "Artist",
-  );
-  const albumOverride = normalizeTextOverride(
-    input.albumOverride,
-    "Album",
-  );
+  const titleOverride = normalizeTextOverride(input.titleOverride, "Title");
+  const artistOverride = normalizeTextOverride(input.artistOverride, "Artist");
+  const albumOverride = normalizeTextOverride(input.albumOverride, "Album");
 
   let yearOverride: number | undefined;
   if (input.yearOverride !== undefined) {

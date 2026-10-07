@@ -1,7 +1,4 @@
-import type {
-  AudioMediaMetadata,
-  MediaAvailability,
-} from "./media-asset";
+import type { AudioMediaMetadata, MediaAvailability } from "./media-asset";
 import {
   projectDocumentSchema,
   type ProjectDocument,
@@ -70,8 +67,7 @@ export function resolveSelectedTrackProjection(
     track.audioAssetId === undefined
       ? undefined
       : project.mediaAssets?.find(
-          (asset) =>
-            asset.id === track.audioAssetId && asset.kind === "audio",
+          (asset) => asset.id === track.audioAssetId && asset.kind === "audio",
         );
 
   return {

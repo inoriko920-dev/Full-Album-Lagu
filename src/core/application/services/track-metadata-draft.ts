@@ -16,10 +16,7 @@ export type TrackMetadataDraftPatch = Partial<
   Omit<TrackMetadataDraft, "trackId">
 >;
 
-function requireTrack(
-  project: ProjectDocument,
-  trackId: string,
-) {
+function requireTrack(project: ProjectDocument, trackId: string) {
   const normalized = trackId.trim();
   if (normalized.length === 0) {
     throw new Error("Metadata draft track ID must be non-empty.");
