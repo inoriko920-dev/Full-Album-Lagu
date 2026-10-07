@@ -15,7 +15,7 @@ Dependency semantics:
 1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **COMPLETE / PASS**
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **COMPLETE / PASS**
-4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **IN PROGRESS; T11-W04-01..05 PASS / VERIFIED; T11-W04-06 READY**
+4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **COMPLETE / PASS**
 5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
 7. **W11-07 — Animation + Boundary Transitions** — FTR-009 + FTR-010
@@ -140,11 +140,11 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Features: FTR-005 + FTR-006; FTR-013/FTR-018 cross-cut.
 - Planning/DoR: PASS.
 - Acceptance: AC-W11-04-01..22.
-- Serial order: T11-W04-01 PASS -> T11-W04-02 PASS -> T11-W04-03 PASS -> T11-W04-04 PASS -> T11-W04-05 PASS -> T11-W04-06 READY.
+- Serial order: T11-W04-01 PASS -> T11-W04-02 PASS -> T11-W04-03 PASS -> T11-W04-04 PASS -> T11-W04-05 PASS -> T11-W04-06 PASS.
 - Auto Susun must be deterministic/offline and publish through the existing CommandEngine/CommandBatch seam.
 - Track binding/default artwork is additive schema-v1; resolved values remain derived.
 - Existing frozen UI is reused; no new UI prompt/image generation is required now.
-- W11-05 remains blocked until W11-04 reaches COMPLETE / PASS.
+- W11-05 is dependency-unlocked for **ASTRA planning only**; implementation remains blocked until its own planning/DoR gate passes.
 
 ## T11-W04-01 verification
 
@@ -169,4 +169,15 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - T11-W04-03 verification: implementation head `f2e33b6ec6a08b3d92acbe4963a1cf73c7086825`; Windows CI `37657078199` / #278 PASS; evidence `evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`.
 - T11-W04-04 verification: implementation head `ea2b6230af036f9eed05232d5ef0cd96609abb7d`; Windows CI `37659863455` / #283 PASS; evidence `evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`.
 - T11-W04-05 verification: implementation head `986e13f186d4dbc6bbb621f77a222fe8d30fa9f4`; Windows CI `37662992589` / #290 PASS; evidence `evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
-- Dependency unlock: T11-W04-06 READY.
+- Dependency unlock: W11-05 ASTRA planning only.
+
+
+## W11-04 completion
+- Serial tasks: T11-W04-01 PASS -> T11-W04-02 PASS -> T11-W04-03 PASS -> T11-W04-04 PASS -> T11-W04-05 PASS -> T11-W04-06 PASS.
+- AC-W11-04-01..22: ALL PASS.
+- FTR-005 + FTR-006: VERIFIED.
+- Architecture/UI/trust-boundary drift: PASS — NO MATERIAL DRIFT.
+- Verified implementation head: `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`.
+- Windows CI `37672986946` / #304 PASS.
+- **W11-04 COMPLETE / PASS.**
+- Dependency unlock: W11-05 Manual Layer Editor + Templates is ready for **ASTRA planning only**; SOL implementation remains blocked until W11-05 planning/DoR passes.

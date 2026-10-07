@@ -213,7 +213,7 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - T11-W04-03 Artwork Intake + Binding Commands: PASS / VERIFIED.
 - T11-W04-04 Metadata Override + Dynamic Binding Integration: PASS / VERIFIED.
 - T11-W04-05 Frozen Auto Susun + Inspector UI Wiring: PASS / VERIFIED.
-- T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure: READY.
+- T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure: PASS / VERIFIED.
 
 ## T11-W04-01 completed
 - Status: PASS / VERIFIED.
@@ -276,3 +276,20 @@ On the next user `lanjutkan`, run the W11-04 closure matrix only. Do not advance
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
+
+
+## W11-04 final closure
+- Status: **COMPLETE / PASS**.
+- Verified implementation head: `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`.
+- Windows CI: `37672986946` / #304 PASS; job `112969205553`.
+- Closure artifact: `11505875947`.
+- Portable artifact: `11505274919`.
+- Frozen visual artifact: `11506080483`.
+- AC-W11-04-01..22: ALL PASS.
+- 128-track live Auto Susun: PASS, 79 ms renderer probe / 650 ms process.
+- Source fingerprints: unchanged.
+- Architecture/UI/trust-boundary drift: PASS — NO MATERIAL DRIFT.
+- Evidence: `docs/step11/evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md`, `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`.
+
+## Next exact action
+After the user says `lanjutkan`, switch to **ASTRA** and perform **W11-05 Manual Layer Editor + Templates planning only**. Read the Software Factory guidance, all current source-of-truth/handoff files, and W11-04 closure evidence first. Create the detailed W11-05 planning DOCX/Markdown and DoR. Do not begin W11-05 SOL implementation, W11-06, or STEP 12 in the same turn.

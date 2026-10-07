@@ -77,3 +77,46 @@ Planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
 ## Closure rule
 
 W11-04 is not COMPLETE because code exists. T11-W04-06 must provide final Windows evidence, map AC-W11-04-01..22 to PASS, and record an architecture/UI/trust-boundary drift review with **no material drift**.
+
+
+## Final T11-W04-06 closure
+
+- Verified implementation head: `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`
+- Windows CI: `37672986946` / #304 — **PASS**
+- CI job: `112969205553`
+- Closure artifact: `11505875947`
+- Portable artifact: `11505274919`
+- Frozen visual artifact: `11506080483`
+- Canonical closure runner: `scripts/run-w11-auto-binding-closure.mjs`
+- 12-track full-flow / Save-Reopen / Undo-Redo: PASS
+- optional artwork missing/relink: PASS
+- 128-track live stress: PASS (79 ms renderer probe / 650 ms process)
+- source SHA-256/size/mtime unchanged: PASS
+- architecture/UI/trust-boundary drift: PASS — NO MATERIAL DRIFT
+
+| Acceptance | Final status |
+|---|---|
+| AC-W11-04-01 | PASS |
+| AC-W11-04-02 | PASS |
+| AC-W11-04-03 | PASS |
+| AC-W11-04-04 | PASS |
+| AC-W11-04-05 | PASS |
+| AC-W11-04-06 | PASS |
+| AC-W11-04-07 | PASS |
+| AC-W11-04-08 | PASS |
+| AC-W11-04-09 | PASS |
+| AC-W11-04-10 | PASS |
+| AC-W11-04-11 | PASS |
+| AC-W11-04-12 | PASS |
+| AC-W11-04-13 | PASS |
+| AC-W11-04-14 | PASS |
+| AC-W11-04-15 | PASS |
+| AC-W11-04-16 | PASS |
+| AC-W11-04-17 | PASS |
+| AC-W11-04-18 | PASS |
+| AC-W11-04-19 | PASS |
+| AC-W11-04-20 | PASS |
+| AC-W11-04-21 | PASS |
+| AC-W11-04-22 | PASS |
+
+**W11-04 acceptance gate: COMPLETE / PASS.**

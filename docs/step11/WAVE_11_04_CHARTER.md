@@ -5,7 +5,7 @@ Planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
 Features: **FTR-005 Auto Susun Album + FTR-006 Artwork/Metadata/Dynamic Track Binding**  
 Cross-cut: **FTR-013 Unified Command History + FTR-018 Error/Offline**  
 Planning status: **COMPLETE / PASS**  
-Implementation status: **IN PROGRESS — T11-W04-01..05 PASS / VERIFIED; T11-W04-06 READY**  
+Implementation status: **COMPLETE / PASS — T11-W04-01..06 PASS / VERIFIED**  
 UI decision: **reuse frozen UI; no new UI prompt/image stage is required now**
 
 ## Goal
@@ -107,7 +107,7 @@ Draft form values, selected Inspector control, picker/dialog state and plan-prev
 3. **T11-W04-03 — Artwork Intake + Binding Commands** — PASS / VERIFIED.
 4. **T11-W04-04 — Metadata Override + Dynamic Binding Integration** — PASS / VERIFIED.
 5. **T11-W04-05 — Frozen Auto Susun + Inspector UI Wiring** — PASS / VERIFIED.
-6. **T11-W04-06 — Wave E2E, Stress, Drift Review & Evidence Closure** — READY.
+6. **T11-W04-06 — Wave E2E, Stress, Drift Review & Evidence Closure** — PASS / VERIFIED.
 
 Only one task may be executed per user turn.
 
@@ -128,4 +128,15 @@ At least 128 tracks with mixed track numbers, filename numbers, missing metadata
 
 ## Planning verdict
 
-**PASS.** Planning remains authoritative. T11-W04-01..05 are verified; only T11-W04-06 is authorized next for SOL. W11-05+, STEP 12 integrations and all out-of-scope features remain blocked.
+**PASS / CLOSED.** T11-W04-01..06 are verified and AC-W11-04-01..22 are ALL PASS. W11-04 is COMPLETE / PASS. W11-05 is unlocked for ASTRA planning only; W11-05 SOL implementation, W11-06+, and STEP 12 integrations remain blocked until their own gates pass.
+
+
+## Closure evidence
+- Verified implementation head: `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`
+- Windows CI `37672986946` / #304 — PASS
+- CI job `112969205553`
+- Closure artifact `11505875947`
+- Portable artifact `11505274919`
+- Frozen visual artifact `11506080483`
+- 128-track live stress: 79 ms renderer probe / 650 ms process
+- Evidence: `evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md`, `evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`

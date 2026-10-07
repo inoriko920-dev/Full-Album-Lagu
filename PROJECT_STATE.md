@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL (T11-W04-06 only; W11-04 implementation in progress)
+- Active role at current checkpoint: SOL closure COMPLETE; next authorized role is ASTRA for W11-05 planning only
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 T11-W04-01..05 PASS / VERIFIED; T11-W04-06 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 not planned yet
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
-- Last completed wave: `W11-03 Album Timeline + Command History`
+- Last completed wave: `W11-04 Auto Susun + Track Binding`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Current wave: `W11-04 Auto Susun + Track Binding` — T11-W04-01..05 PASS / VERIFIED; T11-W04-06 READY
+- Current wave: `W11-04 Auto Susun + Track Binding` — COMPLETE / PASS; W11-05 ASTRA planning is next
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -44,6 +44,7 @@
   - `T11-W04-03 Artwork Intake + Binding Commands` — PASS
   - `T11-W04-04 Metadata Override + Dynamic Binding Integration` — PASS
   - `T11-W04-05 Frozen Auto Susun + Inspector UI Wiring` — PASS
+  - `T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -301,6 +302,21 @@
 - Drift review: `docs/step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`.
 - W11-03 implementation is in progress; T11-W03-01..02 are PASS / VERIFIED and T11-W03-03 is READY.
 
+## W11-04 closure verification
+- Verified implementation head: `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`.
+- Windows CI: `37672986946` / #304 PASS; job `112969205553`.
+- Closure artifact: `11505875947`.
+- Portable artifact: `11505274919`.
+- Frozen visual artifact: `11506080483`.
+- AC-W11-04-01..22: ALL PASS.
+- 12-track full-flow, Save/Reopen, Undo/Redo checkpoint and optional artwork missing/relink: PASS.
+- 128-track live Auto Susun: PASS (79 ms renderer probe / 650 ms process).
+- Source SHA-256/size/mtime: unchanged.
+- Architecture/UI/trust-boundary drift: PASS — NO MATERIAL DRIFT.
+- Evidence: `docs/step11/evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md`, `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`.
+- FTR-005 + FTR-006: VERIFIED W11-04.
+- FTR-018 cross-cut: PASS for W11-04.
+
 ## W11-02 planning decisions
 - One canonical Media Intake pipeline for picker, drag-drop file and drag-drop folder.
 - Main-owned filesystem/discovery/probe/relink; renderer remains filesystem-free.
@@ -322,4 +338,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: remain **SOL** and execute **T11-W04-06 — Wave E2E, Stress, Drift Review & Evidence Closure only**. Run canonical Windows full-flow, 128-track stress, artwork missing/relink, Save/Reopen, Undo/Redo saved checkpoint, source fingerprints, AC-W11-04-01..22 mapping and architecture/UI/trust-boundary drift review. Do not advance to W11-05 or STEP 12 in the same turn.
+After the user says `lanjutkan`: switch to **ASTRA** and perform **W11-05 Manual Layer Editor + Templates planning only**. Create/update the detailed planning source-of-truth and DoR before any W11-05 coding. Do not start SOL implementation, W11-06, or STEP 12 in the same turn.

@@ -78,7 +78,11 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Proof: Windows CI `37659863455` / #283 PASS; `docs/step11/evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`.
 - Completed: **T11-W04-05 Frozen Auto Susun + Inspector UI Wiring — PASS / VERIFIED**.
 - Proof: Windows CI `37662992589` / #290 PASS; `docs/step11/evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
-- Next exact implementation task: **T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure — SOL only**.
+- Completed: **T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure — PASS / VERIFIED**.
+- Proof: Windows CI `37672986946` / #304 PASS; AC-W11-04-01..22 ALL PASS; 12-track canonical W04 full-flow PASS; 128-track live renderer Auto Susun PASS in 79 ms; source fingerprints unchanged; `docs/step11/evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md`.
+- Architecture/UI/trust-boundary drift: **PASS — NO MATERIAL DRIFT**; `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`.
+- **W11-04 COMPLETE / PASS.**
+- Next exact task after user `lanjutkan`: **ASTRA W11-05 Manual Layer Editor + Templates planning only**. No W11-05 coding until its planning/DoR source-of-truth passes.
 - Existing frozen Auto Susun/Inspector/Media/Timeline surfaces are authoritative; no new UI prompt/image generation is required now.
 - If a required W11-04 visual state cannot be represented by the frozen pack, implementation must STOP and return to ASTRA/UI governance.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.
