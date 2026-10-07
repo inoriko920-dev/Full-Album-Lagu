@@ -8,7 +8,7 @@ on:
       - .github/workflows/tmp-prettier-w02-04.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   preview:
