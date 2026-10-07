@@ -290,10 +290,33 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: T11-W02-05 PASS.
-- Scope: execute final W11-02 acceptance matrix/E2E evidence, architecture/UI drift review, consolidate evidence, and close W11-02 only if every required criterion passes.
-- Gate: W11-02 must close COMPLETE / PASS before W11-03 can start.
+- Status: DONE
+- Work status: VERIFIED
+- Evidence status: COMPLETE
+- Gate: PASS
+- Verified branch head: `2af8e653fae57c216be63a7f1c9f866c269b36e9`
+- Clean Windows CI: `37616435681` / run #177 — PASS
+- CI job: `112775774987`
+- T11-W02-06 evidence artifact: `11481085315`
+- Windows portable package artifact: `11480135988`
+- Frozen visual artifact: `11479776589`
+- Acceptance result: AC-W11-02-01..18 all PASS; none BLOCKED.
+- Architecture/UI/trust-boundary drift: PASS — no material drift.
+- Scope delivered:
+  - dedicated Windows Electron closure E2E for 20+ import, duplicate de-duplication, deterministic order and source immutability;
+  - save/reopen -> required missing audio -> folder relink -> readiness restored flow;
+  - 105-file batch progress/responsiveness/order/non-destructive proof;
+  - Unicode/spaces and sanitized public evidence proof;
+  - full regression verification for STEP 10, W11-01, exact frozen UI, package, smoke and portable ZIP;
+  - consolidated wave closure and drift evidence.
+- Evidence:
+  - `docs/step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`
+  - `docs/step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`
+- W11-02 final status: COMPLETE / PASS.
 
-W11-03 remains blocked until W11-02 closes COMPLETE / PASS.
+## NEXT — ASTRA W11-03 Planning Checkpoint
+- Owner: ASTRA
+- Status: READY FOR PLANNING ONLY
+- Scope: create W11-03 Album Timeline + Command History charter, task cards, acceptance matrix, DoR and detailed planning DOCX before any SOL implementation.
+- Features: FTR-004 + FTR-013 + FTR-018 cross-cut.
+- W11-03 SOL implementation remains blocked until ASTRA planning/source-of-truth gate PASS.
