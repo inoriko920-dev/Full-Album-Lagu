@@ -2,8 +2,8 @@
 
 Planning role: **ASTRA**  
 Planning baseline analyzed: `main@da5b6786d0daa472c474a33ffd83a5834af24f82`  
-Status: **NORMALIZED / W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 PLANNING READY**  
-Implementation status: **W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 NOT STARTED**
+Status: **NORMALIZED / W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 PLANNING COMPLETE / PASS**  
+Implementation status: **W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 NOT STARTED — T11-W04-01 READY**
 
 The complete planning authority is the companion DOCX:
 `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
@@ -14,8 +14,8 @@ The complete planning authority is the companion DOCX:
 | FTR-002 | Autosave & Crash Recovery | F-001/F-017; FR-004 | MUST | FTR-001 | VERIFIED W11-01 |
 | FTR-003 | Media Intake & Validation | F-002; FR-005..008 | MUST | FTR-001 | VERIFIED W11-02 |
 | FTR-004 | Track Timeline & Track State | F-003; FR-009..011 | MUST | FTR-003 | VERIFIED W11-03 |
-| FTR-005 | Auto Susun Album | F-004; FR-012 | MUST | FTR-003,FTR-004,FTR-013 | PLANNED W11-04 |
-| FTR-006 | Artwork/Metadata/Dynamic Track Binding | F-005; FR-013..015 | MUST | FTR-003,FTR-004 | PLANNED W11-04 |
+| FTR-005 | Auto Susun Album | F-004; FR-012 | MUST | FTR-003,FTR-004,FTR-013 | W11-04 PLANNING PASS / IMPLEMENTATION READY |
+| FTR-006 | Artwork/Metadata/Dynamic Track Binding | F-005; FR-013..015 | MUST | FTR-003,FTR-004 | W11-04 PLANNING PASS / IMPLEMENTATION READY |
 | FTR-007 | Manual Layer Editor | F-006; FR-016..019 | MUST | FTR-013 + UI Freeze | PLANNED W11-05 |
 | FTR-008 | Audio-Reactive Visual Engine | F-007; FR-020..022 | MUST | FTR-003,FTR-012; later tool boundary | PLANNED W11-06 |
 | FTR-009 | Animation & Limited Keyframes | F-008; FR-023..024 | MUST | FTR-007,FTR-013 | PLANNED W11-07 |
@@ -74,3 +74,18 @@ The complete planning authority is the companion DOCX:
 - Closure evidence: `evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`.
 - Drift review: `evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`.
 - W11-04 is unlocked for ASTRA planning; W11-04 implementation has not started.
+
+
+## W11-04 planning checkpoint
+
+- Baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`.
+- Features: FTR-005 + FTR-006 with FTR-013/FTR-018 cross-cut.
+- ASTRA planning: COMPLETE / PASS.
+- DoR: PASS.
+- Planning authority: `docs/source-of-truth/planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`, `WAVE_11_04_CHARTER.md`, `TASK_CARDS_W11_04.md`, `W11_04_ACCEPTANCE_MATRIX.md`, `W11_04_DOR.md`.
+- Acceptance: AC-W11-04-01..22 defined.
+- T11-W04-01 Binding Schema + Resolver Contracts: READY.
+- T11-W04-02..06: BLOCKED serially.
+- FTR-005/FTR-006 are **not VERIFIED yet**; verification requires W11-04 implementation and closure evidence.
+- FTR-018 remains active cross-cutting work for W11-04.
+- Frozen UI pack is sufficient at planning time; no new UI prompt/image generation is authorized.
