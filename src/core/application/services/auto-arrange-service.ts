@@ -9,10 +9,7 @@ import type {
   ProjectStateToken,
 } from "./project-command-engine";
 
-export type AutoArrangeNumberSource =
-  | "audio-metadata"
-  | "filename"
-  | "none";
+export type AutoArrangeNumberSource = "audio-metadata" | "filename" | "none";
 
 export interface AutoArrangePlanItem {
   trackId: string;
@@ -205,7 +202,8 @@ export function createAutoArrangePlan(
     items: candidates.map((candidate) => ({
       trackId: candidate.track.id,
       fromIndex: candidate.originalIndex,
-      toIndex: targetIndexById.get(candidate.track.id) ?? candidate.originalIndex,
+      toIndex:
+        targetIndexById.get(candidate.track.id) ?? candidate.originalIndex,
       enabled: candidate.track.enabled !== false,
       numberSource: candidate.numberSource,
       ...(candidate.orderNumber === undefined

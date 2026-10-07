@@ -169,13 +169,7 @@ describe("deterministic Auto Susun planner", () => {
       baseRevision: 0,
       baseStateToken: "state-0",
       changed: true,
-      orderedTrackIds: [
-        "track-b",
-        "track-c",
-        "track-a",
-        "track-e",
-        "track-d",
-      ],
+      orderedTrackIds: ["track-b", "track-c", "track-a", "track-e", "track-d"],
     });
 
     expect(
@@ -257,9 +251,9 @@ describe("deterministic Auto Susun planner", () => {
       undoDepth: 1,
       redoDepth: 0,
     });
-    expect(
-      engine.snapshot().project.tracks.map((track) => track.id),
-    ).toEqual(plan.orderedTrackIds);
+    expect(engine.snapshot().project.tracks.map((track) => track.id)).toEqual(
+      plan.orderedTrackIds,
+    );
     expect(engine.historyEntries()).toEqual([
       expect.objectContaining({
         kind: "album.auto-arrange",
@@ -284,9 +278,9 @@ describe("deterministic Auto Susun planner", () => {
       undoDepth: 0,
       redoDepth: 1,
     });
-    expect(
-      engine.snapshot().project.tracks.map((track) => track.id),
-    ).toEqual(project.tracks.map((track) => track.id));
+    expect(engine.snapshot().project.tracks.map((track) => track.id)).toEqual(
+      project.tracks.map((track) => track.id),
+    );
 
     expect(engine.redo().status).toBe("applied");
     expect(engine.snapshot()).toMatchObject({
@@ -295,9 +289,9 @@ describe("deterministic Auto Susun planner", () => {
       undoDepth: 1,
       redoDepth: 0,
     });
-    expect(
-      engine.snapshot().project.tracks.map((track) => track.id),
-    ).toEqual(plan.orderedTrackIds);
+    expect(engine.snapshot().project.tracks.map((track) => track.id)).toEqual(
+      plan.orderedTrackIds,
+    );
   });
 
   it("is idempotent: planning/applying an already arranged project creates no revision or history noise", () => {
@@ -372,10 +366,7 @@ describe("deterministic Auto Susun planner", () => {
     const plan = createAutoArrangePlan(before.project, before.stateToken);
     const invalidPlan = {
       ...plan,
-      orderedTrackIds: [
-        ...plan.orderedTrackIds.slice(0, -1),
-        "track-unknown",
-      ],
+      orderedTrackIds: [...plan.orderedTrackIds.slice(0, -1), "track-unknown"],
     };
 
     expect(
@@ -392,9 +383,9 @@ describe("deterministic Auto Susun planner", () => {
       undoDepth: 0,
       redoDepth: 0,
     });
-    expect(
-      engine.snapshot().project.tracks.map((track) => track.id),
-    ).toEqual(projectFixture().tracks.map((track) => track.id));
+    expect(engine.snapshot().project.tracks.map((track) => track.id)).toEqual(
+      projectFixture().tracks.map((track) => track.id),
+    );
   });
 
   it("clones the plan into the batch so later caller mutation cannot change the pending operation", () => {
@@ -407,9 +398,9 @@ describe("deterministic Auto Susun planner", () => {
     plan.orderedTrackIds.reverse();
 
     expect(engine.executeBatch(batch).status).toBe("applied");
-    expect(
-      engine.snapshot().project.tracks.map((track) => track.id),
-    ).toEqual(expected);
+    expect(engine.snapshot().project.tracks.map((track) => track.id)).toEqual(
+      expected,
+    );
   });
 
   it("keeps direct plan application pure with respect to the input project", () => {
@@ -435,8 +426,8 @@ describe("deterministic Auto Susun planner", () => {
         id: `asset-${index}`,
         kind: "audio" as const,
         required: index % 9 !== 0,
-        sourcePath: `D:/Scale/${String((index * 37) % count + 1).padStart(3, "0")} Track ${index}.wav`,
-        fileName: `${String((index * 37) % count + 1).padStart(3, "0")} Track ${index}.wav`,
+        sourcePath: `D:/Scale/${String(((index * 37) % count) + 1).padStart(3, "0")} Track ${index}.wav`,
+        fileName: `${String(((index * 37) % count) + 1).padStart(3, "0")} Track ${index}.wav`,
         sizeBytes: 10000 + index,
         availability: "ready" as const,
         metadata: {
@@ -449,7 +440,7 @@ describe("deterministic Auto Susun planner", () => {
       tracks: Array.from({ length: count }, (_, index) => ({
         id: `track-${index}`,
         title: `Track ${index}`,
-        sourcePath: `D:/Scale/${String((index * 37) % count + 1).padStart(3, "0")} Track ${index}.wav`,
+        sourcePath: `D:/Scale/${String(((index * 37) % count) + 1).padStart(3, "0")} Track ${index}.wav`,
         audioAssetId: `asset-${index}`,
         ...(index % 9 === 0 ? { enabled: false } : {}),
         ...(index % 11 === 0
@@ -500,22 +491,19 @@ describe("deterministic Auto Susun planner", () => {
       }).toEqual(beforeState.get(track.id));
     }
 
-    const repeat = createAutoArrangePlan(
-      arranged.project,
-      arranged.stateToken,
-    );
+    const repeat = createAutoArrangePlan(arranged.project, arranged.stateToken);
     expect(repeat.changed).toBe(false);
-    expect(
-      engine.executeBatch(createAutoArrangeCommandBatch(repeat)),
-    ).toEqual({ status: "noop" });
+    expect(engine.executeBatch(createAutoArrangeCommandBatch(repeat))).toEqual({
+      status: "noop",
+    });
 
     expect(engine.undo().status).toBe("applied");
-    expect(
-      engine.snapshot().project.tracks.map((track) => track.id),
-    ).toEqual(project.tracks.map((track) => track.id));
+    expect(engine.snapshot().project.tracks.map((track) => track.id)).toEqual(
+      project.tracks.map((track) => track.id),
+    );
     expect(engine.redo().status).toBe("applied");
-    expect(
-      engine.snapshot().project.tracks.map((track) => track.id),
-    ).toEqual(planA.orderedTrackIds);
+    expect(engine.snapshot().project.tracks.map((track) => track.id)).toEqual(
+      planA.orderedTrackIds,
+    );
   });
 });
