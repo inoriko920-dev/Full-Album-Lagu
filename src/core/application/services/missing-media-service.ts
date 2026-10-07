@@ -27,7 +27,8 @@ export interface MissingMediaScanOutcome {
 function withoutErrorCode(
   asset: MediaAssetReference,
 ): Omit<MediaAssetReference, "errorCode"> {
-  const { errorCode: _ignored, ...rest } = asset;
+  const rest = { ...asset };
+  delete rest.errorCode;
   return rest;
 }
 
