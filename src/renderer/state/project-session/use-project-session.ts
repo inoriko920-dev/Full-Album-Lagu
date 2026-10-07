@@ -165,7 +165,7 @@ export function useProjectSession(): ProjectSessionView {
     projectRef.current = snapshot.project;
     setHistorySnapshot(snapshot);
     return snapshot;
-  }, []);
+  }, [history]);
 
   useEffect(() => {
     projectRef.current = project;
@@ -197,7 +197,7 @@ export function useProjectSession(): ProjectSessionView {
       history.reconcileSystemProject(scannedProject);
       return publishHistorySnapshot().project;
     },
-    [publishHistorySnapshot, scanMissingMediaState],
+    [history, publishHistorySnapshot, scanMissingMediaState],
   );
 
   const commitUserProjectMutation = useCallback(
@@ -219,7 +219,7 @@ export function useProjectSession(): ProjectSessionView {
 
       return publishHistorySnapshot().project;
     },
-    [publishHistorySnapshot],
+    [history, publishHistorySnapshot],
   );
 
   useEffect(() => {
@@ -272,7 +272,7 @@ export function useProjectSession(): ProjectSessionView {
     return () => {
       alive = false;
     };
-  }, [publishHistorySnapshot, scanMissingMediaState]);
+  }, [history, publishHistorySnapshot, scanMissingMediaState]);
 
   useEffect(() => {
     if (!dirty || sourceState === "load-error") {
@@ -345,7 +345,7 @@ export function useProjectSession(): ProjectSessionView {
       setErrorCode(result.code);
       return result;
     }
-  }, [persistenceState, project, publishHistorySnapshot]);
+  }, [history, persistenceState, project, publishHistorySnapshot]);
 
   const acceptRecovery =
     useCallback(async (): Promise<RecoveryAcceptResult> => {
