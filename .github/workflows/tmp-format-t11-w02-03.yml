@@ -1,0 +1,37 @@
+name: Temporary Format T11-W02-03
+
+on:
+  push:
+    branches:
+      - sol/t11-w02-03-audio-probe-metadata
+    paths:
+      - .github/workflows/tmp-format-t11-w02-03.yml
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: sol/t11-w02-03-audio-probe-metadata
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Apply exact Prettier output
+        shell: bash
+        run: |
+          npx prettier --write             src/core/application/services/media-intake-service.ts             src/main/infrastructure/media/music-metadata-probe-port.ts             tests/component/AppShell.test.tsx             tests/contract/media-intake-batch-contract.test.ts             tests/integration/music-metadata-probe-port.test.ts             tests/unit/media-intake-service.test.ts             tests/unit/music-metadata-probe-port.test.ts
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add             src/core/application/services/media-intake-service.ts             src/main/infrastructure/media/music-metadata-probe-port.ts             tests/component/AppShell.test.tsx             tests/contract/media-intake-batch-contract.test.ts             tests/integration/music-metadata-probe-port.test.ts             tests/unit/media-intake-service.test.ts             tests/unit/music-metadata-probe-port.test.ts
+          if git diff --cached --quiet; then
+            echo "No formatting changes needed."
+          else
+            git commit -m "style: format T11-W02-03 implementation"
+            git push origin HEAD:sol/t11-w02-03-audio-probe-metadata
+          fi
