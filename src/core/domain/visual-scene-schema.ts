@@ -191,9 +191,7 @@ export type VisualLayerTransform = z.infer<typeof visualLayerTransformSchema>;
 export type VisualBackgroundFill = z.infer<typeof visualBackgroundFillSchema>;
 export type VisualTextRole = z.infer<typeof visualTextRoleSchema>;
 export type VisualTextStyle = z.infer<typeof visualTextStyleSchema>;
-export type VisualBackgroundLayer = z.infer<
-  typeof visualBackgroundLayerSchema
->;
+export type VisualBackgroundLayer = z.infer<typeof visualBackgroundLayerSchema>;
 export type VisualArtworkLayer = z.infer<typeof visualArtworkLayerSchema>;
 export type VisualTextLayer = z.infer<typeof visualTextLayerSchema>;
 export type VisualSpectrumLayer = z.infer<typeof visualSpectrumLayerSchema>;

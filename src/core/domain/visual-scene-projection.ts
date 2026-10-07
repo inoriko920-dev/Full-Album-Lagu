@@ -17,9 +17,7 @@ import {
 } from "./visual-scene-schema";
 
 export type ResolvedSceneTrackContextSource =
-  | "selected"
-  | "first-enabled"
-  | "none";
+  "selected" | "first-enabled" | "none";
 
 export interface ResolvedSceneTrackContext {
   source: ResolvedSceneTrackContextSource;
@@ -27,9 +25,7 @@ export interface ResolvedSceneTrackContext {
 }
 
 export type ResolvedVisualTextProvenance =
-  | TrackPresentationProvenance
-  | "static"
-  | "structural-placeholder";
+  TrackPresentationProvenance | "static" | "structural-placeholder";
 
 export interface ResolvedVisualText {
   value: string;
@@ -83,7 +79,9 @@ function resolveTrackContext(
   selectedTrackId?: string,
 ): { context: ResolvedSceneTrackContext; track?: ProjectTrack } {
   if (selectedTrackId !== undefined) {
-    const selected = project.tracks.find((track) => track.id === selectedTrackId);
+    const selected = project.tracks.find(
+      (track) => track.id === selectedTrackId,
+    );
     if (selected !== undefined) {
       return {
         context: { source: "selected", trackId: selected.id },
@@ -105,9 +103,7 @@ function resolveTrackContext(
 
 function resolveTextLayer(
   layer: VisualTextLayer,
-  presentation:
-    | ReturnType<typeof resolveTrackPresentation>
-    | undefined,
+  presentation: ReturnType<typeof resolveTrackPresentation> | undefined,
 ): ResolvedTextLayer {
   if (layer.role === "static") {
     return {
@@ -171,9 +167,7 @@ function resolveTextLayer(
 function resolveArtworkLayer(
   project: ProjectDocument,
   layer: VisualArtworkLayer,
-  presentation:
-    | ReturnType<typeof resolveTrackPresentation>
-    | undefined,
+  presentation: ReturnType<typeof resolveTrackPresentation> | undefined,
 ): ResolvedArtworkLayer {
   if (layer.binding === "album-artwork") {
     const assetId = project.albumPresentation?.defaultArtworkAssetId;
@@ -190,8 +184,7 @@ function resolveArtworkLayer(
   return {
     ...layer,
     resolvedKind: "artwork",
-    resolvedArtwork:
-      presentation?.artwork ?? { provenance: "placeholder" },
+    resolvedArtwork: presentation?.artwork ?? { provenance: "placeholder" },
   };
 }
 

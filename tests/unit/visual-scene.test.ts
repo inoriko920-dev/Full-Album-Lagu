@@ -3,9 +3,7 @@ import {
   projectDocumentSchema,
   type ProjectDocument,
 } from "../../src/core/domain/project-document";
-import {
-  resolveVisualScene,
-} from "../../src/core/domain/visual-scene-projection";
+import { resolveVisualScene } from "../../src/core/domain/visual-scene-projection";
 import {
   visualSceneSchema,
   type VisualLayerTransform,
