@@ -3,6 +3,7 @@
 Status: **PASS / VERIFIED**  
 Wave: W11-04 — Auto Susun + Track Binding  
 Implementation head: `f6b3d8064c7025afbd6f882023a4bc5eba3ce078`  
+Source-of-truth sync commit: `58db6d2511bd82ab198cbfa64b254dc2cf9495fc`  
 Windows CI: `37654060583` / run #272 — **PASS**  
 CI job: `112904557720`
 
