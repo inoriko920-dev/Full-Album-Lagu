@@ -19,6 +19,11 @@ interface DiscoveredSource {
   source: MediaSourceDescriptor;
 }
 
+export interface DiscoveredMediaSource {
+  discoveryId: string;
+  source: MediaSourceDescriptor;
+}
+
 type BatchTerminalStatus = "completed" | "cancelled" | "error";
 
 interface BatchState {
@@ -181,10 +186,7 @@ export class MediaDiscoveryService {
     };
   }
 
-  getDiscoveredSources(batchId: string): readonly {
-    discoveryId: string;
-    source: MediaSourceDescriptor;
-  }[] {
+  getDiscoveredSources(batchId: string): readonly DiscoveredMediaSource[] {
     const state = this.batches.get(batchId);
     if (!state) return [];
 
