@@ -57,3 +57,22 @@ Task-level evidence contributes to this matrix but does not close the wave by it
 - AC-W11-05-25: **PASS for T11-W05-01 regression gate** — STEP 10 + W11-01..04 + frozen UI + package/smoke/ZIP green.
 
 These task-level statuses do not close the W11-05 acceptance matrix; final closure remains T11-W05-07 owned.
+
+
+## T11-W05-02 task-level evidence
+
+- Verified implementation head: `308a4800bcbfcf4e85828795e6573893622dd722`
+- Windows CI: `37687361672` / #336 — PASS
+- Evidence: `evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md`
+- AC-W11-05-05: **PASS at core-command level** — add/remove/duplicate/reorder are non-destructive and reversible through unified history.
+- AC-W11-05-06: **PARTIAL / command-state PASS** — transform/common state is canonical/reversible; visible Preview remains T11-W05-04/05.
+- AC-W11-05-07: **PASS at core gesture/history level** — continuous preview remains session-only and one gesture-end commit creates one history node.
+- AC-W11-05-08: **PASS at core-command level** — locked mutation rejects until explicit unlock.
+- AC-W11-05-09: **PARTIAL / command validation PASS** — text-style edits validate/persist; readable Preview remains later ownership.
+- AC-W11-05-10: **PARTIAL** — structural layer command targeting works without W11-06 runtime.
+- AC-W11-05-22: **PASS for logical non-destructive boundary** — layer remove/Undo leaves tracks/media references unchanged; physical fingerprint closure remains T11-W05-07.
+- AC-W11-05-23: **PASS for T11-W05-02** — architecture/secrets/portable trust boundaries remain intact.
+- AC-W11-05-24: **PARTIAL / 128-layer command-history stress PASS** — 100-template stress remains T11-W05-03/07.
+- AC-W11-05-25: **PASS for T11-W05-02 regression gate**.
+
+These task-level statuses do not close W11-05; final closure remains T11-W05-07 owned.

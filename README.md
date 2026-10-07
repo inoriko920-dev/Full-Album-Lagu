@@ -1,6 +1,6 @@
 # Lagu Full Album
 
-**Status:** Software Factory **STEP 11 — Feature Implementation Waves** is in progress. W11-01..04 are COMPLETE / PASS; **W11-05 is IN PROGRESS with T11-W05-01 PASS / VERIFIED and T11-W05-02 READY**.
+**Status:** Software Factory **STEP 11 — Feature Implementation Waves** is in progress. W11-01..04 are COMPLETE / PASS; **W11-05 is IN PROGRESS with T11-W05-01..02 PASS / VERIFIED and T11-W05-03 READY**.
 
 Lagu Full Album is a Windows 11 x64 desktop application for producing full-album MP4 videos. The manual editor is primary; a permanent right-side Gemini Agent is designed as a copilot over the same project state and command/history system.
 
@@ -12,10 +12,10 @@ Lagu Full Album is a Windows 11 x64 desktop application for producing full-album
 - W11-02 Media Intake & Relink: COMPLETE / PASS.
 - W11-03 Album Timeline + Unified Command History: COMPLETE / PASS.
 - W11-04 Auto Susun + Track Binding: COMPLETE / PASS.
-- W11-05 Manual Layer Editor + Templates: **T11-W05-01 Visual Scene + Layer Schema + Pure Projection PASS / VERIFIED; T11-W05-02 READY**.
+- W11-05 Manual Layer Editor + Templates: **T11-W05-01 Visual Scene foundation PASS / VERIFIED; T11-W05-02 Manual Layer Commands + Gesture/History PASS / VERIFIED; T11-W05-03 READY**.
 - Frozen UI pack: 29 approved visual states; W11-05 reuses SCR-002C, SCR-003A, SCR-003B and DLG-008 without a new UI prompt/image stage.
 - Gemini/provider, FFmpeg integration and final render runtime remain later gated work.
-- Next: **SOL T11-W05-02 — Manual Layer Commands + Gesture/History Semantics only**.
+- Next: **SOL T11-W05-03 — Template Document + Local Store + Trial/Apply Core only**.
 
 ## UI authority
 - `docs/ui/manifests/UI_REFERENCE_MANIFEST.json`

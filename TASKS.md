@@ -703,15 +703,25 @@
 - Evidence: `docs/step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
 - Result: additive schema-v1 visualScene + normalized logical canvas + pure W11-04-bound projection verified.
 - Regression: 244 Vitest assertions + STEP 10/W11-01..04/frozen UI/package/smoke/ZIP PASS.
-- Dependency unlock: T11-W05-02 READY; later W11-05 tasks remain serially blocked.
+- Historical dependency result at T11-W05-01 closure: W05-02 was unlocked. Current checkpoint: T11-W05-02 PASS / VERIFIED; T11-W05-03 READY.
 ## T11-W05-02 — Manual Layer Commands + Gesture/History Semantics
 - Owner: SOL
-- Status: READY
+- Priority: P0
+- Risk: HIGH
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W05-01 PASS / VERIFIED.
-
+- Verified implementation head: `308a4800bcbfcf4e85828795e6573893622dd722`
+- Windows CI: `37687361672` / #336 PASS; job `113018515599`.
+- Evidence: `docs/step11/evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md`.
+- Result: official manual layer commands + locked/stale guards + coalesced transform gesture + 128-layer stress verified.
+- Regression: 256 Vitest assertions + STEP 10/W11-01..04/frozen UI/package/smoke/ZIP PASS.
+- Dependency unlock: T11-W05-03 READY; later W11-05 tasks remain serially blocked.
 ## T11-W05-03 — Template Document + Local Store + Trial/Apply Core
 - Owner: SOL
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-02 PASS / VERIFIED.
 
 ## T11-W05-04 — Static Scene Preview + Selection/Inspector Projection

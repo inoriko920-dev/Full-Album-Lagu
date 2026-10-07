@@ -290,12 +290,12 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 ## W11-05 planning completed
 - Role: ASTRA.
 - Baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`.
-- Status: **PLANNING COMPLETE / PASS**; T11-W05-01 PASS / VERIFIED; T11-W05-02 READY.
+- Status: **PLANNING COMPLETE / PASS**; current implementation checkpoint is T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY.
 - Features: FTR-007 Manual Layer Editor + FTR-011 Template Workflow; FTR-013/FTR-018 cross-cut.
 - Planning DOCX: `docs/source-of-truth/planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
 - Companion authority: `WAVE_11_05_CHARTER.md`, `TASK_CARDS_W11_05.md`, `W11_05_ACCEPTANCE_MATRIX.md`, `W11_05_DOR.md`.
 - DoR: PASS; AC-W11-05-01..25 defined.
-- Serial tasks: T11-W05-01 PASS / VERIFIED; T11-W05-02 READY; T11-W05-03..07 BLOCKED.
+- Serial tasks: T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY; T11-W05-04..07 BLOCKED.
 - UI authority already frozen: SCR-002C (Layer), SCR-003A/003B (Template/Try), DLG-008/UI-IMG-012 (Save Template). No new UI prompt/image generation is needed.
 - Scope boundary: static scene/layer editing + visual-only local templates. Playback/audio-reactive remains W11-06; animation/transitions remains W11-07; Gemini/FFmpeg remains STEP 12.
 - Governance repair: `10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` was absent from checkout and is restored as a **reconstructed repository copy** with an integrity notice. Never describe it as the missing historical original.
@@ -314,5 +314,21 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 - 244 Vitest assertions plus STEP 10/W11-01..04/frozen UI/package/smoke/ZIP are green.
 - FTR-007/FTR-011 are not wave-VERIFIED yet.
 
+
+
+## T11-W05-02 completed
+- Status: **PASS / VERIFIED**.
+- Verified implementation head: `308a4800bcbfcf4e85828795e6573893622dd722`.
+- Windows CI: `37687361672` / #336 PASS; job `113018515599`.
+- Portable artifact: `11511078393`.
+- Frozen visual artifact: `11511467773`.
+- Evidence: `docs/step11/evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md`.
+- Official manual layer commands now cover add/remove/duplicate/reorder/transform/common/text-style through the shared CommandEngine.
+- Locked-layer mutation, stale revision/token, duplicate ID and invalid targets reject atomically.
+- Transform gesture preview is session-only; gesture end produces one guarded manual command/history node.
+- 128-layer / 64-edit full Undo/Redo stress is deterministic.
+- 256 Vitest assertions plus STEP 10/W11-01..04/frozen UI/package/smoke/ZIP are green.
+- FTR-007 is not wave-VERIFIED yet; FTR-011 has not started.
+
 ## Next exact action
-After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-02 — Manual Layer Commands + Gesture/History Semantics only**. Read W11-05 planning authority and T11-W05-01 evidence first. Do not start T11-W05-03, template store/UI, W11-06, W11-07 or STEP 12 in the same turn.
+After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-03 — Template Document + Local Store + Trial/Apply Core only**. Read W11-05 planning authority plus W05-01/W05-02 evidence first. Do not start T11-W05-04, Preview/UI wiring, W11-06, W11-07 or STEP 12 in the same turn.
