@@ -1337,3 +1337,180 @@ button:disabled {
   justify-content: flex-end;
   gap: 8px;
 }
+
+
+/* T11-W03-04 frozen album/timeline interaction states.
+   Empty SCR-002A stays unchanged; these styles activate only with project tracks/history. */
+
+.media-row {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.media-row.is-selected {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 1px rgb(59 130 246 / 10%);
+}
+
+.media-row--disabled {
+  background: #f8fafc;
+}
+
+.media-row__main {
+  min-width: 0;
+  min-height: 36px;
+  display: grid;
+  grid-template-columns: 28px 28px minmax(0, 1fr);
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  border: 0;
+  color: inherit;
+  background: transparent;
+  text-align: left;
+}
+
+.media-row__main:hover .media-row__copy strong {
+  color: var(--primary);
+}
+
+.media-row__controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.track-enabled-toggle {
+  min-width: 62px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.track-enabled-toggle input {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  accent-color: var(--primary);
+}
+
+.track-order-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.track-order-button {
+  width: 24px;
+  height: 24px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: #526173;
+  background: var(--surface);
+  font-size: 12px;
+  line-height: 1;
+}
+
+.track-order-button:not(:disabled):hover {
+  color: var(--primary);
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.track-order-button:disabled {
+  color: #b7c0cc;
+  background: #f8fafc;
+}
+
+.timeline-tools .text-tool:not(:disabled) {
+  color: #526173;
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.timeline-tools .text-tool:not(:disabled):hover {
+  color: var(--primary);
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.timeline-track {
+  grid-template-columns: 24px minmax(0, 1fr);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    width 120ms ease,
+    min-width 120ms ease,
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.timeline-track.is-selected {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px rgb(37 99 235 / 14%);
+}
+
+.timeline-track--disabled {
+  color: #64748b;
+  border-color: #d8dee8;
+  background: #f3f5f8;
+}
+
+.timeline-track--attention {
+  color: #9a5b00;
+  border-color: #fdba74;
+  background: #fff7ed;
+}
+
+.timeline-track__index {
+  color: #6b7c93;
+  font-size: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-track__copy {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.timeline-track__copy strong,
+.timeline-track__copy small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.timeline-track__copy strong {
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.timeline-track__copy small {
+  color: #718096;
+  font-family: "Cascadia Mono", "Consolas", monospace;
+  font-size: 9px;
+  font-variant-numeric: tabular-nums;
+}
+
+.timeline-track--disabled .timeline-track__copy strong {
+  text-decoration: line-through;
+  text-decoration-thickness: 1px;
+}
+
+@media (max-width: 1400px) {
+  .track-enabled-toggle span {
+    display: none;
+  }
+
+  .track-enabled-toggle {
+    min-width: auto;
+  }
+}
