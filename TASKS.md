@@ -403,8 +403,34 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `83fd9a0772c72c38a995ccd2609a910692a0e61a`
+- Windows CI: `37631324251` / run #225 — PASS
+- CI job: `112826044830`
+- Windows portable artifact: `11487030899`
+- Scope delivered:
+  - validated `track.reorder` and `track.set-enabled` commands through shared CommandEngine;
+  - canonical order remains `tracks[]`;
+  - stable IDs, audio links and source references;
+  - required audio media synchronized from effective enabled usage, including shared assets;
+  - deterministic derived boundary recalculation with no persisted timing duplication;
+  - invalid/no-op command safety;
+  - 105-track deterministic command coverage;
+  - Save/Close/Reopen order+enabled persistence with Unicode/spaces and unchanged source bytes.
+- Full Windows regression: PASS — STEP 10, W11-01, W11-02, exact frozen UI, package, smoke and portable ZIP.
+- Evidence: `docs/step11/evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`.
+- Out of scope honored: frozen timeline/global Undo-Redo UI, trim/split/ripple, Auto Susun, templates, Gemini, FFmpeg/FFprobe, preview, layers, transitions, keyframes and render.
+
+## T11-W03-04 — Frozen Album Timeline + Global Undo/Redo UI Wiring
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
 - Status: READY
-- Dependency: T11-W03-02 PASS / VERIFIED.
+- Dependency: T11-W03-03 PASS / VERIFIED.
 - Scope authority: `docs/step11/TASK_CARDS_W11_03.md`.
-- T11-W03-04..06 remain BLOCKED serially.
+- Existing frozen UI references are authoritative; no new UI prompt/image generation.
+- T11-W03-05..06 remain BLOCKED serially.
 - W11-04 remains blocked until T11-W03-06 closes W11-03 COMPLETE / PASS.
