@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   isProjectTrackEnabled,
   projectAlbumTimeline,
@@ -961,20 +961,18 @@ function MissingMediaDialog({
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<WorkRailTab>("media");
   const [missingDialogOpen, setMissingDialogOpen] = useState(false);
-  const [selectedTrackId, setSelectedTrackId] = useState<string | null>(null);
+  const [selectedTrackIdState, setSelectedTrackId] = useState<string | null>(
+    null,
+  );
   const [timelineZoom, setTimelineZoom] = useState(100);
   const projectSession = useProjectSession();
-
-  useEffect(() => {
-    if (
-      selectedTrackId !== null &&
-      !projectSession.project.tracks.some(
-        (track) => track.id === selectedTrackId,
-      )
-    ) {
-      setSelectedTrackId(null);
-    }
-  }, [projectSession.project.tracks, selectedTrackId]);
+  const selectedTrackId =
+    selectedTrackIdState !== null &&
+    projectSession.project.tracks.some(
+      (track) => track.id === selectedTrackIdState,
+    )
+      ? selectedTrackIdState
+      : null;
 
   const showHistoryControls =
     projectSession.project.tracks.length > 0 ||
