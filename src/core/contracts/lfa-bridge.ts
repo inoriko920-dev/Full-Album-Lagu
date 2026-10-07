@@ -28,9 +28,7 @@ export interface LfaBridge {
   discoverDroppedMedia(
     files: readonly File[],
   ): Promise<MediaDiscoveryStartResult>;
-  getMediaDiscoveryStatus(
-    batchId: string,
-  ): Promise<MediaDiscoveryStatusResult>;
+  getMediaDiscoveryStatus(batchId: string): Promise<MediaDiscoveryStatusResult>;
   cancelMediaDiscovery(batchId: string): Promise<MediaDiscoveryCancelResult>;
   saveProject(request: SaveProjectRequest): Promise<SaveProjectResult>;
   saveProjectAs(request: SaveProjectRequest): Promise<SaveProjectResult>;
