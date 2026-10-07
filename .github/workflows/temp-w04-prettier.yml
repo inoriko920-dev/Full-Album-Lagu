@@ -7,22 +7,32 @@ on:
       - ".github/workflows/temp-w04-prettier.yml"
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: read
 
 jobs:
   format:
+    if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.head_ref }}
       - uses: actions/setup-node@v5
         with:
           node-version: "22"
           cache: "npm"
       - run: npm ci
       - run: npx prettier --write scripts/run-w11-auto-binding-closure.mjs
-      - uses: actions/upload-artifact@v4
-        with:
-          name: W04-Formatted-Runner
-          path: scripts/run-w11-auto-binding-closure.mjs
-          if-no-files-found: error
-          retention-days: 1
+      - name: Commit formatted runner if needed
+        shell: bash
+        run: |
+          if git diff --quiet -- scripts/run-w11-auto-binding-closure.mjs; then
+            echo "Runner already formatted."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/run-w11-auto-binding-closure.mjs
+          git commit -m "chore: format W04 closure runner"
+          git push origin "HEAD:${{ github.head_ref }}"
