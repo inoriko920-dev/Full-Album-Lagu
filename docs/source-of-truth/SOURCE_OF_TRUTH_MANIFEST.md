@@ -35,4 +35,8 @@ These files were created inside the repository after the original artifact impor
 | `10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` | **RECONSTRUCTED REPOSITORY COPY**. The previously referenced historical compact DOCX was missing from checkout. Rebuilt from current normalized Feature Registry + Dependency Graph with an explicit integrity notice. Not claimed byte-identical to the missing historical artifact. | mandatory STEP 11 registry/dependency handoff authority |
 | `14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` | Created by ASTRA from the verified Product Definition, Product Baseline, frozen UI authority, architecture/constitution, W11-04 closure and normalized registry/dependency sources. | current W11-05 detailed planning source-of-truth |
 
+Current branch Git blob identities at ASTRA planning closure:
+- reconstructed STEP 11 registry/dependency DOCX blob: `334719d378a13e7dbf1b09d0389852a2bd4f4bda`;
+- W11-05 planning DOCX blob: `9642ceb0f57901308288d85d38901019022bbc3f`.
+
 The Git blob SHA of these repository-created DOCX files is authoritative for the committed repository snapshot; do not substitute an original-artifact hash for the reconstructed STEP 11 file.
