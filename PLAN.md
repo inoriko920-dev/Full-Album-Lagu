@@ -95,7 +95,9 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Serial order: T11-W05-01 -> 02 -> 03 -> 04 -> 05 -> 06 -> 07.
 - Completed: **T11-W05-01 — Visual Scene + Layer Schema & Pure Projection — PASS / VERIFIED**.
 - Proof: Windows CI `37682820030` / #321 PASS; 244 Vitest assertions PASS; STEP 10 + W11-01..04 + frozen UI + Windows package/smoke/ZIP PASS; `docs/step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
-- Next exact task: **T11-W05-02 — Manual Layer Commands + Gesture/History Semantics — SOL only**.
+- Completed: **T11-W05-02 — Manual Layer Commands + Gesture/History Semantics — PASS / VERIFIED**.
+- Proof: Windows CI `37687361672` / #336 PASS; 256 Vitest assertions PASS; 128-layer command/history stress PASS; STEP 10 + W11-01..04 + frozen UI + Windows package/smoke/ZIP PASS; `docs/step11/evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md`.
+- Next exact task: **T11-W05-03 — Template Document + Local Store + Trial/Apply Core — SOL only**.
 - W11-06 audio-reactive/playback, W11-07 animation/transitions, and STEP 12 Gemini/FFmpeg remain blocked.
 - Existing frozen Auto Susun/Inspector/Media/Timeline surfaces are authoritative; no new UI prompt/image generation is required now.
 - If a required W11-04 visual state cannot be represented by the frozen pack, implementation must STOP and return to ASTRA/UI governance.
