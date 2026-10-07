@@ -41,6 +41,17 @@
 - Verified contribution: AC-03 canonical reorder + persistence core; AC-04 deterministic boundary recalculation; AC-05 disable excludes effective sequence without source mutation; AC-06 re-enable restores required-media blocker; AC-07 stable track/media identity; AC-10 one semantic command/one revision and no-op behavior; AC-11 Undo/Redo semantic restoration through shared engine; AC-12 redo branch foundation remains intact; AC-15 saved checkpoint compatibility; AC-18 105-track deterministic command proof; AC-20 prior-wave/frozen UI/package regression.
 - These are **task-level verified contributions**, not premature final wave closure; T11-W03-04 UI integration and later hardening/closure remain required.
 
+## T11-W03-04 checkpoint evidence
+
+- T11-W03-04 status: **PASS / VERIFIED**.
+- Verified implementation head: `96233d99ecf420ac1c3b583c959a63610c709c27`.
+- Windows CI: `37634883632` / #233 PASS.
+- Frozen visual artifact: `11489775014`.
+- Evidence: `evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`.
+- Verified contribution: AC-03 reorder appears synchronously in Media + Timeline; AC-05 disabled presentation/readiness; AC-08 selection + zoom are session-only/non-dirty; AC-11 global Undo/Redo restores UI semantic state; AC-17 frozen hierarchy/global history actions + exact SCR-002A; AC-18 conditional timeline remains deterministic with existing 100+ core evidence; AC-20 all prior waves/frozen UI/package regressions green.
+- One multi-track media import is also proven as one global UI Undo/Redo step.
+- These are **task-level verified contributions**, not premature final wave closure; T11-W03-05 hardening and T11-W03-06 closure remain required.
+
 ## Closure rule
 
 W11-03 may close only when **AC-W11-03-01..20** are all PASS or any BLOCKED item is explicitly documented with evidence. No criterion is implied PASS merely because code exists.

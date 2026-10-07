@@ -90,8 +90,12 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: PASS / VERIFIED
 - Dependency: T11-W03-03 PASS / VERIFIED
+- Verified implementation head: `96233d99ecf420ac1c3b583c959a63610c709c27`
+- Windows CI: `37634883632` / #233 PASS; job `112838360903`
+- Frozen visual artifact: `11489775014`
+- Evidence: `evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`
 - Purpose:
   - map UI-IMG-002B/UI-IMG-002D and PNL-002/PNL-007;
   - expose selection/reorder/enable state through frozen surfaces;
@@ -114,7 +118,8 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED_BY T11-W03-04
+- Status: READY
+- Dependency: T11-W03-04 PASS / VERIFIED
 - Purpose:
   - prove multi-command atomic transaction/one Undo;
   - enforce origin unification for manual/template/auto-susun/ai contract;

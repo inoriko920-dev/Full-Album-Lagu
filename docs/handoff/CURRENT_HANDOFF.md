@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01..03 are PASS / VERIFIED; T11-W03-04 is the only READY SOL task.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01..04 are PASS / VERIFIED; T11-W03-05 is the only READY SOL task.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -153,10 +153,25 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Missing disabled-only audio does not block readiness; re-enable restores blocker.
 - 105-track command behavior, Unicode/spaces Save/Close/Reopen and source-byte immutability are green.
 
-## Next exact task
-**T11-W03-04 — Frozen Album Timeline + Global Undo/Redo UI Wiring — SOL only.**
+## T11-W03-04 completed
+- Status: PASS / VERIFIED.
+- Verified implementation head: `96233d99ecf420ac1c3b583c959a63610c709c27`.
+- Windows CI: `37634883632` / #233 PASS; job `112838360903`.
+- Portable artifact: `11489515325`.
+- Frozen visual artifact: `11489775014`.
+- Evidence: `docs/step11/evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`.
+- Frozen Media + Album Timeline surfaces use the established track-command/history path.
+- Selection and zoom are session-only and do not dirty the project.
+- Reorder and enabled state stay synchronized across Media/Timeline.
+- Global Undo/Redo follows the single CommandEngine history.
+- One two-track media import is one UI Undo/Redo step.
+- Disabled-only missing audio stops blocking Render immediately; Undo restores blocker.
+- Exact empty SCR-002A and permanent Gemini rail remain unchanged.
 
-On the next user `lanjutkan`, wire the existing frozen album/timeline surfaces and global Undo/Redo to the established ProjectSessionHistory/track commands. Selection/zoom must stay session-only and non-dirty. **Do not create a new UI prompt/image**; existing frozen UI references are the source of truth. Do not start T11-W03-05 in the same turn.
+## Next exact task
+**T11-W03-05 — Unified Batch History & Edge-Case Hardening — SOL only.**
+
+On the next user `lanjutkan`, harden atomic batch rollback/one-Undo behavior, origin unification, redo invalidation, saved-checkpoint/recovery/autosave edges, and 100+ track history/timeline stress. Do not implement templates, Auto Susun or Gemini themselves. Do not start T11-W03-06 closure in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
