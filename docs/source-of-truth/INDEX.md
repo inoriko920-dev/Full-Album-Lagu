@@ -76,7 +76,7 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md` — architecture/UI/trust-boundary review; PASS — NO MATERIAL DRIFT.
 - Windows CI `37672986946` / #304; verified head `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`.
 - AC-W11-04-01..22 ALL PASS; **W11-04 COMPLETE / PASS**.
-- W11-05 source-of-truth planning/DoR now PASS; next implementation authority after merge is **SOL T11-W05-01 only**.
+- W11-05 source-of-truth planning/DoR PASS; T11-W05-01 is now PASS / VERIFIED and the next implementation authority is **SOL T11-W05-02 only**.
 
 
 ## W11-05 planning authority
