@@ -13,7 +13,7 @@ Dependency semantics:
 ## Planned sequence
 
 1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **COMPLETE / PASS**
-2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **IN PROGRESS; T11-W02-01 PASS; T11-W02-02 NEXT**
+2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **IN PROGRESS; T11-W02-01/02 PASS; T11-W02-03 NEXT**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018
 4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006
 5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013
@@ -43,7 +43,7 @@ STEP 10 already proved one thin persistence path. W11-01 extends that seam into 
 
 W11-01 dependency unlock is proven and closed. FTR-001 and FTR-002 are verified and may now serve as prerequisites for later waves. FTR-018 remains active cross-cutting work.
 
-W11-02 ASTRA planning is complete and DoR is PASS. T11-W02-01 is COMPLETE / PASS. T11-W02-02 is now the only READY implementation task; T11-W02-03..06 remain dependency-blocked. W11-03 remains blocked until W11-02 closes COMPLETE / PASS.
+W11-02 ASTRA planning is complete and DoR is PASS. T11-W02-01 and T11-W02-02 are COMPLETE / PASS. T11-W02-03 is now the only READY implementation task; T11-W02-04..06 remain dependency-blocked. W11-03 remains blocked until W11-02 closes COMPLETE / PASS.
 
 
 ## W11-02 planning checkpoint
@@ -53,5 +53,5 @@ W11-02 ASTRA planning is complete and DoR is PASS. T11-W02-01 is COMPLETE / PASS
 - Planning gate: PASS.
 - DoR: PASS.
 - Acceptance: AC-W11-02-01..18.
-- Serial tasks: T11-W02-01 PASS -> T11-W02-02 READY -> T11-W02-03..06 BLOCKED.
+- Serial tasks: T11-W02-01 PASS -> T11-W02-02 PASS -> T11-W02-03 READY -> T11-W02-04..06 BLOCKED.
 - W11-03 remains HARD-blocked on W11-02 closure.

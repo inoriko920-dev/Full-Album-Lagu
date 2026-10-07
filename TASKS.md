@@ -197,17 +197,33 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: T11-W02-01 PASS.
-- Scope: native multi-file picker, drag/drop path seam, recursive deterministic folder discovery, batch dedupe, bounded queue, progress and cancel only.
-- Gate: must PASS before T11-W02-03.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `ad9df0bd20703dbd1ab67c1ca673cdc65f8a3731`
+- Windows CI run: `37589834065` — PASS
+- CI job: `112688415921`
+- Scope delivered:
+  - native multi-file audio picker and multi-folder picker;
+  - preload-only `webUtils.getPathForFile` drop-path resolution;
+  - one main-owned recursive deterministic discovery service;
+  - canonical real-path batch dedupe with Windows case folding;
+  - bounded concurrency 4, progress/status and cancellation;
+  - strict path-free public discovery summaries;
+  - 20+, 100+, Unicode/spaces, duplicate, cancellation, non-destructive and trust-boundary tests.
+- No audio probe/metadata dependency, relink implementation, media UI, Gemini or FFmpeg/FFprobe added.
+- Evidence: `docs/step11/evidence/T11_W02_02_PICKER_DROP_DISCOVERY_EVIDENCE.md`.
 
 ## T11-W02-03 — Audio Probe, Validation, Metadata & Deterministic Initial Order
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED_BY T11-W02-02.
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: T11-W02-02 PASS.
+- Scope: implementation-time dependency/license gate for the planned metadata adapter, audio probe/validation/classification, duration/common tags, deterministic initial order and media/project commit only.
+- Gate: must PASS before T11-W02-04.
 
 ## T11-W02-04 — Missing Media Scan & Relink Core
 - Owner: SOL
