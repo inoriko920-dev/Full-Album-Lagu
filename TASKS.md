@@ -541,17 +541,32 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
-- Dependency: W11-04 ASTRA planning + DoR PASS.
-- Scope authority: `docs/step11/TASK_CARDS_W11_04.md`.
-- T11-W04-02..06 remain BLOCKED serially.
-- No UI, artwork picker, or Auto Susun implementation is authorized in this task.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `706116e2e85b963d0d6570907f70d57a614ef0e6`
+- Windows CI: `37649707029` / run #252 — PASS
+- CI job: `112889560184`
+- Windows portable artifact: `11496316747`
+- Frozen visual artifact: `11495428548`
+- Scope delivered:
+  - additive optional schema-v1 album default artwork + per-track binding fields;
+  - image-only referential validation for album/track artwork;
+  - pure `resolveTrackPresentation()` with deterministic value + provenance;
+  - manual/audio/track/filename/project/canonical/default/placeholder fallbacks;
+  - legacy + additive JsonProjectStore round-trip;
+  - no derived-value persistence.
+- Full previous-wave/frozen UI/Windows package regressions: PASS.
+- Evidence: `docs/step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`.
+- Out of scope honored: Auto Susun, artwork intake, Inspector/UI, Gemini, FFmpeg/FFprobe and persistent Undo.
 
 ## T11-W04-02 — Deterministic Auto Susun Planner + CommandBatch
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED_BY T11-W04-01
+- Status: READY
+- Dependency: T11-W04-01 PASS / VERIFIED
 
 ## T11-W04-03 — Artwork Intake + Binding Commands
 - Owner: SOL
