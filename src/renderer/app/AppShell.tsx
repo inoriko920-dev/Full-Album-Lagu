@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   isProjectTrackEnabled,
   projectAlbumTimeline,
@@ -347,15 +347,6 @@ function SelectedTrackInspector({
     projectSession.createTrackMetadataDraft(trackId),
   );
   const [feedback, setFeedback] = useState("");
-  const overrideKey =
-    projection.status === "selected"
-      ? JSON.stringify(projection.explicitOverrides)
-      : "none";
-
-  useEffect(() => {
-    setDraft(projectSession.createTrackMetadataDraft(trackId));
-    setFeedback("");
-  }, [overrideKey, projectSession.createTrackMetadataDraft, trackId]);
 
   if (projection.status !== "selected") return null;
 
@@ -587,13 +578,17 @@ function InspectorPanel({
   selectedTrackId: string | null;
 }) {
   if (selectedTrackId !== null) {
-    return (
-      <SelectedTrackInspector
-        key={selectedTrackId}
-        projectSession={projectSession}
-        trackId={selectedTrackId}
-      />
-    );
+    const projection = projectSession.selectedTrackProjection(selectedTrackId);
+    if (projection.status === "selected") {
+      const metadataStateKey = JSON.stringify(projection.explicitOverrides);
+      return (
+        <SelectedTrackInspector
+          key={`${selectedTrackId}:${metadataStateKey}`}
+          projectSession={projectSession}
+          trackId={selectedTrackId}
+        />
+      );
+    }
   }
 
   return (
