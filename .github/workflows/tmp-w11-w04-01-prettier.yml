@@ -1,0 +1,36 @@
+name: Temporary W11-04-01 Prettier
+
+on:
+  push:
+    branches:
+      - sol/t11-w04-01-binding-schema-resolver
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: ${{ !contains(github.event.head_commit.message, '[prettier-w04-01]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: sol/t11-w04-01-binding-schema-resolver
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Format T11-W04-01 files
+        run: npx prettier --write src/core/domain/project-document.ts src/core/domain/track-presentation.ts tests/unit/project-document.test.ts tests/unit/track-presentation.test.ts tests/integration/json-project-store.test.ts
+      - name: Commit formatting
+        shell: bash
+        run: |
+          if git diff --quiet -- src/core/domain/project-document.ts src/core/domain/track-presentation.ts tests/unit/project-document.test.ts tests/unit/track-presentation.test.ts tests/integration/json-project-store.test.ts; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/core/domain/project-document.ts src/core/domain/track-presentation.ts tests/unit/project-document.test.ts tests/unit/track-presentation.test.ts tests/integration/json-project-store.test.ts
+          git commit -m "chore: format T11-W04-01 [prettier-w04-01]"
+          git push origin HEAD:sol/t11-w04-01-binding-schema-resolver
