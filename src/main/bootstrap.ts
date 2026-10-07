@@ -1067,6 +1067,443 @@ function createMainWindow(): BrowserWindow {
               };
             }
 
+
+            if (
+              mode === "auto-binding-flow" ||
+              mode === "auto-binding-reopen" ||
+              mode === "auto-arrange-stress"
+            ) {
+              const waitFor = async (predicate, message, maxAttempts = 750) => {
+                for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+                  if (predicate()) return;
+                  await new Promise((resolveWait) =>
+                    setTimeout(resolveWait, 20),
+                  );
+                }
+                throw new Error(message);
+              };
+
+              const shell = () => document.querySelector(".app-shell");
+              const mediaRows = () =>
+                Array.from(document.querySelectorAll("[data-media-track-id]"));
+              const timelineRows = () =>
+                Array.from(
+                  document.querySelectorAll("[data-timeline-track-id]"),
+                );
+              const buttonByText = (label) =>
+                Array.from(document.querySelectorAll("button")).find(
+                  (button) => button.textContent?.trim() === label,
+                );
+              const mediaRowById = (trackId) =>
+                mediaRows().find(
+                  (row) => row.getAttribute("data-media-track-id") === trackId,
+                );
+              const inputByLabel = (label) =>
+                document.querySelector('input[aria-label="' + label + '"]');
+              const setInputValue = (input, value) => {
+                if (!(input instanceof HTMLInputElement)) {
+                  throw new Error("Input not found: " + value);
+                }
+                const descriptor = Object.getOwnPropertyDescriptor(
+                  HTMLInputElement.prototype,
+                  "value",
+                );
+                descriptor?.set?.call(input, value);
+                input.dispatchEvent(new Event("input", { bubbles: true }));
+                input.dispatchEvent(new Event("change", { bubbles: true }));
+              };
+              const selectTrack = (trackId) => {
+                const row = mediaRowById(trackId);
+                const mainButton = row?.querySelector(".media-row__main");
+                if (!(mainButton instanceof HTMLButtonElement)) {
+                  throw new Error("Track selection control not found: " + trackId);
+                }
+                mainButton.click();
+              };
+              const openInspector = () => {
+                const inspectorTab = Array.from(
+                  document.querySelectorAll('button[role="tab"]'),
+                ).find((button) => button.textContent?.trim() === "Inspector");
+                if (!(inspectorTab instanceof HTMLButtonElement)) {
+                  throw new Error("Inspector tab was not found.");
+                }
+                inspectorTab.click();
+              };
+              const snapshotUi = () => {
+                const root = shell();
+                if (!root) throw new Error("App shell is unavailable.");
+                const inspector = document.querySelector(
+                  "[data-inspector-track-id]",
+                );
+                const artworkSection = inspector?.querySelector(
+                  '[aria-label="Artwork track"]',
+                );
+                return {
+                  projectId: root.getAttribute("data-project-id"),
+                  projectRevision: Number(
+                    root.getAttribute("data-project-revision"),
+                  ),
+                  projectSource: root.getAttribute("data-project-source"),
+                  persistenceState: root.getAttribute(
+                    "data-persistence-state",
+                  ),
+                  dirty: root.getAttribute("data-project-dirty") === "true",
+                  canUndo: root.getAttribute("data-can-undo") === "true",
+                  canRedo: root.getAttribute("data-can-redo") === "true",
+                  selectedTrackId:
+                    root.getAttribute("data-selected-track-id") ?? "",
+                  autoArrangeState:
+                    root.getAttribute("data-auto-arrange-state") ?? "",
+                  artworkState: root.getAttribute("data-artwork-state") ?? "",
+                  mediaReady: root.getAttribute("data-media-ready") === "true",
+                  missingMediaCount: Number(
+                    root.getAttribute("data-missing-media-count"),
+                  ),
+                  mediaOrder: mediaRows().map((row) =>
+                    row.getAttribute("data-media-track-id"),
+                  ),
+                  timelineOrder: timelineRows().map((row) =>
+                    row.getAttribute("data-timeline-track-id"),
+                  ),
+                  titleOverride:
+                    inputByLabel("Override judul") instanceof HTMLInputElement
+                      ? inputByLabel("Override judul").value
+                      : null,
+                  artistOverride:
+                    inputByLabel("Override artis") instanceof HTMLInputElement
+                      ? inputByLabel("Override artis").value
+                      : null,
+                  albumOverride:
+                    inputByLabel("Override album") instanceof HTMLInputElement
+                      ? inputByLabel("Override album").value
+                      : null,
+                  yearOverride:
+                    inputByLabel("Override tahun") instanceof HTMLInputElement
+                      ? inputByLabel("Override tahun").value
+                      : null,
+                  inspectorText: inspector?.textContent?.replace(/\\s+/g, " ").trim() ?? "",
+                  artworkText:
+                    artworkSection?.textContent?.replace(/\\s+/g, " ").trim() ?? "",
+                  geminiPresent:
+                    document.body.innerText.includes("Gemini Agent"),
+                };
+              };
+
+              await waitFor(
+                () => {
+                  const root = shell();
+                  return (
+                    root?.getAttribute("data-project-source") === "loaded" &&
+                    mediaRows().length >= 3 &&
+                    timelineRows().length === mediaRows().length
+                  );
+                },
+                "Timed out waiting for W11-04 renderer readiness.",
+              );
+
+              const initial = snapshotUi();
+
+              if (mode === "auto-arrange-stress") {
+                const arrange = buttonByText("Auto Susun Album");
+                if (!(arrange instanceof HTMLButtonElement)) {
+                  throw new Error("Auto Susun control was not found.");
+                }
+                const startedAt = performance.now();
+                arrange.click();
+                await waitFor(
+                  () => {
+                    const root = shell();
+                    return (
+                      root?.getAttribute("data-auto-arrange-state") === "applied" &&
+                      Number(root.getAttribute("data-project-revision")) ===
+                        initial.projectRevision + 1
+                    );
+                  },
+                  "128-track Auto Susun did not apply.",
+                );
+                const applied = snapshotUi();
+                const elapsedMs = Math.round(performance.now() - startedAt);
+                arrange.click();
+                await waitFor(
+                  () =>
+                    shell()?.getAttribute("data-auto-arrange-state") === "noop",
+                  "Repeated 128-track Auto Susun did not become a no-op.",
+                );
+                const noop = snapshotUi();
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  elapsedMs,
+                  initial,
+                  applied,
+                  noop,
+                };
+              }
+
+              const targetTrackId = "track-002";
+              if (!mediaRowById(targetTrackId)) {
+                throw new Error("W11-04 fixture target track is unavailable.");
+              }
+              selectTrack(targetTrackId);
+              openInspector();
+              await waitFor(
+                () =>
+                  document.querySelector(
+                    '[data-inspector-track-id="' + targetTrackId + '"]',
+                  ) !== null,
+                "Inspector did not open for W11-04 target track.",
+              );
+
+              if (mode === "auto-binding-reopen") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  initial: snapshotUi(),
+                };
+              }
+
+              if (initial.dirty || initial.canUndo || initial.canRedo) {
+                throw new Error(
+                  "W11-04 full-flow must start from a clean loaded history.",
+                );
+              }
+
+              const titleInput = inputByLabel("Override judul");
+              const artistInput = inputByLabel("Override artis");
+              const albumInput = inputByLabel("Override album");
+              const yearInput = inputByLabel("Override tahun");
+              setInputValue(titleInput, "Closure Manual Title Ω");
+              setInputValue(artistInput, "Closure Artist Ω");
+              setInputValue(albumInput, "Closure Album Ω");
+              setInputValue(yearInput, "2026");
+              await new Promise((resolveWait) => setTimeout(resolveWait, 50));
+              const draft = snapshotUi();
+
+              const applyMetadata = buttonByText("Terapkan Metadata");
+              if (!(applyMetadata instanceof HTMLButtonElement)) {
+                throw new Error("Apply metadata control was not found.");
+              }
+              applyMetadata.click();
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === initial.projectRevision + 1 &&
+                    current.dirty &&
+                    current.inspectorText.includes("Closure Manual Title Ω") &&
+                    current.inspectorText.includes("Closure Artist Ω")
+                  );
+                },
+                "Metadata override did not apply atomically.",
+              );
+              const metadataApplied = snapshotUi();
+
+              const arrange = buttonByText("Auto Susun Album");
+              if (!(arrange instanceof HTMLButtonElement)) {
+                throw new Error("Auto Susun control was not found.");
+              }
+              arrange.click();
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.autoArrangeState === "applied" &&
+                    current.projectRevision === initial.projectRevision + 2 &&
+                    current.mediaOrder[0] === "track-001" &&
+                    current.mediaOrder[1] === "track-002" &&
+                    current.mediaOrder[2] === "track-003"
+                  );
+                },
+                "Auto Susun did not produce the deterministic order.",
+              );
+              const autoApplied = snapshotUi();
+
+              arrange.click();
+              await waitFor(
+                () =>
+                  shell()?.getAttribute("data-auto-arrange-state") === "noop",
+                "Repeated Auto Susun did not become a no-op.",
+              );
+              const autoNoop = snapshotUi();
+
+              const pickArtwork = buttonByText("Pilih Artwork Track");
+              if (!(pickArtwork instanceof HTMLButtonElement)) {
+                throw new Error("Track artwork control was not found.");
+              }
+              pickArtwork.click();
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === initial.projectRevision + 3 &&
+                    current.artworkText.includes("Track Cover Ω.png")
+                  );
+                },
+                "Track artwork import/bind did not complete.",
+              );
+              const artworkApplied = snapshotUi();
+
+              const saveButton = document.querySelector(
+                'button[data-action="save-project"]',
+              );
+              if (!(saveButton instanceof HTMLButtonElement)) {
+                throw new Error("Save control was not found.");
+              }
+              saveButton.click();
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.persistenceState === "saved" &&
+                    current.dirty === false
+                  );
+                },
+                "W11-04 saved checkpoint did not become clean.",
+              );
+              const saved = snapshotUi();
+
+              const clearMetadata = buttonByText("Hapus Override Metadata");
+              if (!(clearMetadata instanceof HTMLButtonElement)) {
+                throw new Error("Clear metadata control was not found.");
+              }
+              clearMetadata.click();
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === saved.projectRevision + 1 &&
+                    current.dirty &&
+                    !current.inspectorText.includes("Closure Manual Title Ω")
+                  );
+                },
+                "Post-save metadata mutation did not become dirty.",
+              );
+              const postSaveMutation = snapshotUi();
+
+              const undoButton = buttonByText("Undo");
+              if (!(undoButton instanceof HTMLButtonElement)) {
+                throw new Error("Undo control was not found.");
+              }
+              undoButton.click();
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === saved.projectRevision + 2 &&
+                    current.dirty === false &&
+                    current.canRedo &&
+                    current.inspectorText.includes("Closure Manual Title Ω")
+                  );
+                },
+                "Undo did not restore the exact W11-04 saved checkpoint.",
+              );
+              const undoToSaved = snapshotUi();
+
+              const redoButton = buttonByText("Redo");
+              if (!(redoButton instanceof HTMLButtonElement)) {
+                throw new Error("Redo control was not found.");
+              }
+              redoButton.click();
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === saved.projectRevision + 3 &&
+                    current.dirty &&
+                    !current.inspectorText.includes("Closure Manual Title Ω")
+                  );
+                },
+                "Redo did not move away from the saved checkpoint.",
+              );
+              const redoAway = snapshotUi();
+
+              const finalUndo = buttonByText("Undo");
+              if (!(finalUndo instanceof HTMLButtonElement)) {
+                throw new Error("Final Undo control was not found.");
+              }
+              finalUndo.click();
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === saved.projectRevision + 4 &&
+                    current.dirty === false &&
+                    current.inspectorText.includes("Closure Manual Title Ω") &&
+                    current.artworkText.includes("Track Cover Ω.png")
+                  );
+                },
+                "Final Undo did not return to the saved W11-04 state.",
+              );
+              const finalState = snapshotUi();
+
+              return {
+                mode,
+                startupStatus: startup.status,
+                targetTrackId,
+                initial,
+                draft,
+                metadataApplied,
+                autoApplied,
+                autoNoop,
+                artworkApplied,
+                saved,
+                postSaveMutation,
+                undoToSaved,
+                redoAway,
+                finalState,
+              };
+            }
+
+            if (mode === "artwork-missing-relink") {
+              const before = await window.lfa.scanMissingMedia({
+                project: startup.project,
+              });
+              const assetId = "artwork-missing";
+              const relink = await window.lfa.relinkMediaAsset({
+                project: before.project,
+                assetId,
+              });
+              if (relink.status !== "relinked") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  beforeReady: before.readiness.ready,
+                  beforeBlockers: before.readiness.blockers.length,
+                  beforeMissingCount: before.items.length,
+                  relinkStatus: relink.status,
+                };
+              }
+              const after = await window.lfa.scanMissingMedia({
+                project: relink.project,
+              });
+              const save = await window.lfa.saveProject({
+                project: after.project,
+              });
+              const artworkAsset = after.project.mediaAssets?.find(
+                (asset) => asset.id === assetId,
+              );
+              return {
+                mode,
+                startupStatus: startup.status,
+                beforeReady: before.readiness.ready,
+                beforeBlockers: before.readiness.blockers.length,
+                beforeMissingCount: before.items.length,
+                missingWasOptional: before.items.some(
+                  (item) => item.assetId === assetId && item.required === false,
+                ),
+                relinkStatus: relink.status,
+                afterReady: after.readiness.ready,
+                afterBlockers: after.readiness.blockers.length,
+                afterMissingCount: after.items.length,
+                savedStatus: save.status,
+                bindingPreserved:
+                  after.project.albumPresentation?.defaultArtworkAssetId ===
+                  assetId,
+                relinkedAvailability: artworkAsset?.availability ?? null,
+                relinkedRequired: artworkAsset?.required ?? null,
+              };
+            }
+
             throw new Error("Unsupported W11 lifecycle probe mode: " + mode);
           })()
         `)) as Record<string, unknown>;
