@@ -565,14 +565,34 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W04-01 PASS / VERIFIED
+- Verified implementation head: `e2bf67f6bd276748b3852a233873210aae9dfdf4`
+- Windows CI: `37653317447` / run #268 — PASS
+- CI job: `112901989191`
+- Windows portable artifact: `11497287480`
+- Frozen visual artifact: `11496953525`
+- Scope delivered:
+  - pure deterministic AutoArrangePlan;
+  - metadata track number -> filename number -> normalized name -> stable tie-break ordering;
+  - one `auto-susun` CommandBatch / one revision / one Undo-Redo step;
+  - stale revision/state-token + tampered-plan atomic rejection;
+  - repeated unchanged run = no-op;
+  - disabled state, manual bindings, IDs/audio links/source refs preserved;
+  - 128-track deterministic stress.
+- Full previous-wave/frozen UI/Windows package regressions: PASS.
+- Evidence: `docs/step11/evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`.
+- Out of scope honored: artwork intake, metadata override mutation, Inspector/UI, Gemini, FFmpeg/FFprobe and persistent Undo.
 
 ## T11-W04-03 — Artwork Intake + Binding Commands
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED_BY T11-W04-02
+- Status: READY
+- Dependency: T11-W04-02 PASS / VERIFIED
 
 ## T11-W04-04 — Metadata Override + Dynamic Binding Integration
 - Owner: SOL

@@ -38,6 +38,15 @@ Planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
 - Verified contribution: AC-01 legacy schema-v1 compatibility; AC-02 additive binding/default artwork fields + image-only references; AC-03 resolver priority/provenance foundation; AC-04 pure/offline resolver + no derived persistence; AC-21 architecture/secrets/paths/provider-free regression; AC-22 STEP10/W11-01/W11-02/W11-03/frozen UI/package regressions.
 - These are **task-level verified contributions**, not final W11-04 closure.
 
+## T11-W04-02 checkpoint evidence
+
+- T11-W04-02 status: **PASS / VERIFIED**.
+- Verified implementation head: `e2bf67f6bd276748b3852a233873210aae9dfdf4`.
+- Windows CI: `37653317447` / #268 PASS.
+- Evidence: `evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`.
+- Verified contribution: AC-05 deterministic comparator independent of media-array completion order; AC-06 repeat no-op/idempotence; AC-07 IDs/audio/source/disabled/manual binding preservation; AC-08 one auto-susun CommandBatch/one revision/one Undo-Redo step; AC-09 stale revision/token + tampered plan atomic rejection; AC-18 core Undo/Redo semantic restoration; AC-19 128-track deterministic stress; AC-21 provider-free architecture/secrets/paths gate; AC-22 prior-wave/frozen UI/package regressions.
+- These are **task-level verified contributions**, not final wave closure.
+
 ## Closure rule
 
 W11-04 is not COMPLETE because code exists. T11-W04-06 must provide final Windows evidence, map AC-W11-04-01..22 to PASS, and record an architecture/UI/trust-boundary drift review with **no material drift**.

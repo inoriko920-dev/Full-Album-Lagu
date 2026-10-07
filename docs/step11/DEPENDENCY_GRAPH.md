@@ -15,7 +15,7 @@ Dependency semantics:
 1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **COMPLETE / PASS**
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **COMPLETE / PASS**
-4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **IN PROGRESS; T11-W04-01 PASS / VERIFIED; T11-W04-02 READY**
+4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **IN PROGRESS; T11-W04-01..02 PASS / VERIFIED; T11-W04-03 READY**
 5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
 7. **W11-07 — Animation + Boundary Transitions** — FTR-009 + FTR-010
@@ -140,7 +140,7 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Features: FTR-005 + FTR-006; FTR-013/FTR-018 cross-cut.
 - Planning/DoR: PASS.
 - Acceptance: AC-W11-04-01..22.
-- Serial order: T11-W04-01 PASS -> T11-W04-02 READY -> T11-W04-03 BLOCKED -> T11-W04-04 BLOCKED -> T11-W04-05 BLOCKED -> T11-W04-06 BLOCKED.
+- Serial order: T11-W04-01 PASS -> T11-W04-02 PASS -> T11-W04-03 READY -> T11-W04-04 BLOCKED -> T11-W04-05 BLOCKED -> T11-W04-06 BLOCKED.
 - Auto Susun must be deterministic/offline and publish through the existing CommandEngine/CommandBatch seam.
 - Track binding/default artwork is additive schema-v1; resolved values remain derived.
 - Existing frozen UI is reused; no new UI prompt/image generation is required now.
@@ -156,3 +156,14 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - STEP 10, W11-01, W11-02, W11-03, exact frozen UI and Windows package/smoke/ZIP remain green.
 - Evidence: `evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`.
 - Dependency unlock: T11-W04-02 READY. T11-W04-03..06 remain blocked.
+
+## T11-W04-02 verification
+
+- Verified implementation head: `e2bf67f6bd276748b3852a233873210aae9dfdf4`.
+- Windows CI: `37653317447` / #268 PASS; job `112901989191`.
+- Deterministic offline AutoArrangePlan + one auto-susun CommandBatch are proven.
+- Repeated unchanged run is no-op; stale revision/token and tampered plans reject atomically.
+- Disabled state, manual bindings, IDs/audio links/source refs remain stable.
+- 128-track core stress is deterministic and all prior lifecycle/media/timeline/frozen UI/package regressions are green.
+- Evidence: `evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`.
+- Dependency unlock: T11-W04-03 READY. T11-W04-04..06 remain blocked.
