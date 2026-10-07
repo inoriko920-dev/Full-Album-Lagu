@@ -58,4 +58,5 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - W11-02 closure evidence: `../../step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
 - W11-02 drift review: `../../step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`.
 - W11-03 planning baseline: `main@6f296f7cc8e8b81e86bde71f8cd3a32c0d0f1bd2`.
-- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 ASTRA planning COMPLETE / PASS with DoR PASS. Only T11-W03-01 has implementation authority; later W11-03 tasks remain blocked serially.
+- W11-03 implementation evidence: `../../step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md` and `../../step11/evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`.
+- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 ASTRA planning COMPLETE / PASS with DoR PASS; T11-W03-01..02 PASS / VERIFIED. Only T11-W03-03 has implementation authority next; T11-W03-04..06 remain blocked serially.
