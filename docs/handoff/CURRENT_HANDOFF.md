@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01 and T11-W03-02 are PASS / VERIFIED; T11-W03-03 is the only READY SOL task.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01..03 are PASS / VERIFIED; T11-W03-04 is the only READY SOL task.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -141,10 +141,22 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Media import and relink use shared history; passive missing scan remains non-history reconciliation.
 - Existing W11-01/W11-02 behavior, frozen UI, package, smoke and portable ZIP are green.
 
-## Next exact task
-**T11-W03-03 — Reorder / Enable-Disable / Boundary Application Core — SOL only.**
+## T11-W03-03 completed
+- Status: PASS / VERIFIED.
+- Verified implementation head: `83fd9a0772c72c38a995ccd2609a910692a0e61a`.
+- Windows CI: `37631324251` / #225 PASS; job `112826044830`.
+- Portable artifact: `11487030899`.
+- Evidence: `docs/step11/evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`.
+- Reorder and enabled-state mutations use shared CommandEngine history.
+- Canonical order remains tracks[]; boundaries stay derived.
+- Required audio follows effective enabled usage, including shared assets.
+- Missing disabled-only audio does not block readiness; re-enable restores blocker.
+- 105-track command behavior, Unicode/spaces Save/Close/Reopen and source-byte immutability are green.
 
-On the next user `lanjutkan`, implement validated track reorder and enabled-state commands, required-media synchronization, deterministic boundary recalculation and persistence round-trip according to the task card. Do not start T11-W03-04 UI wiring in the same turn.
+## Next exact task
+**T11-W03-04 — Frozen Album Timeline + Global Undo/Redo UI Wiring — SOL only.**
+
+On the next user `lanjutkan`, wire the existing frozen album/timeline surfaces and global Undo/Redo to the established ProjectSessionHistory/track commands. Selection/zoom must stay session-only and non-dirty. **Do not create a new UI prompt/image**; existing frozen UI references are the source of truth. Do not start T11-W03-05 in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.

@@ -62,8 +62,11 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: PASS / VERIFIED
 - Dependency: T11-W03-02 PASS / VERIFIED
+- Verified implementation head: `83fd9a0772c72c38a995ccd2609a910692a0e61a`
+- Windows CI: `37631324251` / #225 PASS; job `112826044830`
+- Evidence: `evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`
 - Purpose:
   - validated `track.reorder` and `track.set-enabled` commands;
   - canonical order remains `tracks[]`;
@@ -87,7 +90,8 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W03-03
+- Status: READY
+- Dependency: T11-W03-03 PASS / VERIFIED
 - Purpose:
   - map UI-IMG-002B/UI-IMG-002D and PNL-002/PNL-007;
   - expose selection/reorder/enable state through frozen surfaces;

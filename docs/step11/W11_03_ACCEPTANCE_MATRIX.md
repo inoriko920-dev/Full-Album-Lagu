@@ -32,6 +32,15 @@
 - Verified contribution: AC-09 shared mutation owner for current W11-02 user mutations; AC-10/11/12 command/history behavior; AC-15 logical Save checkpoint; AC-16 Open/New/Recovery/passive-scan semantics; AC-19 offline/trust-boundary gates; AC-20 W11-01/W11-02/frozen UI/package regressions.
 - These are **task-level verified contributions**, not premature final wave closure; the matrix remains open until T11-W03-06.
 
+## T11-W03-03 checkpoint evidence
+
+- T11-W03-03 status: **PASS / VERIFIED**.
+- Verified implementation head: `83fd9a0772c72c38a995ccd2609a910692a0e61a`.
+- Windows CI: `37631324251` / #225 PASS.
+- Evidence: `evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`.
+- Verified contribution: AC-03 canonical reorder + persistence core; AC-04 deterministic boundary recalculation; AC-05 disable excludes effective sequence without source mutation; AC-06 re-enable restores required-media blocker; AC-07 stable track/media identity; AC-10 one semantic command/one revision and no-op behavior; AC-11 Undo/Redo semantic restoration through shared engine; AC-12 redo branch foundation remains intact; AC-15 saved checkpoint compatibility; AC-18 105-track deterministic command proof; AC-20 prior-wave/frozen UI/package regression.
+- These are **task-level verified contributions**, not premature final wave closure; T11-W03-04 UI integration and later hardening/closure remain required.
+
 ## Closure rule
 
 W11-03 may close only when **AC-W11-03-01..20** are all PASS or any BLOCKED item is explicitly documented with evidence. No criterion is implied PASS merely because code exists.

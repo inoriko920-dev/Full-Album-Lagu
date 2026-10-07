@@ -6,7 +6,7 @@
 - Active role at current checkpoint: SOL (next task only)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01..02 PASS / VERIFIED; T11-W03-03 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01..03 PASS / VERIFIED; T11-W03-04 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-02 Media Intake Foundation`
@@ -35,6 +35,7 @@
   - `T11-W02-06 Wave E2E, Drift Review & Evidence Closure` — PASS
   - `T11-W03-01 Timeline Domain + CommandEngine Core` — PASS
   - `T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics` — PASS
+  - `T11-W03-03 Reorder / Enable-Disable / Boundary Application Core` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -100,13 +101,27 @@
 - T11-W03-02 CI job: `112815298762`
 - T11-W03-02 Windows portable artifact: `11484699332`
 - T11-W03-02 evidence: `docs/step11/evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`
-- Next READY implementation task: `T11-W03-03 Reorder / Enable-Disable / Boundary Application Core` — SOL
+- T11-W03-03 verified implementation head: `83fd9a0772c72c38a995ccd2609a910692a0e61a`
+- T11-W03-03 Windows CI: `37631324251` / run #225 — PASS
+- T11-W03-03 CI job: `112826044830`
+- T11-W03-03 Windows portable artifact: `11487030899`
+- T11-W03-03 evidence: `docs/step11/evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`
+- Next READY implementation task: `T11-W03-04 Frozen Album Timeline + Global Undo/Redo UI Wiring` — SOL
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics VERIFIED.** ProjectSession now uses the shared CommandEngine history seam, dirty state is based on a logical saved checkpoint, Undo-to-saved/Redo-away semantics are proven, Recovery Accept remains dirty, Open/New reset history, media import/relink use shared history, and passive missing-media reconciliation creates no false history/dirty noise. Windows CI #211 is fully green including all prior lifecycle/media/frozen UI/package regressions. T11-W03-03 is now the only READY implementation task.
+**PASS — T11-W03-03 Reorder / Enable-Disable / Boundary Application Core VERIFIED.** Track reorder and enabled-state commands now run through the shared CommandEngine; effective media requirement follows enabled usage including shared assets; boundaries remain deterministic and derived; persistence/Unicode/source-immutability and 105-track coverage pass. Windows CI #225 is fully green including all prior lifecycle/media/frozen UI/package regressions. T11-W03-04 is now the only READY implementation task.
+
+## T11-W03-03 verification
+- Verified implementation head: `83fd9a0772c72c38a995ccd2609a910692a0e61a`.
+- Windows CI: `37631324251` / #225 — PASS.
+- CI job: `112826044830`.
+- Windows portable artifact: `11487030899`.
+- Frozen visual artifact: `11487375187`.
+- Evidence: `docs/step11/evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`.
+- No UI wiring, new UI prompt/image, provider/runtime integration, or later-wave feature was pulled forward.
 
 ## T11-W03-02 verification
 - Verified implementation head: `c505b14488735705401a0ffb6e1bd666dd77a996`.
@@ -174,4 +189,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: execute **T11-W03-03 — Reorder / Enable-Disable / Boundary Application Core only** as SOL. Re-read the W11-03 task card and T11-W03-02 evidence first. Do not start T11-W03-04 frozen timeline/global Undo-Redo UI wiring in the same turn.
+After the user says `lanjutkan`: execute **T11-W03-04 — Frozen Album Timeline + Global Undo/Redo UI Wiring only** as SOL. Re-read the frozen UI references, W11-03 task card, and T11-W03-03 evidence first. Use the existing frozen images/reference documents; do not generate a new UI prompt/image and do not start T11-W03-05 in the same turn.
