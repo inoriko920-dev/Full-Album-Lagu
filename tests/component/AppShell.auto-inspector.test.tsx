@@ -210,12 +210,16 @@ describe("T11-W04-05 frozen Auto Susun + Inspector wiring", () => {
     const shell = document.querySelector(".app-shell");
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: "Auto Susun Album" })).toBeEnabled();
+      expect(
+        screen.getByRole("button", { name: "Auto Susun Album" }),
+      ).toBeEnabled();
       expect(mediaOrder()).toEqual(["track-c", "track-a", "track-b"]);
     });
 
     fireEvent.click(
-      document.querySelector('[data-media-track-id="track-c"] button') as Element,
+      document.querySelector(
+        '[data-media-track-id="track-c"] button',
+      ) as Element,
     );
     expect(shell).toHaveAttribute("data-selected-track-id", "track-c");
 
@@ -252,11 +256,15 @@ describe("T11-W04-05 frozen Auto Susun + Inspector wiring", () => {
     const shell = document.querySelector(".app-shell");
 
     await waitFor(() => {
-      expect(document.querySelector('[data-media-track-id="track-b"]')).not.toBeNull();
+      expect(
+        document.querySelector('[data-media-track-id="track-b"]'),
+      ).not.toBeNull();
     });
 
     fireEvent.click(
-      document.querySelector('[data-media-track-id="track-b"] button') as Element,
+      document.querySelector(
+        '[data-media-track-id="track-b"] button',
+      ) as Element,
     );
     fireEvent.click(screen.getByRole("tab", { name: "Inspector" }));
 
@@ -274,9 +282,7 @@ describe("T11-W04-05 frozen Auto Susun + Inspector wiring", () => {
     expect(shell).toHaveAttribute("data-project-revision", "0");
     expect(shell).toHaveAttribute("data-project-dirty", "false");
 
-    fireEvent.click(
-      screen.getByRole("button", { name: "Terapkan Metadata" }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: "Terapkan Metadata" }));
 
     await waitFor(() => {
       expect(shell).toHaveAttribute("data-project-revision", "1");
@@ -289,9 +295,9 @@ describe("T11-W04-05 frozen Auto Susun + Inspector wiring", () => {
     await waitFor(() => {
       expect(shell).toHaveAttribute("data-project-revision", "2");
       expect(shell).toHaveAttribute("data-project-dirty", "false");
-      expect(screen.getByRole("textbox", { name: "Override judul" })).toHaveValue(
-        "Existing Manual B",
-      );
+      expect(
+        screen.getByRole("textbox", { name: "Override judul" }),
+      ).toHaveValue("Existing Manual B");
     });
   });
 
@@ -338,10 +344,14 @@ describe("T11-W04-05 frozen Auto Susun + Inspector wiring", () => {
     const shell = document.querySelector(".app-shell");
 
     await waitFor(() => {
-      expect(document.querySelector('[data-media-track-id="track-b"]')).not.toBeNull();
+      expect(
+        document.querySelector('[data-media-track-id="track-b"]'),
+      ).not.toBeNull();
     });
     fireEvent.click(
-      document.querySelector('[data-media-track-id="track-b"] button') as Element,
+      document.querySelector(
+        '[data-media-track-id="track-b"] button',
+      ) as Element,
     );
     fireEvent.click(screen.getByRole("tab", { name: "Inspector" }));
 
@@ -387,7 +397,9 @@ describe("T11-W04-05 frozen Auto Susun + Inspector wiring", () => {
 
     render(<AppShell />);
 
-    expect(screen.getByRole("button", { name: "Auto Susun Album" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Auto Susun Album" }),
+    ).toBeDisabled();
     fireEvent.click(screen.getByRole("tab", { name: "Inspector" }));
     expect(screen.getByText("Belum ada pilihan")).toBeInTheDocument();
     expect(

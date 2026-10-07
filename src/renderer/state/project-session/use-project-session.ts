@@ -69,17 +69,8 @@ export type MediaOperationState =
   | "error";
 export type RelinkActionState = "idle" | "working" | "error";
 export type AutoArrangeActionState =
-  | "idle"
-  | "planning"
-  | "applying"
-  | "applied"
-  | "noop"
-  | "error";
-export type ArtworkActionState =
-  | "idle"
-  | "working"
-  | "cancelled"
-  | "error";
+  "idle" | "planning" | "applying" | "applied" | "noop" | "error";
+export type ArtworkActionState = "idle" | "working" | "cancelled" | "error";
 export type MetadataDraftApplyResult = "applied" | "noop" | "error";
 
 export interface MediaUiProgress {
@@ -548,10 +539,7 @@ export function useProjectSession(): ProjectSessionView {
     setAutoArrangeState("planning");
 
     try {
-      const plan = createAutoArrangePlan(
-        before.project,
-        before.stateToken,
-      );
+      const plan = createAutoArrangePlan(before.project, before.stateToken);
       if (!plan.changed) {
         setAutoArrangeState("noop");
         return "noop";
@@ -643,12 +631,7 @@ export function useProjectSession(): ProjectSessionView {
         return false;
       }
     },
-    [
-      artworkActionState,
-      history,
-      publishHistorySnapshot,
-      syncMediaProjection,
-    ],
+    [artworkActionState, history, publishHistorySnapshot, syncMediaProjection],
   );
 
   const importTrackArtwork = useCallback(

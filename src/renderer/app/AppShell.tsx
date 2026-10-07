@@ -512,7 +512,9 @@ function SelectedTrackInspector({
       <section className="inspector-section" aria-label="Artwork track">
         <div className="inspector-section__header">
           <strong>Artwork</strong>
-          <span>{provenanceLabel(projection.presentation.artwork.provenance)}</span>
+          <span>
+            {provenanceLabel(projection.presentation.artwork.provenance)}
+          </span>
         </div>
 
         <div className="inspector-artwork-row">
@@ -534,8 +536,7 @@ function SelectedTrackInspector({
               compact
               disabled={
                 busy ||
-                projection.presentation.artwork.provenance !==
-                  "manual-override"
+                projection.presentation.artwork.provenance !== "manual-override"
               }
               onClick={() => projectSession.clearTrackArtwork(trackId)}
             />
