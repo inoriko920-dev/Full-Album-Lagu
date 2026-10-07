@@ -23,10 +23,13 @@ function makeProject(
       sourcePath: `D:/Album/${index + 1}.mp3`,
       fileName: `${index + 1}.mp3`,
       sizeBytes: 1000 + index,
-      availability: "ready" as const,
       ...(durationMs === undefined
-        ? {}
+        ? {
+            availability: "invalid" as const,
+            errorCode: "MEDIA_DURATION_UNAVAILABLE" as const,
+          }
         : {
+            availability: "ready" as const,
             metadata: {
               durationMs,
             },
