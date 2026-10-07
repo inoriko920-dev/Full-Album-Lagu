@@ -70,8 +70,10 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - DoR: **PASS**; AC-W11-04-01..22 defined.
 - Completed: **T11-W04-01 Binding Schema + Resolver Contracts — PASS / VERIFIED**.
 - Proof: Windows CI `37649707029` / #252 PASS; `docs/step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`.
-- Next exact implementation task: **T11-W04-02 Deterministic Auto Susun Planner + CommandBatch — SOL only**.
-- T11-W04-03..06 remain serially blocked.
+- Completed: **T11-W04-02 Deterministic Auto Susun Planner + CommandBatch — PASS / VERIFIED**.
+- Proof: Windows CI `37653317447` / #268 PASS; deterministic 128-track planner/apply/Undo/Redo stress PASS; `docs/step11/evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`.
+- Next exact implementation task: **T11-W04-03 Artwork Intake + Binding Commands — SOL only**.
+- T11-W04-04..06 remain serially blocked.
 - Existing frozen Auto Susun/Inspector/Media/Timeline surfaces are authoritative; no new UI prompt/image generation is required now.
 - If a required W11-04 visual state cannot be represented by the frozen pack, implementation must STOP and return to ASTRA/UI governance.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.
