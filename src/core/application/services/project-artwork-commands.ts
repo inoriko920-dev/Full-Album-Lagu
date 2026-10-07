@@ -29,8 +29,7 @@ export interface SetTrackArtworkCommandInput extends ArtworkCommandExpectation {
   origin?: ProjectCommandOrigin;
 }
 
-export interface ImportAndBindArtworkBatchInput
-  extends ArtworkCommandExpectation {
+export interface ImportAndBindArtworkBatchInput extends ArtworkCommandExpectation {
   asset: MediaAssetReference;
   target: ArtworkBindingTarget;
   origin?: ProjectCommandOrigin;
@@ -64,7 +63,8 @@ function requireImageAsset(
     (candidate) => candidate.id === normalized,
   );
   if (asset === undefined) throw new Error("Artwork asset does not exist.");
-  if (asset.kind !== "image") throw new Error("Artwork asset must be an image.");
+  if (asset.kind !== "image")
+    throw new Error("Artwork asset must be an image.");
   return asset;
 }
 
@@ -142,7 +142,8 @@ export function createSetTrackArtworkCommand(
     origin: input.origin ?? "manual",
     ...expectationFields(input),
     apply: (project) => {
-      if (input.assetId !== undefined) requireImageAsset(project, input.assetId);
+      if (input.assetId !== undefined)
+        requireImageAsset(project, input.assetId);
       return updateTrack(project, input.trackId, (track) => {
         if (input.assetId !== undefined) {
           if (track.binding?.artworkAssetId === input.assetId) return track;

@@ -167,9 +167,9 @@ describe("artwork binding commands", () => {
       dirty: false,
     });
     expect(
-      session.snapshot().project.mediaAssets?.some(
-        (asset) => asset.id === "image-new",
-      ),
+      session
+        .snapshot()
+        .project.mediaAssets?.some((asset) => asset.id === "image-new"),
     ).toBe(false);
     expect(session.snapshot().project.tracks[0]?.binding).toMatchObject({
       artworkAssetId: "image-track",

@@ -16,7 +16,9 @@ function nextUniqueAssetId(
   project: ProjectDocument,
   idFactory: () => string,
 ): string {
-  const existing = new Set((project.mediaAssets ?? []).map((asset) => asset.id));
+  const existing = new Set(
+    (project.mediaAssets ?? []).map((asset) => asset.id),
+  );
   for (let attempt = 0; attempt < 100; attempt += 1) {
     const candidate = idFactory().trim();
     if (candidate.length > 0 && !existing.has(candidate)) return candidate;

@@ -11,11 +11,19 @@ import { ArtworkIntakeService } from "../../src/core/application/services/artwor
 import { createEmptyProject } from "../../src/core/domain/project-document";
 
 function sourcePort(result: MediaSourceInspection): MediaSourcePort {
-  return { async inspect() { return result; } };
+  return {
+    async inspect() {
+      return result;
+    },
+  };
 }
 
 function probePort(result: ArtworkProbeResult): ArtworkProbePort {
-  return { async probe() { return result; } };
+  return {
+    async probe() {
+      return result;
+    },
+  };
 }
 
 describe("ArtworkIntakeService", () => {
@@ -24,42 +32,45 @@ describe("ArtworkIntakeService", () => {
     ["cover.jpg", "jpeg" as const],
     ["cover.jpeg", "jpeg" as const],
     ["cover.webp", "webp" as const],
-  ])("imports supported %s artwork as optional media", async (fileName, format) => {
-    const project = createEmptyProject("artwork-supported");
-    const original = structuredClone(project);
-    const service = new ArtworkIntakeService(
-      sourcePort({
-        status: "found",
-        source: {
-          sourcePath: `D:/Album/${fileName}`,
-          fileName,
-          sizeBytes: 120,
-        },
-      }),
-      probePort({ status: "ready", format }),
-      () => "image-1",
-    );
+  ])(
+    "imports supported %s artwork as optional media",
+    async (fileName, format) => {
+      const project = createEmptyProject("artwork-supported");
+      const original = structuredClone(project);
+      const service = new ArtworkIntakeService(
+        sourcePort({
+          status: "found",
+          source: {
+            sourcePath: `D:/Album/${fileName}`,
+            fileName,
+            sizeBytes: 120,
+          },
+        }),
+        probePort({ status: "ready", format }),
+        () => "image-1",
+      );
 
-    const result = await service.importAndBind(
-      project,
-      { kind: "album-default" },
-      `D:/Album/${fileName}`,
-    );
-    expect(project).toEqual(original);
-    expect(result.status).toBe("imported");
-    if (result.status !== "imported") throw new Error("Expected imported.");
-    expect(result.project).toMatchObject({
-      revision: 1,
-      albumPresentation: { defaultArtworkAssetId: "image-1" },
-    });
-    expect(result.project.mediaAssets?.[0]).toMatchObject({
-      id: "image-1",
-      kind: "image",
-      required: false,
-      availability: "ready",
-      fileName,
-    });
-  });
+      const result = await service.importAndBind(
+        project,
+        { kind: "album-default" },
+        `D:/Album/${fileName}`,
+      );
+      expect(project).toEqual(original);
+      expect(result.status).toBe("imported");
+      if (result.status !== "imported") throw new Error("Expected imported.");
+      expect(result.project).toMatchObject({
+        revision: 1,
+        albumPresentation: { defaultArtworkAssetId: "image-1" },
+      });
+      expect(result.project.mediaAssets?.[0]).toMatchObject({
+        id: "image-1",
+        kind: "image",
+        required: false,
+        availability: "ready",
+        fileName,
+      });
+    },
+  );
 
   it("binds imported artwork to one track without changing unrelated manual fields", async () => {
     const project = {
