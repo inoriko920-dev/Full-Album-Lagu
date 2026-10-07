@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL
+- Active role at current checkpoint: ASTRA
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
-- STEP 11 planning checkpoint: W11-01 planning/implementation COMPLETE; W11-02 ASTRA planning = PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 T11-W02-01..05 COMPLETE / PASS
+- STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 planning/implementation COMPLETE; W11-03 ASTRA planning is next
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 SOL implementation BLOCKED pending ASTRA planning
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
-- Last completed wave: `W11-01 Project Lifecycle & Recovery Core`
+- Last completed wave: `W11-02 Media Intake Foundation`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Active planned wave: `W11-02 Media Intake Foundation`
+- Next planned wave: `W11-03 Album Timeline + Command History`
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -32,6 +32,7 @@
   - `T11-W02-03 Audio Probe, Validation, Metadata & Deterministic Initial Order` — PASS
   - `T11-W02-04 Missing Media Scan & Relink Core` — PASS
   - `T11-W02-05 Frozen Media/Missing/Relink UI Wiring` — PASS
+  - `T11-W02-06 Wave E2E, Drift Review & Evidence Closure` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -70,22 +71,34 @@
 - T11-W02-05 CI job: `112745333468`
 - T11-W02-05 frozen visual artifact: `11475113563`
 - T11-W02-05 evidence: `docs/step11/evidence/T11_W02_05_FROZEN_MEDIA_RELINK_UI_EVIDENCE.md`
-- Next READY implementation task: `T11-W02-06 Wave E2E, Drift Review & Evidence Closure` — SOL
+- W11-02 closure head: `2af8e653fae57c216be63a7f1c9f866c269b36e9`
+- W11-02 clean Windows CI: `37616435681` / run #177 — PASS
+- W11-02 CI job: `112775774987`
+- W11-02 closure artifact: `11481085315`
+- W11-02 Windows portable artifact: `11480135988`
+- W11-02 frozen visual artifact: `11479776589`
+- W11-02 closure evidence: `docs/step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`
+- W11-02 drift review: `docs/step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`
+- Next READY task: `ASTRA W11-03 Album Timeline + Command History planning/charter checkpoint` — planning only
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W02-05 FROZEN MEDIA / MISSING / RELINK UI WIRING VERIFIED.** Media import/progress/cancel/error states are wired into the approved Media hierarchy; required missing audio surfaces the UI-IMG-002F warning and blocks Render readiness; DLG-005 single/folder relink states map to UI-IMG-009A/009B; ambiguous/no-match results remain unresolved; renderer ownership stays filesystem-free. The exact frozen SCR-002A visual baseline remains PASS, proving the default empty editor was not redesigned.
+**PASS — W11-02 MEDIA INTAKE FOUNDATION COMPLETE.** T11-W02-01..06 are VERIFIED; AC-W11-02-01..18 are all PASS; the architecture/UI/trust-boundary drift review is PASS with no material drift; clean Windows CI #177 passed full verify, runtime audit, STEP 10 + W11-01 regressions, T11-W02-06 media closure E2E, exact frozen SCR-002A, package, smoke and portable ZIP.
 
-## T11-W02-05 verification
-- Verified implementation head: `28c9fe1f1581482a4440ff894532d34f0b0f0a4c`.
-- Windows CI run: `37607158798` — PASS.
-- CI job: `112745333468`.
-- Exact frozen SCR-002A baseline: PASS; artifact `11475113563`.
-- Full verify + runtime audit + STEP 10 SLC + W11-01 lifecycle/recovery + Windows package/smoke/ZIP: PASS.
-- Evidence: `docs/step11/evidence/T11_W02_05_FROZEN_MEDIA_RELINK_UI_EVIDENCE.md`.
-- T11-W02-06 is now READY; W11-03 remains blocked until W11-02 closure.
+## T11-W02-06 verification
+- Verified branch head: `2af8e653fae57c216be63a7f1c9f866c269b36e9`.
+- Windows CI run: `37616435681` / #177 — PASS.
+- CI job: `112775774987`.
+- Closure evidence artifact: `11481085315`.
+- Portable package artifact: `11480135988`.
+- Frozen visual artifact: `11479776589`.
+- Full-flow E2E: 24-file import + duplicate dedupe + save/reopen + missing required audio + folder relink + readiness restored — PASS.
+- Stress E2E: 105-file progressive intake, deterministic order, renderer heartbeat, source immutability — PASS.
+- Evidence: `docs/step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
+- Drift review: `docs/step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`.
+- W11-03 implementation is not started.
 
 ## W11-02 planning decisions
 - One canonical Media Intake pipeline for picker, drag-drop file and drag-drop folder.
@@ -108,4 +121,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: execute **T11-W02-06 Wave E2E, Drift Review & Evidence Closure only** as SOL. Do not start W11-03 in the same turn.
+After the user says `lanjutkan`: switch to **ASTRA** and execute only the **W11-03 Album Timeline + Command History planning/charter checkpoint**. Create the detailed planning DOCX plus operational charter/task cards/acceptance matrix/DoR/source-of-truth updates before any SOL implementation. Do not start W11-03 coding in the same turn as planning unless the repository's explicit planning gate later authorizes it.

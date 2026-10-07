@@ -20,3 +20,21 @@
 | AC-W11-02-16 | renderer has no direct fs/dialog/subprocess/provider | 01..06 | architecture gate/drift review |
 | AC-W11-02-17 | offline + sanitized diagnostics | 01..06 | offline E2E + secret/path checks |
 | AC-W11-02-18 | W11-01/UI/package regressions remain green | 05,06 | canonical Windows CI |
+
+## Closure result
+
+**W11-02 COMPLETE / PASS.** AC-W11-02-01 through AC-W11-02-18 are all **PASS**; none are BLOCKED.
+
+Canonical clean verification:
+- branch head: `2af8e653fae57c216be63a7f1c9f866c269b36e9`;
+- Windows CI: `37616435681` / run #177 — PASS;
+- CI job: `112775774987`;
+- T11-W02-06 closure artifact: `11481085315`;
+- exact frozen visual artifact: `11479776589`;
+- Windows portable package artifact: `11480135988`.
+
+Consolidated proof:
+- `docs/step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`;
+- `docs/step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`.
+
+Next checkpoint is ASTRA planning for W11-03. W11-03 implementation must not begin until its planning/DoR/source-of-truth gate passes.

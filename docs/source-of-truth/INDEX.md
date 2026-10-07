@@ -53,4 +53,6 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - Current W11-02 authority: `planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
 - Operational companions: `../../step11/FEATURE_REGISTRY.md`, `../../step11/DEPENDENCY_GRAPH.md`, `../../step11/WAVE_11_02_CHARTER.md`, `../../step11/TASK_CARDS_W11_02.md`, `../../step11/W11_02_ACCEPTANCE_MATRIX.md`.
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`.
-- Status: W11-01 COMPLETE / PASS; W11-02 ASTRA planning PASS / DoR PASS; next task T11-W02-01 READY for SOL.
+- W11-02 closure evidence: `../../step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
+- W11-02 drift review: `../../step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`.
+- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS with AC-W11-02-01..18 PASS and drift review PASS. Next checkpoint: ASTRA planning for W11-03; no W11-03 implementation authority exists yet.

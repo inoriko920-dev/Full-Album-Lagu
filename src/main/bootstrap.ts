@@ -323,6 +323,66 @@ function createMainWindow(): BrowserWindow {
               name,
             });
 
+            const waitForDiscovery = async (batchId) => {
+              let polls = 0;
+              let sawProgress = false;
+              let rendererTicks = 0;
+              const heartbeat = setInterval(() => {
+                rendererTicks += 1;
+              }, 1);
+
+              try {
+                await new Promise((resolveWait) => setTimeout(resolveWait, 5));
+                while (polls < 1000) {
+                  const status =
+                    await window.lfa.getMediaDiscoveryStatus(batchId);
+                  polls += 1;
+                  if (status.status === "discovering") {
+                    sawProgress = true;
+                    await new Promise((resolveWait) =>
+                      setTimeout(resolveWait, 5),
+                    );
+                    continue;
+                  }
+                  return { status, polls, sawProgress, rendererTicks };
+                }
+                throw new Error("Timed out waiting for media discovery.");
+              } finally {
+                clearInterval(heartbeat);
+              }
+            };
+
+            const waitForIntake = async (batchId) => {
+              let polls = 0;
+              let sawProgress = false;
+              let rendererTicks = 0;
+              const heartbeat = setInterval(() => {
+                rendererTicks += 1;
+              }, 1);
+
+              try {
+                await new Promise((resolveWait) => setTimeout(resolveWait, 5));
+                while (polls < 2000) {
+                  const status = await window.lfa.getMediaIntakeStatus(batchId);
+                  polls += 1;
+                  if (
+                    status.status === "probing" ||
+                    status.status === "committing"
+                  ) {
+                    sawProgress = true;
+                    await new Promise((resolveWait) =>
+                      setTimeout(resolveWait, 5),
+                    );
+                    continue;
+                  }
+                  return { status, polls, sawProgress, rendererTicks };
+                }
+                throw new Error("Timed out waiting for media intake.");
+              } finally {
+                clearInterval(heartbeat);
+              }
+            };
+
             if (mode === "known-save") {
               const project = nextProject(
                 startup.project,
@@ -550,6 +610,146 @@ function createMainWindow(): BrowserWindow {
                 mode,
                 startupStatus: startup.status,
                 discardStatus: discarded.status,
+              };
+            }
+
+            if (mode === "media-import") {
+              const selected = await window.lfa.pickAudioFiles();
+              if (selected.status !== "started") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  selectionStatus: selected.status,
+                };
+              }
+
+              const discoveryRun = await waitForDiscovery(selected.batchId);
+              const discovery = discoveryRun.status;
+              if (discovery.status !== "completed") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  selectionStatus: selected.status,
+                  discoveryStatus: discovery.status,
+                  discoveryPolls: discoveryRun.polls,
+                  rendererTicks: discoveryRun.rendererTicks,
+                };
+              }
+
+              const intakeStart = await window.lfa.startMediaIntake({
+                discoveryBatchId: selected.batchId,
+                project: startup.project,
+              });
+              if (intakeStart.status !== "started") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  selectionStatus: selected.status,
+                  discoveryStatus: discovery.status,
+                  intakeStartStatus: intakeStart.status,
+                  discoveryPolls: discoveryRun.polls,
+                  rendererTicks: discoveryRun.rendererTicks,
+                };
+              }
+
+              const intakeRun = await waitForIntake(intakeStart.batchId);
+              const intake = intakeRun.status;
+              if (intake.status !== "completed") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  selectionStatus: selected.status,
+                  discoveryStatus: discovery.status,
+                  intakeStatus: intake.status,
+                  discoveryPolls: discoveryRun.polls,
+                  intakePolls: intakeRun.polls,
+                  rendererTicks:
+                    discoveryRun.rendererTicks + intakeRun.rendererTicks,
+                };
+              }
+
+              const save = await window.lfa.saveProject({
+                project: intake.project,
+              });
+              const orderedTitles = intake.project.tracks
+                .slice(0, 10)
+                .map((track) => track.title);
+              const lastTrack =
+                intake.project.tracks[intake.project.tracks.length - 1];
+
+              return {
+                mode,
+                startupStatus: startup.status,
+                selectionStatus: selected.status,
+                discoveryStatus: discovery.status,
+                discoveryRootsSelected: discovery.summary.rootsSelected,
+                discovered: discovery.summary.filesDiscovered,
+                duplicatesSkipped: discovery.summary.duplicatesSkipped,
+                discoveryIssueCount: discovery.summary.issues.length,
+                intakeStatus: intake.status,
+                accepted: intake.summary.accepted,
+                rejected: intake.summary.rejected,
+                saveStatus: save.status,
+                projectRevision: intake.project.revision,
+                trackCount: intake.project.tracks.length,
+                mediaAssetCount: intake.project.mediaAssets?.length ?? 0,
+                orderedTitles,
+                lastTitle: lastTrack?.title ?? null,
+                discoveryPolls: discoveryRun.polls,
+                intakePolls: intakeRun.polls,
+                discoveryProgressObserved: discoveryRun.sawProgress,
+                intakeProgressObserved: intakeRun.sawProgress,
+                rendererTicks:
+                  discoveryRun.rendererTicks + intakeRun.rendererTicks,
+              };
+            }
+
+            if (mode === "media-missing-relink") {
+              const before = await window.lfa.scanMissingMedia({
+                project: startup.project,
+              });
+              const relink = await window.lfa.relinkMissingMediaFolder({
+                project: before.project,
+              });
+
+              if (relink.status !== "completed") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  missingBefore: before.items.length,
+                  requiredBlockersBefore: before.readiness.blockers.length,
+                  readyBefore: before.readiness.ready,
+                  relinkStatus: relink.status,
+                };
+              }
+
+              const after = await window.lfa.scanMissingMedia({
+                project: relink.project,
+              });
+              const save = await window.lfa.saveProject({
+                project: after.project,
+              });
+
+              return {
+                mode,
+                startupStatus: startup.status,
+                missingBefore: before.items.length,
+                requiredBlockersBefore: before.readiness.blockers.length,
+                readyBefore: before.readiness.ready,
+                relinkStatus: relink.status,
+                relinkedCount: relink.results.filter(
+                  (item) => item.status === "relinked",
+                ).length,
+                ambiguousCount: relink.results.filter(
+                  (item) => item.status === "ambiguous",
+                ).length,
+                noMatchCount: relink.results.filter(
+                  (item) => item.status === "no-match",
+                ).length,
+                missingAfter: after.items.length,
+                requiredBlockersAfter: after.readiness.blockers.length,
+                readyAfter: after.readiness.ready,
+                saveStatus: save.status,
               };
             }
 

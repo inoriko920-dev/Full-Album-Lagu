@@ -21,7 +21,7 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 ## STEP 11 — Feature Implementation Waves — IN PROGRESS
 
 - W11-01 Project Lifecycle & Recovery Core — COMPLETE / PASS.
-- W11-02 Media Intake Foundation — IN PROGRESS; T11-W02-01..05 COMPLETE / PASS.
+- W11-02 Media Intake Foundation — COMPLETE / PASS; T11-W02-01..06 VERIFIED.
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut.
 - Current planning authority:
   - `docs/source-of-truth/planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
@@ -33,9 +33,11 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Completed: **T11-W02-03 Audio Probe, Validation, Metadata & Deterministic Initial Order — PASS / VERIFIED**.
 - Completed: **T11-W02-04 Missing Media Scan & Relink Core — PASS / VERIFIED**.
 - Completed: **T11-W02-05 Frozen Media/Missing/Relink UI Wiring — PASS / VERIFIED**.
-- Next exact implementation task: **T11-W02-06 Wave E2E, Drift Review & Evidence Closure**.
-- One task per user turn; W11-03 remains blocked until T11-W02-06 closes W11-02 COMPLETE / PASS.
-- Do not start W11-03 until W11-02 closes COMPLETE / PASS.
+- Completed: **T11-W02-06 Wave E2E, Drift Review & Evidence Closure — PASS / VERIFIED**.
+- W11-02 acceptance AC-W11-02-01..18: **ALL PASS**; architecture/UI drift: **PASS — no material drift**.
+- Closure proof: Windows CI `37616435681` / #177 PASS; `docs/step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
+- Next exact task: **ASTRA W11-03 Album Timeline + Command History planning/charter checkpoint**.
+- Do not start W11-03 SOL implementation until its planning DOCX/operational charter/task cards/acceptance matrix/DoR gate is complete.
 - No new W11-02 UI prompt/image generation is needed; existing frozen states are authoritative.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.
 
