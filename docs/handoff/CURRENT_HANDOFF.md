@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. STEP 11 planning is complete. **T11-W01-01, T11-W01-02, T11-W01-03, and T11-W01-04 are implemented and verified.** W11-01 remains in progress.
+STEP 10 is complete. STEP 11 planning is complete. **T11-W01-01 through T11-W01-05 are verified. W11-01 is COMPLETE / PASS.** STEP 11 remains in progress overall; W11-02 has not been planned for implementation yet.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -19,8 +19,10 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 ## Active wave
 **W11-01 Project Lifecycle & Recovery Core**
 - Features: FTR-001 Project Lifecycle + FTR-002 Autosave & Crash Recovery + FTR-018 Error/Offline cross-cut.
-- Status: IN_PROGRESS.
-- DoR: PASS.
+- Status: COMPLETE / PASS.
+- Acceptance: AC-W11-01-01..14 all PASS.
+- Drift review: PASS — no material architecture/UI/trust-boundary drift.
+- Canonical closure baseline: `main@5b7cd0328dcdfdbb242a2e88999209446daacf12`, Windows CI `37578082369` PASS.
 
 ## Completed STEP 11 tasks
 ### T11-W01-01 Lifecycle Contracts & Session Path Ownership — PASS / VERIFIED
@@ -69,10 +71,21 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - exact default SCR-002A visual baseline remains green;
 - evidence: `docs/step11/evidence/T11_W01_04_FROZEN_UI_RECOVERY_UX_EVIDENCE.md`.
 
-## Next exact task
-**T11-W01-05 Wave E2E, Drift Review & Evidence Pack** — SOL only.
+### T11-W01-05 Wave E2E, Drift Review & Evidence Pack — PASS / VERIFIED
+- verification baseline: `main@5b7cd0328dcdfdbb242a2e88999209446daacf12`;
+- canonical Windows CI: `37578082369` PASS;
+- job: `112651361529`;
+- all AC-W11-01-01..14 PASS;
+- architecture drift review PASS with no material drift;
+- W11-01 evidence pack consolidated and findable;
+- W11-01 status: COMPLETE / PASS;
+- closure evidence: `docs/step11/evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`;
+- drift review: `docs/step11/evidence/W11_01_ARCHITECTURE_DRIFT_REVIEW.md`.
 
-Do not start the next feature wave, media, Gemini, or render implementation in the same turn. Start T11-W01-05 only after the user explicitly says `lanjutkan`.
+## Next exact task
+**ASTRA planning/charter for W11-02 Media Intake Foundation** — planning only.
+
+Do not begin SOL implementation of media intake yet. W11-02 must first receive an explicit charter, acceptance mapping, dependency review, task cards, and source-of-truth planning gate.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Recovery artifacts must remain separate from the primary project file and must never masquerade as a successful user Save. Frozen UI cannot be silently redesigned. Gemini and FFmpeg concrete integrations remain STEP 12 owned.
