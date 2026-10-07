@@ -48,8 +48,7 @@ export type ProjectCommandExecutionResult =
     };
 
 export type ProjectHistoryActionResult =
-  | { status: "applied"; entry: ProjectHistoryEntry }
-  | { status: "unavailable" };
+  { status: "applied"; entry: ProjectHistoryEntry } | { status: "unavailable" };
 
 export interface ProjectHistoryEntry {
   id: string;
@@ -110,10 +109,7 @@ function stableSerialize(value: unknown): string {
       ([left], [right]) => left.localeCompare(right, "en-US"),
     );
     return `{${entries
-      .map(
-        ([key, item]) =>
-          `${JSON.stringify(key)}:${stableSerialize(item)}`,
-      )
+      .map(([key, item]) => `${JSON.stringify(key)}:${stableSerialize(item)}`)
       .join(",")}}`;
   }
 
@@ -130,10 +126,7 @@ function semanticallyEqual(
   );
 }
 
-function hasValidMetadata(command: {
-  kind: string;
-  label: string;
-}): boolean {
+function hasValidMetadata(command: { kind: string; label: string }): boolean {
   return command.kind.trim().length > 0 && command.label.trim().length > 0;
 }
 

@@ -84,7 +84,9 @@ describe("ProjectCommandEngine", () => {
     const engine = new ProjectCommandEngine(createEmptyProject("command-3"));
 
     expect(
-      engine.execute(renameCommand("Stale Revision", "manual", { revision: 9 })),
+      engine.execute(
+        renameCommand("Stale Revision", "manual", { revision: 9 }),
+      ),
     ).toEqual({ status: "rejected", code: "STALE_REVISION" });
 
     expect(

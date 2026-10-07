@@ -54,7 +54,9 @@ describe("album timeline projection", () => {
   });
 
   it("derives cumulative boundaries from canonical track order and skips disabled tracks", () => {
-    const projection = projectAlbumTimeline(makeProject([1000, 2000, 3000], [1]));
+    const projection = projectAlbumTimeline(
+      makeProject([1000, 2000, 3000], [1]),
+    );
 
     expect(projection.complete).toBe(true);
     expect(projection.enabledTrackCount).toBe(2);
@@ -88,7 +90,9 @@ describe("album timeline projection", () => {
   });
 
   it("marks timing unresolved from the first enabled track without a usable duration", () => {
-    const projection = projectAlbumTimeline(makeProject([1000, undefined, 3000]));
+    const projection = projectAlbumTimeline(
+      makeProject([1000, undefined, 3000]),
+    );
 
     expect(projection.complete).toBe(false);
     expect(projection.totalDurationMs).toBeUndefined();

@@ -6,8 +6,7 @@ import {
 
 export type AlbumTimelineItemStatus = "resolved" | "disabled" | "unresolved";
 export type AlbumTimelineUnresolvedReason =
-  | "duration-unavailable"
-  | "prior-duration-unresolved";
+  "duration-unavailable" | "prior-duration-unresolved";
 
 export interface AlbumTimelineItem {
   trackId: string;
