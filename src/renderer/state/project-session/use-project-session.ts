@@ -16,11 +16,7 @@ import {
 
 export type ProjectSourceState = "new" | "loaded" | "load-error";
 export type ProjectPersistenceState =
-  | "idle"
-  | "saving"
-  | "saved"
-  | "cancelled"
-  | "error";
+  "idle" | "saving" | "saved" | "cancelled" | "error";
 
 const AUTOSAVE_INTERVAL_MS = 15_000;
 
@@ -134,9 +130,7 @@ export function useProjectSession(): ProjectSessionView {
         });
 
         if (!alive) return;
-        setRecoveryErrorCode(
-          result.status === "error" ? result.code : null,
-        );
+        setRecoveryErrorCode(result.status === "error" ? result.code : null);
       } catch {
         if (!alive) return;
         setRecoveryErrorCode("AUTOSAVE_WRITE_FAILED");

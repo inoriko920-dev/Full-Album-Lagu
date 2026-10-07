@@ -65,7 +65,9 @@ export class ProjectRecoveryService {
     };
   }
 
-  async inspect(primaryProject: ProjectDocument): Promise<RecoveryStatusResult> {
+  async inspect(
+    primaryProject: ProjectDocument,
+  ): Promise<RecoveryStatusResult> {
     const primary = projectDocumentSchema.parse(primaryProject);
 
     let snapshot;

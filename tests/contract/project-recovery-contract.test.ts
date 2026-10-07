@@ -12,13 +12,9 @@ import {
 describe("project recovery IPC contract", () => {
   it("uses narrow allowlisted recovery channels", () => {
     expect(PROJECT_AUTOSAVE_CHANNEL).toBe("project:autosave-recovery");
-    expect(PROJECT_RECOVERY_STATUS_CHANNEL).toBe(
-      "project:get-recovery-status",
-    );
+    expect(PROJECT_RECOVERY_STATUS_CHANNEL).toBe("project:get-recovery-status");
     expect(PROJECT_RECOVERY_ACCEPT_CHANNEL).toBe("project:accept-recovery");
-    expect(PROJECT_RECOVERY_DISCARD_CHANNEL).toBe(
-      "project:discard-recovery",
-    );
+    expect(PROJECT_RECOVERY_DISCARD_CHANNEL).toBe("project:discard-recovery");
   });
 
   it("keeps the recovery artifact schema separate from the primary project schema", () => {

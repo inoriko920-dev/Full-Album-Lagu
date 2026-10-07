@@ -155,6 +155,4 @@ export type RecoveryAcceptResult = z.infer<typeof recoveryAcceptResultSchema>;
 export type RecoveryDiscardRequest = z.infer<
   typeof recoveryDiscardRequestSchema
 >;
-export type RecoveryDiscardResult = z.infer<
-  typeof recoveryDiscardResultSchema
->;
+export type RecoveryDiscardResult = z.infer<typeof recoveryDiscardResultSchema>;

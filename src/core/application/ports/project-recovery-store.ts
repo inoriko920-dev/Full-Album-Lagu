@@ -1,8 +1,7 @@
 import type { RecoverySnapshot } from "../../contracts/project-recovery";
 
 export type ProjectRecoveryStoreErrorCode =
-  | "RECOVERY_INVALID"
-  | "AUTOSAVE_WRITE_FAILED";
+  "RECOVERY_INVALID" | "AUTOSAVE_WRITE_FAILED";
 
 export class ProjectRecoveryStoreError extends Error {
   constructor(
