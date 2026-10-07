@@ -15,7 +15,7 @@ Dependency semantics:
 1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **COMPLETE / PASS**
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **COMPLETE / PASS**
-4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006
+4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **PLANNING COMPLETE / PASS; T11-W04-01 READY**
 5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
 7. **W11-07 — Animation + Boundary Transitions** — FTR-009 + FTR-010
@@ -131,3 +131,17 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Drift review: `evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`.
 - FTR-004 and FTR-013 are VERIFIED W11-03; FTR-018 cross-cut PASS.
 - Dependency result: W11-04 may enter ASTRA planning. No W11-04 implementation is authorized until its own planning/DoR gate passes.
+
+
+## W11-04 planning checkpoint
+
+- Baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`.
+- Dependencies FTR-003/FTR-004/FTR-013 are verified by W11-02/W11-03.
+- Features: FTR-005 + FTR-006; FTR-013/FTR-018 cross-cut.
+- Planning/DoR: PASS.
+- Acceptance: AC-W11-04-01..22.
+- Serial order: T11-W04-01 READY -> T11-W04-02 BLOCKED -> T11-W04-03 BLOCKED -> T11-W04-04 BLOCKED -> T11-W04-05 BLOCKED -> T11-W04-06 BLOCKED.
+- Auto Susun must be deterministic/offline and publish through the existing CommandEngine/CommandBatch seam.
+- Track binding/default artwork is additive schema-v1; resolved values remain derived.
+- Existing frozen UI is reused; no new UI prompt/image generation is required now.
+- W11-05 remains blocked until W11-04 reaches COMPLETE / PASS.
