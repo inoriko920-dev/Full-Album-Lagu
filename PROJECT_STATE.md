@@ -64,7 +64,6 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - Native Open/Save As dialog clicks are not directly automated in CI; deterministic injected path/cancel seams exercise the same production lifecycle service and IPC pipeline.
 - Development/tooling dependency advisories remain tracked; runtime high-severity audit is clean.
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
-- Native Open/Save As dialog pointer/keyboard interaction remains non-automated in CI; deterministic injected selection/cancel seams exercise the same production pipeline.
 
 ## Next exact action
 After the user says `lanjutkan`: perform **ASTRA planning/charter for W11-02 Media Intake Foundation only**. Do not begin SOL coding for W11-02 until that planning gate is complete.
