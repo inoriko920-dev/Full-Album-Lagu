@@ -346,17 +346,39 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
-- Dependency: ASTRA-W11-03-PLAN PASS.
-- Scope:
-  - additive optional track enabled contract;
-  - pure deterministic timeline projection;
-  - CommandEngine / CommandBatch / bounded in-memory history core;
-  - monotonic revision + logical state-token foundation;
-  - unit/contract compatibility and 100+ deterministic tests.
-- Gate: must PASS / VERIFIED before T11-W03-02 starts.
-- Do not wire product UI or migrate all existing mutations in this task.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `d0ab313bece2e9ef730ee41f417310501214d7b1`
+- Windows CI: `37624594282` / run #192 — PASS
+- CI job: `112803016531`
+- Windows portable artifact: `11484295009`
+- Scope delivered:
+  - additive schema-v1 optional `track.enabled`; omission remains enabled;
+  - pure deterministic album timeline projection from canonical `tracks[]`;
+  - disabled-track exclusion from effective sequence/duration;
+  - cumulative boundaries derived from validated audio durations; no persisted boundary copy;
+  - explicit unresolved-timing projection when duration is unavailable;
+  - framework-independent unified CommandEngine for manual/template/Auto Susun/AI origins;
+  - one successful semantic command = one history node + one revision increment;
+  - no-op produces no revision/history noise;
+  - stale revision/state-token rejection;
+  - monotonic revision through Undo/Redo with semantic state tokens;
+  - redo truncation after divergent mutation;
+  - atomic CommandBatch = one publication / one revision / one Undo;
+  - bounded in-memory history and sanitized failures;
+  - deterministic 105-track coverage and schema-v1 JsonProjectStore round-trip.
+- Full Windows regression: PASS — STEP 10, W11-01, W11-02, exact frozen UI, package, smoke and portable ZIP.
+- Evidence: `docs/step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`.
+- Out of scope honored: ProjectSession migration/checkpoint integration, reorder/enable commands, UI wiring, Gemini, FFmpeg/FFprobe, Auto Susun, templates, layers, preview, transitions and render.
 
-## T11-W03-02..06
-- Status: BLOCKED serially by `docs/step11/TASK_CARDS_W11_03.md`.
+## T11-W03-02 — Existing Mutation Migration + Session Checkpoint Semantics
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: READY
+- Dependency: T11-W03-01 PASS / VERIFIED.
+- Scope authority: `docs/step11/TASK_CARDS_W11_03.md`.
+- T11-W03-03..06 remain BLOCKED serially.
 - W11-04 remains blocked until T11-W03-06 closes W11-03 COMPLETE / PASS.
