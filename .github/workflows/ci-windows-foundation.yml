@@ -86,6 +86,19 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Run STEP 11 T11-W02-06 media intake closure E2E
+        run: npm run e2e:w11:media-closure
+
+      - name: Upload STEP 11 T11-W02-06 media closure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-T11-W02-06-Media-Closure-Evidence
+          path: |
+            artifacts/step11/T11-W02-06/**
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Capture SCR-002A real-app screenshot
         run: npm run ui:screenshot:scr002a
 
