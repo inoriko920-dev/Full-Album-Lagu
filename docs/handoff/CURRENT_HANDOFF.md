@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 ASTRA planning is COMPLETE / PASS and its DoR is PASS; implementation has not started.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 is IN PROGRESS; T11-W02-01 is COMPLETE / PASS and T11-W02-02 is READY.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -84,24 +84,23 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - closure evidence: `docs/step11/evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`;
 - drift review: `docs/step11/evidence/W11_01_ARCHITECTURE_DRIFT_REVIEW.md`.
 
-## Active planned wave
+## Active wave
 **W11-02 Media Intake Foundation**
-- Planning role: ASTRA — COMPLETE / PASS.
-- Future execution owner: SOL.
-- Features: FTR-003 Media Intake & Validation + FTR-016 Missing Media Detection & Relink + FTR-018 cross-cut.
-- Baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`.
-- Requirements: F-002, F-017; FR-005..008, FR-048..050, FR-055..056.
-- DoR: PASS.
-- Acceptance: AC-W11-02-01..18 defined and mapped.
-- Task sequence: T11-W02-01..06, serial only.
-- Preferred probe/metadata adapter: `music-metadata`, subject to implementation-time lock/audit/CI.
-- Existing frozen UI references 002A/002B/002F/009A/009B are sufficient; no new UI prompt/image step.
-- Exact Gemini and FFmpeg/FFprobe integration remain outside this wave.
+- Planning: ASTRA COMPLETE / PASS; DoR PASS.
+- Features: FTR-003 + FTR-016 + FTR-018 cross-cut.
+- T11-W02-01: COMPLETE / PASS / VERIFIED.
+- Verified implementation head: `bc63f368af86d9c6f418a683b7fee47d4093a4df`.
+- Windows CI: `37586453731` PASS; job `112677579172`.
+- Evidence: `docs/step11/evidence/T11_W02_01_MEDIA_DOMAIN_CONTRACTS_EVIDENCE.md`.
+- Schema remains version 1 with additive mediaAssets/audioAssetId.
+- Legacy W11-01 project persistence round-trip remains compatible.
+- Public media/relink contracts are path-free; internal media source/probe ports are narrow.
+- No media picker/probe/relink/UI implementation has started beyond the T11-W02-01 foundation.
 
 ## Next exact task
-**T11-W02-01 Media Domain, Contracts & Project Compatibility** — SOL only.
+**T11-W02-02 Picker/Drop Discovery, Batch Queue, Progress & Cancel** — SOL only.
 
-Implement only additive media domain/reference models, ports/contracts, and project backward compatibility. Do not start picker/discovery, metadata probing, relink implementation, UI wiring, T11-W02-02, or W11-03 in the same turn.
+Implement only native multi-file selection, drag/drop path handoff, recursive deterministic folder discovery, batch dedupe, bounded queue/progress/cancel. Do not start audio metadata probing, deterministic metadata ordering, relink core, UI wiring, T11-W02-03, or W11-03 in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
