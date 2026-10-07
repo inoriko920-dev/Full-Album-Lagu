@@ -105,18 +105,11 @@ export interface ProjectSessionView {
 }
 
 export function useProjectSession(): ProjectSessionView {
-  const initialProjectRef = useRef<ProjectDocument | null>(null);
-  if (initialProjectRef.current === null) {
-    initialProjectRef.current = createSessionProject();
-  }
-
-  const historyRef = useRef<ProjectSessionHistory | null>(null);
-  if (historyRef.current === null) {
-    historyRef.current = new ProjectSessionHistory(initialProjectRef.current);
-  }
-
+  const [history] = useState(
+    () => new ProjectSessionHistory(createSessionProject()),
+  );
   const [historySnapshot, setHistorySnapshot] = useState(() =>
-    historyRef.current!.snapshot(),
+    history.snapshot(),
   );
   const project = historySnapshot.project;
   const dirty = historySnapshot.dirty;
@@ -168,7 +161,7 @@ export function useProjectSession(): ProjectSessionView {
   >(null);
 
   const publishHistorySnapshot = useCallback(() => {
-    const snapshot = historyRef.current!.snapshot();
+    const snapshot = history.snapshot();
     projectRef.current = snapshot.project;
     setHistorySnapshot(snapshot);
     return snapshot;
@@ -201,7 +194,7 @@ export function useProjectSession(): ProjectSessionView {
   const reconcileMissingMedia = useCallback(
     async (targetProject: ProjectDocument): Promise<ProjectDocument> => {
       const scannedProject = await scanMissingMediaState(targetProject);
-      historyRef.current!.reconcileSystemProject(scannedProject);
+      history.reconcileSystemProject(scannedProject);
       return publishHistorySnapshot().project;
     },
     [publishHistorySnapshot, scanMissingMediaState],
@@ -213,7 +206,7 @@ export function useProjectSession(): ProjectSessionView {
       kind: string,
       label: string,
     ): ProjectDocument => {
-      const result = historyRef.current!.commitExternalProject({
+      const result = history.commitExternalProject({
         kind,
         label,
         origin: "manual",
@@ -240,7 +233,7 @@ export function useProjectSession(): ProjectSessionView {
         const scannedProject = await scanMissingMediaState(result.project);
         if (!alive) return;
 
-        historyRef.current!.resetClean(scannedProject);
+        history.resetClean(scannedProject);
         publishHistorySnapshot();
         setSourceState("loaded");
         setLocation(result.location);
@@ -330,7 +323,7 @@ export function useProjectSession(): ProjectSessionView {
     try {
       const result = await window.lfa.saveProject({ project });
       if (result.status === "saved") {
-        historyRef.current!.markSaved(result.projectRevision);
+        history.markSaved(result.projectRevision);
         publishHistorySnapshot();
         setPersistenceState("saved");
         setLocation(result.location);
@@ -370,9 +363,9 @@ export function useProjectSession(): ProjectSessionView {
 
         if (result.status === "recovered") {
           const savedRevisionBeforeRecovery =
-            historyRef.current!.snapshot().savedRevision;
+            history.snapshot().savedRevision;
           const scannedProject = await scanMissingMediaState(result.project);
-          historyRef.current!.resetDirty(
+          history.resetDirty(
             scannedProject,
             savedRevisionBeforeRecovery,
           );
