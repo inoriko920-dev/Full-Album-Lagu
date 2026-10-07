@@ -103,6 +103,9 @@ describe("media intake public contracts", () => {
     });
 
     expect(result.status).toBe("ambiguous");
+    if (result.status !== "ambiguous") {
+      throw new Error("Expected an ambiguous relink result.");
+    }
     expect(result.candidates).toHaveLength(2);
     expect(result.candidates[0]).not.toHaveProperty("sourcePath");
   });
