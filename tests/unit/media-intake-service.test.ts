@@ -141,9 +141,7 @@ describe("MediaIntakeService", () => {
         active += 1;
         maxActive = Math.max(maxActive, active);
         const number = Number.parseInt(item.fileName.slice(0, 3), 10);
-        await new Promise((resolve) =>
-          setTimeout(resolve, (number % 7) + 1),
-        );
+        await new Promise((resolve) => setTimeout(resolve, (number % 7) + 1));
         active -= 1;
         return {
           status: "ready",
@@ -179,8 +177,7 @@ describe("MediaIntakeService", () => {
     expect(result.project.tracks.map((track) => track.title)).toEqual(
       Array.from(
         { length: 120 },
-        (_, index) =>
-          `${String(index + 1).padStart(3, "0")} Song ${index + 1}`,
+        (_, index) => `${String(index + 1).padStart(3, "0")} Song ${index + 1}`,
       ),
     );
   });
@@ -287,10 +284,8 @@ describe("MediaIntakeService", () => {
 
     const result = await waitForTerminal(
       service,
-      service.start(
-        "discovery-1",
-        createEmptyProject("project-fallback"),
-      ).batchId,
+      service.start("discovery-1", createEmptyProject("project-fallback"))
+        .batchId,
     );
     expect(result.status).toBe("completed");
     if (result.status !== "completed") throw new Error("Expected completed.");

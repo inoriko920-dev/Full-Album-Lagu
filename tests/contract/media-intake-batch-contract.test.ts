@@ -99,8 +99,6 @@ describe("media intake batch contract", () => {
         },
       }).success,
     ).toBe(false);
-    expect(result.project.tracks[0]?.sourcePath).toBe(
-      "D:/Album/Song.mp3",
-    );
+    expect(result.project.tracks[0]?.sourcePath).toBe("D:/Album/Song.mp3");
   });
 });

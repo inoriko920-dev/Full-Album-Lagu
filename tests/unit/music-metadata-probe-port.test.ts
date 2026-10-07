@@ -11,9 +11,7 @@ const source = {
   sizeBytes: 1234,
 };
 
-function metadata(
-  value: Partial<IAudioMetadata> = {},
-): IAudioMetadata {
+function metadata(value: Partial<IAudioMetadata> = {}): IAudioMetadata {
   return {
     format: {
       duration: 1.25,

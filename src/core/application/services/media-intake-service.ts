@@ -1,8 +1,9 @@
-import type { MediaProbePort, MediaProbeResult } from "../ports/media-probe-port";
-import type { MediaSourceDescriptor } from "../ports/media-source-port";
 import type {
-  DiscoveredMediaSource,
-} from "./media-discovery-service";
+  MediaProbePort,
+  MediaProbeResult,
+} from "../ports/media-probe-port";
+import type { MediaSourceDescriptor } from "../ports/media-source-port";
+import type { DiscoveredMediaSource } from "./media-discovery-service";
 import type {
   MediaBatchProgress,
   MediaBatchSummary,
@@ -42,7 +43,8 @@ interface ProbedItem {
   importOrdinal: number;
 }
 
-type IntakeStatus = "probing" | "committing" | "completed" | "cancelled" | "error";
+type IntakeStatus =
+  "probing" | "committing" | "completed" | "cancelled" | "error";
 
 interface IntakeBatchState {
   batchId: string;
@@ -99,9 +101,7 @@ export function extractFilenameOrderNumber(
     return value > 0 ? value : undefined;
   }
 
-  const trackPrefix = stem.match(
-    /^(?:track|trk)\s*0*(\d{1,4})(?=$|[\s._-])/i,
-  );
+  const trackPrefix = stem.match(/^(?:track|trk)\s*0*(\d{1,4})(?=$|[\s._-])/i);
   if (trackPrefix?.[1]) {
     const value = Number.parseInt(trackPrefix[1], 10);
     return value > 0 ? value : undefined;

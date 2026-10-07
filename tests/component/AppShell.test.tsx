@@ -74,13 +74,11 @@ const cancelMediaDiscoveryMock = vi.fn<LfaBridge["cancelMediaDiscovery"]>(
     batchId,
   }),
 );
-const startMediaIntakeMock = vi.fn<LfaBridge["startMediaIntake"]>(
-  async () => ({
-    status: "error" as const,
-    code: "MEDIA_PROBE_FAILED" as const,
-    message: "Not used in frozen AppShell tests.",
-  }),
-);
+const startMediaIntakeMock = vi.fn<LfaBridge["startMediaIntake"]>(async () => ({
+  status: "error" as const,
+  code: "MEDIA_PROBE_FAILED" as const,
+  message: "Not used in frozen AppShell tests.",
+}));
 const getMediaIntakeStatusMock = vi.fn<LfaBridge["getMediaIntakeStatus"]>(
   async (batchId) => ({
     status: "error" as const,

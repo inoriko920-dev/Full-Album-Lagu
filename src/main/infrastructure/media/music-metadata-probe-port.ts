@@ -1,9 +1,5 @@
 import { extname } from "node:path";
-import {
-  parseFile,
-  type IAudioMetadata,
-  type IOptions,
-} from "music-metadata";
+import { parseFile, type IAudioMetadata, type IOptions } from "music-metadata";
 import type {
   AudioMediaMetadata,
   MediaIssueCode,
@@ -40,11 +36,7 @@ function cleanString(value: unknown, maxLength: number): string | undefined {
 }
 
 function positiveInteger(value: unknown): number | undefined {
-  if (
-    typeof value !== "number" ||
-    !Number.isInteger(value) ||
-    value <= 0
-  ) {
+  if (typeof value !== "number" || !Number.isInteger(value) || value <= 0) {
     return undefined;
   }
   return value;
