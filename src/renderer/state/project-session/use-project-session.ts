@@ -184,7 +184,8 @@ export function useProjectSession(): ProjectSessionView {
         if (
           (asset.availability !== "missing" &&
             asset.availability !== "invalid") ||
-          asset.errorCode === undefined
+          asset.errorCode === undefined ||
+          (asset.kind === "audio" && !asset.required)
         ) {
           return [];
         }
