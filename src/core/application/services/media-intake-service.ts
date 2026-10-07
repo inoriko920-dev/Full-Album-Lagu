@@ -148,15 +148,15 @@ function fallbackTrackTitle(fileName: string): string {
 }
 
 function toOrderCandidate(item: ProbedItem): AudioImportOrderCandidate {
-  return {
+  const candidate: AudioImportOrderCandidate = {
     fileName: item.source.fileName,
     sourceIdentity: item.source.sourcePath,
     importOrdinal: item.importOrdinal,
-    metadataTrackNumber:
-      item.probe.status === "ready"
-        ? item.probe.metadata.trackNumber
-        : undefined,
   };
+  const trackNumber =
+    item.probe.status === "ready" ? item.probe.metadata.trackNumber : undefined;
+  if (trackNumber !== undefined) candidate.metadataTrackNumber = trackNumber;
+  return candidate;
 }
 
 function reportForProbe(item: ProbedItem, assetId?: string): MediaItemReport {
