@@ -464,7 +464,7 @@ describe("deterministic Auto Susun planner", () => {
     );
 
     expect(planA.orderedTrackIds).toHaveLength(count);
-    expect(new Set(planA.orderedTrackIds)).toHaveSize(count);
+    expect(new Set(planA.orderedTrackIds).size).toBe(count);
     expect(planB).toEqual(planA);
 
     expect(
