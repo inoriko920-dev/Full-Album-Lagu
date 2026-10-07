@@ -176,7 +176,6 @@ function normalizeCommonPatch(input: LayerCommonPatch): LayerCommonPatch {
   };
 }
 
-
 export function createLayerAddCommand(
   input: AddLayerCommandInput,
 ): ProjectCommand {
@@ -285,7 +284,6 @@ export function createLayerReorderCommand(
     },
   };
 }
-
 
 export function createLayerSetTransformCommand(
   input: SetLayerTransformCommandInput,
