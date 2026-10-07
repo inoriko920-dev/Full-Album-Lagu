@@ -157,11 +157,7 @@ describe("AppShell", () => {
 
   it("shows newer recovery without changing frozen hierarchy and can restore it as dirty live state", async () => {
     const primary = project("project-recovery-ui", "Album Utama", 2);
-    const recovered = project(
-      "project-recovery-ui",
-      "Album Dipulihkan",
-      3,
-    );
+    const recovered = project("project-recovery-ui", "Album Dipulihkan", 3);
 
     getStartupProjectMock.mockResolvedValueOnce({
       status: "loaded",
@@ -296,9 +292,7 @@ describe("AppShell", () => {
       name: "Autosave tidak valid",
     });
     expect(
-      within(notice).getByText(
-        "Autosave pemulihan tidak dapat digunakan.",
-      ),
+      within(notice).getByText("Autosave pemulihan tidak dapat digunakan."),
     ).toBeInTheDocument();
     expect(screen.getByText("Primary Aman")).toBeInTheDocument();
     expect(
@@ -322,7 +316,9 @@ describe("AppShell", () => {
       name: "Penyimpanan dibatalkan",
     });
     expect(
-      within(notice).getByText("Perubahan proyek belum disimpan ke file utama."),
+      within(notice).getByText(
+        "Perubahan proyek belum disimpan ke file utama.",
+      ),
     ).toBeInTheDocument();
 
     fireEvent.click(

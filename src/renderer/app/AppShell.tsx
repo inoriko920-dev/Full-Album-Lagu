@@ -307,7 +307,9 @@ function ProjectNotice({
       >
         <div className="project-notice__copy">
           <strong>Autosave lama tidak digunakan.</strong>
-          <span>Proyek utama lebih baru dan tetap menjadi sumber yang aman.</span>
+          <span>
+            Proyek utama lebih baru dan tetap menjadi sumber yang aman.
+          </span>
         </div>
         <ActionButton
           variant="secondary"
@@ -351,7 +353,9 @@ function ProjectNotice({
       >
         <div className="project-notice__copy">
           <strong>Proyek gagal dibuka.</strong>
-          <span>File yang ada tidak diubah. Anda dapat membuka proyek lain.</span>
+          <span>
+            File yang ada tidak diubah. Anda dapat membuka proyek lain.
+          </span>
         </div>
       </section>
     );
