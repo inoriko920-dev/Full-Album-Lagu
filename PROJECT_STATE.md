@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: ASTRA (next wave planning only)
+- Active role at current checkpoint: SOL (T11-W04-01 only; W11-04 ASTRA planning complete)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
-- STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 NOT STARTED / ASTRA PLANNING READY
+- STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 ASTRA planning COMPLETE / PASS
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 NOT STARTED / T11-W04-01 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-03 Album Timeline + Command History`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Next planned wave: `W11-04 Auto Susun + Track Binding` — ASTRA planning required before SOL implementation
+- Current planned wave: `W11-04 Auto Susun + Track Binding` — ASTRA planning/DoR PASS; T11-W04-01 READY
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -130,13 +130,35 @@
 - W11-03 closure evidence: `docs/step11/evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`
 - W11-03 drift review: `docs/step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`
 - W11-03 acceptance: AC-W11-03-01..20 ALL PASS
-- Next authorized action: ASTRA planning for `W11-04 Auto Susun + Track Binding`; no W11-04 implementation is authorized yet
+- W11-04 planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
+- W11-04 ASTRA planning: COMPLETE / PASS
+- W11-04 DoR: PASS
+- W11-04 planning DOCX: `docs/source-of-truth/planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+- W11-04 operational charter: `docs/step11/WAVE_11_04_CHARTER.md`
+- W11-04 task cards: `docs/step11/TASK_CARDS_W11_04.md`
+- W11-04 acceptance matrix: `docs/step11/W11_04_ACCEPTANCE_MATRIX.md` — AC-W11-04-01..22
+- W11-04 DoR record: `docs/step11/W11_04_DOR.md`
+- Next authorized action: SOL `T11-W04-01 Binding Schema + Resolver Contracts` only; T11-W04-02..06 remain blocked
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — W11-03 Album Timeline + Command History COMPLETE / VERIFIED.** T11-W03-01..06 are PASS. Windows CI #244 proves the canonical 12-track import/load/reorder/disable/boundary/Save-reopen/history flow, the 128-track live renderer/history scenario, all prior lifecycle/media regressions, exact frozen UI, package, smoke and portable ZIP. AC-W11-03-01..20 are ALL PASS and architecture/UI/trust-boundary drift is PASS with no material drift.
+**PASS — W11-04 Auto Susun + Track Binding ASTRA PLANNING / DoR COMPLETE.** Planning baseline is `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`. FTR-005/FTR-006 scope, additive schema-v1 binding/default-artwork contract, deterministic/idempotent Auto Susun rules, artwork lifecycle, dynamic resolver priority/provenance, CommandBatch semantics, frozen-UI mapping, 128-track stress target, AC-W11-04-01..22 and serial tasks T11-W04-01..06 are locked. No production implementation has started. Only T11-W04-01 may become active after this planning pack is merged.
+
+## W11-04 planning decisions
+- Auto Susun is offline/deterministic, not Gemini/AI/cloud.
+- Canonical order remains `ProjectDocument.tracks[]`; no duplicate order source.
+- One Auto Susun apply = one `auto-susun` CommandBatch / one revision / one Undo.
+- Re-running on unchanged state must be idempotent/no-op.
+- Proposed additive schema-v1: project album default artwork + per-track metadata/artwork overrides.
+- Resolved title/artist/album/year/artwork is dynamic with explicit provenance; derived display values are not persisted merely because they were resolved.
+- Artwork baseline: PNG/JPEG/WebP; optional visual media (`required=false`); missing artwork must not block required-audio readiness.
+- Main owns image selection/validation; renderer remains filesystem-free.
+- Existing frozen Auto Susun toolbar / Inspector / Media / Timeline surfaces are reused; no new UI prompt/image generation is required now.
+- If a required visual state is missing from the frozen pack, SOL must STOP and return to ASTRA/UI governance.
+- 128-track deterministic/responsive evidence is mandatory.
+- Gemini, FFmpeg/FFprobe, Manual Layer Editor, Templates, Preview, Transitions, Keyframes, Render and persistent Undo remain out of scope.
 
 ## T11-W03-06 verification
 - Verified implementation head: `8464da5bbbff20ff23636a2b4894952949f6d070`.
@@ -247,4 +269,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: switch to **ASTRA** and plan **W11-04 — Auto Susun + Track Binding (FTR-005 + FTR-006, with FTR-013/FTR-018 cross-cut as applicable)**. Create the required detailed planning DOCX plus operational charter/task cards/acceptance/DoR source-of-truth before any W11-04 SOL implementation. Do not code W11-04 before that planning gate passes.
+After the user says `lanjutkan`: switch to **SOL** and execute **T11-W04-01 — Binding Schema + Resolver Contracts only**. Implement only additive schema-v1 binding/default-artwork validation plus a pure resolved-track-presentation/provenance contract and compatibility tests. Do not implement Auto Susun, image picker/artwork intake, Inspector wiring, or T11-W04-02+ in the same turn.
