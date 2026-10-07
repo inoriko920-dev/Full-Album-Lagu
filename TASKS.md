@@ -109,9 +109,35 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: T11-W01-03 PASS.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified branch SHA: `fe548a032e982be70359dbc8dc6c2d02787ca6ce`
+- Windows CI run: `37577568055` — PASS
+- CI job: `112649903010`
+- Frozen visual artifact: `11463371449`
+- Scope delivered:
+  - conditional frozen-shell notice row with no default-state layout drift;
+  - recovery available/stale/invalid visible states;
+  - Pulihkan / Abaikan / Hapus Autosave actions;
+  - Save cancel/error visible feedback and retry;
+  - autosave-write error manual-Save action;
+  - ProjectSession accept/discard wiring through typed bridge only;
+  - dirty/recovery DOM state markers for tests.
+- Verification:
+  - component state/action tests PASS;
+  - full verify suite PASS;
+  - STEP 10 SLC + T11-W01-02 + T11-W01-03 regressions PASS;
+  - exact SCR-002A frozen visual baseline PASS;
+  - Windows package/smoke/portable ZIP PASS.
+- Evidence: `docs/step11/evidence/T11_W01_04_FROZEN_UI_RECOVERY_UX_EVIDENCE.md`.
+- Out of scope honored: W11-01 final drift closure, media, Gemini integration, FFmpeg/render and frozen UI redesign.
 
 ## T11-W01-05 — Wave E2E, Drift Review & Evidence Pack
-- Status: BLOCKED_BY T11-W01-04
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: T11-W01-04 PASS.

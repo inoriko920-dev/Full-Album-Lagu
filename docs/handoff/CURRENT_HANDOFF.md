@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. STEP 11 planning is complete. **T11-W01-01, T11-W01-02, and T11-W01-03 are implemented and verified.** W11-01 remains in progress.
+STEP 10 is complete. STEP 11 planning is complete. **T11-W01-01, T11-W01-02, T11-W01-03, and T11-W01-04 are implemented and verified.** W11-01 remains in progress.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -55,10 +55,24 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - STEP 10 SLC, T11-W01-02 lifecycle, frozen UI baseline, package/smoke and portable ZIP remain green;
 - evidence: `docs/step11/evidence/T11_W01_03_DIRTY_AUTOSAVE_RECOVERY_EVIDENCE.md`.
 
-## Next exact task
-**T11-W01-04 Frozen UI States + Recovery UX Wiring** — SOL only.
+### T11-W01-04 Frozen UI States + Recovery UX Wiring — PASS / VERIFIED
+- verified branch SHA: `fe548a032e982be70359dbc8dc6c2d02787ca6ce`;
+- Windows CI: `37577568055` PASS;
+- job: `112649903010`;
+- frozen visual artifact: `11463371449`;
+- conditional notice row appears only for lifecycle/recovery attention states;
+- recovery available/stale/invalid states are visible and actionable;
+- Pulihkan restores recovery into live dirty state without overwriting primary;
+- Abaikan/Hapus Autosave removes recovery only;
+- Save cancel/error states are visible and retryable;
+- permanent Gemini rail and frozen hierarchy remain unchanged;
+- exact default SCR-002A visual baseline remains green;
+- evidence: `docs/step11/evidence/T11_W01_04_FROZEN_UI_RECOVERY_UX_EVIDENCE.md`.
 
-Do not start T11-W01-05, media, Gemini, or render in the same turn. Start T11-W01-04 only after the user explicitly says `lanjutkan`.
+## Next exact task
+**T11-W01-05 Wave E2E, Drift Review & Evidence Pack** — SOL only.
+
+Do not start the next feature wave, media, Gemini, or render implementation in the same turn. Start T11-W01-05 only after the user explicitly says `lanjutkan`.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Recovery artifacts must remain separate from the primary project file and must never masquerade as a successful user Save. Frozen UI cannot be silently redesigned. Gemini and FFmpeg concrete integrations remain STEP 12 owned.
