@@ -9,6 +9,7 @@ export const projectTrackSchema = z
     title: z.string().min(1),
     sourcePath: z.string().min(1),
     audioAssetId: z.string().min(1).optional(),
+    enabled: z.boolean().optional(),
   })
   .passthrough();
 
@@ -57,6 +58,7 @@ export const projectDocumentSchema = z
     });
   });
 
+export type ProjectTrack = z.infer<typeof projectTrackSchema>;
 export type ProjectDocument = z.infer<typeof projectDocumentSchema>;
 
 export function createEmptyProject(projectId: string): ProjectDocument {

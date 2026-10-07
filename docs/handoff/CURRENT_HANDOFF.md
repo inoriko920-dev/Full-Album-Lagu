@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 ASTRA planning is COMPLETE / PASS with DoR PASS; implementation has not started. T11-W03-01 is the only READY SOL task.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01 is PASS / VERIFIED and T11-W03-02 is the only READY SOL task.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -113,10 +113,25 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - No new UI prompt/image generation; existing frozen album/timeline references are authority.
 - No Gemini/FFmpeg/Auto Susun/template/layer/preview/transition/render implementation is authorized by this planning checkpoint.
 
-## Next exact task
-**T11-W03-01 — Timeline Domain + CommandEngine Core — SOL only.**
+## T11-W03-01 completed
+- Status: PASS / VERIFIED.
+- Verified implementation head: `d0ab313bece2e9ef730ee41f417310501214d7b1`.
+- Windows CI: `37624594282` / #192 PASS; job `112803016531`.
+- Portable artifact: `11484295009`.
+- Evidence: `docs/step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`.
+- Added optional schema-v1 track enabled state with legacy omission=enabled.
+- Added pure derived Album Timeline projection; cumulative boundaries are not persisted.
+- Added unified framework-independent CommandEngine/CommandBatch for manual/template/Auto Susun/AI origins.
+- Successful semantic command = one history node + one revision; no-op adds neither.
+- Undo/Redo preserve monotonic revision and move through logical semantic state tokens.
+- Batch is atomic and one batch is one Undo.
+- 105-track deterministic projection and full previous-wave regressions are green.
+- No renderer/UI/session migration was performed.
 
-On the next user `lanjutkan`, execute T11-W03-01 only. Do not start T11-W03-02 or product UI wiring in the same turn. Re-read the W11-03 charter/task card before modifying code.
+## Next exact task
+**T11-W03-02 — Existing Mutation Migration + Session Checkpoint Semantics — SOL only.**
+
+On the next user `lanjutkan`, migrate the official ProjectSession mutation path/checkpoint semantics and existing W11-02 user-driven mutations according to the task card. Do not start T11-W03-03 reorder/enable application commands or T11-W03-04 UI wiring in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.

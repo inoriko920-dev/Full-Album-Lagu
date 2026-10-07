@@ -6,7 +6,7 @@
 - Active role at current checkpoint: SOL (next task only)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 implementation NOT STARTED; T11-W03-01 READY after planning merge
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01 PASS / VERIFIED; T11-W03-02 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-02 Media Intake Foundation`
@@ -33,6 +33,7 @@
   - `T11-W02-04 Missing Media Scan & Relink Core` — PASS
   - `T11-W02-05 Frozen Media/Missing/Relink UI Wiring` — PASS
   - `T11-W02-06 Wave E2E, Drift Review & Evidence Closure` — PASS
+  - `T11-W03-01 Timeline Domain + CommandEngine Core` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -88,14 +89,26 @@
 - W11-03 task cards: `docs/step11/TASK_CARDS_W11_03.md`
 - W11-03 acceptance matrix: `docs/step11/W11_03_ACCEPTANCE_MATRIX.md`
 - W11-03 DoR record: `docs/step11/W11_03_DOR.md`
-- Next READY implementation task: `T11-W03-01 Timeline Domain + CommandEngine Core` — SOL
-- Next READY task: `ASTRA W11-03 Album Timeline + Command History planning/charter checkpoint` — planning only
+- T11-W03-01 verified implementation head: `d0ab313bece2e9ef730ee41f417310501214d7b1`
+- T11-W03-01 Windows CI: `37624594282` / run #192 — PASS
+- T11-W03-01 CI job: `112803016531`
+- T11-W03-01 Windows portable artifact: `11484295009`
+- T11-W03-01 evidence: `docs/step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`
+- Next READY implementation task: `T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics` — SOL
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — W11-03 ASTRA PLANNING / DoR COMPLETE.** FTR-004, FTR-013 and the FTR-018 cross-cut are mapped to a serial implementation plan. Canonical album order, additive enabled state, derived cumulative boundaries, CommandEngine ownership, atomic batch semantics, logical saved-history checkpoint behavior, W11-01/W11-02 migration constraints, frozen UI authority, 100+ performance requirements, AC-W11-03-01..20 and ASTRA stop triggers are defined. No production source code changed in this planning checkpoint.
+**PASS — T11-W03-01 Timeline Domain + CommandEngine Core VERIFIED.** Additive schema-v1 enabled state, deterministic derived album timeline, unified framework-independent CommandEngine/CommandBatch, monotonic revision, logical semantic state tokens, atomic batch history, bounded in-memory history, stale guards and 105-track deterministic coverage are implemented. Windows CI #192 is fully green including prior lifecycle/media/frozen UI/package regressions. T11-W03-02 is now the only READY implementation task.
+
+## T11-W03-01 verification
+- Verified implementation head: `d0ab313bece2e9ef730ee41f417310501214d7b1`.
+- Windows CI: `37624594282` / #192 — PASS.
+- CI job: `112803016531`.
+- Windows portable artifact: `11484295009`.
+- Evidence: `docs/step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`.
+- No schema bump, persisted boundary duplication, UI redesign, provider/runtime integration, or T11-W03-02 work was pulled forward.
 
 ## W11-03 planning decisions
 - Canonical order is `ProjectDocument.tracks[]`; no duplicate order field.
@@ -146,4 +159,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: switch to **SOL** and execute **T11-W03-01 — Timeline Domain + CommandEngine Core only**. Do not start T11-W03-02 or UI wiring in the same turn. If any ASTRA stop trigger in the W11-03 charter is crossed, stop implementation and return to planning.
+After the user says `lanjutkan`: execute **T11-W03-02 — Existing Mutation Migration + Session Checkpoint Semantics only** as SOL. Re-read the W11-03 task card and T11-W03-01 evidence first. Do not start T11-W03-03 reorder/enable commands or product UI wiring in the same turn.

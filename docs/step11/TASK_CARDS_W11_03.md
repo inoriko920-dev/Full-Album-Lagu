@@ -8,7 +8,10 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY_AFTER_PLANNING_MERGE
+- Status: PASS / VERIFIED
+- Verified implementation head: `d0ab313bece2e9ef730ee41f417310501214d7b1`
+- Windows CI: `37624594282` / #192 PASS; job `112803016531`
+- Evidence: `evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`
 - Purpose:
   - additive optional `track.enabled` with legacy default true;
   - pure deterministic timeline projection;
@@ -33,7 +36,8 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED_BY T11-W03-01
+- Status: READY
+- Dependency: T11-W03-01 PASS / VERIFIED
 - Purpose:
   - integrate CommandEngine with ProjectSession;
   - migrate existing W11-02 user-driven media import/relink project commits into shared history semantics where applicable;

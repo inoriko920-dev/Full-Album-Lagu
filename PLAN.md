@@ -36,7 +36,7 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Completed: **T11-W02-06 Wave E2E, Drift Review & Evidence Closure — PASS / VERIFIED**.
 - W11-02 acceptance AC-W11-02-01..18: **ALL PASS**; architecture/UI drift: **PASS — no material drift**.
 - Closure proof: Windows CI `37616435681` / #177 PASS; `docs/step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
-- W11-03 Album Timeline + Command History — **ASTRA PLANNING COMPLETE / DoR PASS; IMPLEMENTATION NOT STARTED**.
+- W11-03 Album Timeline + Command History — **ASTRA PLANNING COMPLETE / DoR PASS; IMPLEMENTATION IN PROGRESS**.
 - W11-03 features: FTR-004 + FTR-013 + FTR-018 cross-cut.
 - W11-03 planning baseline: `main@6f296f7cc8e8b81e86bde71f8cd3a32c0d0f1bd2`.
 - W11-03 planning authority:
@@ -45,8 +45,10 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
   - `docs/step11/TASK_CARDS_W11_03.md`
   - `docs/step11/W11_03_ACCEPTANCE_MATRIX.md`
   - `docs/step11/W11_03_DOR.md`
-- Next exact implementation task: **T11-W03-01 Timeline Domain + CommandEngine Core — SOL only**.
-- T11-W03-02..06 remain serially blocked; W11-04 remains blocked until W11-03 closure.
+- Completed: **T11-W03-01 Timeline Domain + CommandEngine Core — PASS / VERIFIED**.
+- Proof: Windows CI `37624594282` / #192 PASS; `docs/step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`.
+- Next exact implementation task: **T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics — SOL only**.
+- T11-W03-03..06 remain serially blocked; W11-04 remains blocked until W11-03 closure.
 - No new W11-02 UI prompt/image generation is needed; existing frozen states are authoritative.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.
 
