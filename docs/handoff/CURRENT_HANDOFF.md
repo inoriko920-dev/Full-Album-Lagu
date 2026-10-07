@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01, W11-02 and **W11-03 are COMPLETE / PASS**. T11-W03-01..06 are PASS / VERIFIED. **W11-04 is not started; the only next authorized action is ASTRA planning for W11-04 Auto Susun + Track Binding.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01, W11-02 and **W11-03 are COMPLETE / PASS**. **W11-04 ASTRA planning and DoR are COMPLETE / PASS; implementation has not started. T11-W04-01 is the only READY SOL task.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -195,10 +195,25 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - AC-W11-03-01..20 ALL PASS.
 - W11-03 = COMPLETE / PASS.
 
-## Next exact task
-**ASTRA planning for W11-04 — Auto Susun + Track Binding.**
+## W11-04 planning checkpoint
+- Role: ASTRA — COMPLETE / PASS.
+- Baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`.
+- Features: FTR-005 Auto Susun Album + FTR-006 Artwork/Metadata/Dynamic Track Binding; FTR-013/FTR-018 cross-cut.
+- Planning DOCX: `docs/source-of-truth/planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Operational charter: `docs/step11/WAVE_11_04_CHARTER.md`.
+- Task cards: `docs/step11/TASK_CARDS_W11_04.md`.
+- Acceptance: `docs/step11/W11_04_ACCEPTANCE_MATRIX.md` — AC-W11-04-01..22.
+- DoR: `docs/step11/W11_04_DOR.md` — PASS.
+- Auto Susun is deterministic/offline and must publish through one `auto-susun` CommandBatch.
+- Metadata/artwork binding is additive schema-v1 and resolved dynamically with provenance.
+- Artwork is optional visual media (`required=false`) and must not block required-audio readiness.
+- Existing frozen Auto Susun/Inspector/Media/Timeline UI is sufficient at planning time; no new UI prompt/image stage is required.
+- T11-W04-02..06 remain serially blocked.
 
-On the next user `lanjutkan`, do not code W11-04. First create the detailed W11-04 planning DOCX and operational charter/task cards/acceptance/DoR, respecting all Software Factory and frozen-UI rules. SOL implementation remains blocked until the new planning/source-of-truth gate passes.
+## Next exact task
+**T11-W04-01 — Binding Schema + Resolver Contracts — SOL only.**
+
+On the next user `lanjutkan`, implement only additive binding/default-artwork schema validation plus the pure resolved-track-presentation/provenance contract and compatibility tests. Do not implement Auto Susun, artwork picker/intake, Inspector wiring, or later tasks in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.

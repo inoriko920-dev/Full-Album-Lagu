@@ -506,3 +506,75 @@
   - `docs/step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`
 - **W11-03 = COMPLETE / PASS.**
 - W11-04 is unlocked for ASTRA planning only; implementation has not started.
+
+
+## ASTRA-W11-04-PLAN — Auto Susun + Track Binding Charter
+- Owner: ASTRA
+- Priority: P0
+- Risk: HIGH
+- Status: DONE
+- Work status: PLANNING_COMPLETE
+- Evidence status: DOCX + operational Markdown
+- Gate: PASS
+- Baseline analyzed: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
+- Feature set: FTR-005 + FTR-006 + FTR-013/FTR-018 cross-cut.
+- DoR: PASS.
+- Planning authority:
+  - `docs/source-of-truth/planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+  - `docs/step11/WAVE_11_04_CHARTER.md`
+  - `docs/step11/TASK_CARDS_W11_04.md`
+  - `docs/step11/W11_04_ACCEPTANCE_MATRIX.md`
+  - `docs/step11/W11_04_DOR.md`
+- Acceptance planned: AC-W11-04-01..22.
+- Decisions:
+  - Auto Susun is offline/deterministic, not Gemini/AI/cloud;
+  - canonical order remains `ProjectDocument.tracks[]`;
+  - one Auto Susun apply = one `auto-susun` CommandBatch / one revision / one Undo;
+  - manual metadata/artwork overrides survive Auto Susun;
+  - track presentation is dynamically resolved with provenance rather than duplicating derived fields;
+  - artwork is optional image media and must not block required-audio readiness;
+  - existing frozen toolbar/Inspector/Media/Timeline surfaces are reused;
+  - no new UI prompt/image generation is required at planning time.
+- Implementation code changed: NO.
+
+## T11-W04-01 — Binding Schema + Resolver Contracts
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: READY
+- Dependency: W11-04 ASTRA planning + DoR PASS.
+- Scope authority: `docs/step11/TASK_CARDS_W11_04.md`.
+- T11-W04-02..06 remain BLOCKED serially.
+- No UI, artwork picker, or Auto Susun implementation is authorized in this task.
+
+## T11-W04-02 — Deterministic Auto Susun Planner + CommandBatch
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: BLOCKED_BY T11-W04-01
+
+## T11-W04-03 — Artwork Intake + Binding Commands
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: BLOCKED_BY T11-W04-02
+
+## T11-W04-04 — Metadata Override + Dynamic Binding Integration
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: BLOCKED_BY T11-W04-03
+
+## T11-W04-05 — Frozen Auto Susun + Inspector UI Wiring
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: BLOCKED_BY T11-W04-04
+- UI rule: existing frozen pack is authoritative; if a required visual state is missing, STOP and return to ASTRA/UI governance.
+
+## T11-W04-06 — Wave E2E, Stress, Drift Review & Evidence Closure
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: BLOCKED_BY T11-W04-05
+- W11-05 remains blocked until W11-04 closes COMPLETE / PASS.

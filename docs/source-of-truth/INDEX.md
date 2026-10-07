@@ -14,13 +14,14 @@
 11. `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
 12. `planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
 13. `planning/current/12_STEP_11_W11_03_ALBUM_TIMELINE_COMMAND_HISTORY_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
-14. `factory/SOFTWARE_FACTORY_V2_COMPLETE_GUIDE.txt`
-14. `../../ui/manifests/UI_REFERENCE_MANIFEST.json`
-15. `../../ui/manifests/UI_FREEZE_MANIFEST.json`
-16. `../../architecture/ARCHITECTURE.md`
-17. `../../architecture/CODE_CONSTITUTION.md`
-18. `../../architecture/S08_T03_CI_PACKAGING_EVIDENCE.md`
-19. `../../handoff/CURRENT_HANDOFF.md`
+14. `planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+15. `factory/SOFTWARE_FACTORY_V2_COMPLETE_GUIDE.txt`
+16. `../../ui/manifests/UI_REFERENCE_MANIFEST.json`
+17. `../../ui/manifests/UI_FREEZE_MANIFEST.json`
+18. `../../architecture/ARCHITECTURE.md`
+19. `../../architecture/CODE_CONSTITUTION.md`
+20. `../../architecture/S08_T03_CI_PACKAGING_EVIDENCE.md`
+21. `../../handoff/CURRENT_HANDOFF.md`
 
 ## Current vs archive
 `planning/current/` is authoritative. `planning/archive/` is history only.
@@ -52,11 +53,16 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 ## STEP 11 current planning
 - Registry/wave-order baseline: `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
 - W11-02 authority: `planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
-- Current W11-03 authority: `planning/current/12_STEP_11_W11_03_ALBUM_TIMELINE_COMMAND_HISTORY_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- W11-03 authority: `planning/current/12_STEP_11_W11_03_ALBUM_TIMELINE_COMMAND_HISTORY_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Current W11-04 authority: `planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
 - Operational companions: `../../step11/FEATURE_REGISTRY.md`, `../../step11/DEPENDENCY_GRAPH.md`, W11-02 closure documents, and current W11-03 `WAVE_11_03_CHARTER.md`, `TASK_CARDS_W11_03.md`, `W11_03_ACCEPTANCE_MATRIX.md`, `W11_03_DOR.md`.
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`.
 - W11-02 closure evidence: `../../step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
 - W11-02 drift review: `../../step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`.
 - W11-03 planning baseline: `main@6f296f7cc8e8b81e86bde71f8cd3a32c0d0f1bd2`.
 - W11-03 implementation evidence: `../../step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`, `../../step11/evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`, `../../step11/evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`, `../../step11/evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`, `../../step11/evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`, `../../step11/evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`, and `../../step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`.
-- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; **W11-03 COMPLETE / PASS with AC-W11-03-01..20 ALL PASS and no material drift**. W11-04 is unlocked for ASTRA planning only; no W11-04 SOL implementation is authorized until its planning DOCX/charter/task cards/acceptance/DoR gate passes. Frozen UI references remain authoritative and no new UI prompt/image generation was required.
+- W11-04 planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`.
+- W11-04 operational companions: `../../step11/WAVE_11_04_CHARTER.md`, `../../step11/TASK_CARDS_W11_04.md`, `../../step11/W11_04_ACCEPTANCE_MATRIX.md`, `../../step11/W11_04_DOR.md`.
+- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; **W11-04 ASTRA planning COMPLETE / PASS with DoR PASS and AC-W11-04-01..22 defined**.
+- Only T11-W04-01 has SOL implementation authority next; T11-W04-02..06 remain serially blocked.
+- Existing frozen Auto Susun/Inspector/Media/Timeline references are sufficient at planning time; no new UI prompt/image generation is required.
