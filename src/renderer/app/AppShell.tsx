@@ -256,13 +256,186 @@ function TimelinePanel() {
   );
 }
 
+function ProjectNotice({
+  projectSession,
+}: {
+  projectSession: ReturnType<typeof useProjectSession>;
+}) {
+  const recovery = projectSession.recoveryState;
+  const recoveryBusy = projectSession.recoveryActionState === "working";
+
+  if (recovery.status === "available") {
+    return (
+      <section
+        className="project-notice project-notice--recovery"
+        role="status"
+        aria-label="Pemulihan proyek tersedia"
+      >
+        <div className="project-notice__copy">
+          <strong>Autosave yang lebih baru ditemukan.</strong>
+          <span>
+            Revisi {recovery.project.revision} dapat dipulihkan tanpa menimpa
+            file proyek utama.
+          </span>
+        </div>
+        <div className="project-notice__actions">
+          <ActionButton
+            variant="primary"
+            label="Pulihkan"
+            compact
+            disabled={recoveryBusy}
+            onClick={() => void projectSession.acceptRecovery()}
+          />
+          <ActionButton
+            variant="secondary"
+            label="Abaikan"
+            compact
+            disabled={recoveryBusy}
+            onClick={() => void projectSession.discardRecovery()}
+          />
+        </div>
+      </section>
+    );
+  }
+
+  if (recovery.status === "stale") {
+    return (
+      <section
+        className="project-notice project-notice--warning"
+        role="status"
+        aria-label="Autosave lama"
+      >
+        <div className="project-notice__copy">
+          <strong>Autosave lama tidak digunakan.</strong>
+          <span>Proyek utama lebih baru dan tetap menjadi sumber yang aman.</span>
+        </div>
+        <ActionButton
+          variant="secondary"
+          label="Hapus Autosave"
+          compact
+          disabled={recoveryBusy}
+          onClick={() => void projectSession.discardRecovery()}
+        />
+      </section>
+    );
+  }
+
+  if (recovery.status === "invalid") {
+    return (
+      <section
+        className="project-notice project-notice--error"
+        role="alert"
+        aria-label="Autosave tidak valid"
+      >
+        <div className="project-notice__copy">
+          <strong>Autosave pemulihan tidak dapat digunakan.</strong>
+          <span>File proyek utama tidak diubah dan tetap dipertahankan.</span>
+        </div>
+        <ActionButton
+          variant="secondary"
+          label="Hapus Autosave"
+          compact
+          disabled={recoveryBusy}
+          onClick={() => void projectSession.discardRecovery()}
+        />
+      </section>
+    );
+  }
+
+  if (projectSession.sourceState === "load-error") {
+    return (
+      <section
+        className="project-notice project-notice--error"
+        role="alert"
+        aria-label="Gagal membuka proyek"
+      >
+        <div className="project-notice__copy">
+          <strong>Proyek gagal dibuka.</strong>
+          <span>File yang ada tidak diubah. Anda dapat membuka proyek lain.</span>
+        </div>
+      </section>
+    );
+  }
+
+  if (projectSession.persistenceState === "error") {
+    return (
+      <section
+        className="project-notice project-notice--error"
+        role="alert"
+        aria-label="Gagal menyimpan proyek"
+      >
+        <div className="project-notice__copy">
+          <strong>Proyek gagal disimpan.</strong>
+          <span>Periksa lokasi penyimpanan lalu coba simpan kembali.</span>
+        </div>
+        <ActionButton
+          variant="secondary"
+          label="Simpan Lagi"
+          compact
+          onClick={() => void projectSession.save()}
+        />
+      </section>
+    );
+  }
+
+  if (projectSession.persistenceState === "cancelled") {
+    return (
+      <section
+        className="project-notice project-notice--neutral"
+        role="status"
+        aria-label="Penyimpanan dibatalkan"
+      >
+        <div className="project-notice__copy">
+          <strong>Penyimpanan dibatalkan.</strong>
+          <span>Perubahan proyek belum disimpan ke file utama.</span>
+        </div>
+        <ActionButton
+          variant="secondary"
+          label="Simpan Lagi"
+          compact
+          onClick={() => void projectSession.save()}
+        />
+      </section>
+    );
+  }
+
+  if (projectSession.recoveryErrorCode === "AUTOSAVE_WRITE_FAILED") {
+    return (
+      <section
+        className="project-notice project-notice--error"
+        role="alert"
+        aria-label="Autosave gagal"
+      >
+        <div className="project-notice__copy">
+          <strong>Autosave pemulihan gagal.</strong>
+          <span>Simpan proyek secara manual untuk melindungi perubahan.</span>
+        </div>
+        <ActionButton
+          variant="secondary"
+          label="Simpan Sekarang"
+          compact
+          onClick={() => void projectSession.save()}
+        />
+      </section>
+    );
+  }
+
+  return null;
+}
+
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<WorkRailTab>("media");
   const projectSession = useProjectSession();
+  const hasNotice =
+    projectSession.recoveryState.status !== "none" ||
+    projectSession.sourceState === "load-error" ||
+    projectSession.persistenceState === "error" ||
+    projectSession.persistenceState === "cancelled" ||
+    projectSession.recoveryErrorCode === "AUTOSAVE_WRITE_FAILED";
 
   return (
     <main
-      className="app-shell"
+      className={`app-shell${hasNotice ? " app-shell--has-notice" : ""}`}
       data-fixture-version={FIXTURE_VERSION}
       data-project-id={projectSession.project.projectId}
       data-project-name={projectSession.project.name}
@@ -270,6 +443,8 @@ export function AppShell() {
       data-project-source={projectSession.sourceState}
       data-project-location={projectSession.location.kind}
       data-persistence-state={projectSession.persistenceState}
+      data-project-dirty={projectSession.dirty ? "true" : "false"}
+      data-recovery-state={projectSession.recoveryState.status}
     >
       <header className="top-toolbar">
         <div className="project-identity">
@@ -313,6 +488,8 @@ export function AppShell() {
                   : ""}
         </span>
       </header>
+
+      <ProjectNotice projectSession={projectSession} />
 
       <div className="workspace-grid">
         <WorkRail activeTab={activeTab} onTabChange={setActiveTab} />
