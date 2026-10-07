@@ -106,7 +106,6 @@ function MediaPanel({
             wide
             onClick={() => void projectSession.importAudio()}
           />
-          <span className="media-drop-hint">atau seret file audio ke panel ini</span>
           {projectSession.mediaOperationState === "cancelled" ? (
             <span className="media-inline-note">Impor dibatalkan.</span>
           ) : null}
