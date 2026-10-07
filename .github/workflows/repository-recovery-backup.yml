@@ -1,0 +1,227 @@
+name: Repository Recovery Backup
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/repository-recovery-backup.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  BACKUP_APP_NAME: Full-Album-Lagu
+
+jobs:
+  build-recovery-backup:
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout complete repository history
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Build and verify repository recovery backup
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $repo = "${{ github.repository }}"
+          $root = Join-Path $PWD "backup-output"
+          $app = Join-Path $root "APP_001_FULL_ALBUM_LAGU"
+          $gitDir = Join-Path $app "GIT"
+          $sourceDir = Join-Path $app "SOURCE"
+          $docsDir = Join-Path $app "DOCS"
+          $recoveryDir = Join-Path $app "RECOVERY"
+          New-Item -ItemType Directory -Force $gitDir,$sourceDir,$docsDir,$recoveryDir | Out-Null
+
+          git fetch origin "+refs/heads/*:refs/remotes/origin/*" "+refs/tags/*:refs/tags/*" --prune
+          if ($LASTEXITCODE -ne 0) { throw "git fetch all refs failed" }
+
+          $remoteRefs = git for-each-ref --format='%(refname)' refs/remotes/origin/
+          foreach ($ref in $remoteRefs) {
+            if ($ref -eq "refs/remotes/origin/HEAD") { continue }
+            $branch = $ref -replace '^refs/remotes/origin/', ''
+            if ([string]::IsNullOrWhiteSpace($branch)) { continue }
+            $sha = (git rev-parse $ref).Trim()
+            git update-ref "refs/heads/$branch" $sha
+            if ($LASTEXITCODE -ne 0) { throw "failed to materialize branch $branch" }
+          }
+
+          $wibZone = [System.TimeZoneInfo]::FindSystemTimeZoneById("SE Asia Standard Time")
+          $wibNow = [System.TimeZoneInfo]::ConvertTimeFromUtc([DateTime]::UtcNow, $wibZone)
+          $stamp = $wibNow.ToString("yyyy-MM-dd_HH-mm-ss") + "-WIB"
+          $backupTime = $wibNow.ToString("yyyy-MM-dd HH:mm:ss 'WIB'")
+          $mainCommit = (git rev-parse refs/heads/main).Trim()
+
+          $bundle = Join-Path $gitDir "Full-Album-Lagu-COMPLETE-GIT-HISTORY.bundle"
+          git bundle create $bundle --all
+          if ($LASTEXITCODE -ne 0) { throw "git bundle create failed" }
+          if (!(Test-Path $bundle) -or (Get-Item $bundle).Length -lt 1024) { throw "git bundle is missing or unexpectedly small" }
+          $verifyOutput = git bundle verify $bundle 2>&1
+          $verifyOutput | Set-Content -Encoding utf8 (Join-Path $gitDir "GIT_BUNDLE_VERIFY.txt")
+          if ($LASTEXITCODE -ne 0) { throw "git bundle verify failed" }
+          git bundle list-heads $bundle | Set-Content -Encoding utf8 (Join-Path $gitDir "GIT_BUNDLE_REFS.txt")
+
+          $sourceZip = Join-Path $sourceDir "Full-Album-Lagu-SOURCE-MAIN.zip"
+          git archive --format=zip --output=$sourceZip $mainCommit
+          if ($LASTEXITCODE -ne 0) { throw "source snapshot archive failed" }
+          if (!(Test-Path $sourceZip) -or (Get-Item $sourceZip).Length -lt 1024) { throw "source snapshot missing or empty" }
+
+          $sourceTest = Join-Path $root "source-test"
+          Expand-Archive -LiteralPath $sourceZip -DestinationPath $sourceTest -Force
+          if (!(Test-Path (Join-Path $sourceTest "package.json"))) { throw "source snapshot validation failed: package.json missing" }
+          Remove-Item -Recurse -Force $sourceTest
+
+          $docsZip = Join-Path $docsDir "Full-Album-Lagu-DOCS-MAIN.zip"
+          git archive --format=zip --output=$docsZip $mainCommit docs AGENTS.md README.md PROJECT_STATE.md PLAN.md TASKS.md
+          if ($LASTEXITCODE -ne 0) { throw "documentation snapshot archive failed" }
+
+          git for-each-ref --format='%(refname) %(objectname)' refs/heads refs/remotes refs/tags | Set-Content -Encoding utf8 (Join-Path $app "REFS.txt")
+          git for-each-ref --format='%(refname:short) %(objectname)' refs/heads | Set-Content -Encoding utf8 (Join-Path $app "BRANCHES.txt")
+          git for-each-ref --format='%(refname:short) %(objectname)' refs/tags | Set-Content -Encoding utf8 (Join-Path $app "TAGS.txt")
+          git log --all --date=iso-strict --pretty=format:'%H%x09%P%x09%ad%x09%an%x09%s' | Set-Content -Encoding utf8 (Join-Path $app "COMMIT_HISTORY.txt")
+          $mainCommit | Set-Content -Encoding ascii (Join-Path $app "MAIN_COMMIT.txt")
+
+          @(
+            "APP NAME: Full-Album-Lagu",
+            "ORIGINAL REPO: https://github.com/$repo",
+            "DEFAULT BRANCH: main",
+            "BACKUP TIME: $backupTime",
+            "MAIN COMMIT: $mainCommit",
+            "SOURCE SNAPSHOT: SOURCE/Full-Album-Lagu-SOURCE-MAIN.zip",
+            "GIT BUNDLE: GIT/Full-Album-Lagu-COMPLETE-GIT-HISTORY.bundle",
+            "GIT BUNDLE VERIFY: PASS",
+            "BUILD: supplied separately from last verified Windows artifact",
+            "BACKUP STATUS: BACKUP_COMPLETE_FOR_REPOSITORY_DATA",
+            "NOTE: app source was not modified by this backup job"
+          ) | Set-Content -Encoding utf8 (Join-Path $app "REPOSITORY_INFO.txt")
+
+          @(
+            "SECRET_REQUIRED_BUT_NOT_BACKED_UP",
+            "No secret values are included in this backup.",
+            "Restore any future repository/environment/Actions secrets manually from your own secure secret store.",
+            "The current backup job does not export GitHub Actions secrets, API keys, tokens, credentials, or Gemini keys."
+          ) | Set-Content -Encoding utf8 (Join-Path $app "REQUIRED_SECRETS.txt")
+
+          @'
+FULL-ALBUM-LAGU — PETUNJUK PEMULIHAN
+
+Jika GitHub lama sudah tidak dapat diakses:
+1. Ekstrak paket backup utama.
+2. Masuk ke APP_001_FULL_ALBUM_LAGU\GIT.
+3. Jalankan RECOVERY\VERIFY_BACKUP.ps1 terlebih dahulu.
+4. Buat repository KOSONG di akun GitHub baru.
+5. Jalankan RECOVERY\RESTORE_TO_NEW_GITHUB.ps1 dan masukkan URL repo baru.
+6. Script akan clone Git Bundle, menambahkan remote baru, lalu meminta konfirmasi sebelum push.
+7. Push seluruh branch dan tag hanya setelah Anda menyetujui konfirmasi.
+8. Pasang kembali secret secara manual jika suatu saat dibutuhkan.
+9. Cocokkan MAIN_COMMIT.txt dan SHA256SUMS.txt.
+10. SOURCE ZIP tersedia sebagai salinan yang mudah dibuka manusia; Git Bundle adalah sumber pemulihan history/ref.
+'@ | Set-Content -Encoding utf8 (Join-Path $recoveryDir "PETUNJUK_PEMULIHAN.txt")
+
+          @'
+param(
+  [Parameter(Mandatory=$true)][string]$NewRepositoryUrl
+)
+$ErrorActionPreference = "Stop"
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$app = Split-Path -Parent $here
+$bundle = Join-Path $app "GIT\Full-Album-Lagu-COMPLETE-GIT-HISTORY.bundle"
+if (!(Test-Path $bundle)) { throw "Git Bundle tidak ditemukan: $bundle" }
+git bundle verify $bundle
+if ($LASTEXITCODE -ne 0) { throw "Git Bundle gagal diverifikasi." }
+$restoreDir = Join-Path (Split-Path -Parent $app) "RESTORED_Full-Album-Lagu"
+if (Test-Path $restoreDir) { throw "Folder restore sudah ada: $restoreDir" }
+git clone $bundle $restoreDir
+if ($LASTEXITCODE -ne 0) { throw "Clone dari Git Bundle gagal." }
+Push-Location $restoreDir
+try {
+  git remote remove origin 2>$null
+  git remote add origin $NewRepositoryUrl
+  Write-Host "Repo berhasil dipulihkan secara lokal." -ForegroundColor Green
+  Write-Host "Target remote: $NewRepositoryUrl"
+  $answer = Read-Host "Ketik PUSH untuk mengirim SEMUA branch dan tag ke GitHub baru"
+  if ($answer -ne "PUSH") {
+    Write-Host "Push dibatalkan. Repo lokal tetap aman di $restoreDir"
+    exit 0
+  }
+  git push origin --all
+  if ($LASTEXITCODE -ne 0) { throw "Push branch gagal." }
+  git push origin --tags
+  if ($LASTEXITCODE -ne 0) { throw "Push tag gagal." }
+  Write-Host "Restore ke GitHub baru selesai." -ForegroundColor Green
+} finally {
+  Pop-Location
+}
+'@ | Set-Content -Encoding utf8 (Join-Path $recoveryDir "RESTORE_TO_NEW_GITHUB.ps1")
+
+          @'
+$ErrorActionPreference = "Stop"
+$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$app = Split-Path -Parent $here
+$bundle = Join-Path $app "GIT\Full-Album-Lagu-COMPLETE-GIT-HISTORY.bundle"
+$source = Join-Path $app "SOURCE\Full-Album-Lagu-SOURCE-MAIN.zip"
+$sums = Join-Path $app "SHA256SUMS.txt"
+if (!(Test-Path $bundle)) { throw "Git Bundle hilang." }
+if (!(Test-Path $source)) { throw "Source ZIP hilang." }
+git bundle verify $bundle
+if ($LASTEXITCODE -ne 0) { throw "Git Bundle rusak." }
+$lines = Get-Content $sums | Where-Object { $_ -match '^[0-9a-f]{64}  ' }
+foreach ($line in $lines) {
+  $expected,$relative = $line -split '  ',2
+  $path = Join-Path $app $relative
+  if (!(Test-Path $path)) { throw "File checksum hilang: $relative" }
+  $actual = (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash.ToLower()
+  if ($actual -ne $expected) { throw "Checksum gagal: $relative" }
+}
+Write-Host "VERIFY_BACKUP PASS" -ForegroundColor Green
+'@ | Set-Content -Encoding utf8 (Join-Path $recoveryDir "VERIFY_BACKUP.ps1")
+
+          $checksumPath = Join-Path $app "SHA256SUMS.txt"
+          $checksumLines = Get-ChildItem -Path $app -Recurse -File | Where-Object { $_.FullName -ne $checksumPath } | Sort-Object FullName | ForEach-Object {
+            $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLower()
+            $relative = $_.FullName.Substring($app.Length + 1).Replace('\','/')
+            "$hash  $relative"
+          }
+          $checksumLines | Set-Content -Encoding ascii $checksumPath
+
+          @(
+            "Backup repository Full-Album-Lagu",
+            "Timestamp: $backupTime",
+            "Main commit: $mainCommit",
+            "Git Bundle: VERIFIED",
+            "Source ZIP: VERIFIED / extractable",
+            "Docs ZIP: PRESENT",
+            "Checksums: GENERATED",
+            "Secrets: NOT BACKED UP",
+            "Scope: ONLY inoriko920-dev/Full-Album-Lagu"
+          ) | Set-Content -Encoding utf8 (Join-Path $app "STATUS_BACKUP.txt")
+
+          $package = Join-Path $PWD "Full-Album-Lagu-Repository-Backup-$stamp.zip"
+          Compress-Archive -Path "$app\*" -DestinationPath $package -CompressionLevel Optimal -Force
+          $testDir = Join-Path $root "package-test"
+          Expand-Archive -LiteralPath $package -DestinationPath $testDir -Force
+          if (!(Test-Path (Join-Path $testDir "GIT\Full-Album-Lagu-COMPLETE-GIT-HISTORY.bundle"))) { throw "Final backup ZIP validation failed" }
+          Remove-Item -Recurse -Force $testDir
+
+          $packageHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $package).Hash.ToLower()
+          @(
+            "PACKAGE=$([IO.Path]::GetFileName($package))",
+            "SHA256=$packageHash",
+            "BACKUP_TIME=$backupTime",
+            "MAIN_COMMIT=$mainCommit"
+          ) | Set-Content -Encoding ascii (Join-Path $PWD "Full-Album-Lagu-Repository-Backup-METADATA.txt")
+
+      - name: Upload repository recovery backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: Full-Album-Lagu-Repository-Recovery-Backup
+          path: |
+            Full-Album-Lagu-Repository-Backup-*.zip
+            Full-Album-Lagu-Repository-Backup-METADATA.txt
+          if-no-files-found: error
+          retention-days: 90
