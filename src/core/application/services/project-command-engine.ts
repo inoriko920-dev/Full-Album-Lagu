@@ -113,7 +113,7 @@ function stableSerialize(value: unknown): string {
       .join(",")}}`;
   }
 
-  return JSON.stringify(String(value)) ?? "\"\"";
+  return JSON.stringify(String(value)) ?? '""';
 }
 
 function semanticallyEqual(
