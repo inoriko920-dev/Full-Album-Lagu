@@ -18,6 +18,17 @@ import {
   mediaDiscoveryStatusResultSchema,
 } from "../core/contracts/media-discovery";
 import {
+  MEDIA_INTAKE_CANCEL_CHANNEL,
+  MEDIA_INTAKE_START_CHANNEL,
+  MEDIA_INTAKE_STATUS_CHANNEL,
+  mediaIntakeCancelRequestSchema,
+  mediaIntakeCancelResultSchema,
+  mediaIntakeStartRequestSchema,
+  mediaIntakeStartResultSchema,
+  mediaIntakeStatusRequestSchema,
+  mediaIntakeStatusResultSchema,
+} from "../core/contracts/media-intake-batch";
+import {
   PROJECT_AUTOSAVE_CHANNEL,
   PROJECT_RECOVERY_ACCEPT_CHANNEL,
   PROJECT_RECOVERY_DISCARD_CHANNEL,
@@ -107,6 +118,33 @@ export const lfaBridge: LfaBridge = {
       request,
     );
     return mediaDiscoveryCancelResultSchema.parse(payload);
+  },
+
+  async startMediaIntake(request) {
+    const validatedRequest = mediaIntakeStartRequestSchema.parse(request);
+    const payload: unknown = await ipcRenderer.invoke(
+      MEDIA_INTAKE_START_CHANNEL,
+      validatedRequest,
+    );
+    return mediaIntakeStartResultSchema.parse(payload);
+  },
+
+  async getMediaIntakeStatus(batchId) {
+    const request = mediaIntakeStatusRequestSchema.parse({ batchId });
+    const payload: unknown = await ipcRenderer.invoke(
+      MEDIA_INTAKE_STATUS_CHANNEL,
+      request,
+    );
+    return mediaIntakeStatusResultSchema.parse(payload);
+  },
+
+  async cancelMediaIntake(batchId) {
+    const request = mediaIntakeCancelRequestSchema.parse({ batchId });
+    const payload: unknown = await ipcRenderer.invoke(
+      MEDIA_INTAKE_CANCEL_CHANNEL,
+      request,
+    );
+    return mediaIntakeCancelResultSchema.parse(payload);
   },
 
   async saveProject(request) {
