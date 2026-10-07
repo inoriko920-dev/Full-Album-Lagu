@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: ASTRA W11-05 planning COMPLETE / PASS; next authorized role is SOL T11-W05-01 only after planning merge
+- Active role at current checkpoint: SOL T11-W05-01 COMPLETE / PASS; next authorized task is SOL T11-W05-02 only
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 NOT STARTED
+- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01 PASS / VERIFIED; T11-W05-02 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-04 Auto Susun + Track Binding`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Current wave: `W11-05 Manual Layer Editor + Templates` — PLANNING COMPLETE / PASS; T11-W05-01 READY after planning merge
+- Current wave: `W11-05 Manual Layer Editor + Templates` — T11-W05-01 PASS / VERIFIED; T11-W05-02 READY
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -45,6 +45,7 @@
   - `T11-W04-04 Metadata Override + Dynamic Binding Integration` — PASS
   - `T11-W04-05 Frozen Auto Susun + Inspector UI Wiring` — PASS
   - `T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure` — PASS
+  - `T11-W05-01 Visual Scene + Layer Schema & Pure Projection` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -326,11 +327,26 @@
 - Acceptance matrix: `docs/step11/W11_05_ACCEPTANCE_MATRIX.md`.
 - DoR: `docs/step11/W11_05_DOR.md` — PASS.
 - Acceptance planned: AC-W11-05-01..25.
-- Serial tasks: T11-W05-01 READY after planning merge; T11-W05-02..07 BLOCKED.
+- Serial tasks: T11-W05-01 PASS / VERIFIED; T11-W05-02 READY; T11-W05-03..07 BLOCKED.
 - Frozen UI authority is sufficient: SCR-002C, SCR-003A, SCR-003B and DLG-008/UI-IMG-012. No new UI prompt/image generation is required.
 - W11-05 owns static visual scene/layer state + local visual-only template workflow.
 - Audio-reactive/playback remains W11-06; keyframes/transitions remain W11-07; Gemini/FFmpeg remains STEP 12.
 - Governance repair: the previously missing STEP 11 registry/dependency DOCX is restored at its expected path as an explicitly labelled reconstructed repository copy; it is not claimed byte-identical to the historical missing artifact.
+
+## T11-W05-01 verification
+- Verified implementation head: `137e8d31a08b804498b56a9b9cb094bcc4add8f0`.
+- Windows CI: `37682820030` / #321 PASS; job `113003054180`.
+- Windows portable artifact: `11509257626`.
+- Frozen visual artifact: `11510031703`.
+- Additive schema-v1 `visualScene` verified; no migration/schemaVersion bump.
+- Normalized logical canvas transform contract verified; `layers[]` is canonical back-to-front z-order.
+- Background/artwork/text/spectrum/progress structural layer schema verified.
+- Pure selected-track/first-enabled projection reuses W11-04 title/artist/artwork bindings without derived persistence.
+- Legacy compatibility, invalid/duplicate validation and JSON round-trip: PASS.
+- 244 Vitest assertions PASS; STEP 10 + W11-01..04 + frozen UI + package/smoke/ZIP PASS.
+- Evidence: `docs/step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
+- FTR-007/FTR-011 remain **not wave-VERIFIED**; only their W05-01 foundation is proven.
+- Dependency unlock: **T11-W05-02 READY**. T11-W05-03..07 remain BLOCKED.
 
 ## W11-02 planning decisions
 - One canonical Media Intake pipeline for picker, drag-drop file and drag-drop folder.
@@ -353,4 +369,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: switch to **SOL** and execute **T11-W05-01 — Visual Scene + Layer Schema & Pure Projection only**. Do not start T11-W05-02, template storage/UI, W11-06, W11-07, or STEP 12 in the same turn.
+After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-02 — Manual Layer Commands + Gesture/History Semantics only**. Do not start T11-W05-03, template storage/UI, W11-06, W11-07, or STEP 12 in the same turn.
