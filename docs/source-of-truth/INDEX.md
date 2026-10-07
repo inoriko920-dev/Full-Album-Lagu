@@ -75,3 +75,19 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - Windows CI `37672986946` / #304; verified head `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`.
 - AC-W11-04-01..22 ALL PASS; **W11-04 COMPLETE / PASS**.
 - Next source-of-truth work: **ASTRA W11-05 planning only**; implementation remains blocked until its DoR passes.
+
+
+## W11-05 planning authority
+- `planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` — detailed ASTRA W11-05 source-of-truth; planning COMPLETE / PASS.
+- `../../step11/WAVE_11_05_CHARTER.md` — operational scope/boundaries/schema/template semantics/UI mapping.
+- `../../step11/TASK_CARDS_W11_05.md` — strict serial T11-W05-01..07 task cards.
+- `../../step11/W11_05_ACCEPTANCE_MATRIX.md` — AC-W11-05-01..25.
+- `../../step11/W11_05_DOR.md` — Definition of Ready PASS.
+- Frozen W11-05 visual authority: SCR-002C, SCR-003A, SCR-003B, DLG-008/UI-IMG-012 from the existing UI reference pack; no new prompt/image generation is required.
+- Next implementation authority after merged planning: SOL T11-W05-01 only.
+
+## STEP 11 registry DOCX integrity repair
+- `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` is now present at the mandatory read path.
+- The previously referenced historical compact DOCX was missing from repository checkout.
+- The current file is an **explicitly labelled reconstructed repository copy** generated from the normalized `docs/step11/FEATURE_REGISTRY.md` and `docs/step11/DEPENDENCY_GRAPH.md`.
+- It is repository authority for continuity but is **not claimed to be byte-identical to the missing historical file**.
