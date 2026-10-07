@@ -175,3 +175,113 @@ function normalizeCommonPatch(input: LayerCommonPatch): LayerCommonPatch {
     ...(input.locked === undefined ? {} : { locked: input.locked }),
   };
 }
+
+
+export function createLayerAddCommand(
+  input: AddLayerCommandInput,
+): ProjectCommand {
+  const layer = visualLayerSchema.parse(structuredClone(input.layer));
+
+  return {
+    kind: "layer.add",
+    label: `Tambah layer ${layer.name}`,
+    origin: "manual",
+    ...expectationFields(input),
+    apply: (project) => {
+      const layers = currentLayers(project);
+      if (layers.some((candidate) => candidate.id === layer.id)) {
+        throw new Error("Layer ID already exists.");
+      }
+
+      const toIndex =
+        input.toIndex === undefined
+          ? layers.length
+          : requireInsertionIndex(input.toIndex, layers.length);
+
+      const nextLayers = [...layers];
+      nextLayers.splice(toIndex, 0, structuredClone(layer));
+      return withLayers(project, nextLayers);
+    },
+  };
+}
+
+export function createLayerRemoveCommand(
+  input: RemoveLayerCommandInput,
+): ProjectCommand {
+  return {
+    kind: "layer.remove",
+    label: `Hapus layer ${input.layerId}`,
+    origin: "manual",
+    ...expectationFields(input),
+    apply: (project) => {
+      const { layer, index } = findLayer(project, input.layerId);
+      requireUnlocked(layer);
+
+      const nextLayers = [...currentLayers(project)];
+      nextLayers.splice(index, 1);
+      return withLayers(project, nextLayers);
+    },
+  };
+}
+
+export function createLayerDuplicateCommand(
+  input: DuplicateLayerCommandInput,
+): ProjectCommand {
+  return {
+    kind: "layer.duplicate",
+    label: `Duplikat layer ${input.layerId}`,
+    origin: "manual",
+    ...expectationFields(input),
+    apply: (project) => {
+      const { layer, index } = findLayer(project, input.layerId);
+      requireUnlocked(layer);
+
+      const newLayerId = requireNonEmpty(input.newLayerId, "New layer ID");
+      const layers = currentLayers(project);
+      if (layers.some((candidate) => candidate.id === newLayerId)) {
+        throw new Error("Duplicate layer ID already exists.");
+      }
+
+      const toIndex =
+        input.toIndex === undefined
+          ? index + 1
+          : requireInsertionIndex(input.toIndex, layers.length);
+
+      const duplicated = visualLayerSchema.parse({
+        ...structuredClone(layer),
+        id: newLayerId,
+      });
+
+      const nextLayers = [...layers];
+      nextLayers.splice(toIndex, 0, duplicated);
+      return withLayers(project, nextLayers);
+    },
+  };
+}
+
+export function createLayerReorderCommand(
+  input: ReorderLayerCommandInput,
+): ProjectCommand {
+  return {
+    kind: "layer.reorder",
+    label: `Pindahkan layer ${input.layerId}`,
+    origin: "manual",
+    ...expectationFields(input),
+    apply: (project) => {
+      const { layer, index } = findLayer(project, input.layerId);
+      requireUnlocked(layer);
+
+      const layers = currentLayers(project);
+      const toIndex = requireReorderIndex(input.toIndex, layers.length);
+      if (index === toIndex) return project;
+
+      const nextLayers = [...layers];
+      const [moved] = nextLayers.splice(index, 1);
+      if (moved === undefined) {
+        throw new Error("Layer reorder target could not be resolved.");
+      }
+      nextLayers.splice(toIndex, 0, moved);
+      return withLayers(project, nextLayers);
+    },
+  };
+}
