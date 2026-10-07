@@ -3,16 +3,24 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL
+- Active role at current checkpoint: ASTRA
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
-- STEP 11 planning checkpoint: FEATURE_REGISTRY + DEPENDENCY_GRAPH + W11-01 CHARTER = PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; later waves not started
+- STEP 11 planning checkpoint: W11-01 planning/implementation COMPLETE; W11-02 ASTRA planning = PASS
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 implementation not started
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-01 Project Lifecycle & Recovery Core`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Next planning target: `W11-02 Media Intake Foundation` — ASTRA planning required before SOL implementation
+- Active planned wave: `W11-02 Media Intake Foundation`
+- W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
+- W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
+- W11-02 ASTRA planning: COMPLETE / PASS
+- W11-02 DoR: PASS
+- W11-02 planning DOCX: `docs/source-of-truth/planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+- W11-02 operational charter: `docs/step11/WAVE_11_02_CHARTER.md`
+- W11-02 task cards: `docs/step11/TASK_CARDS_W11_02.md`
+- W11-02 acceptance matrix: `docs/step11/W11_02_ACCEPTANCE_MATRIX.md`
 - Completed implementation tasks:
   - `T11-W01-01 Lifecycle Contracts & Session Path Ownership` — PASS
   - `T11-W01-02 Open / Save As / Known-Path Save` — PASS
@@ -36,26 +44,27 @@
 - T11-W01-05 canonical CI job: `112651361529`
 - W11-01 closure evidence: `docs/step11/evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`
 - W11-01 drift review: `docs/step11/evidence/W11_01_ARCHITECTURE_DRIFT_REVIEW.md`
-- Next action: ASTRA planning/charter for `W11-02 Media Intake Foundation`; SOL implementation is not READY yet
+- Next READY implementation task after this planning package merges: `T11-W02-01 Media Domain, Contracts & Project Compatibility` — SOL
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — W11-01 COMPLETE.** T11-W01-01 through T11-W01-05 are verified. All AC-W11-01-01..14 PASS, canonical Windows CI is green, frozen SCR-002A remains exact, and the architecture drift review found no material drift. STEP 11 remains in progress overall because later feature waves have not started.
+**PASS — W11-02 ASTRA PLANNING COMPLETE.** Requirements F-002/F-017 and FR-005..008/048..050/055..056 are mapped; W11-01 prerequisite is complete; scope, architecture ownership, additive schema-v1 strategy, missing/relink semantics, UI authority, dependency posture, error taxonomy, 18 acceptance criteria, six serial tasks, test/evidence strategy, rollback and review triggers are defined. No media feature code was changed in this planning checkpoint.
 
-## W11-01 closure summary
-- Project lifecycle: Open / Save As / known-path Save verified.
-- Dirty state and separate recovery generations verified.
-- Newer/stale/corrupt/interrupted recovery behavior verified.
-- Recovery restore/discard and lifecycle error/cancel UI states verified.
-- Renderer trust boundary and canonical ownership preserved.
-- Unicode/spaces path coverage verified.
-- Offline lifecycle/recovery behavior verified without cloud/provider dependency.
-- Secret/private-path evidence gates remain green.
-- Windows package, executable smoke, portable ZIP, and frozen visual baseline remain green.
-- All W11-01 acceptance criteria AC-01..14: PASS.
-- Architecture drift: PASS — no material drift; no ADR/re-freeze/schema migration required.
+## W11-02 planning decisions
+- One canonical main-process Media Intake pipeline serves picker, drop-file and drop-folder inputs.
+- Preferred metadata/duration adapter: `music-metadata`, subject to implementation-time lock/audit/CI.
+- Exact FFmpeg/FFprobe executable integration remains outside W11-02 and STEP 12-owned.
+- Renderer retains no direct filesystem/dialog/subprocess/provider ownership.
+- Project schema stays v1 with additive optional media fields unless implementation proves a blocking incompatibility.
+- Import is non-destructive; source media is never renamed/moved/edited by the intake/relink workflow.
+- 20+/100+ batch operations must be asynchronous, bounded, observable and cancellable.
+- Initial ordering is deterministic: metadata track number -> filename number -> filename -> stable tie-break.
+- Missing mandatory audio and optional visual references are distinct states.
+- Relink only auto-resolves unique high-confidence candidates; ambiguity remains unresolved.
+- Existing frozen UI states 002A/002B/002F/009A/009B are sufficient; no new UI prompt/image generation is required.
+- W11-02 acceptance: AC-W11-02-01..18 planned and mapped.
 
 ## Protected decisions
 Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works without AI; one Project State/official mutation path; JSON versioned project; track-boundary model; portable Windows ZIP; final MP4; OS-protected secrets; frozen UI cannot be silently redesigned.
@@ -66,4 +75,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: perform **ASTRA planning/charter for W11-02 Media Intake Foundation only**. Do not begin SOL coding for W11-02 until that planning gate is complete.
+After the user says `lanjutkan`: execute **T11-W02-01 Media Domain, Contracts & Project Compatibility only** as SOL. Do not start T11-W02-02 in the same turn.
