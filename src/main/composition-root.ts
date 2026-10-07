@@ -1,6 +1,7 @@
 import { app, dialog } from "electron";
 import { randomUUID } from "node:crypto";
 import { join, resolve } from "node:path";
+import { MediaDiscoveryService } from "../core/application/services/media-discovery-service";
 import { ProjectLifecycleService } from "../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../core/application/services/project-path-session";
 import {
@@ -8,7 +9,6 @@ import {
   SaveProjectUseCase,
 } from "../core/application/services/project-persistence";
 import { ProjectRecoveryService } from "../core/application/services/project-recovery-service";
-import { MediaDiscoveryService } from "../core/application/services/media-discovery-service";
 import { NodeMediaDiscoveryPort } from "./infrastructure/media/node-media-discovery-port";
 import { JsonProjectRecoveryStore } from "./infrastructure/persistence/json-project-recovery-store";
 import { JsonProjectStore } from "./infrastructure/persistence/json-project-store";
@@ -104,7 +104,6 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     selectSavePath,
     selectOpenPath,
   );
-
 
   const selectAudioFiles = async (): Promise<string[] | null> => {
     if (cancelMediaFiles) return null;
