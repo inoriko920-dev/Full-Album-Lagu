@@ -22,9 +22,8 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           from zipfile import ZipFile
-          import xml.etree.ElementTree as ET
-
-          ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+          import html
+          import re
           docs = [
               "docs/source-of-truth/planning/current/00_MASTER_PRODUCT_DEFINITION_LAGU_FULL_ALBUM_REPO_COMPACT.docx",
               "docs/source-of-truth/planning/current/02_STEP_01_PRODUCT_DEFINITION_BASELINE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT.docx",
@@ -43,22 +42,13 @@ jobs:
 
           def extract_docx(path: Path) -> str:
               with ZipFile(path) as z:
-                  xml = z.read("word/document.xml")
-              root = ET.fromstring(xml)
-              lines = []
-              for para in root.findall(".//w:p", ns):
-                  parts = []
-                  for node in para.iter():
-                      tag = node.tag.split("}")[-1]
-                      if tag == "t" and node.text:
-                          parts.append(node.text)
-                      elif tag == "tab":
-                          parts.append("\t")
-                      elif tag == "br":
-                          parts.append("\n")
-                  text = "".join(parts).strip()
-                  if text:
-                      lines.append(text)
+                  raw = z.read("word/document.xml").decode("utf-8", errors="ignore")
+              raw = re.sub(r"</w:p\\s*>", "\\n", raw, flags=re.I)
+              raw = re.sub(r"<w:tab\\s*/>", "\\t", raw, flags=re.I)
+              raw = re.sub(r"<w:br\\s*/>", "\\n", raw, flags=re.I)
+              raw = re.sub(r"<[^>]+>", "", raw)
+              raw = html.unescape(raw)
+              lines = [line.strip() for line in raw.splitlines() if line.strip()]
               return "\n".join(lines)
 
           manifest = []
