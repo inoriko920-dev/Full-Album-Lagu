@@ -640,6 +640,28 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W04-05 PASS / VERIFIED
-- W11-05 remains blocked until W11-04 closes COMPLETE / PASS.
+- Verified implementation head: `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`
+- Windows CI: `37672986946` / run #304 — PASS
+- CI job: `112969205553`
+- W11-04 closure artifact: `11505875947`
+- Windows portable artifact: `11505274919`
+- Frozen visual artifact: `11506080483`
+- Closure proof:
+  - 12-track real UI full-flow + Save/Reopen + Undo/Redo checkpoint PASS;
+  - deterministic Auto Susun + repeat no-op PASS;
+  - optional artwork missing/relink remains nonblocking PASS;
+  - 128-track live renderer Auto Susun PASS in 79 ms probe / 650 ms process;
+  - source SHA-256/size/mtime unchanged;
+  - AC-W11-04-01..22 ALL PASS;
+  - architecture/UI/trust-boundary drift review PASS — no material drift;
+  - STEP 10, W11-01, W11-02, W11-03, frozen UI, Windows package, executable smoke and portable ZIP all PASS.
+- Evidence:
+  - `docs/step11/evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md`
+  - `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`
+- **W11-04 = COMPLETE / PASS.**
+- W11-05 is unlocked for **ASTRA planning only**; implementation remains blocked until its planning/DoR gate passes.
