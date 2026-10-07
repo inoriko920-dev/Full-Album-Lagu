@@ -5,7 +5,7 @@ Planning baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`
 Features: **FTR-007 Manual Layer Editor + FTR-011 Template Workflow**  
 Cross-cut: **FTR-013 Unified Command History + FTR-018 Error/Offline**  
 Planning status: **COMPLETE / PASS**  
-Implementation status: **NOT STARTED — only T11-W05-01 may start after this planning pack is merged**  
+Implementation status: **IN PROGRESS — T11-W05-01 PASS / VERIFIED; T11-W05-02 READY**  
 UI decision: **reuse frozen SCR-002C, SCR-003A, SCR-003B and DLG-008; no new UI prompt/image stage required**
 
 ## Source authority
@@ -276,7 +276,7 @@ A stale trial/apply rejects atomically and must be restarted.
 6. **T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring**
 7. **T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure**
 
-Execution is strictly serial. After planning merge, only T11-W05-01 is READY.
+Execution is strictly serial. T11-W05-01 is PASS / VERIFIED; only T11-W05-02 is READY.
 
 ## Stress targets
 
@@ -302,4 +302,14 @@ Every implementation task preserves:
 
 ## Planning verdict
 
-**PASS.** W11-05 planning is complete. No new UI prompt/image stage is required. After this planning pack and the governance reconstruction are committed and verified, **only T11-W05-01** is authorized next for SOL.
+**PASS.** W11-05 planning remains authoritative. T11-W05-01 is PASS / VERIFIED; **only T11-W05-02** is authorized next for SOL. No new UI prompt/image stage is required.
+
+
+## T11-W05-01 verified implementation
+- Status: PASS / VERIFIED.
+- Verified implementation head: `137e8d31a08b804498b56a9b9cb094bcc4add8f0`.
+- Windows CI: `37682820030` / #321 PASS.
+- Evidence: `evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
+- Additive schema-v1 visualScene, normalized logical canvas, stable IDs/canonical layer order, pure track-bound projection and persistence compatibility are proven.
+- Scope boundary remains intact: no manual commands/UI/template store/playback/keyframes/Gemini/FFmpeg were introduced.
+- Dependency unlock: T11-W05-02 READY; T11-W05-03..07 remain blocked.

@@ -191,6 +191,81 @@ describe("JsonProjectStore", () => {
     expect(JSON.stringify(loaded)).not.toContain("resolvedPresentation");
   });
 
+  it("round-trips the additive W11-05 visual scene without derived duplication", async () => {
+    const root = await mkdtemp(join(tmpdir(), "lfa visual scene "));
+    cleanupPaths.push(root);
+    const projectPath = join(root, "visual-scene-roundtrip.lfa.json");
+    const store = new JsonProjectStore();
+    const project = {
+      schemaVersion: 1 as const,
+      projectId: "visual-scene-roundtrip",
+      name: "Visual Scene Roundtrip",
+      revision: 5,
+      tracks: [],
+      visualScene: {
+        sceneVersion: 1 as const,
+        layers: [
+          {
+            id: "layer-background",
+            kind: "background" as const,
+            name: "Background",
+            visible: true,
+            locked: true,
+            transform: {
+              x: 0.5,
+              y: 0.5,
+              width: 1,
+              height: 1,
+              rotationDeg: 0,
+              opacity: 1,
+              anchor: "center" as const,
+            },
+            fill: {
+              type: "solid" as const,
+              color: "#101820FF",
+            },
+          },
+          {
+            id: "layer-title",
+            kind: "text" as const,
+            name: "Judul Track",
+            visible: true,
+            locked: false,
+            transform: {
+              x: 0.5,
+              y: 0.8,
+              width: 0.7,
+              height: 0.12,
+              rotationDeg: 0,
+              opacity: 1,
+              anchor: "center" as const,
+            },
+            role: "title" as const,
+            style: {
+              fontFamily: "Inter",
+              fontSizeRatio: 0.05,
+              fontWeight: "semibold" as const,
+              italic: false,
+              align: "center" as const,
+              color: "#FFFFFFFF",
+              letterSpacingRatio: 0,
+              lineHeight: 1.2,
+            },
+          },
+        ],
+      },
+    };
+
+    await store.save(projectPath, project);
+    const loaded = await store.load(projectPath);
+
+    expect(loaded).toEqual(project);
+    expect(loaded.schemaVersion).toBe(1);
+    expect(JSON.stringify(loaded)).not.toContain("resolvedText");
+    expect(JSON.stringify(loaded)).not.toContain("resolvedArtwork");
+    expect(JSON.stringify(loaded)).not.toContain("runtimeState");
+  });
+
   it("rejects corrupt JSON without modifying the source file", async () => {
     const root = await mkdtemp(join(tmpdir(), "lfa corrupt "));
     cleanupPaths.push(root);

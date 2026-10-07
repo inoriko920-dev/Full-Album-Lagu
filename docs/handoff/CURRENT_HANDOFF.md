@@ -269,11 +269,6 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Evidence: `docs/step11/evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
 - Frozen Auto Susun and selected-track Inspector metadata/artwork controls are wired to official history; draft edits remain session-only until Apply; Media/Timeline/Inspector selection stays canonical; exact SCR-002A is unchanged.
 
-## Next exact task
-**T11-W04-06 — Wave E2E, Stress, Drift Review & Evidence Closure — SOL only.**
-
-On the next user `lanjutkan`, run the W11-04 closure matrix only. Do not advance to W11-05 or STEP 12 in the same turn.
-
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
 
@@ -291,22 +286,33 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 - Architecture/UI/trust-boundary drift: PASS — NO MATERIAL DRIFT.
 - Evidence: `docs/step11/evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md`, `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`.
 
-## Next exact action
-After the user says `lanjutkan`, switch to **ASTRA** and perform **W11-05 Manual Layer Editor + Templates planning only**. Read the Software Factory guidance, all current source-of-truth/handoff files, and W11-04 closure evidence first. Create the detailed W11-05 planning DOCX/Markdown and DoR. Do not begin W11-05 SOL implementation, W11-06, or STEP 12 in the same turn.
-
 
 ## W11-05 planning completed
 - Role: ASTRA.
 - Baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`.
-- Status: **PLANNING COMPLETE / PASS**; implementation NOT STARTED.
+- Status: **PLANNING COMPLETE / PASS**; T11-W05-01 PASS / VERIFIED; T11-W05-02 READY.
 - Features: FTR-007 Manual Layer Editor + FTR-011 Template Workflow; FTR-013/FTR-018 cross-cut.
 - Planning DOCX: `docs/source-of-truth/planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
 - Companion authority: `WAVE_11_05_CHARTER.md`, `TASK_CARDS_W11_05.md`, `W11_05_ACCEPTANCE_MATRIX.md`, `W11_05_DOR.md`.
 - DoR: PASS; AC-W11-05-01..25 defined.
-- Serial tasks: T11-W05-01 READY after planning merge; T11-W05-02..07 BLOCKED.
+- Serial tasks: T11-W05-01 PASS / VERIFIED; T11-W05-02 READY; T11-W05-03..07 BLOCKED.
 - UI authority already frozen: SCR-002C (Layer), SCR-003A/003B (Template/Try), DLG-008/UI-IMG-012 (Save Template). No new UI prompt/image generation is needed.
 - Scope boundary: static scene/layer editing + visual-only local templates. Playback/audio-reactive remains W11-06; animation/transitions remains W11-07; Gemini/FFmpeg remains STEP 12.
 - Governance repair: `10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` was absent from checkout and is restored as a **reconstructed repository copy** with an integrity notice. Never describe it as the missing historical original.
 
+
+
+## T11-W05-01 completed
+- Status: **PASS / VERIFIED**.
+- Verified implementation head: `137e8d31a08b804498b56a9b9cb094bcc4add8f0`.
+- Windows CI: `37682820030` / #321 PASS; job `113003054180`.
+- Portable artifact: `11509257626`.
+- Frozen visual artifact: `11510031703`.
+- Evidence: `docs/step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
+- Additive schema-v1 visualScene, normalized logical canvas, stable layer IDs/canonical order, schema validation and pure W11-04-bound title/artist/artwork projection are proven.
+- Spectrum/Progress remain structural placeholders; no W11-06 runtime was pulled forward.
+- 244 Vitest assertions plus STEP 10/W11-01..04/frozen UI/package/smoke/ZIP are green.
+- FTR-007/FTR-011 are not wave-VERIFIED yet.
+
 ## Next exact action
-After the user says `lanjutkan`, switch to **SOL** and execute **T11-W05-01 — Visual Scene + Layer Schema & Pure Projection only**. Read this handoff, the W11-05 DOCX/Markdown planning pack, W11-04 closure evidence, architecture/constitution and frozen UI authority first. Do not start T11-W05-02, template store/UI, W11-06, W11-07 or STEP 12 in the same turn.
+After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-02 — Manual Layer Commands + Gesture/History Semantics only**. Read W11-05 planning authority and T11-W05-01 evidence first. Do not start T11-W05-03, template store/UI, W11-06, W11-07 or STEP 12 in the same turn.

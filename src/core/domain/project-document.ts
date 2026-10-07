@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { mediaAssetReferenceSchema } from "./media-asset";
+import { visualSceneSchema } from "./visual-scene-schema";
 
 export const PROJECT_SCHEMA_VERSION = 1 as const;
 
@@ -37,6 +38,7 @@ export const projectDocumentSchema = z
     name: z.string().trim().min(1).max(200),
     revision: z.number().int().nonnegative(),
     albumPresentation: projectAlbumPresentationSchema.optional(),
+    visualScene: visualSceneSchema.optional(),
     tracks: z.array(projectTrackSchema),
     mediaAssets: z.array(mediaAssetReferenceSchema).optional(),
   })

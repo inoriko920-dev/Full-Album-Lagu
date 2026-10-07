@@ -41,3 +41,19 @@ Task-level evidence contributes to this matrix but does not close the wave by it
 - attach Windows E2E/stress/source-fingerprint evidence;
 - record architecture/UI/trust-boundary drift review with no material drift;
 - preserve all mandatory previous-wave/package gates.
+
+
+## T11-W05-01 task-level evidence
+
+- Verified implementation head: `137e8d31a08b804498b56a9b9cb094bcc4add8f0`
+- Windows CI: `37682820030` / #321 — PASS
+- Evidence: `evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`
+- AC-W11-05-01: **PASS at T11-W05-01 level** — legacy schema-v1 remains compatible and visualScene JSON round-trip is proven.
+- AC-W11-05-02: **PASS at T11-W05-01 level** — deterministic validation, unique stable IDs, canonical layer-array order.
+- AC-W11-05-03: **PASS at T11-W05-01 level** — title/artist/artwork resolve through W11-04 bindings without derived persistence.
+- AC-W11-05-10: **PARTIAL** — Spectrum/Progress structural layers exist without W11-06 runtime; interaction behavior remains later ownership.
+- AC-W11-05-11: **PARTIAL** — persistence round-trip is proven; full session/history behavior remains later ownership.
+- AC-W11-05-23: **PASS for T11-W05-01** — architecture/provider/tool boundaries remain intact.
+- AC-W11-05-25: **PASS for T11-W05-01 regression gate** — STEP 10 + W11-01..04 + frozen UI + package/smoke/ZIP green.
+
+These task-level statuses do not close the W11-05 acceptance matrix; final closure remains T11-W05-07 owned.

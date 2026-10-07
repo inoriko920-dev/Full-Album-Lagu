@@ -3,7 +3,7 @@
 Planning role: **ASTRA**  
 Planning baseline analyzed: `main@da5b6786d0daa472c474a33ffd83a5834af24f82`  
 Status: **NORMALIZED / W11-01..04 COMPLETE / PASS; W11-05 PLANNING COMPLETE / PASS**  
-Implementation status: **W11-01..04 COMPLETE / PASS; W11-05 NOT STARTED — T11-W05-01 READY after planning merge**
+Implementation status: **W11-01..04 COMPLETE / PASS; W11-05 IN PROGRESS — T11-W05-01 PASS / VERIFIED; T11-W05-02 READY**
 
 The complete planning authority is the companion DOCX:
 `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
@@ -16,7 +16,7 @@ The complete planning authority is the companion DOCX:
 | FTR-004 | Track Timeline & Track State | F-003; FR-009..011 | MUST | FTR-003 | VERIFIED W11-03 |
 | FTR-005 | Auto Susun Album | F-004; FR-012 | MUST | FTR-003,FTR-004,FTR-013 | VERIFIED W11-04 |
 | FTR-006 | Artwork/Metadata/Dynamic Track Binding | F-005; FR-013..015 | MUST | FTR-003,FTR-004 | VERIFIED W11-04 |
-| FTR-007 | Manual Layer Editor | F-006; FR-016..019 | MUST | FTR-013 + UI Freeze | W11-05 PLANNING PASS / T11-W05-01 READY AFTER MERGE |
+| FTR-007 | Manual Layer Editor | F-006; FR-016..019 | MUST | FTR-013 + UI Freeze | W11-05 T11-W05-01 PASS / T11-W05-02 READY |
 | FTR-008 | Audio-Reactive Visual Engine | F-007; FR-020..022 | MUST | FTR-003,FTR-012; later tool boundary | PLANNED W11-06 |
 | FTR-009 | Animation & Limited Keyframes | F-008; FR-023..024 | MUST | FTR-007,FTR-013 | PLANNED W11-07 |
 | FTR-010 | Track-Boundary Transition System | F-009; FR-025..027 | MUST | FTR-004,FTR-006,FTR-009 | PLANNED W11-07 |
@@ -127,5 +127,16 @@ The complete planning authority is the companion DOCX:
 - Frozen UI authority: SCR-002C + SCR-003A + SCR-003B + DLG-008/UI-IMG-012. No new prompt/image stage is required.
 - Manual Layer Editor is primary; template workflow is visual-only/non-destructive and uses the same Project State + CommandEngine.
 - W11-05 boundary: static visual scene/layer state and local templates only. W11-06 keeps playback/audio-reactive; W11-07 keeps keyframe/transition execution; STEP 12 keeps Gemini/FFmpeg.
-- Serial task gate: T11-W05-01 READY after planning merge; T11-W05-02..07 BLOCKED.
+- Serial task gate: T11-W05-01 PASS / VERIFIED; T11-W05-02 READY; T11-W05-03..07 BLOCKED.
 - FTR-007/FTR-011 are **not VERIFIED** until implementation + W11-05 closure evidence passes.
+
+
+## T11-W05-01 verification
+- T11-W05-01 Visual Scene + Layer Schema & Pure Projection: PASS / VERIFIED.
+- Verified implementation head: `137e8d31a08b804498b56a9b9cb094bcc4add8f0`.
+- Windows CI: `37682820030` / #321 PASS; job `113003054180`.
+- Evidence: `evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
+- Additive schema-v1 visualScene, stable layer IDs/canonical order, normalized logical canvas, and pure W11-04-bound projection are verified.
+- FTR-007 is **not wave-VERIFIED** yet; this task proves only its scene/schema/projection foundation.
+- FTR-011 has not started.
+- Dependency unlock: T11-W05-02 READY; T11-W05-03..07 remain blocked.
