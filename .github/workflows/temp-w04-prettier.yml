@@ -1,0 +1,28 @@
+name: Temporary W04 Prettier Formatter
+
+on:
+  pull_request:
+    paths:
+      - "scripts/run-w11-auto-binding-closure.mjs"
+      - ".github/workflows/temp-w04-prettier.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: "npm"
+      - run: npm ci
+      - run: npx prettier --write scripts/run-w11-auto-binding-closure.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: W04-Formatted-Runner
+          path: scripts/run-w11-auto-binding-closure.mjs
+          if-no-files-found: error
+          retention-days: 1
