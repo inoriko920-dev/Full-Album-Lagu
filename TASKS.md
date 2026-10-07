@@ -219,17 +219,34 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: T11-W02-02 PASS.
-- Scope: implementation-time dependency/license gate for the planned metadata adapter, audio probe/validation/classification, duration/common tags, deterministic initial order and media/project commit only.
-- Gate: must PASS before T11-W02-04.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `62bd3b76f7f45dad14938b1dd94f2e9ff73c2722`
+- Windows CI run: `37594104866` — PASS
+- CI job: `112702409465`
+- Scope delivered:
+  - exact `music-metadata@12.0.0` runtime dependency after compatibility/license gate;
+  - main-owned `MusicMetadataProbePort` with duration and common metadata extraction;
+  - explicit unsupported/unreadable/corrupt/duration-unavailable classification;
+  - `skipCovers: true` bulk probing;
+  - bounded/cancellable intake service with progress and staged commit;
+  - deterministic initial order: metadata track -> filename number -> filename -> stable tie-break;
+  - schema-v1 media asset/track commit with filename title fallback;
+  - synthetic real-parser MP3/WAV/FLAC/M4A/AAC coverage plus 120-item ordering stability.
+- Runtime FFmpeg/FFprobe, relink and media UI were not implemented.
+- Evidence: `docs/step11/evidence/T11_W02_03_AUDIO_PROBE_METADATA_ORDERING_EVIDENCE.md`.
 
 ## T11-W02-04 — Missing Media Scan & Relink Core
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED_BY T11-W02-03.
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: T11-W02-03 PASS.
+- Scope: missing-media scan, required-audio vs optional-visual distinction, individual relink, deterministic folder relink matching and ambiguity handling only.
+- Gate: must PASS before T11-W02-05.
 
 ## T11-W02-05 — Frozen Media/Missing/Relink UI Wiring
 - Owner: SOL
