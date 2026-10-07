@@ -342,7 +342,7 @@ describe("T11-W03-05 unified history hardening", () => {
     expect(session.redo()).toEqual({ status: "unavailable" });
   });
 
-  it("uses the late-save checkpoint revision for dirty autosave and skips again after Undo-to-saved", async () => {
+  it("uses the late-save checkpoint revision for dirty autosave and returns logical clean after Undo-to-saved", async () => {
     const session = new ProjectSessionHistory(
       createEmptyProject("autosave-checkpoint"),
     );
@@ -376,13 +376,18 @@ describe("T11-W03-05 unified history hardening", () => {
 
     session.undo();
     const clean = session.snapshot();
-    expect(clean.dirty).toBe(false);
-    expect(await recovery.autosave(clean.project, clean.savedRevision)).toEqual(
-      {
-        status: "skipped",
-        reason: "clean",
-      },
-    );
+    expect(clean).toMatchObject({
+      project: { name: "Primary Saved", revision: 3 },
+      savedRevision: 1,
+      savedStateToken: savedCheckpoint.stateToken,
+      stateToken: savedCheckpoint.stateToken,
+      dirty: false,
+    });
+    expect(await recovery.inspect(savedCheckpoint.project)).toMatchObject({
+      status: "available",
+      generation: 1,
+      project: { name: "Dirty Draft" },
+    });
   });
 
   it("keeps 128-track batch history and timeline deterministic through 60 Undo/Redo cycles", () => {
