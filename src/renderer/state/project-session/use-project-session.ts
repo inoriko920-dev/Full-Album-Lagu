@@ -362,8 +362,7 @@ export function useProjectSession(): ProjectSessionView {
         });
 
         if (result.status === "recovered") {
-          const savedRevisionBeforeRecovery =
-            history.snapshot().savedRevision;
+          const savedRevisionBeforeRecovery = history.snapshot().savedRevision;
           const scannedProject = await scanMissingMediaState(result.project);
           history.resetDirty(scannedProject, savedRevisionBeforeRecovery);
           publishHistorySnapshot();
