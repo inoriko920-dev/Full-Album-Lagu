@@ -1,0 +1,36 @@
+name: Temporary W11-03-04 Prettier
+
+on:
+  push:
+    branches:
+      - sol/t11-w03-04-frozen-timeline-history-ui
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: ${{ !contains(github.event.head_commit.message, '[prettier-w03-04]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: sol/t11-w03-04-frozen-timeline-history-ui
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Format T11-W03-04 files
+        run: npx prettier --write src/renderer/app/app-shell.css tests/component/AppShell.timeline-history.test.tsx
+      - name: Commit formatting
+        shell: bash
+        run: |
+          if git diff --quiet -- src/renderer/app/app-shell.css tests/component/AppShell.timeline-history.test.tsx; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/renderer/app/app-shell.css tests/component/AppShell.timeline-history.test.tsx
+          git commit -m "chore: format T11-W03-04 [prettier-w03-04]"
+          git push origin HEAD:sol/t11-w03-04-frozen-timeline-history-ui
