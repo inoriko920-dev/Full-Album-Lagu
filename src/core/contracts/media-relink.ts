@@ -1,6 +1,5 @@
 import { z } from "zod";
 import {
-  mediaAvailabilitySchema,
   mediaIssueCodeSchema,
   mediaKindSchema,
 } from "../domain/media-asset";
