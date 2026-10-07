@@ -1,4 +1,7 @@
-import type { AudioMediaMetadata, MediaAssetReference } from "../../domain/media-asset";
+import type {
+  AudioMediaMetadata,
+  MediaAssetReference,
+} from "../../domain/media-asset";
 import {
   projectDocumentSchema,
   type ProjectDocument,
@@ -138,10 +141,7 @@ function compareSortRecords(
   return compareText(left.trackId, right.trackId);
 }
 
-function sameOrder(
-  left: readonly string[],
-  right: readonly string[],
-): boolean {
+function sameOrder(left: readonly string[], right: readonly string[]): boolean {
   return (
     left.length === right.length &&
     left.every((trackId, index) => trackId === right[index])
