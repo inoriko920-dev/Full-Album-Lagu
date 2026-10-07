@@ -4,11 +4,25 @@ import { ProjectStoreError } from "../../core/application/ports/project-store";
 import type { ProjectLifecycleService } from "../../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../../core/application/services/project-path-session";
 import type { LoadProjectUseCase } from "../../core/application/services/project-persistence";
+import type { MediaDiscoveryService } from "../../core/application/services/media-discovery-service";
 import type { ProjectRecoveryService } from "../../core/application/services/project-recovery-service";
 import {
   FOUNDATION_INFO_CHANNEL,
   foundationInfoSchema,
 } from "../../core/contracts/foundation-info";
+import {
+  MEDIA_DISCOVER_DROPPED_CHANNEL,
+  MEDIA_DISCOVERY_CANCEL_CHANNEL,
+  MEDIA_DISCOVERY_STATUS_CHANNEL,
+  MEDIA_PICK_AUDIO_FILES_CHANNEL,
+  MEDIA_PICK_FOLDER_CHANNEL,
+  mediaDiscoveryCancelRequestSchema,
+  mediaDiscoveryCancelResultSchema,
+  mediaDiscoveryPathRequestSchema,
+  mediaDiscoveryStartResultSchema,
+  mediaDiscoveryStatusRequestSchema,
+  mediaDiscoveryStatusResultSchema,
+} from "../../core/contracts/media-discovery";
 import {
   PROJECT_AUTOSAVE_CHANNEL,
   PROJECT_RECOVERY_ACCEPT_CHANNEL,
@@ -40,6 +54,9 @@ export interface ProjectIpcDependencies {
   loadProject: LoadProjectUseCase;
   pathSession: ProjectPathSession;
   recoveryService: ProjectRecoveryService;
+  mediaDiscoveryService: MediaDiscoveryService;
+  selectAudioFiles: () => Promise<string[] | null>;
+  selectMediaFolders: () => Promise<string[] | null>;
   startupProjectPath?: string;
 }
 
@@ -100,6 +117,115 @@ export function registerIpcHandlers(
       arch: process.arch,
       phase: "foundation",
     }),
+  );
+
+
+  const startMediaDiscovery = (paths: readonly string[]) => {
+    try {
+      const { batchId } = projectDependencies.mediaDiscoveryService.start(paths);
+      return mediaDiscoveryStartResultSchema.parse({
+        status: "started",
+        batchId,
+      });
+    } catch {
+      return mediaDiscoveryStartResultSchema.parse({
+        status: "error",
+        code: "MEDIA_DISCOVERY_FAILED",
+        message: "Media discovery could not be started safely.",
+      });
+    }
+  };
+
+  ipcMain.handle(MEDIA_PICK_AUDIO_FILES_CHANNEL, async () => {
+    try {
+      const paths = await projectDependencies.selectAudioFiles();
+      if (!paths || paths.length === 0) {
+        return mediaDiscoveryStartResultSchema.parse({
+          status: "cancelled",
+          code: "MEDIA_SELECTION_CANCELLED",
+        });
+      }
+
+      return startMediaDiscovery(paths);
+    } catch {
+      return mediaDiscoveryStartResultSchema.parse({
+        status: "error",
+        code: "MEDIA_DISCOVERY_FAILED",
+        message: "Audio selection could not be completed safely.",
+      });
+    }
+  });
+
+  ipcMain.handle(MEDIA_PICK_FOLDER_CHANNEL, async () => {
+    try {
+      const paths = await projectDependencies.selectMediaFolders();
+      if (!paths || paths.length === 0) {
+        return mediaDiscoveryStartResultSchema.parse({
+          status: "cancelled",
+          code: "MEDIA_SELECTION_CANCELLED",
+        });
+      }
+
+      return startMediaDiscovery(paths);
+    } catch {
+      return mediaDiscoveryStartResultSchema.parse({
+        status: "error",
+        code: "MEDIA_DISCOVERY_FAILED",
+        message: "Folder selection could not be completed safely.",
+      });
+    }
+  });
+
+  ipcMain.handle(
+    MEDIA_DISCOVER_DROPPED_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = mediaDiscoveryPathRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return mediaDiscoveryStartResultSchema.parse({
+          status: "error",
+          code: "MEDIA_DISCOVERY_FAILED",
+          message: "Dropped media request is invalid.",
+        });
+      }
+
+      return startMediaDiscovery(request.data.paths);
+    },
+  );
+
+  ipcMain.handle(
+    MEDIA_DISCOVERY_STATUS_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = mediaDiscoveryStatusRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return mediaDiscoveryStatusResultSchema.parse({
+          status: "error",
+          batchId: "invalid",
+          code: "MEDIA_DISCOVERY_FAILED",
+          message: "Media discovery status request is invalid.",
+        });
+      }
+
+      return mediaDiscoveryStatusResultSchema.parse(
+        projectDependencies.mediaDiscoveryService.getStatus(request.data.batchId),
+      );
+    },
+  );
+
+  ipcMain.handle(
+    MEDIA_DISCOVERY_CANCEL_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = mediaDiscoveryCancelRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return mediaDiscoveryCancelResultSchema.parse({
+          status: "not-running",
+          batchId: "invalid",
+        });
+      }
+
+      return mediaDiscoveryCancelResultSchema.parse(
+        projectDependencies.mediaDiscoveryService.cancel(request.data.batchId),
+      );
+    },
   );
 
   ipcMain.handle(PROJECT_SAVE_CHANNEL, async (_event, payload: unknown) => {
