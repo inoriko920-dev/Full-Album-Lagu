@@ -6,16 +6,19 @@
 - Active role at current checkpoint: SOL
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: FEATURE_REGISTRY + DEPENDENCY_GRAPH + W11-01 CHARTER = PASS
-- STEP 11 implementation: IN_PROGRESS
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; later waves not started
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
-- Active wave: `W11-01 Project Lifecycle & Recovery Core`
-- Wave features: FTR-001 + FTR-002 + FTR-018 cross-cut
+- Last completed wave: `W11-01 Project Lifecycle & Recovery Core`
+- W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
+- W11-01 status: COMPLETE / PASS
+- Next planning target: `W11-02 Media Intake Foundation` — ASTRA planning required before SOL implementation
 - Completed implementation tasks:
   - `T11-W01-01 Lifecycle Contracts & Session Path Ownership` — PASS
   - `T11-W01-02 Open / Save As / Known-Path Save` — PASS
   - `T11-W01-03 Dirty State & Autosave Recovery Store` — PASS
   - `T11-W01-04 Frozen UI States + Recovery UX Wiring` — PASS
+  - `T11-W01-05 Wave E2E, Drift Review & Evidence Pack` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -28,25 +31,31 @@
 - T11-W01-04 Windows CI: `37577568055` — PASS
 - T11-W01-04 CI job: `112649903010`
 - T11-W01-04 frozen visual artifact: `11463371449`
-- Next READY implementation task: `T11-W01-05 Wave E2E, Drift Review & Evidence Pack`
+- T11-W01-05 verification baseline: `main@5b7cd0328dcdfdbb242a2e88999209446daacf12`
+- T11-W01-05 canonical Windows CI baseline: `37578082369` — PASS
+- T11-W01-05 canonical CI job: `112651361529`
+- W11-01 closure evidence: `docs/step11/evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`
+- W11-01 drift review: `docs/step11/evidence/W11_01_ARCHITECTURE_DRIFT_REVIEW.md`
+- Next action: ASTRA planning/charter for `W11-02 Media Intake Foundation`; SOL implementation is not READY yet
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W01-04 verified.** Lifecycle/recovery states are now visible and actionable through a conditional frozen-shell notice row. Recovery restore/discard and Save retry paths stay inside ProjectSession and typed preload/IPC boundaries. The default SCR-002A visual baseline remains exact, and the permanent Gemini rail/frozen hierarchy are unchanged. W11-01 remains in progress pending its final E2E/drift/evidence task.
+**PASS — W11-01 COMPLETE.** T11-W01-01 through T11-W01-05 are verified. All AC-W11-01-01..14 PASS, canonical Windows CI is green, frozen SCR-002A remains exact, and the architecture drift review found no material drift. STEP 11 remains in progress overall because later feature waves have not started.
 
-## T11-W01-04 verified behavior
-- Default empty editor renders no extra notice and preserves the approved SCR-002A baseline.
-- Newer recovery is visibly offered with Pulihkan and Abaikan actions.
-- Pulihkan restores the recovery snapshot into live editor state while remaining dirty against the primary-file revision.
-- Abaikan/Hapus Autosave removes recovery only and preserves the primary project.
-- Stale recovery is visibly rejected in favor of the newer primary project.
-- Invalid recovery is visibly rejected while the primary project remains active.
-- Save cancellation and Save failure are visibly reported and retryable.
-- Autosave-write failure directs the user to normal Save.
-- Permanent Gemini right rail, left work rail, preview, timeline, and top action hierarchy remain unchanged.
-- STEP 10 SLC, T11-W01-02 lifecycle, T11-W01-03 recovery, runtime audit, frozen visual baseline, Windows package/smoke, and portable ZIP remain green.
+## W11-01 closure summary
+- Project lifecycle: Open / Save As / known-path Save verified.
+- Dirty state and separate recovery generations verified.
+- Newer/stale/corrupt/interrupted recovery behavior verified.
+- Recovery restore/discard and lifecycle error/cancel UI states verified.
+- Renderer trust boundary and canonical ownership preserved.
+- Unicode/spaces path coverage verified.
+- Offline lifecycle/recovery behavior verified without cloud/provider dependency.
+- Secret/private-path evidence gates remain green.
+- Windows package, executable smoke, portable ZIP, and frozen visual baseline remain green.
+- All W11-01 acceptance criteria AC-01..14: PASS.
+- Architecture drift: PASS — no material drift; no ADR/re-freeze/schema migration required.
 
 ## Protected decisions
 Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works without AI; one Project State/official mutation path; JSON versioned project; track-boundary model; portable Windows ZIP; final MP4; OS-protected secrets; frozen UI cannot be silently redesigned.
@@ -55,7 +64,6 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - Native Open/Save As dialog clicks are not directly automated in CI; deterministic injected path/cancel seams exercise the same production lifecycle service and IPC pipeline.
 - Development/tooling dependency advisories remain tracked; runtime high-severity audit is clean.
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
-- W11-01 final E2E, architecture drift review, and consolidated evidence closure are intentionally deferred to T11-W01-05.
 
 ## Next exact action
-After the user says `lanjutkan`: execute **T11-W01-05 Wave E2E, Drift Review & Evidence Pack only**. Do not start the next wave in the same turn.
+After the user says `lanjutkan`: perform **ASTRA planning/charter for W11-02 Media Intake Foundation only**. Do not begin SOL coding for W11-02 until that planning gate is complete.

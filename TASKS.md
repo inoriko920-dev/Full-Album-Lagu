@@ -138,6 +138,22 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: T11-W01-04 PASS.
+- Status: DONE
+- Work status: VERIFIED
+- Evidence status: COMPLETE
+- Gate: PASS
+- Verification baseline: `main@5b7cd0328dcdfdbb242a2e88999209446daacf12`
+- Canonical Windows CI: `37578082369` — PASS
+- CI job: `112651361529`
+- Acceptance result: AC-W11-01-01..14 all PASS; none BLOCKED.
+- Architecture drift: PASS — no material drift.
+- Evidence:
+  - `docs/step11/evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`
+  - `docs/step11/evidence/W11_01_ARCHITECTURE_DRIFT_REVIEW.md`
+- W11-01 final status: COMPLETE / PASS.
+
+## NEXT — W11-02 Media Intake Foundation
+- Status: NOT_STARTED
+- Planning owner: ASTRA
+- Intended feature set: FTR-003 + FTR-016 + FTR-018 cross-cut.
+- Gate: SOL implementation BLOCKED until W11-02 charter, acceptance mapping, task cards, and source-of-truth planning are complete.

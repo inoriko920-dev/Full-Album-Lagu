@@ -5,8 +5,8 @@
 **Execution owner:** SOL  
 **Baseline analyzed:** `main@da5b6786d0daa472c474a33ffd83a5834af24f82`  
 **Features:** FTR-001, FTR-002, FTR-018 cross-cut  
-**Status:** **READY**  
-**Coding in this planning checkpoint:** NOT STARTED
+**Status:** **COMPLETE / PASS**  
+**Implementation closure:** T11-W01-01..05 VERIFIED
 
 ## Objective
 
@@ -96,3 +96,19 @@ Schema v1 must materially change; persistence ownership crosses module boundary;
 ## Definition of Ready
 
 Requirement refs known — PASS. Baseline known — PASS. Dependencies known — PASS. Owner known — PASS. UI/data/error contracts known — PASS. Tests/evidence defined — PASS. Scope OUT explicit — PASS. Rollback known — PASS.
+
+
+## Closure
+
+W11-01 closed after T11-W01-05.
+
+- All acceptance criteria AC-W11-01-01..14: PASS.
+- Canonical verification baseline: `main@5b7cd0328dcdfdbb242a2e88999209446daacf12`.
+- Windows CI: `37578082369` / job `112651361529` — PASS.
+- Architecture drift: PASS — no material drift.
+- Frozen UI baseline: PASS.
+- Windows package/smoke/portable ZIP: PASS.
+- Evidence: `docs/step11/evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`.
+- Drift review: `docs/step11/evidence/W11_01_ARCHITECTURE_DRIFT_REVIEW.md`.
+
+Next: ASTRA planning/charter for W11-02 Media Intake Foundation. W11-02 SOL implementation remains blocked until that planning gate passes.
