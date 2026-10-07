@@ -61,7 +61,7 @@ export const mediaBatchProgressSchema = z
     }
   });
 
-const mediaBatchSummarySchema = z
+export const mediaBatchSummarySchema = z
   .object({
     discovered: z.number().int().nonnegative(),
     accepted: z.number().int().nonnegative(),
@@ -146,6 +146,7 @@ export const mediaRelinkResultSchema = z.discriminatedUnion("status", [
 export type MediaPublicErrorCode = z.infer<typeof mediaPublicErrorCodeSchema>;
 export type MediaItemReport = z.infer<typeof mediaItemReportSchema>;
 export type MediaBatchProgress = z.infer<typeof mediaBatchProgressSchema>;
+export type MediaBatchSummary = z.infer<typeof mediaBatchSummarySchema>;
 export type MediaBatchResult = z.infer<typeof mediaBatchResultSchema>;
 export type RelinkCandidateSummary = z.infer<
   typeof relinkCandidateSummarySchema

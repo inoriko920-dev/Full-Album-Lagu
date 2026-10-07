@@ -2,6 +2,10 @@ import { ipcMain } from "electron";
 import { ProjectRecoveryStoreError } from "../../core/application/ports/project-recovery-store";
 import { ProjectStoreError } from "../../core/application/ports/project-store";
 import type { MediaDiscoveryService } from "../../core/application/services/media-discovery-service";
+import {
+  MediaIntakeStartError,
+  type MediaIntakeService,
+} from "../../core/application/services/media-intake-service";
 import type { ProjectLifecycleService } from "../../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../../core/application/services/project-path-session";
 import type { LoadProjectUseCase } from "../../core/application/services/project-persistence";
@@ -23,6 +27,17 @@ import {
   mediaDiscoveryStatusRequestSchema,
   mediaDiscoveryStatusResultSchema,
 } from "../../core/contracts/media-discovery";
+import {
+  MEDIA_INTAKE_CANCEL_CHANNEL,
+  MEDIA_INTAKE_START_CHANNEL,
+  MEDIA_INTAKE_STATUS_CHANNEL,
+  mediaIntakeCancelRequestSchema,
+  mediaIntakeCancelResultSchema,
+  mediaIntakeStartRequestSchema,
+  mediaIntakeStartResultSchema,
+  mediaIntakeStatusRequestSchema,
+  mediaIntakeStatusResultSchema,
+} from "../../core/contracts/media-intake-batch";
 import {
   PROJECT_AUTOSAVE_CHANNEL,
   PROJECT_RECOVERY_ACCEPT_CHANNEL,
@@ -55,6 +70,7 @@ export interface ProjectIpcDependencies {
   pathSession: ProjectPathSession;
   recoveryService: ProjectRecoveryService;
   mediaDiscoveryService: MediaDiscoveryService;
+  mediaIntakeService: MediaIntakeService;
   selectAudioFiles: () => Promise<string[] | null>;
   selectMediaFolders: () => Promise<string[] | null>;
   startupProjectPath?: string;
@@ -226,6 +242,81 @@ export function registerIpcHandlers(
 
       return mediaDiscoveryCancelResultSchema.parse(
         projectDependencies.mediaDiscoveryService.cancel(request.data.batchId),
+      );
+    },
+  );
+
+  ipcMain.handle(
+    MEDIA_INTAKE_START_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = mediaIntakeStartRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return mediaIntakeStartResultSchema.parse({
+          status: "error",
+          code: "MEDIA_PROBE_FAILED",
+          message: "Media intake request is invalid.",
+        });
+      }
+
+      try {
+        const { batchId } = projectDependencies.mediaIntakeService.start(
+          request.data.discoveryBatchId,
+          request.data.project,
+        );
+        return mediaIntakeStartResultSchema.parse({
+          status: "started",
+          batchId,
+        });
+      } catch (error) {
+        if (error instanceof MediaIntakeStartError) {
+          return mediaIntakeStartResultSchema.parse({
+            status: "error",
+            code: error.code,
+            message: error.message,
+          });
+        }
+
+        return mediaIntakeStartResultSchema.parse({
+          status: "error",
+          code: "MEDIA_PROBE_FAILED",
+          message: "Media intake could not be started safely.",
+        });
+      }
+    },
+  );
+
+  ipcMain.handle(
+    MEDIA_INTAKE_STATUS_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = mediaIntakeStatusRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return mediaIntakeStatusResultSchema.parse({
+          status: "error",
+          batchId: "invalid",
+          code: "MEDIA_PROBE_FAILED",
+          message: "Media intake status request is invalid.",
+        });
+      }
+
+      return mediaIntakeStatusResultSchema.parse(
+        projectDependencies.mediaIntakeService.getStatus(request.data.batchId),
+      );
+    },
+  );
+
+  ipcMain.handle(
+    MEDIA_INTAKE_CANCEL_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = mediaIntakeCancelRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return mediaIntakeCancelResultSchema.parse({
+          status: "not-running",
+          batchId: "invalid",
+        });
+      }
+
+      return mediaIntakeCancelResultSchema.parse(
+        projectDependencies.mediaIntakeService.cancel(request.data.batchId),
       );
     },
   );

@@ -5,6 +5,12 @@ import type {
   MediaDiscoveryStatusResult,
 } from "./media-discovery";
 import type {
+  MediaIntakeCancelResult,
+  MediaIntakeStartRequest,
+  MediaIntakeStartResult,
+  MediaIntakeStatusResult,
+} from "./media-intake-batch";
+import type {
   AutosaveRecoveryRequest,
   AutosaveRecoveryResult,
   RecoveryAcceptRequest,
@@ -30,6 +36,11 @@ export interface LfaBridge {
   ): Promise<MediaDiscoveryStartResult>;
   getMediaDiscoveryStatus(batchId: string): Promise<MediaDiscoveryStatusResult>;
   cancelMediaDiscovery(batchId: string): Promise<MediaDiscoveryCancelResult>;
+  startMediaIntake(
+    request: MediaIntakeStartRequest,
+  ): Promise<MediaIntakeStartResult>;
+  getMediaIntakeStatus(batchId: string): Promise<MediaIntakeStatusResult>;
+  cancelMediaIntake(batchId: string): Promise<MediaIntakeCancelResult>;
   saveProject(request: SaveProjectRequest): Promise<SaveProjectResult>;
   saveProjectAs(request: SaveProjectRequest): Promise<SaveProjectResult>;
   openProject(): Promise<OpenProjectResult>;

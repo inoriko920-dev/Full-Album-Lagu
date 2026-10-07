@@ -74,6 +74,25 @@ const cancelMediaDiscoveryMock = vi.fn<LfaBridge["cancelMediaDiscovery"]>(
     batchId,
   }),
 );
+const startMediaIntakeMock = vi.fn<LfaBridge["startMediaIntake"]>(async () => ({
+  status: "error" as const,
+  code: "MEDIA_PROBE_FAILED" as const,
+  message: "Not used in frozen AppShell tests.",
+}));
+const getMediaIntakeStatusMock = vi.fn<LfaBridge["getMediaIntakeStatus"]>(
+  async (batchId) => ({
+    status: "error" as const,
+    batchId,
+    code: "MEDIA_PROBE_FAILED" as const,
+    message: "Not used in frozen AppShell tests.",
+  }),
+);
+const cancelMediaIntakeMock = vi.fn<LfaBridge["cancelMediaIntake"]>(
+  async (batchId) => ({
+    status: "not-running" as const,
+    batchId,
+  }),
+);
 
 const bridge: LfaBridge = {
   getFoundationInfo: getFoundationInfoMock,
@@ -82,6 +101,9 @@ const bridge: LfaBridge = {
   discoverDroppedMedia: discoverDroppedMediaMock,
   getMediaDiscoveryStatus: getMediaDiscoveryStatusMock,
   cancelMediaDiscovery: cancelMediaDiscoveryMock,
+  startMediaIntake: startMediaIntakeMock,
+  getMediaIntakeStatus: getMediaIntakeStatusMock,
+  cancelMediaIntake: cancelMediaIntakeMock,
   saveProject: saveProjectMock,
   saveProjectAs: saveProjectAsMock,
   openProject: openProjectMock,
@@ -121,6 +143,9 @@ beforeEach(() => {
   discoverDroppedMediaMock.mockClear();
   getMediaDiscoveryStatusMock.mockClear();
   cancelMediaDiscoveryMock.mockClear();
+  startMediaIntakeMock.mockClear();
+  getMediaIntakeStatusMock.mockClear();
+  cancelMediaIntakeMock.mockClear();
 });
 
 afterEach(() => {
