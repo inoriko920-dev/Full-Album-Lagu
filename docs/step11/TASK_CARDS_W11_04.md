@@ -30,8 +30,13 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: PASS / VERIFIED
 - Dependency: T11-W04-01 PASS / VERIFIED
+- Verified implementation head: `f6b3d8064c7025afbd6f882023a4bc5eba3ce078`
+- Windows CI: `37654060583` / #272 PASS; job `112904557720`
+- Windows portable artifact: `11496964253`
+- Frozen visual artifact: `11498102072`
+- Evidence: `evidence/T11_W04_02_AUTO_SUSUN_PLANNER_BATCH_EVIDENCE.md`
 - Scope:
   - pure `AutoArrangePlan`;
   - stable comparator;
@@ -51,7 +56,8 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED_BY T11-W04-02
+- Status: READY
+- Dependency: T11-W04-02 PASS / VERIFIED
 - Scope:
   - main-owned PNG/JPEG/WebP selection/validation;
   - optional image media asset lifecycle;
