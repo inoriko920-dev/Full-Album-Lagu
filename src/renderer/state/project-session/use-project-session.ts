@@ -401,11 +401,7 @@ export function useProjectSession(): ProjectSessionView {
         setRecoveryActionState("error");
         return result;
       }
-    }, [
-      publishHistorySnapshot,
-      recoveryActionState,
-      scanMissingMediaState,
-    ]);
+    }, [publishHistorySnapshot, recoveryActionState, scanMissingMediaState]);
 
   const discardRecovery =
     useCallback(async (): Promise<RecoveryDiscardResult> => {
@@ -691,11 +687,7 @@ export function useProjectSession(): ProjectSessionView {
         return result;
       }
     },
-    [
-      commitUserProjectMutation,
-      reconcileMissingMedia,
-      relinkActionState,
-    ],
+    [commitUserProjectMutation, reconcileMissingMedia, relinkActionState],
   );
 
   const relinkMissingMediaFolder =
@@ -742,11 +734,7 @@ export function useProjectSession(): ProjectSessionView {
         setMediaError({ code: result.code, message: result.message });
         return result;
       }
-    }, [
-      commitUserProjectMutation,
-      reconcileMissingMedia,
-      relinkActionState,
-    ]);
+    }, [commitUserProjectMutation, reconcileMissingMedia, relinkActionState]);
 
   return {
     project,

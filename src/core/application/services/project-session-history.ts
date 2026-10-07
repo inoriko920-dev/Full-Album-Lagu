@@ -14,8 +14,7 @@ import {
   type ProjectDocument,
 } from "../../domain/project-document";
 
-export interface ProjectSessionHistorySnapshot
-  extends ProjectCommandEngineSnapshot {
+export interface ProjectSessionHistorySnapshot extends ProjectCommandEngineSnapshot {
   savedStateToken: ProjectStateToken | null;
   savedRevision: number;
   dirty: boolean;
@@ -119,10 +118,7 @@ export class ProjectSessionHistory {
     this.savedRevision = snapshot.project.revision;
   }
 
-  resetDirty(
-    projectInput: ProjectDocument,
-    savedRevision: number,
-  ): void {
+  resetDirty(projectInput: ProjectDocument, savedRevision: number): void {
     const project = projectDocumentSchema.parse(projectInput);
     validateSavedRevision(project, savedRevision);
     this.engine = new ProjectCommandEngine(project);

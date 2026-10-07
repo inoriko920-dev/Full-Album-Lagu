@@ -6,10 +6,7 @@ import {
   type ProjectDocument,
 } from "../../src/core/domain/project-document";
 
-function renameProject(
-  session: ProjectSessionHistory,
-  name: string,
-): void {
+function renameProject(session: ProjectSessionHistory, name: string): void {
   const before = session.snapshot();
   const result = session.execute({
     kind: "project.rename",
@@ -181,7 +178,9 @@ describe("ProjectSessionHistory", () => {
   });
 
   it("migrates media import and relink into the shared history path", () => {
-    const session = new ProjectSessionHistory(createEmptyProject("media-history"));
+    const session = new ProjectSessionHistory(
+      createEmptyProject("media-history"),
+    );
 
     const imported = projectDocumentSchema.parse({
       ...session.snapshot().project,

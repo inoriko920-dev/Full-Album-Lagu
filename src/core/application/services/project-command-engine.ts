@@ -51,8 +51,7 @@ export type ProjectHistoryActionResult =
   { status: "applied"; entry: ProjectHistoryEntry } | { status: "unavailable" };
 
 export type ProjectSystemReconciliationResult =
-  | { status: "applied" }
-  | { status: "noop" };
+  { status: "applied" } | { status: "noop" };
 
 export interface ProjectHistoryEntry {
   id: string;
