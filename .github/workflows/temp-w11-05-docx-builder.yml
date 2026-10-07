@@ -73,18 +73,6 @@ jobs:
               i = 0
               while i < len(lines):
                   line = lines[i].rstrip()
-                  if line.strip().startswith('~~~'):
-                      if in_code:
-                          p = doc.add_paragraph()
-                          r = p.add_run('\n'.join(code))
-                          r.font.name = 'Consolas'
-                          r.font.size = Pt(8.5)
-                          in_code = False
-                          code = []
-                      else:
-                          in_code = True
-                      i += 1
-                      continue
                   if line.strip().startswith(chr(96) * 3):
                       if in_code:
                           p = doc.add_paragraph()
@@ -138,8 +126,7 @@ jobs:
                   elif line.startswith('- '):
                       doc.add_paragraph(line[2:].strip(), style='List Bullet')
                   else:
-                      clean = line.replace('**','')
-                      doc.add_paragraph(clean)
+                      doc.add_paragraph(line.replace('**',''))
                   i += 1
 
           def title_page(doc, title, subtitle, status, integrity=None):
@@ -202,6 +189,15 @@ jobs:
           d.core_properties.subject = 'ASTRA detailed planning source-of-truth'
           d.save(OUT/'14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx')
           PY
+      - name: Upload generated planning DOCX
+        uses: actions/upload-artifact@v4
+        with:
+          name: W11-05-Planning-DOCX
+          path: |
+            docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx
+            docs/source-of-truth/planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx
+          if-no-files-found: error
+          retention-days: 1
       - name: Commit generated DOCX
         shell: bash
         run: |
