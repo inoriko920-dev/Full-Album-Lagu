@@ -102,8 +102,13 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: PASS / VERIFIED
 - Dependency: T11-W04-04 PASS / VERIFIED
+- Verified implementation head: `986e13f186d4dbc6bbb621f77a222fe8d30fa9f4`
+- Windows CI: `37662992589` / #290 PASS; job `112934968106`
+- Windows portable artifact: `11501198106`
+- Frozen visual artifact: `11501427907`
+- Evidence: `evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`
 - Scope:
   - enable frozen Auto Susun toolbar action;
   - wire selected-track Inspector metadata/artwork controls;
@@ -124,7 +129,8 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W04-05
+- Status: READY
+- Dependency: T11-W04-05 PASS / VERIFIED
 - Scope:
   - canonical Windows full-flow;
   - 128-track stress;
