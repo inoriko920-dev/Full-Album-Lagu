@@ -424,20 +424,28 @@ describe("AppShell", () => {
       ],
     };
     const relinkedProject = {
-      ...missingProject,
+      schemaVersion: 1 as const,
+      projectId: "project-missing-ui",
+      name: "Album Missing",
       revision: 5,
       tracks: [
         {
-          ...missingProject.tracks[0],
+          id: "track-5",
+          title: "Track 5",
           sourcePath: "D:/Moved/05 Track 5.mp3",
+          audioAssetId: "asset-5",
         },
       ],
       mediaAssets: [
         {
-          ...missingProject.mediaAssets[0],
+          id: "asset-5",
+          kind: "audio" as const,
+          required: true,
           sourcePath: "D:/Moved/05 Track 5.mp3",
+          fileName: "05 Track 5.mp3",
+          sizeBytes: 1000,
           availability: "ready" as const,
-          errorCode: undefined,
+          metadata: { durationMs: 5000 },
         },
       ],
     };
