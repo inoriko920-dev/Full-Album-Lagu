@@ -112,6 +112,8 @@ describe("MusicMetadataProbePort", () => {
           container: "MPEG",
           codec: "MPEG 1 Layer 3",
           hasAudio: true,
+          trackInfo: [],
+          tagTypes: [],
         },
       }),
     );
