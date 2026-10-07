@@ -1,15 +1,20 @@
+import type { ProjectStateToken } from "./project-command-engine";
+
+function isValidStateToken(value: string): boolean {
+  return value.trim().length > 0;
+}
+
 export function isProjectDirty(
-  currentRevision: number,
-  savedRevision: number,
+  currentStateToken: ProjectStateToken,
+  savedStateToken: ProjectStateToken | null,
 ): boolean {
-  if (
-    !Number.isInteger(currentRevision) ||
-    currentRevision < 0 ||
-    !Number.isInteger(savedRevision) ||
-    savedRevision < 0
-  ) {
-    throw new Error("Project revisions must be non-negative integers.");
+  if (!isValidStateToken(currentStateToken)) {
+    throw new Error("Current project state token must be non-empty.");
   }
 
-  return currentRevision !== savedRevision;
+  if (savedStateToken !== null && !isValidStateToken(savedStateToken)) {
+    throw new Error("Saved project state token must be non-empty when set.");
+  }
+
+  return savedStateToken === null || currentStateToken !== savedStateToken;
 }
