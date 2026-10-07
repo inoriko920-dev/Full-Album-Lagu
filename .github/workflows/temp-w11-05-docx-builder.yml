@@ -1,0 +1,217 @@
+name: Temporary W11-05 Planning DOCX Builder
+
+on:
+  push:
+    branches:
+      - astra/w11-05-planning
+    paths:
+      - ".github/workflows/temp-w11-05-docx-builder.yml"
+      - "docs/step11/WAVE_11_05_CHARTER.md"
+      - "docs/step11/TASK_CARDS_W11_05.md"
+      - "docs/step11/W11_05_ACCEPTANCE_MATRIX.md"
+      - "docs/step11/W11_05_DOR.md"
+      - "docs/step11/FEATURE_REGISTRY.md"
+      - "docs/step11/DEPENDENCY_GRAPH.md"
+
+permissions:
+  contents: write
+
+jobs:
+  build-docx:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install python-docx
+        run: pip install python-docx==1.2.0
+      - name: Build repository planning DOCX
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          from docx import Document
+          from docx.enum.text import WD_ALIGN_PARAGRAPH
+          from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
+          from docx.shared import Inches, Pt, RGBColor
+          from docx.oxml import OxmlElement
+          from docx.oxml.ns import qn
+
+          ROOT = Path('.')
+          OUT = ROOT / 'docs/source-of-truth/planning/current'
+          OUT.mkdir(parents=True, exist_ok=True)
+
+          def configure(doc):
+              sec = doc.sections[0]
+              sec.top_margin = Inches(0.65)
+              sec.bottom_margin = Inches(0.65)
+              sec.left_margin = Inches(0.7)
+              sec.right_margin = Inches(0.7)
+              doc.styles['Normal'].font.name = 'Aptos'
+              doc.styles['Normal'].font.size = Pt(9.5)
+              for name, size in [('Title',24),('Heading 1',17),('Heading 2',13),('Heading 3',11)]:
+                  doc.styles[name].font.name = 'Aptos Display'
+                  doc.styles[name].font.size = Pt(size)
+              return doc
+
+          def shade(cell, fill):
+              tcPr = cell._tc.get_or_add_tcPr()
+              shd = tcPr.find(qn('w:shd'))
+              if shd is None:
+                  shd = OxmlElement('w:shd')
+                  tcPr.append(shd)
+              shd.set(qn('w:fill'), fill)
+
+          def add_markdown(doc, text):
+              lines = text.splitlines()
+              in_code = False
+              code = []
+              i = 0
+              while i < len(lines):
+                  line = lines[i].rstrip()
+                  if line.strip().startswith('~~~'):
+                      if in_code:
+                          p = doc.add_paragraph()
+                          r = p.add_run('\n'.join(code))
+                          r.font.name = 'Consolas'
+                          r.font.size = Pt(8.5)
+                          in_code = False
+                          code = []
+                      else:
+                          in_code = True
+                      i += 1
+                      continue
+                  if line.strip().startswith(chr(96) * 3):
+                      if in_code:
+                          p = doc.add_paragraph()
+                          r = p.add_run('\n'.join(code))
+                          r.font.name = 'Consolas'
+                          r.font.size = Pt(8.5)
+                          in_code = False
+                          code = []
+                      else:
+                          in_code = True
+                      i += 1
+                      continue
+                  if in_code:
+                      code.append(line)
+                      i += 1
+                      continue
+                  if not line.strip():
+                      i += 1
+                      continue
+                  if line.startswith('|') and i + 1 < len(lines) and re.match(r'^\|?\s*:?-{3,}', lines[i+1]):
+                      headers = [x.strip() for x in line.strip().strip('|').split('|')]
+                      i += 2
+                      rows = []
+                      while i < len(lines) and lines[i].strip().startswith('|'):
+                          rows.append([x.strip() for x in lines[i].strip().strip('|').split('|')])
+                          i += 1
+                      table = doc.add_table(rows=1, cols=len(headers))
+                      table.alignment = WD_TABLE_ALIGNMENT.CENTER
+                      table.style = 'Table Grid'
+                      for j, h in enumerate(headers):
+                          cell = table.rows[0].cells[j]
+                          cell.text = h
+                          shade(cell, 'D9EAF7')
+                          cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+                          for run in cell.paragraphs[0].runs:
+                              run.bold = True
+                      for row in rows:
+                          cells = table.add_row().cells
+                          for j in range(len(headers)):
+                              cells[j].text = row[j] if j < len(row) else ''
+                              cells[j].vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+                      continue
+                  if line.startswith('# '):
+                      doc.add_heading(line[2:].strip(), level=1)
+                  elif line.startswith('## '):
+                      doc.add_heading(line[3:].strip(), level=2)
+                  elif line.startswith('### '):
+                      doc.add_heading(line[4:].strip(), level=3)
+                  elif re.match(r'^\d+\.\s+', line):
+                      doc.add_paragraph(re.sub(r'^\d+\.\s+', '', line), style='List Number')
+                  elif line.startswith('- '):
+                      doc.add_paragraph(line[2:].strip(), style='List Bullet')
+                  else:
+                      clean = line.replace('**','')
+                      doc.add_paragraph(clean)
+                  i += 1
+
+          def title_page(doc, title, subtitle, status, integrity=None):
+              p = doc.add_paragraph()
+              p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+              p.paragraph_format.space_before = Pt(90)
+              r = p.add_run(title)
+              r.bold = True
+              r.font.size = Pt(24)
+              r.font.name = 'Aptos Display'
+              r.font.color.rgb = RGBColor(20,65,110)
+              p2 = doc.add_paragraph()
+              p2.alignment = WD_ALIGN_PARAGRAPH.CENTER
+              r = p2.add_run(subtitle)
+              r.font.size = Pt(13)
+              r.font.color.rgb = RGBColor(80,80,80)
+              p3 = doc.add_paragraph()
+              p3.alignment = WD_ALIGN_PARAGRAPH.CENTER
+              r = p3.add_run(status)
+              r.bold = True
+              r.font.size = Pt(11)
+              if integrity:
+                  box = doc.add_table(rows=1, cols=1)
+                  box.alignment = WD_TABLE_ALIGNMENT.CENTER
+                  cell = box.cell(0,0)
+                  cell.text = integrity
+                  shade(cell, 'FFF2CC')
+              doc.add_page_break()
+
+          d = configure(Document())
+          title_page(
+              d,
+              'STEP 11 — Feature Registry, Dependency Graph & Wave Charter',
+              'Lagu Full Album • Repository Compact Companion',
+              'RECONSTRUCTED REPOSITORY COPY • v1.0-R1',
+              'Integrity notice: the historical compact DOCX referenced by INDEX.md was absent from repository checkout. This file is reconstructed from the current normalized FEATURE_REGISTRY.md and DEPENDENCY_GRAPH.md. It is NOT claimed to be byte-identical to the missing historical document.'
+          )
+          add_markdown(d, (ROOT/'docs/step11/FEATURE_REGISTRY.md').read_text(encoding='utf-8'))
+          d.add_page_break()
+          add_markdown(d, (ROOT/'docs/step11/DEPENDENCY_GRAPH.md').read_text(encoding='utf-8'))
+          d.core_properties.title = 'STEP 11 Feature Registry Dependency Graph Wave Charter — Reconstructed Repository Copy'
+          d.core_properties.subject = 'Reconstructed repository-readable planning authority'
+          d.save(OUT/'10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx')
+
+          d = configure(Document())
+          title_page(d, 'STEP 11 • W11-05', 'Manual Layer Editor + Templates Charter', 'ASTRA Planning • COMPLETE / PASS • v1.0')
+          sources = [
+              ('Operational Charter','docs/step11/WAVE_11_05_CHARTER.md'),
+              ('Serial Task Cards','docs/step11/TASK_CARDS_W11_05.md'),
+              ('Acceptance Matrix','docs/step11/W11_05_ACCEPTANCE_MATRIX.md'),
+              ('Definition of Ready','docs/step11/W11_05_DOR.md'),
+          ]
+          for idx, (label, path) in enumerate(sources):
+              if idx:
+                  d.add_page_break()
+              h = d.add_heading(label, level=1)
+              h.runs[0].font.color.rgb = RGBColor(20,65,110)
+              add_markdown(d, (ROOT/path).read_text(encoding='utf-8'))
+          d.core_properties.title = 'W11-05 Manual Layer Editor + Templates Charter'
+          d.core_properties.subject = 'ASTRA detailed planning source-of-truth'
+          d.save(OUT/'14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx')
+          PY
+      - name: Commit generated DOCX
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx
+          git add docs/source-of-truth/planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx
+          if git diff --cached --quiet; then
+            echo "DOCX already up to date."
+            exit 0
+          fi
+          git commit -m "STEP 11 ASTRA W11-05: add detailed planning DOCX authority"
+          git push origin "HEAD:${{ github.ref_name }}"
