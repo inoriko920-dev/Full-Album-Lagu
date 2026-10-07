@@ -6,7 +6,7 @@
 - Active role at current checkpoint: SOL (next task only)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01 PASS / VERIFIED; T11-W03-02 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01..02 PASS / VERIFIED; T11-W03-03 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-02 Media Intake Foundation`
@@ -34,6 +34,7 @@
   - `T11-W02-05 Frozen Media/Missing/Relink UI Wiring` — PASS
   - `T11-W02-06 Wave E2E, Drift Review & Evidence Closure` — PASS
   - `T11-W03-01 Timeline Domain + CommandEngine Core` — PASS
+  - `T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -94,13 +95,27 @@
 - T11-W03-01 CI job: `112803016531`
 - T11-W03-01 Windows portable artifact: `11484295009`
 - T11-W03-01 evidence: `docs/step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`
-- Next READY implementation task: `T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics` — SOL
+- T11-W03-02 verified implementation head: `c505b14488735705401a0ffb6e1bd666dd77a996`
+- T11-W03-02 Windows CI: `37628187263` / run #211 — PASS
+- T11-W03-02 CI job: `112815298762`
+- T11-W03-02 Windows portable artifact: `11484699332`
+- T11-W03-02 evidence: `docs/step11/evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`
+- Next READY implementation task: `T11-W03-03 Reorder / Enable-Disable / Boundary Application Core` — SOL
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W03-01 Timeline Domain + CommandEngine Core VERIFIED.** Additive schema-v1 enabled state, deterministic derived album timeline, unified framework-independent CommandEngine/CommandBatch, monotonic revision, logical semantic state tokens, atomic batch history, bounded in-memory history, stale guards and 105-track deterministic coverage are implemented. Windows CI #192 is fully green including prior lifecycle/media/frozen UI/package regressions. T11-W03-02 is now the only READY implementation task.
+**PASS — T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics VERIFIED.** ProjectSession now uses the shared CommandEngine history seam, dirty state is based on a logical saved checkpoint, Undo-to-saved/Redo-away semantics are proven, Recovery Accept remains dirty, Open/New reset history, media import/relink use shared history, and passive missing-media reconciliation creates no false history/dirty noise. Windows CI #211 is fully green including all prior lifecycle/media/frozen UI/package regressions. T11-W03-03 is now the only READY implementation task.
+
+## T11-W03-02 verification
+- Verified implementation head: `c505b14488735705401a0ffb6e1bd666dd77a996`.
+- Windows CI: `37628187263` / #211 — PASS.
+- CI job: `112815298762`.
+- Windows portable artifact: `11484699332`.
+- Frozen visual artifact: `11485890461`.
+- Evidence: `docs/step11/evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`.
+- No reorder/enable-disable application commands, Undo/Redo UI, provider/runtime integration or frozen UI redesign was pulled forward.
 
 ## T11-W03-01 verification
 - Verified implementation head: `d0ab313bece2e9ef730ee41f417310501214d7b1`.
@@ -136,7 +151,7 @@
 - Stress E2E: 105-file progressive intake, deterministic order, renderer heartbeat, source immutability — PASS.
 - Evidence: `docs/step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
 - Drift review: `docs/step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`.
-- W11-03 implementation is not started.
+- W11-03 implementation is in progress; T11-W03-01..02 are PASS / VERIFIED and T11-W03-03 is READY.
 
 ## W11-02 planning decisions
 - One canonical Media Intake pipeline for picker, drag-drop file and drag-drop folder.
@@ -159,4 +174,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: execute **T11-W03-02 — Existing Mutation Migration + Session Checkpoint Semantics only** as SOL. Re-read the W11-03 task card and T11-W03-01 evidence first. Do not start T11-W03-03 reorder/enable commands or product UI wiring in the same turn.
+After the user says `lanjutkan`: execute **T11-W03-03 — Reorder / Enable-Disable / Boundary Application Core only** as SOL. Re-read the W11-03 task card and T11-W03-02 evidence first. Do not start T11-W03-04 frozen timeline/global Undo-Redo UI wiring in the same turn.
