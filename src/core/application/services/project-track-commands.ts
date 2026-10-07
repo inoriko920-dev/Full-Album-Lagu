@@ -1,6 +1,4 @@
-import {
-  isProjectTrackEnabled,
-} from "../../domain/album-timeline";
+import { isProjectTrackEnabled } from "../../domain/album-timeline";
 import {
   projectDocumentSchema,
   type ProjectDocument,
@@ -68,10 +66,7 @@ export function synchronizeRequiredAudioAssets(
 
   let changed = false;
   const mediaAssets = project.mediaAssets.map((asset) => {
-    if (
-      asset.kind !== "audio" ||
-      !referencedAudioAssetIds.has(asset.id)
-    ) {
+    if (asset.kind !== "audio" || !referencedAudioAssetIds.has(asset.id)) {
       return asset;
     }
 

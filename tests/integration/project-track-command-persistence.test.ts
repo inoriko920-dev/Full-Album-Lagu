@@ -36,7 +36,9 @@ describe("track application command persistence", () => {
         await writeFile(path, `source-audio-${index}`, "utf8");
       }),
     );
-    const sourceBefore = await Promise.all(sourcePaths.map((path) => readFile(path)));
+    const sourceBefore = await Promise.all(
+      sourcePaths.map((path) => readFile(path)),
+    );
 
     const project: ProjectDocument = {
       schemaVersion: 1,
@@ -80,11 +82,15 @@ describe("track application command persistence", () => {
       "track-1",
       "track-2",
     ]);
-    expect(reopened.tracks.find((track) => track.id === "track-2")).toMatchObject({
+    expect(
+      reopened.tracks.find((track) => track.id === "track-2"),
+    ).toMatchObject({
       enabled: false,
       audioAssetId: "asset-2",
     });
-    expect(reopened.mediaAssets?.find((asset) => asset.id === "asset-2")).toMatchObject({
+    expect(
+      reopened.mediaAssets?.find((asset) => asset.id === "asset-2"),
+    ).toMatchObject({
       required: false,
     });
     expect(projectAlbumTimeline(reopened)).toMatchObject({
@@ -93,7 +99,9 @@ describe("track application command persistence", () => {
       totalDurationMs: 4000,
     });
 
-    const sourceAfter = await Promise.all(sourcePaths.map((path) => readFile(path)));
+    const sourceAfter = await Promise.all(
+      sourcePaths.map((path) => readFile(path)),
+    );
     expect(sourceAfter).toEqual(sourceBefore);
   });
 });

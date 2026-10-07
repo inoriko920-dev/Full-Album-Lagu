@@ -97,11 +97,13 @@ describe("track application commands", () => {
     });
 
     const timeline = projectAlbumTimeline(engine.snapshot().project);
-    expect(timeline.items.map((item) => ({
-      trackId: item.trackId,
-      startMs: item.startMs,
-      endMs: item.endMs,
-    }))).toEqual([
+    expect(
+      timeline.items.map((item) => ({
+        trackId: item.trackId,
+        startMs: item.startMs,
+        endMs: item.endMs,
+      })),
+    ).toEqual([
       { trackId: "track-3", startMs: 0, endMs: 3000 },
       { trackId: "track-1", startMs: 3000, endMs: 4000 },
       { trackId: "track-2", startMs: 4000, endMs: 6000 },
@@ -128,24 +130,26 @@ describe("track application commands", () => {
       toIndex: 1,
       expected: ["track-1", "track-3", "track-2"],
     },
-  ])("supports $name reorder with stable IDs and media links", ({ trackId, toIndex, expected }) => {
-    const engine = new ProjectCommandEngine(makeProject());
-    const beforeLinks = new Map(
-      engine.snapshot().project.tracks.map((track) => [
-        track.id,
-        track.audioAssetId,
-      ]),
-    );
+  ])(
+    "supports $name reorder with stable IDs and media links",
+    ({ trackId, toIndex, expected }) => {
+      const engine = new ProjectCommandEngine(makeProject());
+      const beforeLinks = new Map(
+        engine
+          .snapshot()
+          .project.tracks.map((track) => [track.id, track.audioAssetId]),
+      );
 
-    expect(
-      engine.execute(createTrackReorderCommand({ trackId, toIndex })).status,
-    ).toBe("applied");
+      expect(
+        engine.execute(createTrackReorderCommand({ trackId, toIndex })).status,
+      ).toBe("applied");
 
-    expect(order(engine)).toEqual(expected);
-    for (const track of engine.snapshot().project.tracks) {
-      expect(track.audioAssetId).toBe(beforeLinks.get(track.id));
-    }
-  });
+      expect(order(engine)).toEqual(expected);
+      for (const track of engine.snapshot().project.tracks) {
+        expect(track.audioAssetId).toBe(beforeLinks.get(track.id));
+      }
+    },
+  );
 
   it("disables and re-enables a track without deleting source identity and updates boundaries/readiness", () => {
     const project = makeProject();
@@ -156,7 +160,9 @@ describe("track application commands", () => {
     };
     const engine = new ProjectCommandEngine(project);
 
-    expect(getProjectMediaReadiness(engine.snapshot().project).ready).toBe(false);
+    expect(getProjectMediaReadiness(engine.snapshot().project).ready).toBe(
+      false,
+    );
 
     expect(
       engine.execute(
@@ -174,7 +180,9 @@ describe("track application commands", () => {
       audioAssetId: "asset-2",
       sourcePath: "D:/Album/02 Dua.mp3",
     });
-    expect(disabled.mediaAssets?.find((asset) => asset.id === "asset-2")).toMatchObject({
+    expect(
+      disabled.mediaAssets?.find((asset) => asset.id === "asset-2"),
+    ).toMatchObject({
       required: false,
       availability: "missing",
     });
@@ -197,7 +205,9 @@ describe("track application commands", () => {
     ).toBe("applied");
 
     const reenabled = engine.snapshot().project;
-    expect(reenabled.mediaAssets?.find((asset) => asset.id === "asset-2")).toMatchObject({
+    expect(
+      reenabled.mediaAssets?.find((asset) => asset.id === "asset-2"),
+    ).toMatchObject({
       required: true,
       availability: "missing",
     });
@@ -247,19 +257,25 @@ describe("track application commands", () => {
       createTrackSetEnabledCommand({ trackId: "track-a", enabled: false }),
     );
     expect(engine.snapshot().project.mediaAssets?.[0]?.required).toBe(true);
-    expect(getProjectMediaReadiness(engine.snapshot().project).ready).toBe(false);
+    expect(getProjectMediaReadiness(engine.snapshot().project).ready).toBe(
+      false,
+    );
 
     engine.execute(
       createTrackSetEnabledCommand({ trackId: "track-b", enabled: false }),
     );
     expect(engine.snapshot().project.mediaAssets?.[0]?.required).toBe(false);
-    expect(getProjectMediaReadiness(engine.snapshot().project).ready).toBe(true);
+    expect(getProjectMediaReadiness(engine.snapshot().project).ready).toBe(
+      true,
+    );
 
     engine.execute(
       createTrackSetEnabledCommand({ trackId: "track-a", enabled: true }),
     );
     expect(engine.snapshot().project.mediaAssets?.[0]?.required).toBe(true);
-    expect(getProjectMediaReadiness(engine.snapshot().project).ready).toBe(false);
+    expect(getProjectMediaReadiness(engine.snapshot().project).ready).toBe(
+      false,
+    );
   });
 
   it("rejects unknown tracks, invalid reorder targets, and invalid enabled payloads without history", () => {
