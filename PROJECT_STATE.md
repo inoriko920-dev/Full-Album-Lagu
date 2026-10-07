@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL (T11-W04-01 only; W11-04 ASTRA planning complete)
+- Active role at current checkpoint: SOL (T11-W04-02 only; W11-04 implementation in progress)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 NOT STARTED / T11-W04-01 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 T11-W04-01 PASS / VERIFIED; T11-W04-02 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-03 Album Timeline + Command History`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Current planned wave: `W11-04 Auto Susun + Track Binding` — ASTRA planning/DoR PASS; T11-W04-01 READY
+- Current wave: `W11-04 Auto Susun + Track Binding` — T11-W04-01 PASS / VERIFIED; T11-W04-02 READY
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -39,6 +39,7 @@
   - `T11-W03-04 Frozen Album Timeline + Global Undo/Redo UI Wiring` — PASS
   - `T11-W03-05 Unified Batch History & Edge-Case Hardening` — PASS
   - `T11-W03-06 Wave E2E, Drift Review & Evidence Closure` — PASS
+  - `T11-W04-01 Binding Schema + Resolver Contracts` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -138,13 +139,28 @@
 - W11-04 task cards: `docs/step11/TASK_CARDS_W11_04.md`
 - W11-04 acceptance matrix: `docs/step11/W11_04_ACCEPTANCE_MATRIX.md` — AC-W11-04-01..22
 - W11-04 DoR record: `docs/step11/W11_04_DOR.md`
-- Next authorized action: SOL `T11-W04-01 Binding Schema + Resolver Contracts` only; T11-W04-02..06 remain blocked
+- T11-W04-01 verified implementation head: `706116e2e85b963d0d6570907f70d57a614ef0e6`
+- T11-W04-01 Windows CI: `37649707029` / run #252 — PASS
+- T11-W04-01 CI job: `112889560184`
+- T11-W04-01 Windows portable artifact: `11496316747`
+- T11-W04-01 frozen visual artifact: `11495428548`
+- T11-W04-01 evidence: `docs/step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`
+- Next authorized action: SOL `T11-W04-02 Deterministic Auto Susun Planner + CommandBatch` only; T11-W04-03..06 remain blocked
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — W11-04 Auto Susun + Track Binding ASTRA PLANNING / DoR COMPLETE.** Planning baseline is `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`. FTR-005/FTR-006 scope, additive schema-v1 binding/default-artwork contract, deterministic/idempotent Auto Susun rules, artwork lifecycle, dynamic resolver priority/provenance, CommandBatch semantics, frozen-UI mapping, 128-track stress target, AC-W11-04-01..22 and serial tasks T11-W04-01..06 are locked. No production implementation has started. Only T11-W04-01 may become active after this planning pack is merged.
+**PASS — T11-W04-01 Binding Schema + Resolver Contracts VERIFIED.** Additive schema-v1 album/track binding fields, image-only artwork references, pure resolved-track presentation with explicit provenance, legacy compatibility and no-derived-persistence behavior are verified. Windows CI #252 is fully green. T11-W04-02 is now the only READY implementation task.
+
+## T11-W04-01 verification
+- Verified implementation head: `706116e2e85b963d0d6570907f70d57a614ef0e6`.
+- Windows CI: `37649707029` / #252 — PASS.
+- CI job: `112889560184`.
+- Windows portable artifact: `11496316747`.
+- Frozen visual artifact: `11495428548`.
+- Evidence: `docs/step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`.
+- No Auto Susun planner/apply, artwork intake, metadata mutation command, UI wiring, Gemini or FFmpeg/FFprobe work was pulled forward.
 
 ## W11-04 planning decisions
 - Auto Susun is offline/deterministic, not Gemini/AI/cloud.
@@ -269,4 +285,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: switch to **SOL** and execute **T11-W04-01 — Binding Schema + Resolver Contracts only**. Implement only additive schema-v1 binding/default-artwork validation plus a pure resolved-track-presentation/provenance contract and compatibility tests. Do not implement Auto Susun, image picker/artwork intake, Inspector wiring, or T11-W04-02+ in the same turn.
+After the user says `lanjutkan`: remain **SOL** and execute **T11-W04-02 — Deterministic Auto Susun Planner + CommandBatch only**. Implement the pure plan/comparator, idempotence, stale revision/state-token guards, one `auto-susun` CommandBatch, disabled/manual-override preservation and 128-track core stress. Do not implement artwork intake, Inspector/UI wiring or T11-W04-03+ in the same turn.

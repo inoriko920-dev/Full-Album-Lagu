@@ -8,7 +8,10 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: PASS / VERIFIED
+- Verified implementation head: `706116e2e85b963d0d6570907f70d57a614ef0e6`
+- Windows CI: `37649707029` / #252 PASS; job `112889560184`
+- Evidence: `evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`
 - Scope:
   - additive optional album/track binding schema;
   - artwork referential validation;
@@ -27,7 +30,8 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED_BY T11-W04-01
+- Status: READY
+- Dependency: T11-W04-01 PASS / VERIFIED
 - Scope:
   - pure `AutoArrangePlan`;
   - stable comparator;

@@ -119,6 +119,78 @@ describe("JsonProjectStore", () => {
     expect(await store.load(projectPath)).toEqual(project);
   });
 
+  it("round-trips W11-04 additive binding/default artwork fields without derived duplication", async () => {
+    const root = await mkdtemp(join(tmpdir(), "lfa binding schema "));
+    cleanupPaths.push(root);
+    const projectPath = join(root, "binding-roundtrip.lfa.json");
+    const store = new JsonProjectStore();
+    const project = {
+      schemaVersion: 1 as const,
+      projectId: "binding-roundtrip",
+      name: "Binding Roundtrip",
+      revision: 3,
+      albumPresentation: {
+        defaultArtworkAssetId: "image-default",
+      },
+      mediaAssets: [
+        {
+          id: "audio-1",
+          kind: "audio" as const,
+          required: true,
+          sourcePath: "D:/Album/01 Track.wav",
+          fileName: "01 Track.wav",
+          sizeBytes: 1234,
+          availability: "ready" as const,
+          metadata: {
+            durationMs: 1000,
+            title: "Metadata Title",
+            artist: "Metadata Artist",
+          },
+        },
+        {
+          id: "image-default",
+          kind: "image" as const,
+          required: false,
+          sourcePath: "D:/Album/default.webp",
+          fileName: "default.webp",
+          sizeBytes: 345,
+          availability: "ready" as const,
+        },
+        {
+          id: "image-track",
+          kind: "image" as const,
+          required: false,
+          sourcePath: "D:/Album/track.jpg",
+          fileName: "track.jpg",
+          sizeBytes: 456,
+          availability: "missing" as const,
+          errorCode: "MEDIA_NOT_FOUND" as const,
+        },
+      ],
+      tracks: [
+        {
+          id: "track-1",
+          title: "Track",
+          sourcePath: "D:/Album/01 Track.wav",
+          audioAssetId: "audio-1",
+          binding: {
+            titleOverride: "Manual Title",
+            artistOverride: "Manual Artist",
+            albumOverride: "Manual Album",
+            yearOverride: 2026,
+            artworkAssetId: "image-track",
+          },
+        },
+      ],
+    };
+
+    await store.save(projectPath, project);
+    const loaded = await store.load(projectPath);
+
+    expect(loaded).toEqual(project);
+    expect(JSON.stringify(loaded)).not.toContain("resolvedPresentation");
+  });
+
   it("rejects corrupt JSON without modifying the source file", async () => {
     const root = await mkdtemp(join(tmpdir(), "lfa corrupt "));
     cleanupPaths.push(root);

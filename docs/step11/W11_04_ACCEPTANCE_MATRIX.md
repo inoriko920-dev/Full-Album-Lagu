@@ -29,6 +29,15 @@ Planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
 | AC-W11-04-21 | Architecture, secret, portable-path and trust-boundary gates pass; no Gemini/FFmpeg dependency is required. | all/06 |
 | AC-W11-04-22 | STEP10 + W11-01 + W11-02 + W11-03 + exact frozen UI + Windows package/smoke/ZIP regressions all pass. | 06 |
 
+## T11-W04-01 checkpoint evidence
+
+- T11-W04-01 status: **PASS / VERIFIED**.
+- Verified implementation head: `706116e2e85b963d0d6570907f70d57a614ef0e6`.
+- Windows CI: `37649707029` / #252 PASS.
+- Evidence: `evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`.
+- Verified contribution: AC-01 legacy schema-v1 compatibility; AC-02 additive binding/default artwork fields + image-only references; AC-03 resolver priority/provenance foundation; AC-04 pure/offline resolver + no derived persistence; AC-21 architecture/secrets/paths/provider-free regression; AC-22 STEP10/W11-01/W11-02/W11-03/frozen UI/package regressions.
+- These are **task-level verified contributions**, not final W11-04 closure.
+
 ## Closure rule
 
 W11-04 is not COMPLETE because code exists. T11-W04-06 must provide final Windows evidence, map AC-W11-04-01..22 to PASS, and record an architecture/UI/trust-boundary drift review with **no material drift**.
