@@ -37,6 +37,87 @@ describe("JsonProjectStore", () => {
     expect(directoryEntries).toEqual(["Proyek Baru.lfa.json"]);
   });
 
+  it("round-trips a W11-01 schema-v1 project without forcing media fields", async () => {
+    const root = await mkdtemp(join(tmpdir(), "lfa legacy media "));
+    cleanupPaths.push(root);
+    const sourcePath = join(root, "legacy.lfa.json");
+    const roundTripPath = join(root, "legacy-roundtrip.lfa.json");
+    const legacyProject = {
+      schemaVersion: 1,
+      projectId: "legacy-w11-01",
+      name: "Legacy W11-01",
+      revision: 7,
+      tracks: [
+        {
+          id: "track-legacy",
+          title: "Track Lama",
+          sourcePath: "D:/Musik Lama/01 Track.mp3",
+          legacyExtension: "preserved",
+        },
+      ],
+      futureProjectField: { preserved: true },
+    };
+
+    await writeFile(
+      sourcePath,
+      `${JSON.stringify(legacyProject, null, 2)}\n`,
+      "utf8",
+    );
+
+    const store = new JsonProjectStore();
+    const loaded = await store.load(sourcePath);
+
+    expect(loaded).toEqual(legacyProject);
+    expect(loaded).not.toHaveProperty("mediaAssets");
+
+    await store.save(roundTripPath, loaded);
+
+    expect(JSON.parse(await readFile(roundTripPath, "utf8"))).toEqual(
+      legacyProject,
+    );
+  });
+
+  it("persists additive schema-v1 media references without a version bump", async () => {
+    const root = await mkdtemp(join(tmpdir(), "lfa media schema "));
+    cleanupPaths.push(root);
+    const projectPath = join(root, "media.lfa.json");
+    const store = new JsonProjectStore();
+    const project = {
+      schemaVersion: 1 as const,
+      projectId: "media-roundtrip",
+      name: "Media Roundtrip",
+      revision: 1,
+      mediaAssets: [
+        {
+          id: "asset-audio-1",
+          kind: "audio" as const,
+          required: true,
+          sourcePath: "D:/Album/01 Intro.mp3",
+          fileName: "01 Intro.mp3",
+          sizeBytes: 12345,
+          availability: "ready" as const,
+          metadata: {
+            durationMs: 125000,
+            title: "Intro",
+            trackNumber: 1,
+          },
+        },
+      ],
+      tracks: [
+        {
+          id: "track-1",
+          title: "Intro",
+          sourcePath: "D:/Album/01 Intro.mp3",
+          audioAssetId: "asset-audio-1",
+        },
+      ],
+    };
+
+    await store.save(projectPath, project);
+
+    expect(await store.load(projectPath)).toEqual(project);
+  });
+
   it("rejects corrupt JSON without modifying the source file", async () => {
     const root = await mkdtemp(join(tmpdir(), "lfa corrupt "));
     cleanupPaths.push(root);
