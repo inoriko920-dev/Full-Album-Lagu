@@ -72,9 +72,7 @@ async function mapBounded<T, R>(
   };
 
   const workerCount = Math.min(concurrency, values.length);
-  await Promise.all(
-    Array.from({ length: workerCount }, () => runWorker()),
-  );
+  await Promise.all(Array.from({ length: workerCount }, () => runWorker()));
 
   return results;
 }
