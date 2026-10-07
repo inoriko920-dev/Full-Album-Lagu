@@ -15,7 +15,7 @@ Dependency semantics:
 1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **COMPLETE / PASS**
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **COMPLETE / PASS**
-4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **PLANNING COMPLETE / PASS; T11-W04-01 READY**
+4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **IN PROGRESS; T11-W04-01 PASS / VERIFIED; T11-W04-02 READY**
 5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
 7. **W11-07 — Animation + Boundary Transitions** — FTR-009 + FTR-010
@@ -140,8 +140,19 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Features: FTR-005 + FTR-006; FTR-013/FTR-018 cross-cut.
 - Planning/DoR: PASS.
 - Acceptance: AC-W11-04-01..22.
-- Serial order: T11-W04-01 READY -> T11-W04-02 BLOCKED -> T11-W04-03 BLOCKED -> T11-W04-04 BLOCKED -> T11-W04-05 BLOCKED -> T11-W04-06 BLOCKED.
+- Serial order: T11-W04-01 PASS -> T11-W04-02 READY -> T11-W04-03 BLOCKED -> T11-W04-04 BLOCKED -> T11-W04-05 BLOCKED -> T11-W04-06 BLOCKED.
 - Auto Susun must be deterministic/offline and publish through the existing CommandEngine/CommandBatch seam.
 - Track binding/default artwork is additive schema-v1; resolved values remain derived.
 - Existing frozen UI is reused; no new UI prompt/image generation is required now.
 - W11-05 remains blocked until W11-04 reaches COMPLETE / PASS.
+
+## T11-W04-01 verification
+
+- Verified implementation head: `706116e2e85b963d0d6570907f70d57a614ef0e6`.
+- Windows CI: `37649707029` / #252 PASS; job `112889560184`.
+- Additive schema-v1 album/track binding contract and image-only artwork reference validation are proven.
+- Pure resolved-track presentation priority + provenance are proven without I/O or state mutation.
+- Legacy/additive persistence round-trip and no-derived-value-persistence behavior are green.
+- STEP 10, W11-01, W11-02, W11-03, exact frozen UI and Windows package/smoke/ZIP remain green.
+- Evidence: `evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`.
+- Dependency unlock: T11-W04-02 READY. T11-W04-03..06 remain blocked.
