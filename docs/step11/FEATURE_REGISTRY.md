@@ -2,8 +2,8 @@
 
 Planning role: **ASTRA**  
 Planning baseline analyzed: `main@da5b6786d0daa472c474a33ffd83a5834af24f82`  
-Status: **NORMALIZED / W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 PLANNING COMPLETE / PASS**  
-Implementation status: **W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS**
+Status: **NORMALIZED / W11-01..04 COMPLETE / PASS; W11-05 PLANNING COMPLETE / PASS**  
+Implementation status: **W11-01..04 COMPLETE / PASS; W11-05 NOT STARTED — T11-W05-01 READY after planning merge**
 
 The complete planning authority is the companion DOCX:
 `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
@@ -16,18 +16,18 @@ The complete planning authority is the companion DOCX:
 | FTR-004 | Track Timeline & Track State | F-003; FR-009..011 | MUST | FTR-003 | VERIFIED W11-03 |
 | FTR-005 | Auto Susun Album | F-004; FR-012 | MUST | FTR-003,FTR-004,FTR-013 | VERIFIED W11-04 |
 | FTR-006 | Artwork/Metadata/Dynamic Track Binding | F-005; FR-013..015 | MUST | FTR-003,FTR-004 | VERIFIED W11-04 |
-| FTR-007 | Manual Layer Editor | F-006; FR-016..019 | MUST | FTR-013 + UI Freeze | PLANNED W11-05 |
+| FTR-007 | Manual Layer Editor | F-006; FR-016..019 | MUST | FTR-013 + UI Freeze | W11-05 PLANNING PASS / T11-W05-01 READY AFTER MERGE |
 | FTR-008 | Audio-Reactive Visual Engine | F-007; FR-020..022 | MUST | FTR-003,FTR-012; later tool boundary | PLANNED W11-06 |
 | FTR-009 | Animation & Limited Keyframes | F-008; FR-023..024 | MUST | FTR-007,FTR-013 | PLANNED W11-07 |
 | FTR-010 | Track-Boundary Transition System | F-009; FR-025..027 | MUST | FTR-004,FTR-006,FTR-009 | PLANNED W11-07 |
-| FTR-011 | Template Workflow | F-010; FR-028..030 | MUST | FTR-007,FTR-013 | PLANNED W11-05 |
+| FTR-011 | Template Workflow | F-010; FR-028..030 | MUST | FTR-007,FTR-013 | W11-05 PLANNING PASS / SERIAL BLOCKED BEHIND T11-W05-01..02 |
 | FTR-012 | Preview Playback & Navigation | F-011; FR-031..033 | MUST | FTR-003,FTR-004 | PLANNED W11-06 |
 | FTR-013 | Unified Command History / Undo-Redo | F-012; FR-034..035 | MUST | project state contracts | VERIFIED W11-03 |
 | FTR-014 | Gemini Agent + AI Risk/Plan Policy | F-013/F-014; FR-036..041 | MUST | FTR-013,FTR-015 | DEFER STEP 12 |
 | FTR-015 | Gemini Credential Vault & Failover | F-015/F-016; FR-042..047 | MUST | OS secure storage / provider | DEFER STEP 12 |
 | FTR-016 | Missing Media Detection & Relink | F-017; FR-049..050 | MUST | FTR-003 | VERIFIED W11-02 |
 | FTR-017 | MP4 Render & Preflight | F-018; FR-051..054 | MUST | most visual/media capabilities + STEP 12 tool integration | PLANNED W11-08 |
-| FTR-018 | Error/Diagnostics/Offline Cross-Cutting | F-019/F-020; FR-048,055..056 | MUST | all waves | W11-01 PASS / W11-02 PASS / W11-03 PASS / W11-04 PASS CROSS-CUT |
+| FTR-018 | Error/Diagnostics/Offline Cross-Cutting | F-019/F-020; FR-048,055..056 | MUST | all waves | W11-01..04 PASS; W11-05 PLANNED CROSS-CUT |
 | FTR-019 | Background Video | F-021; FR-057 | SHOULD | media/render capability | CONDITIONAL |
 | FTR-020 | Extended Effects & Branding | F-022/F-024; FR-058..059 | SHOULD | visual engine | CONDITIONAL |
 | FTR-021 | 1440p / 4K Render Presets | F-023 | SHOULD | render capability/hardware | CONDITIONAL |
@@ -114,4 +114,18 @@ The complete planning authority is the companion DOCX:
 - FTR-018 W11-04 cross-cut: PASS.
 - AC-W11-04-01..22: ALL PASS.
 - Evidence: `evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md`, `evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`.
-- W11-05 FTR-007 + FTR-011 is dependency-unlocked for ASTRA planning only.
+- W11-05 FTR-007 + FTR-011 ASTRA planning is COMPLETE / PASS; implementation has not started.
+
+
+## W11-05 planning checkpoint
+- Baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`.
+- Features: FTR-007 + FTR-011 with FTR-013/FTR-018 cross-cut.
+- ASTRA planning: COMPLETE / PASS.
+- DoR: PASS.
+- Acceptance: AC-W11-05-01..25.
+- Planning authority: `docs/source-of-truth/planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`, `WAVE_11_05_CHARTER.md`, `TASK_CARDS_W11_05.md`, `W11_05_ACCEPTANCE_MATRIX.md`, `W11_05_DOR.md`.
+- Frozen UI authority: SCR-002C + SCR-003A + SCR-003B + DLG-008/UI-IMG-012. No new prompt/image stage is required.
+- Manual Layer Editor is primary; template workflow is visual-only/non-destructive and uses the same Project State + CommandEngine.
+- W11-05 boundary: static visual scene/layer state and local templates only. W11-06 keeps playback/audio-reactive; W11-07 keeps keyframe/transition execution; STEP 12 keeps Gemini/FFmpeg.
+- Serial task gate: T11-W05-01 READY after planning merge; T11-W05-02..07 BLOCKED.
+- FTR-007/FTR-011 are **not VERIFIED** until implementation + W11-05 closure evidence passes.
