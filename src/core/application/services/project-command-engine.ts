@@ -97,7 +97,7 @@ function stableSerialize(value: unknown): string {
     typeof value === "number" ||
     typeof value === "boolean"
   ) {
-    return JSON.stringify(value);
+    return JSON.stringify(value) ?? "null";
   }
 
   if (Array.isArray(value)) {
@@ -113,7 +113,7 @@ function stableSerialize(value: unknown): string {
       .join(",")}}`;
   }
 
-  return JSON.stringify(String(value));
+  return JSON.stringify(String(value)) ?? "\"\"";
 }
 
 function semanticallyEqual(
