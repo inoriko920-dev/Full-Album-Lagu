@@ -2,8 +2,8 @@
 
 Planning role: **ASTRA**  
 Planning baseline analyzed: `main@da5b6786d0daa472c474a33ffd83a5834af24f82`  
-Status: **NORMALIZED / W11-01 COMPLETE; NEXT W11-02 PLANNING**  
-Implementation status: **W11-01 COMPLETE / PASS; later waves not started**
+Status: **NORMALIZED / W11-01 COMPLETE; W11-02 PLANNING PASS**  
+Implementation status: **W11-01 COMPLETE / PASS; W11-02 READY for serial SOL execution**
 
 The complete planning authority is the companion DOCX:
 `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
@@ -12,7 +12,7 @@ The complete planning authority is the companion DOCX:
 |---|---|---|---|---|---|
 | FTR-001 | Project Lifecycle | F-001; FR-001..003 | MUST | STEP 10 persistence seam | VERIFIED W11-01 |
 | FTR-002 | Autosave & Crash Recovery | F-001/F-017; FR-004 | MUST | FTR-001 | VERIFIED W11-01 |
-| FTR-003 | Media Intake & Validation | F-002; FR-005..008 | MUST | FTR-001 | PLANNED W11-02 |
+| FTR-003 | Media Intake & Validation | F-002; FR-005..008 | MUST | FTR-001 | READY W11-02 |
 | FTR-004 | Track Timeline & Track State | F-003; FR-009..011 | MUST | FTR-003 | PLANNED W11-03 |
 | FTR-005 | Auto Susun Album | F-004; FR-012 | MUST | FTR-003,FTR-004,FTR-013 | PLANNED W11-04 |
 | FTR-006 | Artwork/Metadata/Dynamic Track Binding | F-005; FR-013..015 | MUST | FTR-003,FTR-004 | PLANNED W11-04 |
@@ -25,9 +25,9 @@ The complete planning authority is the companion DOCX:
 | FTR-013 | Unified Command History / Undo-Redo | F-012; FR-034..035 | MUST | project state contracts | PLANNED W11-03 |
 | FTR-014 | Gemini Agent + AI Risk/Plan Policy | F-013/F-014; FR-036..041 | MUST | FTR-013,FTR-015 | DEFER STEP 12 |
 | FTR-015 | Gemini Credential Vault & Failover | F-015/F-016; FR-042..047 | MUST | OS secure storage / provider | DEFER STEP 12 |
-| FTR-016 | Missing Media Detection & Relink | F-017; FR-049..050 | MUST | FTR-003 | PLANNED W11-02 |
+| FTR-016 | Missing Media Detection & Relink | F-017; FR-049..050 | MUST | FTR-003 | READY W11-02 |
 | FTR-017 | MP4 Render & Preflight | F-018; FR-051..054 | MUST | most visual/media capabilities + STEP 12 tool integration | PLANNED W11-08 |
-| FTR-018 | Error/Diagnostics/Offline Cross-Cutting | F-019/F-020; FR-048,055..056 | MUST | all waves | W11-01 PASS / ACTIVE CROSS-CUT |
+| FTR-018 | Error/Diagnostics/Offline Cross-Cutting | F-019/F-020; FR-048,055..056 | MUST | all waves | W11-01 PASS / W11-02 READY CROSS-CUT |
 | FTR-019 | Background Video | F-021; FR-057 | SHOULD | media/render capability | CONDITIONAL |
 | FTR-020 | Extended Effects & Branding | F-022/F-024; FR-058..059 | SHOULD | visual engine | CONDITIONAL |
 | FTR-021 | 1440p / 4K Render Presets | F-023 | SHOULD | render capability/hardware | CONDITIONAL |
@@ -49,4 +49,6 @@ The complete planning authority is the companion DOCX:
 - FTR-018 cross-cut for W11-01: PASS; remains active for later waves.
 - All W11-01 acceptance AC-01..14: PASS.
 - Evidence: `evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`.
-- Next planning target: W11-02 Media Intake Foundation (FTR-003 + FTR-016 + FTR-018).
+- W11-02 Media Intake Foundation planning: PASS / READY.
+- W11-02 planning authority: `WAVE_11_02_CHARTER.md`, `TASK_CARDS_W11_02.md`, `W11_02_ACCEPTANCE_MATRIX.md` and source-of-truth planning DOCX.
+- Next implementation task: T11-W02-01 only.

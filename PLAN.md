@@ -18,14 +18,21 @@ The slice proves a real Electron path from the frozen UI through ProjectSession,
 
 Provisional: native save-dialog clicking is not automated in CI; CI injects the chosen path while retaining the same production persistence pipeline.
 
-## STEP 11 — Feature Implementation Waves — NEXT
-Do not start until explicit user instruction.
+## STEP 11 — Feature Implementation Waves — IN PROGRESS
 
-Start with ASTRA:
-1. normalize FEATURE_REGISTRY from Product Definition + proven STEP 10 capabilities;
-2. build dependency graph;
-3. choose one small Wave 01 with clear scope IN/OUT, acceptance, tests, evidence and rollback;
-4. hand the READY wave/tasks to SOL for serial implementation.
+- W11-01 Project Lifecycle & Recovery Core — COMPLETE / PASS.
+- W11-02 Media Intake Foundation — ASTRA PLANNING COMPLETE / PASS; DoR PASS.
+- W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut.
+- Current planning authority:
+  - `docs/source-of-truth/planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+  - `docs/step11/WAVE_11_02_CHARTER.md`
+  - `docs/step11/TASK_CARDS_W11_02.md`
+  - `docs/step11/W11_02_ACCEPTANCE_MATRIX.md`
+- Next exact implementation task: **T11-W02-01 Media Domain, Contracts & Project Compatibility**.
+- One task per user turn; T11-W02-02 remains blocked until T11-W02-01 PASS.
+- Do not start W11-03 until W11-02 closes COMPLETE / PASS.
+- No new W11-02 UI prompt/image generation is needed; existing frozen states are authoritative.
+- Exact Gemini and FFmpeg/FFprobe integration remain later integration work.
 
 ## Later
 STEP 12 external/Gemini integration; STEP 13 QA/hardening; STEP 14 release candidate/package; STEP 15 final release/backup/maintenance.

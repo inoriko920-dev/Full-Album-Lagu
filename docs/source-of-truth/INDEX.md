@@ -11,13 +11,15 @@
 8. `planning/current/07_STEP_05_UI_FREEZE_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx`
 9. `planning/current/08_STEP_06_ARCHITECTURE_TECHNOLOGY_DECISION_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx`
 10. `planning/current/09_STEP_07_CODE_CONSTITUTION_REPOSITORY_ARCHITECTURE_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx`
-11. `factory/SOFTWARE_FACTORY_V2_COMPLETE_GUIDE.txt`
-12. `../../ui/manifests/UI_REFERENCE_MANIFEST.json`
-13. `../../ui/manifests/UI_FREEZE_MANIFEST.json`
-14. `../../architecture/ARCHITECTURE.md`
-15. `../../architecture/CODE_CONSTITUTION.md`
-16. `../../architecture/S08_T03_CI_PACKAGING_EVIDENCE.md`
-17. `../../handoff/CURRENT_HANDOFF.md`
+11. `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+12. `planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+13. `factory/SOFTWARE_FACTORY_V2_COMPLETE_GUIDE.txt`
+14. `../../ui/manifests/UI_REFERENCE_MANIFEST.json`
+15. `../../ui/manifests/UI_FREEZE_MANIFEST.json`
+16. `../../architecture/ARCHITECTURE.md`
+17. `../../architecture/CODE_CONSTITUTION.md`
+18. `../../architecture/S08_T03_CI_PACKAGING_EVIDENCE.md`
+19. `../../handoff/CURRENT_HANDOFF.md`
 
 ## Current vs archive
 `planning/current/` is authoritative. `planning/archive/` is history only.
@@ -47,7 +49,8 @@ Generated image wording never overrides locked product behavior; final render re
 Latest explicit user decision -> current Product Definition/planning -> UI Freeze/Final UI Reference -> Architecture/Code Constitution -> operational summaries/handoff.
 
 ## STEP 11 current planning
-- `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
-- Operational companions: `../../step11/FEATURE_REGISTRY.md`, `../../step11/DEPENDENCY_GRAPH.md`, `../../step11/WAVE_11_01_CHARTER.md`, `../../step11/TASK_CARDS_W11_01.md`.
-- Baseline analyzed: `main@da5b6786d0daa472c474a33ffd83a5834af24f82`.
-- Status: STEP 11 planning baseline PASS; W11-01 COMPLETE / PASS; later waves not started. Next planning target is W11-02 Media Intake Foundation, which requires a new ASTRA charter before SOL implementation.
+- Registry/wave-order baseline: `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Current W11-02 authority: `planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Operational companions: `../../step11/FEATURE_REGISTRY.md`, `../../step11/DEPENDENCY_GRAPH.md`, `../../step11/WAVE_11_02_CHARTER.md`, `../../step11/TASK_CARDS_W11_02.md`, `../../step11/W11_02_ACCEPTANCE_MATRIX.md`.
+- W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`.
+- Status: W11-01 COMPLETE / PASS; W11-02 ASTRA planning PASS / DoR PASS; next task T11-W02-01 READY for SOL.

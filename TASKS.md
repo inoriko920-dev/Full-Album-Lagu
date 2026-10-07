@@ -152,8 +152,64 @@
   - `docs/step11/evidence/W11_01_ARCHITECTURE_DRIFT_REVIEW.md`
 - W11-01 final status: COMPLETE / PASS.
 
-## NEXT — W11-02 Media Intake Foundation
-- Status: NOT_STARTED
-- Planning owner: ASTRA
-- Intended feature set: FTR-003 + FTR-016 + FTR-018 cross-cut.
-- Gate: SOL implementation BLOCKED until W11-02 charter, acceptance mapping, task cards, and source-of-truth planning are complete.
+## ASTRA-W11-02-PLAN — Media Intake Foundation Charter
+- Owner: ASTRA
+- Priority: P0
+- Risk: HIGH
+- Status: DONE
+- Work status: PLANNING_COMPLETE
+- Evidence status: DOCX + operational Markdown
+- Gate: PASS
+- Baseline analyzed: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
+- Feature set: FTR-003 + FTR-016 + FTR-018 cross-cut.
+- Requirements: F-002, F-017; FR-005..008, FR-048..050, FR-055..056.
+- DoR: PASS.
+- Planning authority:
+  - `docs/source-of-truth/planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+  - `docs/step11/WAVE_11_02_CHARTER.md`
+  - `docs/step11/TASK_CARDS_W11_02.md`
+  - `docs/step11/W11_02_ACCEPTANCE_MATRIX.md`
+- Implementation code changed: NO.
+- No new UI prompt/image generation required; existing frozen states are authoritative.
+
+## T11-W02-01 — Media Domain, Contracts & Project Compatibility
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: ASTRA-W11-02-PLAN PASS.
+- Purpose: additive media domain/reference model, typed ports/contracts, schema-v1/W11-01 compatibility only.
+- Out of scope: picker, discovery queue, metadata library, relink implementation, UI.
+
+## T11-W02-02 — Picker/Drop Discovery, Batch Queue, Progress & Cancel
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: BLOCKED_BY T11-W02-01.
+
+## T11-W02-03 — Audio Probe, Validation, Metadata & Deterministic Initial Order
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: BLOCKED_BY T11-W02-02.
+
+## T11-W02-04 — Missing Media Scan & Relink Core
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
+- Status: BLOCKED_BY T11-W02-03.
+
+## T11-W02-05 — Frozen Media/Missing/Relink UI Wiring
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: BLOCKED_BY T11-W02-04.
+
+## T11-W02-06 — Wave E2E, Drift Review & Evidence Closure
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
+- Status: BLOCKED_BY T11-W02-05.
+
+W11-03 remains blocked until W11-02 closes COMPLETE / PASS.

@@ -4,17 +4,19 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. STEP 11 planning is complete. **T11-W01-01 through T11-W01-05 are verified. W11-01 is COMPLETE / PASS.** STEP 11 remains in progress overall; W11-02 has not been planned for implementation yet.
+STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 ASTRA planning is COMPLETE / PASS and its DoR is PASS; implementation has not started.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
 
 ## STEP 11 planning authority
-- DOCX: `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+- Registry/wave-order baseline DOCX: `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+- W11-02 planning DOCX: `docs/source-of-truth/planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
 - Operational registry: `docs/step11/FEATURE_REGISTRY.md`
 - Dependency graph: `docs/step11/DEPENDENCY_GRAPH.md`
-- Wave charter: `docs/step11/WAVE_11_01_CHARTER.md`
-- Task cards: `docs/step11/TASK_CARDS_W11_01.md`
+- W11-02 charter: `docs/step11/WAVE_11_02_CHARTER.md`
+- W11-02 task cards: `docs/step11/TASK_CARDS_W11_02.md`
+- W11-02 acceptance matrix: `docs/step11/W11_02_ACCEPTANCE_MATRIX.md`
 
 ## Last completed wave
 **W11-01 Project Lifecycle & Recovery Core**
@@ -82,10 +84,24 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - closure evidence: `docs/step11/evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`;
 - drift review: `docs/step11/evidence/W11_01_ARCHITECTURE_DRIFT_REVIEW.md`.
 
-## Next exact task
-**ASTRA planning/charter for W11-02 Media Intake Foundation** — planning only.
+## Active planned wave
+**W11-02 Media Intake Foundation**
+- Planning role: ASTRA — COMPLETE / PASS.
+- Future execution owner: SOL.
+- Features: FTR-003 Media Intake & Validation + FTR-016 Missing Media Detection & Relink + FTR-018 cross-cut.
+- Baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`.
+- Requirements: F-002, F-017; FR-005..008, FR-048..050, FR-055..056.
+- DoR: PASS.
+- Acceptance: AC-W11-02-01..18 defined and mapped.
+- Task sequence: T11-W02-01..06, serial only.
+- Preferred probe/metadata adapter: `music-metadata`, subject to implementation-time lock/audit/CI.
+- Existing frozen UI references 002A/002B/002F/009A/009B are sufficient; no new UI prompt/image step.
+- Exact Gemini and FFmpeg/FFprobe integration remain outside this wave.
 
-Do not begin SOL implementation of media intake yet. W11-02 must first receive an explicit charter, acceptance mapping, dependency review, task cards, and source-of-truth planning gate.
+## Next exact task
+**T11-W02-01 Media Domain, Contracts & Project Compatibility** — SOL only.
+
+Implement only additive media domain/reference models, ports/contracts, and project backward compatibility. Do not start picker/discovery, metadata probing, relink implementation, UI wiring, T11-W02-02, or W11-03 in the same turn.
 
 ## Protected boundaries
-Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Recovery artifacts must remain separate from the primary project file and must never masquerade as a successful user Save. Frozen UI cannot be silently redesigned. Gemini and FFmpeg concrete integrations remain STEP 12 owned.
+Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
