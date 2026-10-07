@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 is IN PROGRESS; T11-W02-01, T11-W02-02 and T11-W02-03 are COMPLETE / PASS, and T11-W02-04 is READY.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 is IN PROGRESS; T11-W02-01..04 are COMPLETE / PASS, and T11-W02-05 is READY.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -91,21 +91,23 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - T11-W02-01: COMPLETE / PASS / VERIFIED.
 - T11-W02-02: COMPLETE / PASS / VERIFIED.
 - T11-W02-03: COMPLETE / PASS / VERIFIED.
-- T11-W02-03 verified implementation head: `62bd3b76f7f45dad14938b1dd94f2e9ff73c2722`.
-- Windows CI: `37594104866` PASS; job `112702409465`.
-- Evidence: `docs/step11/evidence/T11_W02_03_AUDIO_PROBE_METADATA_ORDERING_EVIDENCE.md`.
-- `music-metadata@12.0.0` is pinned and runtime high-severity audit remains green.
-- Main-owned probing extracts positive duration and common title/artist/album/track/year/container/codec metadata with `skipCovers`.
-- Invalid, corrupt, unreadable, unsupported and duration-unavailable paths are explicit.
-- 120-item out-of-order async completion still produces deterministic initial ordering with concurrency capped at 4.
-- Schema remains v1; ready/invalid supported audio commits through mediaAssets + audioAssetId.
-- MP3/WAV/FLAC/M4A/AAC synthetic real-parser fixtures PASS; source bytes/size/mtime remain unchanged.
-- Runtime FFmpeg/FFprobe remains deferred; test-fixture generation does not change that boundary.
+- T11-W02-04: COMPLETE / PASS / VERIFIED.
+- T11-W02-04 verified implementation head: `b9e22a6c4c1e986d0592dd914d7977eb3678701d`.
+- Windows CI: `37603548993` PASS; job `112733462189`.
+- Evidence: `docs/step11/evidence/T11_W02_04_MISSING_MEDIA_RELINK_CORE_EVIDENCE.md`.
+- Open/startup scans referenced media through a main-owned read-only source adapter.
+- Required missing audio becomes a readiness blocker; missing optional visual remains non-blocking.
+- Explicit relink validates replacement media before changing project references.
+- Folder relink is recursive/deterministic and requires exact normalized filename plus size/duration confidence; only a unique best candidate auto-resolves.
+- Ambiguous/no-match candidates remain unresolved; no fuzzy guessing.
+- Moved Track 5, Unicode/spaces, invalid replacement, ambiguous/no-match and source byte/mtime preservation all PASS on Windows.
+- Renderer remains filesystem-free; public missing/relink summaries remain path-sanitized.
+- Frozen media/missing/relink presentation has not been wired yet; T11-W02-05 owns that work.
 
 ## Next exact task
-**T11-W02-04 Missing Media Scan & Relink Core** — SOL only.
+**T11-W02-05 Frozen Media/Missing/Relink UI Wiring** — SOL only.
 
-Implement only missing-media scan, required-audio versus optional-visual distinction, individual relink validation, folder relink unique-match logic, ambiguity/no-match handling and non-destructive reference updates. Do not start frozen media/missing/relink UI wiring, T11-W02-05, or W11-03 in the same turn.
+Wire only the already-approved frozen media import/progress/error/missing/relink states into the existing hierarchy and typed bridge. Use UI-IMG-002A/002B/002F/009A/009B as authority; do not redesign the shell, do not start T11-W02-06 wave closure, and do not start W11-03 in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
