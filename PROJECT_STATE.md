@@ -347,7 +347,22 @@
 - 244 Vitest assertions PASS; STEP 10 + W11-01..04 + frozen UI + package/smoke/ZIP PASS.
 - Evidence: `docs/step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
 - FTR-007/FTR-011 remain **not wave-VERIFIED**; only their W05-01 foundation is proven.
-- Dependency unlock: **T11-W05-02 READY**. T11-W05-03..07 remain BLOCKED.
+- Dependency unlock: T11-W05-02 PASS / VERIFIED; **T11-W05-03 READY**. T11-W05-04..07 remain BLOCKED.
+
+## T11-W05-02 verification
+- Verified implementation head: `308a4800bcbfcf4e85828795e6573893622dd722`.
+- Windows CI: `37687361672` / #336 PASS; job `113018515599`.
+- Windows portable artifact: `11511078393`.
+- Frozen visual artifact: `11511467773`.
+- Official manual layer add/remove/duplicate/reorder/transform/common/text-style commands verified on the shared CommandEngine.
+- Stable-ID targeting, canonical z-order, locked-layer guard, stale revision/state-token rejection and no-op suppression verified.
+- 50 gesture previews remain session-only; gesture end publishes exactly one manual history entry.
+- 128-layer / 64-edit full Undo/Redo stress deterministic.
+- 256 Vitest assertions PASS; STEP 10 + W11-01..04 + frozen UI + package/smoke/ZIP PASS.
+- Evidence: `docs/step11/evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md`.
+- FTR-007 remains not wave-VERIFIED; this task proves its command/history core.
+- FTR-011 has not started.
+- Dependency unlock: **T11-W05-03 READY**. T11-W05-04..07 remain BLOCKED.
 
 ## W11-02 planning decisions
 - One canonical Media Intake pipeline for picker, drag-drop file and drag-drop folder.
@@ -370,4 +385,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-02 — Manual Layer Commands + Gesture/History Semantics only**. Do not start T11-W05-03, template storage/UI, W11-06, W11-07, or STEP 12 in the same turn.
+After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-03 — Template Document + Local Store + Trial/Apply Core only**. Do not start T11-W05-04, Preview/UI wiring, W11-06, W11-07, or STEP 12 in the same turn.
