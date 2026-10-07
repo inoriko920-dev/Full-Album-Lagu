@@ -29,6 +29,17 @@ import {
   mediaIntakeStatusResultSchema,
 } from "../core/contracts/media-intake-batch";
 import {
+  MEDIA_MISSING_SCAN_CHANNEL,
+  MEDIA_RELINK_FOLDER_CHANNEL,
+  MEDIA_RELINK_SINGLE_CHANNEL,
+  folderRelinkOperationResultSchema,
+  folderRelinkRequestSchema,
+  missingMediaScanRequestSchema,
+  missingMediaScanResultSchema,
+  singleRelinkOperationResultSchema,
+  singleRelinkRequestSchema,
+} from "../core/contracts/media-relink";
+import {
   PROJECT_AUTOSAVE_CHANNEL,
   PROJECT_RECOVERY_ACCEPT_CHANNEL,
   PROJECT_RECOVERY_DISCARD_CHANNEL,
@@ -145,6 +156,33 @@ export const lfaBridge: LfaBridge = {
       request,
     );
     return mediaIntakeCancelResultSchema.parse(payload);
+  },
+
+  async scanMissingMedia(request) {
+    const validatedRequest = missingMediaScanRequestSchema.parse(request);
+    const payload: unknown = await ipcRenderer.invoke(
+      MEDIA_MISSING_SCAN_CHANNEL,
+      validatedRequest,
+    );
+    return missingMediaScanResultSchema.parse(payload);
+  },
+
+  async relinkMediaAsset(request) {
+    const validatedRequest = singleRelinkRequestSchema.parse(request);
+    const payload: unknown = await ipcRenderer.invoke(
+      MEDIA_RELINK_SINGLE_CHANNEL,
+      validatedRequest,
+    );
+    return singleRelinkOperationResultSchema.parse(payload);
+  },
+
+  async relinkMissingMediaFolder(request) {
+    const validatedRequest = folderRelinkRequestSchema.parse(request);
+    const payload: unknown = await ipcRenderer.invoke(
+      MEDIA_RELINK_FOLDER_CHANNEL,
+      validatedRequest,
+    );
+    return folderRelinkOperationResultSchema.parse(payload);
   },
 
   async saveProject(request) {
