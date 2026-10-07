@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01, W11-02 and **W11-03 are COMPLETE / PASS**. **W11-04 ASTRA planning and DoR are COMPLETE / PASS; implementation has not started. T11-W04-01 is the only READY SOL task.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01, W11-02 and **W11-03 are COMPLETE / PASS**. **W11-04 is in implementation: T11-W04-01 is PASS / VERIFIED and T11-W04-02 is the only READY SOL task.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -208,12 +208,27 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Metadata/artwork binding is additive schema-v1 and resolved dynamically with provenance.
 - Artwork is optional visual media (`required=false`) and must not block required-audio readiness.
 - Existing frozen Auto Susun/Inspector/Media/Timeline UI is sufficient at planning time; no new UI prompt/image stage is required.
-- T11-W04-02..06 remain serially blocked.
+- T11-W04-01 Binding Schema + Resolver Contracts: PASS / VERIFIED.
+- T11-W04-02 Deterministic Auto Susun Planner + CommandBatch: READY.
+- T11-W04-03..06 remain serially blocked.
+
+## T11-W04-01 completed
+- Status: PASS / VERIFIED.
+- Verified implementation head: `706116e2e85b963d0d6570907f70d57a614ef0e6`.
+- Windows CI: `37649707029` / #252 PASS; job `112889560184`.
+- Portable artifact: `11496316747`.
+- Frozen visual artifact: `11495428548`.
+- Evidence: `docs/step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`.
+- Optional schema-v1 album default artwork + per-track binding fields are canonical.
+- Artwork references must resolve to existing image assets; missing image availability does not break identity.
+- `resolveTrackPresentation()` is pure/offline and returns deterministic value + provenance.
+- Derived display values are not persisted.
+- Legacy/additive JsonProjectStore round-trip and all prior regressions are green.
 
 ## Next exact task
-**T11-W04-01 — Binding Schema + Resolver Contracts — SOL only.**
+**T11-W04-02 — Deterministic Auto Susun Planner + CommandBatch — SOL only.**
 
-On the next user `lanjutkan`, implement only additive binding/default-artwork schema validation plus the pure resolved-track-presentation/provenance contract and compatibility tests. Do not implement Auto Susun, artwork picker/intake, Inspector wiring, or later tasks in the same turn.
+On the next user `lanjutkan`, implement only the deterministic planner/comparator, idempotence, stale guards, one `auto-susun` CommandBatch, preservation rules and 128-track core stress. Do not implement artwork intake or UI.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
