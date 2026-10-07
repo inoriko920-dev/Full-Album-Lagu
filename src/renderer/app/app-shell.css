@@ -1338,7 +1338,6 @@ button:disabled {
   gap: 8px;
 }
 
-
 /* T11-W03-04 frozen album/timeline interaction states.
    Empty SCR-002A stays unchanged; these styles activate only with project tracks/history. */
 

@@ -329,10 +329,18 @@ describe("AppShell frozen timeline and global history wiring", () => {
   it("keeps empty SCR-002A free of conditional history controls", () => {
     render(<AppShell />);
 
-    expect(screen.queryByRole("button", { name: "Undo" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Redo" })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Perkecil timeline" })).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Perbesar timeline" })).toBeDisabled();
+    expect(
+      screen.queryByRole("button", { name: "Undo" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Redo" }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Perkecil timeline" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Perbesar timeline" }),
+    ).toBeDisabled();
   });
 
   it("keeps track selection and timeline zoom session-only without dirtying the project", async () => {
@@ -346,7 +354,9 @@ describe("AppShell frozen timeline and global history wiring", () => {
 
     const shell = document.querySelector(".app-shell");
     await waitFor(() => {
-      expect(document.querySelector('[data-media-track-id="track-2"]')).not.toBeNull();
+      expect(
+        document.querySelector('[data-media-track-id="track-2"]'),
+      ).not.toBeNull();
       expect(shell).toHaveAttribute("data-project-dirty", "false");
     });
 
@@ -408,7 +418,9 @@ describe("AppShell frozen timeline and global history wiring", () => {
 
     const timeline = screen.getByRole("region", { name: "Album Timeline" });
     expect(
-      within(timeline).getByRole("button", { name: /Track Tiga.*00:01.*00:04/ }),
+      within(timeline).getByRole("button", {
+        name: /Track Tiga.*00:01.*00:04/,
+      }),
     ).toBeInTheDocument();
     expect(
       within(timeline).getByRole("button", { name: /Track Dua.*00:04.*00:06/ }),
@@ -575,7 +587,9 @@ describe("AppShell frozen timeline and global history wiring", () => {
     );
 
     await waitFor(() => {
-      expect(document.querySelectorAll("[data-media-track-id]")).toHaveLength(2);
+      expect(document.querySelectorAll("[data-media-track-id]")).toHaveLength(
+        2,
+      );
       expect(screen.getByRole("button", { name: "Undo" })).toBeEnabled();
       expect(shell).toHaveAttribute("data-project-dirty", "true");
     });
@@ -584,7 +598,9 @@ describe("AppShell frozen timeline and global history wiring", () => {
 
     await waitFor(() => {
       expect(screen.getByText("Belum ada media audio")).toBeInTheDocument();
-      expect(document.querySelectorAll("[data-media-track-id]")).toHaveLength(0);
+      expect(document.querySelectorAll("[data-media-track-id]")).toHaveLength(
+        0,
+      );
       expect(shell).toHaveAttribute("data-project-dirty", "false");
       expect(screen.getByRole("button", { name: "Redo" })).toBeEnabled();
     });
@@ -592,7 +608,9 @@ describe("AppShell frozen timeline and global history wiring", () => {
     fireEvent.click(screen.getByRole("button", { name: "Redo" }));
 
     await waitFor(() => {
-      expect(document.querySelectorAll("[data-media-track-id]")).toHaveLength(2);
+      expect(document.querySelectorAll("[data-media-track-id]")).toHaveLength(
+        2,
+      );
       expect(shell).toHaveAttribute("data-project-dirty", "true");
     });
   });
