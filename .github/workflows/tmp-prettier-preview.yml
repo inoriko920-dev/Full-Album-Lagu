@@ -1,0 +1,25 @@
+name: Temporary Prettier Preview
+
+on:
+  push:
+    branches:
+      - sol/t11-w02-02-discovery-queue
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format and print diff
+        shell: bash
+        run: |
+          npx prettier --write tests/component/AppShell.test.tsx
+          git diff -- tests/component/AppShell.test.tsx
