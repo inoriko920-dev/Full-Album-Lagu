@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { isProjectDirty } from "../../../core/application/services/project-dirty-state";
 import type { ProjectLocation } from "../../../core/contracts/project-lifecycle";
 import type {
+  RecoveryAcceptResult,
+  RecoveryDiscardResult,
   RecoveryErrorCode,
   RecoveryStatusResult,
 } from "../../../core/contracts/project-recovery";
@@ -16,7 +18,12 @@ import {
 
 export type ProjectSourceState = "new" | "loaded" | "load-error";
 export type ProjectPersistenceState =
-  "idle" | "saving" | "saved" | "cancelled" | "error";
+  | "idle"
+  | "saving"
+  | "saved"
+  | "cancelled"
+  | "error";
+export type RecoveryActionState = "idle" | "working" | "error";
 
 const AUTOSAVE_INTERVAL_MS = 15_000;
 
@@ -35,10 +42,13 @@ export interface ProjectSessionView {
   errorCode: ProjectPersistenceErrorCode | null;
   recoveryErrorCode: RecoveryErrorCode | null;
   recoveryState: RecoveryStatusResult;
+  recoveryActionState: RecoveryActionState;
   location: ProjectLocation;
   dirty: boolean;
   savedRevision: number;
   save(): Promise<SaveProjectResult>;
+  acceptRecovery(): Promise<RecoveryAcceptResult>;
+  discardRecovery(): Promise<RecoveryDiscardResult>;
 }
 
 export function useProjectSession(): ProjectSessionView {
@@ -55,6 +65,8 @@ export function useProjectSession(): ProjectSessionView {
   const [recoveryState, setRecoveryState] = useState<RecoveryStatusResult>({
     status: "none",
   });
+  const [recoveryActionState, setRecoveryActionState] =
+    useState<RecoveryActionState>("idle");
   const [location, setLocation] = useState<ProjectLocation>({
     kind: "unsaved",
   });
@@ -183,6 +195,83 @@ export function useProjectSession(): ProjectSessionView {
     }
   }, [persistenceState, project]);
 
+  const acceptRecovery =
+    useCallback(async (): Promise<RecoveryAcceptResult> => {
+      if (recoveryActionState === "working") {
+        return { status: "none" };
+      }
+
+      setRecoveryActionState("working");
+      setRecoveryErrorCode(null);
+
+      try {
+        const result = await window.lfa.acceptRecovery({
+          primaryProject: project,
+        });
+
+        if (result.status === "recovered") {
+          setProject(result.project);
+          setRecoveryState({ status: "none" });
+          setRecoveryActionState("idle");
+        } else if (result.status === "stale") {
+          setRecoveryState(result);
+          setRecoveryActionState("idle");
+        } else if (result.status === "error") {
+          setRecoveryErrorCode(result.code);
+          setRecoveryActionState("error");
+        } else {
+          setRecoveryState({ status: "none" });
+          setRecoveryActionState("idle");
+        }
+
+        return result;
+      } catch {
+        const result: RecoveryAcceptResult = {
+          status: "error",
+          code: "RECOVERY_INVALID",
+          message: "Recovery could not be accepted safely.",
+        };
+        setRecoveryErrorCode(result.code);
+        setRecoveryActionState("error");
+        return result;
+      }
+    }, [project, recoveryActionState]);
+
+  const discardRecovery =
+    useCallback(async (): Promise<RecoveryDiscardResult> => {
+      if (recoveryActionState === "working") {
+        return { status: "none" };
+      }
+
+      setRecoveryActionState("working");
+      setRecoveryErrorCode(null);
+
+      try {
+        const result = await window.lfa.discardRecovery({
+          projectId: project.projectId,
+        });
+
+        if (result.status === "discarded" || result.status === "none") {
+          setRecoveryState({ status: "none" });
+          setRecoveryActionState("idle");
+        } else {
+          setRecoveryErrorCode(result.code);
+          setRecoveryActionState("error");
+        }
+
+        return result;
+      } catch {
+        const result: RecoveryDiscardResult = {
+          status: "error",
+          code: "AUTOSAVE_WRITE_FAILED",
+          message: "Recovery artifact could not be discarded.",
+        };
+        setRecoveryErrorCode(result.code);
+        setRecoveryActionState("error");
+        return result;
+      }
+    }, [project.projectId, recoveryActionState]);
+
   return {
     project,
     sourceState,
@@ -190,9 +279,12 @@ export function useProjectSession(): ProjectSessionView {
     errorCode,
     recoveryErrorCode,
     recoveryState,
+    recoveryActionState,
     location,
     dirty,
     savedRevision,
     save,
+    acceptRecovery,
+    discardRecovery,
   };
 }
