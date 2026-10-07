@@ -1,0 +1,27 @@
+name: Temporary Prettier Preview W02-04
+
+on:
+  push:
+    branches:
+      - sol/t11-w02-04-missing-relink-core
+    paths:
+      - .github/workflows/tmp-prettier-w02-04.yml
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Format and print diff
+        shell: bash
+        run: |
+          npx prettier --write             src/core/application/services/media-relink-service.ts             src/core/application/services/missing-media-service.ts             src/core/contracts/media-relink.ts             src/main/composition-root.ts             src/main/ipc/register-ipc.ts             tests/integration/media-relink-core.test.ts             tests/unit/missing-media-service.test.ts
+          git diff --             src/core/application/services/media-relink-service.ts             src/core/application/services/missing-media-service.ts             src/core/contracts/media-relink.ts             src/main/composition-root.ts             src/main/ipc/register-ipc.ts             tests/integration/media-relink-core.test.ts             tests/unit/missing-media-service.test.ts
