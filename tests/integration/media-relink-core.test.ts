@@ -2,6 +2,7 @@ import {
   mkdir,
   mkdtemp,
   readFile,
+  realpath,
   rm,
   stat,
   writeFile,
@@ -93,6 +94,7 @@ describe("missing media + relink real filesystem", () => {
     const root = await mkdtemp(join(tmpdir(), "lfa moved track Ω "));
     cleanupPaths.push(root);
     const { project, replacementPath } = await makeMovedTrackProject(root);
+    const canonicalReplacementPath = await realpath(replacementPath);
     const bytesBefore = await readFile(replacementPath);
     const statBefore = await stat(replacementPath);
 
@@ -111,9 +113,11 @@ describe("missing media + relink real filesystem", () => {
     expect(outcome.project?.mediaAssets?.[0]).toMatchObject({
       id: "asset-5",
       availability: "ready",
-      sourcePath: replacementPath,
+      sourcePath: canonicalReplacementPath,
     });
-    expect(outcome.project?.tracks[4]?.sourcePath).toBe(replacementPath);
+    expect(outcome.project?.tracks[4]?.sourcePath).toBe(
+      canonicalReplacementPath,
+    );
 
     expect(await readFile(replacementPath)).toEqual(bytesBefore);
     const statAfter = await stat(replacementPath);
@@ -146,6 +150,7 @@ describe("missing media + relink real filesystem", () => {
     const root = await mkdtemp(join(tmpdir(), "lfa folder relink Ω "));
     cleanupPaths.push(root);
     const { project, replacementPath } = await makeMovedTrackProject(root);
+    const canonicalReplacementPath = await realpath(replacementPath);
     const folder = join(root, "Folder Pindah Ω");
 
     const outcome = await relinkService().relinkFolder(project, folder);
@@ -157,7 +162,9 @@ describe("missing media + relink real filesystem", () => {
       },
     ]);
     expect(outcome.project.revision).toBe(10);
-    expect(outcome.project.tracks[4]?.sourcePath).toBe(replacementPath);
+    expect(outcome.project.tracks[4]?.sourcePath).toBe(
+      canonicalReplacementPath,
+    );
   });
 
   it("keeps same-name same-confidence candidates ambiguous and unresolved", async () => {
