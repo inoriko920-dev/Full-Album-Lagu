@@ -14,7 +14,7 @@ Dependency semantics:
 
 1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **COMPLETE / PASS**
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
-3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **IN PROGRESS; T11-W03-01..05 PASS / VERIFIED; T11-W03-06 READY**
+3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **COMPLETE / PASS**
 4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006
 5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
@@ -43,7 +43,7 @@ STEP 10 already proved one thin persistence path. W11-01 extends that seam into 
 
 W11-01 dependency unlock is proven and closed. FTR-001 and FTR-002 are verified and may now serve as prerequisites for later waves. FTR-018 remains active cross-cutting work.
 
-W11-02 ASTRA planning and implementation are complete. T11-W02-01..06 are COMPLETE / PASS, all AC-W11-02-01..18 PASS, and the architecture/UI drift review is PASS with no material drift. W11-03 ASTRA planning is COMPLETE / PASS with DoR PASS. T11-W03-01..05 are PASS / VERIFIED; T11-W03-06 is the only READY implementation task.
+W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL PASS and the architecture/UI/trust-boundary drift review is PASS with no material drift. W11-04 dependencies FTR-004/FTR-013 are now verified, but W11-04 implementation remains blocked until ASTRA creates and passes its detailed planning/DoR source-of-truth.
 
 
 ## W11-02 planning checkpoint
@@ -58,8 +58,8 @@ W11-02 ASTRA planning and implementation are complete. T11-W02-01..06 are COMPLE
 - W11-03 planning baseline: `main@6f296f7cc8e8b81e86bde71f8cd3a32c0d0f1bd2`.
 - W11-03 features: FTR-004 + FTR-013 + FTR-018.
 - W11-03 planning/DoR: PASS.
-- Serial order: T11-W03-01 PASS -> T11-W03-02 PASS -> T11-W03-03 PASS -> T11-W03-04 PASS -> T11-W03-05 PASS -> T11-W03-06 READY.
-- W11-04 remains blocked until W11-03 closes COMPLETE / PASS.
+- Serial order: T11-W03-01 PASS -> T11-W03-02 PASS -> T11-W03-03 PASS -> T11-W03-04 PASS -> T11-W03-05 PASS -> T11-W03-06 PASS.
+- W11-03 = COMPLETE / PASS. W11-04 is dependency-unlocked for ASTRA planning; SOL implementation remains blocked pending its planning/DoR gate.
 
 ## T11-W03-01 verification
 
@@ -118,3 +118,16 @@ W11-02 ASTRA planning and implementation are complete. T11-W02-01..06 are COMPLE
 - Exact frozen SCR-002A and all prior lifecycle/media/package regressions remain green.
 - Evidence: `evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`.
 - Dependency unlock: T11-W03-06 READY. W11-04 remains blocked until wave closure.
+
+## T11-W03-06 / W11-03 closure
+
+- Verified implementation head: `8464da5bbbff20ff23636a2b4894952949f6d070`.
+- Windows CI: `37642774190` / #244 PASS; job `112865244896`.
+- 12-track canonical Windows full-flow PASS: import/load -> reorder -> disable -> derived boundary -> Save -> Undo/Redo saved-checkpoint -> process restart/reopen.
+- 128-track live renderer/history scenario PASS in 970 ms.
+- AC-W11-03-01..20: ALL PASS.
+- Architecture/UI/trust-boundary drift: PASS — no material drift.
+- Closure evidence: `evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`.
+- Drift review: `evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`.
+- FTR-004 and FTR-013 are VERIFIED W11-03; FTR-018 cross-cut PASS.
+- Dependency result: W11-04 may enter ASTRA planning. No W11-04 implementation is authorized until its own planning/DoR gate passes.

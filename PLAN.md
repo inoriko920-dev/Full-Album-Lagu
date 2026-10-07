@@ -36,7 +36,7 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Completed: **T11-W02-06 Wave E2E, Drift Review & Evidence Closure — PASS / VERIFIED**.
 - W11-02 acceptance AC-W11-02-01..18: **ALL PASS**; architecture/UI drift: **PASS — no material drift**.
 - Closure proof: Windows CI `37616435681` / #177 PASS; `docs/step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
-- W11-03 Album Timeline + Command History — **ASTRA PLANNING COMPLETE / DoR PASS; IMPLEMENTATION IN PROGRESS**.
+- W11-03 Album Timeline + Command History — **COMPLETE / PASS**.
 - W11-03 features: FTR-004 + FTR-013 + FTR-018 cross-cut.
 - W11-03 planning baseline: `main@6f296f7cc8e8b81e86bde71f8cd3a32c0d0f1bd2`.
 - W11-03 planning authority:
@@ -55,8 +55,11 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Proof: Windows CI `37634883632` / #233 PASS; exact frozen SCR-002A PASS; `docs/step11/evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`.
 - Completed: **T11-W03-05 Unified Batch History & Edge-Case Hardening — PASS / VERIFIED**.
 - Proof: Windows CI `37638091188` / #240 PASS; 128-track history/timeline stress PASS; `docs/step11/evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`.
-- Next exact implementation task: **T11-W03-06 Wave E2E, Drift Review & Evidence Closure — SOL only**.
-- W11-04 remains blocked until T11-W03-06 closes W11-03 COMPLETE / PASS.
+- Completed: **T11-W03-06 Wave E2E, Drift Review & Evidence Closure — PASS / VERIFIED**.
+- Proof: Windows CI `37642774190` / #244 PASS; AC-W11-03-01..20 ALL PASS; 12-track canonical full-flow PASS; 128-track live renderer/history PASS in 970 ms; `docs/step11/evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`.
+- Architecture/UI/trust-boundary drift: **PASS — NO MATERIAL DRIFT**; `docs/step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`.
+- **W11-03 COMPLETE / PASS.**
+- Next exact action: **ASTRA planning for W11-04 Auto Susun + Track Binding**. A detailed planning DOCX/charter/task cards/acceptance/DoR must be created and merged before SOL implementation begins.
 - No new W11-02 UI prompt/image generation is needed; existing frozen states are authoritative.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.
 

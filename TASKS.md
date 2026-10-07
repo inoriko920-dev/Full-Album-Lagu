@@ -482,7 +482,27 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
-- Dependency: T11-W03-05 PASS / VERIFIED.
-- Scope authority: `docs/step11/TASK_CARDS_W11_03.md`.
-- W11-04 remains blocked until this closure task is COMPLETE / PASS.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `8464da5bbbff20ff23636a2b4894952949f6d070`
+- Windows CI: `37642774190` / run #244 — PASS
+- CI job: `112865244896`
+- W11-03 closure artifact: `11493061001`
+- Windows portable artifact: `11491964745`
+- Frozen visual artifact: `11494045003`
+- Closure proof:
+  - 12-track real import/load -> reorder -> disable -> derived boundary -> Save -> Undo/Redo saved-checkpoint -> process restart/reopen PASS;
+  - persisted reorder + disabled state and clean history reset after reopen PASS;
+  - source hashes/size/mtime unchanged;
+  - 128-track live renderer/history scenario PASS in 970 ms;
+  - public closure evidence contains no raw-path keys/provider secrets;
+  - AC-W11-03-01..20 ALL PASS;
+  - architecture/UI/trust-boundary drift review PASS — no material drift;
+  - STEP 10, W11-01, W11-02, exact frozen UI, Windows package, executable smoke and portable ZIP all PASS.
+- Evidence:
+  - `docs/step11/evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`
+  - `docs/step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`
+- **W11-03 = COMPLETE / PASS.**
+- W11-04 is unlocked for ASTRA planning only; implementation has not started.
