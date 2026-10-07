@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01 is PASS / VERIFIED and T11-W03-02 is the only READY SOL task.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01 and T11-W03-02 are PASS / VERIFIED; T11-W03-03 is the only READY SOL task.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -128,10 +128,23 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - 105-track deterministic projection and full previous-wave regressions are green.
 - No renderer/UI/session migration was performed.
 
-## Next exact task
-**T11-W03-02 — Existing Mutation Migration + Session Checkpoint Semantics — SOL only.**
+## T11-W03-02 completed
+- Status: PASS / VERIFIED.
+- Verified implementation head: `c505b14488735705401a0ffb6e1bd666dd77a996`.
+- Windows CI: `37628187263` / #211 PASS; job `112815298762`.
+- Portable artifact: `11484699332`.
+- Evidence: `docs/step11/evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`.
+- ProjectSession now publishes user mutations through ProjectSessionHistory -> ProjectCommandEngine.
+- Logical saved-state token is the dirty/clean authority; numeric revision remains monotonic.
+- Undo-to-saved is clean; Redo-away is dirty.
+- Recovery Accept remains dirty until primary Save; Open/New-style reset clears history.
+- Media import and relink use shared history; passive missing scan remains non-history reconciliation.
+- Existing W11-01/W11-02 behavior, frozen UI, package, smoke and portable ZIP are green.
 
-On the next user `lanjutkan`, migrate the official ProjectSession mutation path/checkpoint semantics and existing W11-02 user-driven mutations according to the task card. Do not start T11-W03-03 reorder/enable application commands or T11-W03-04 UI wiring in the same turn.
+## Next exact task
+**T11-W03-03 — Reorder / Enable-Disable / Boundary Application Core — SOL only.**
+
+On the next user `lanjutkan`, implement validated track reorder and enabled-state commands, required-media synchronization, deterministic boundary recalculation and persistence round-trip according to the task card. Do not start T11-W03-04 UI wiring in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.

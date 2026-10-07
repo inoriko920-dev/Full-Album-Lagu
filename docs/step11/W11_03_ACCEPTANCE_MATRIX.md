@@ -23,6 +23,15 @@
 | AC-W11-03-19 | Core timeline/history works offline and diagnostics contain no secret/provider/unnecessary raw-path leakage | 01..06 | secret/path/architecture gates |
 | AC-W11-03-20 | W11-01 lifecycle/recovery, W11-02 media/relink, frozen UI, Windows package/smoke/portable ZIP regressions stay green | 02,04,06 | canonical Windows CI |
 
+## T11-W03-02 checkpoint evidence
+
+- T11-W03-02 status: **PASS / VERIFIED**.
+- Verified implementation head: `c505b14488735705401a0ffb6e1bd666dd77a996`.
+- Windows CI: `37628187263` / #211 PASS.
+- Evidence: `evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`.
+- Verified contribution: AC-09 shared mutation owner for current W11-02 user mutations; AC-10/11/12 command/history behavior; AC-15 logical Save checkpoint; AC-16 Open/New/Recovery/passive-scan semantics; AC-19 offline/trust-boundary gates; AC-20 W11-01/W11-02/frozen UI/package regressions.
+- These are **task-level verified contributions**, not premature final wave closure; the matrix remains open until T11-W03-06.
+
 ## Closure rule
 
 W11-03 may close only when **AC-W11-03-01..20** are all PASS or any BLOCKED item is explicitly documented with evidence. No criterion is implied PASS merely because code exists.

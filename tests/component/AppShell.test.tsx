@@ -210,6 +210,13 @@ describe("AppShell", () => {
   });
 
   it("wires native audio import through discovery and intake into the frozen Media panel", async () => {
+    const baseProject = {
+      schemaVersion: 1 as const,
+      projectId: "project-media-ui",
+      name: "Album Media",
+      revision: 0,
+      tracks: [],
+    };
     const importedProject = {
       schemaVersion: 1 as const,
       projectId: "project-media-ui",
@@ -240,6 +247,11 @@ describe("AppShell", () => {
       ],
     };
 
+    getStartupProjectMock.mockResolvedValueOnce({
+      status: "loaded",
+      project: baseProject,
+      location: { kind: "known-path" },
+    });
     pickAudioFilesMock.mockResolvedValueOnce({
       status: "started",
       batchId: "discovery-ui-1",

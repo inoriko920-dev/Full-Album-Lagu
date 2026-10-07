@@ -47,8 +47,10 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
   - `docs/step11/W11_03_DOR.md`
 - Completed: **T11-W03-01 Timeline Domain + CommandEngine Core — PASS / VERIFIED**.
 - Proof: Windows CI `37624594282` / #192 PASS; `docs/step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`.
-- Next exact implementation task: **T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics — SOL only**.
-- T11-W03-03..06 remain serially blocked; W11-04 remains blocked until W11-03 closure.
+- Completed: **T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics — PASS / VERIFIED**.
+- Proof: Windows CI `37628187263` / #211 PASS; `docs/step11/evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`.
+- Next exact implementation task: **T11-W03-03 Reorder / Enable-Disable / Boundary Application Core — SOL only**.
+- T11-W03-04..06 remain serially blocked; W11-04 remains blocked until W11-03 closure.
 - No new W11-02 UI prompt/image generation is needed; existing frozen states are authoritative.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.
 

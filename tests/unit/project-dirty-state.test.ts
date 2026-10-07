@@ -2,23 +2,21 @@ import { describe, expect, it } from "vitest";
 import { isProjectDirty } from "../../src/core/application/services/project-dirty-state";
 
 describe("project dirty state", () => {
-  it("becomes dirty when the live revision differs from the last saved revision", () => {
-    expect(isProjectDirty(4, 4)).toBe(false);
-    expect(isProjectDirty(5, 4)).toBe(true);
+  it("is clean when the live logical state token matches the saved checkpoint", () => {
+    expect(isProjectDirty("state-4", "state-4")).toBe(false);
+    expect(isProjectDirty("state-5", "state-4")).toBe(true);
   });
 
-  it("returns clean again after a successful save advances the saved revision", () => {
-    const mutatedRevision = 8;
-    expect(isProjectDirty(mutatedRevision, 7)).toBe(true);
-    expect(isProjectDirty(mutatedRevision, 8)).toBe(false);
+  it("treats a missing saved checkpoint as dirty for recovered state", () => {
+    expect(isProjectDirty("state-recovered", null)).toBe(true);
   });
 
-  it("rejects invalid revision values", () => {
-    expect(() => isProjectDirty(-1, 0)).toThrow(
-      "Project revisions must be non-negative integers.",
+  it("rejects empty logical state tokens", () => {
+    expect(() => isProjectDirty("", "state-0")).toThrow(
+      "Current project state token must be non-empty.",
     );
-    expect(() => isProjectDirty(1.5, 1)).toThrow(
-      "Project revisions must be non-negative integers.",
+    expect(() => isProjectDirty("state-1", "   ")).toThrow(
+      "Saved project state token must be non-empty when set.",
     );
   });
 });
