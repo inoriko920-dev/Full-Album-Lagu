@@ -27,11 +27,7 @@ import {
 
 export type ProjectSourceState = "new" | "loaded" | "load-error";
 export type ProjectPersistenceState =
-  | "idle"
-  | "saving"
-  | "saved"
-  | "cancelled"
-  | "error";
+  "idle" | "saving" | "saved" | "cancelled" | "error";
 export type RecoveryActionState = "idle" | "working" | "error";
 export type MediaOperationState =
   | "idle"
@@ -386,9 +382,7 @@ export function useProjectSession(): ProjectSessionView {
 
   const runMediaImport = useCallback(
     async (
-      startDiscovery: () => ReturnType<
-        typeof window.lfa.pickAudioFiles
-      >,
+      startDiscovery: () => ReturnType<typeof window.lfa.pickAudioFiles>,
     ): Promise<void> => {
       if (mediaBusyRef.current) return;
 
@@ -473,10 +467,7 @@ export function useProjectSession(): ProjectSessionView {
               intakeStart.batchId,
             );
 
-            if (
-              intake.status === "probing" ||
-              intake.status === "committing"
-            ) {
+            if (intake.status === "probing" || intake.status === "committing") {
               setMediaOperationState(intake.status);
               setMediaProgress({
                 phase: intake.status,

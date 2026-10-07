@@ -506,16 +506,12 @@ describe("AppShell", () => {
     const dialog = await screen.findByRole("dialog", {
       name: "Media Tidak Ditemukan",
     });
-    expect(
-      within(dialog).getByText("05 Track 5.mp3"),
-    ).toBeInTheDocument();
+    expect(within(dialog).getByText("05 Track 5.mp3")).toBeInTheDocument();
     expect(
       within(dialog).getByText("Wajib • menghambat render • tidak ditemukan"),
     ).toBeInTheDocument();
 
-    fireEvent.click(
-      within(dialog).getByRole("button", { name: "Cari File" }),
-    );
+    fireEvent.click(within(dialog).getByRole("button", { name: "Cari File" }));
 
     await waitFor(() => {
       expect(

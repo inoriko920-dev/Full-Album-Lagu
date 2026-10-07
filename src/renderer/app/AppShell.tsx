@@ -145,13 +145,19 @@ function MediaPanel({
       </div>
 
       {projectSession.mediaError ? (
-        <div className="media-library__message media-library__message--error" role="alert">
+        <div
+          className="media-library__message media-library__message--error"
+          role="alert"
+        >
           {projectSession.mediaError.message}
         </div>
       ) : null}
 
       {rejected > 0 ? (
-        <div className="media-library__message media-library__message--warning" role="status">
+        <div
+          className="media-library__message media-library__message--warning"
+          role="status"
+        >
           {rejected} file ditolak atau tidak valid.
         </div>
       ) : null}
@@ -186,7 +192,7 @@ function MediaPanel({
                       ? "File perlu diperiksa"
                       : asset?.availability === "unsupported"
                         ? "Format tidak didukung"
-                        : asset?.metadata?.artist ?? "Audio siap"}
+                        : (asset?.metadata?.artist ?? "Audio siap")}
                 </small>
               </span>
               {needsRelink && track.audioAssetId ? (
@@ -792,7 +798,11 @@ function MissingMediaDialog({
           />
           <ActionButton
             variant="primary"
-            label={projectSession.missingMediaItems.length === 0 ? "Selesai" : "Tutup"}
+            label={
+              projectSession.missingMediaItems.length === 0
+                ? "Selesai"
+                : "Tutup"
+            }
             disabled={busy}
             onClick={onClose}
           />
@@ -845,9 +855,12 @@ export function AppShell() {
             variant="toolbar"
             label="Impor Audio"
             icon="upload"
-            disabled={["selecting", "discovering", "probing", "committing"].includes(
-              projectSession.mediaOperationState,
-            )}
+            disabled={[
+              "selecting",
+              "discovering",
+              "probing",
+              "committing",
+            ].includes(projectSession.mediaOperationState)}
             onClick={() => void projectSession.importAudio()}
           />
           <ActionButton
