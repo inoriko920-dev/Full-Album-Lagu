@@ -1,3 +1,7 @@
+import type {
+  ArtworkImportRequest,
+  ArtworkImportResult,
+} from "./artwork-intake";
 import type { FoundationInfo } from "./foundation-info";
 import type {
   MediaDiscoveryCancelResult,
@@ -37,6 +41,7 @@ import type {
 
 export interface LfaBridge {
   getFoundationInfo(): Promise<FoundationInfo>;
+  importArtwork(request: ArtworkImportRequest): Promise<ArtworkImportResult>;
   pickAudioFiles(): Promise<MediaDiscoveryStartResult>;
   pickMediaFolder(): Promise<MediaDiscoveryStartResult>;
   discoverDroppedMedia(

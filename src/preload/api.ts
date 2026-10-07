@@ -1,5 +1,10 @@
 import { ipcRenderer, webUtils } from "electron";
 import {
+  ARTWORK_PICK_AND_BIND_CHANNEL,
+  artworkImportRequestSchema,
+  artworkImportResultSchema,
+} from "../core/contracts/artwork-intake";
+import {
   FOUNDATION_INFO_CHANNEL,
   foundationInfoSchema,
 } from "../core/contracts/foundation-info";
@@ -68,6 +73,15 @@ export const lfaBridge: LfaBridge = {
   async getFoundationInfo() {
     const payload: unknown = await ipcRenderer.invoke(FOUNDATION_INFO_CHANNEL);
     return foundationInfoSchema.parse(payload);
+  },
+
+  async importArtwork(request) {
+    const validatedRequest = artworkImportRequestSchema.parse(request);
+    const payload: unknown = await ipcRenderer.invoke(
+      ARTWORK_PICK_AND_BIND_CHANNEL,
+      validatedRequest,
+    );
+    return artworkImportResultSchema.parse(payload);
   },
 
   async pickAudioFiles() {

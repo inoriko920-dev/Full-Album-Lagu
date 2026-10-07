@@ -1,6 +1,7 @@
 import { ipcMain } from "electron";
 import { ProjectRecoveryStoreError } from "../../core/application/ports/project-recovery-store";
 import { ProjectStoreError } from "../../core/application/ports/project-store";
+import type { ArtworkIntakeService } from "../../core/application/services/artwork-intake-service";
 import type { MediaDiscoveryService } from "../../core/application/services/media-discovery-service";
 import {
   MediaIntakeStartError,
@@ -12,6 +13,11 @@ import type { ProjectLifecycleService } from "../../core/application/services/pr
 import { ProjectPathSession } from "../../core/application/services/project-path-session";
 import type { LoadProjectUseCase } from "../../core/application/services/project-persistence";
 import type { ProjectRecoveryService } from "../../core/application/services/project-recovery-service";
+import {
+  ARTWORK_PICK_AND_BIND_CHANNEL,
+  artworkImportRequestSchema,
+  artworkImportResultSchema,
+} from "../../core/contracts/artwork-intake";
 import {
   FOUNDATION_INFO_CHANNEL,
   foundationInfoSchema,
@@ -85,9 +91,11 @@ export interface ProjectIpcDependencies {
   recoveryService: ProjectRecoveryService;
   mediaDiscoveryService: MediaDiscoveryService;
   mediaIntakeService: MediaIntakeService;
+  artworkIntakeService: ArtworkIntakeService;
   missingMediaService: MissingMediaService;
   mediaRelinkService: MediaRelinkService;
   selectAudioFiles: () => Promise<string[] | null>;
+  selectArtworkFile: () => Promise<string | null>;
   selectMediaFolders: () => Promise<string[] | null>;
   selectRelinkFile: (kind: MediaKind) => Promise<string | null>;
   selectRelinkFolder: () => Promise<string | null>;
@@ -169,6 +177,44 @@ export function registerIpcHandlers(
       });
     }
   };
+
+  ipcMain.handle(
+    ARTWORK_PICK_AND_BIND_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = artworkImportRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return artworkImportResultSchema.parse({
+          status: "error",
+          code: "MEDIA_PROBE_FAILED",
+          message: "Permintaan artwork tidak valid.",
+        });
+      }
+
+      try {
+        const selectedPath = await projectDependencies.selectArtworkFile();
+        if (selectedPath === null) {
+          return artworkImportResultSchema.parse({
+            status: "cancelled",
+            code: "MEDIA_SELECTION_CANCELLED",
+          });
+        }
+
+        return artworkImportResultSchema.parse(
+          await projectDependencies.artworkIntakeService.importAndBind(
+            request.data.project,
+            request.data.target,
+            selectedPath,
+          ),
+        );
+      } catch {
+        return artworkImportResultSchema.parse({
+          status: "error",
+          code: "MEDIA_PROBE_FAILED",
+          message: "Artwork tidak dapat diproses dengan aman.",
+        });
+      }
+    },
+  );
 
   ipcMain.handle(MEDIA_PICK_AUDIO_FILES_CHANNEL, async () => {
     try {
