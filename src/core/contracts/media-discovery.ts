@@ -5,8 +5,7 @@ export const MEDIA_PICK_FOLDER_CHANNEL = "media:pick-folder" as const;
 export const MEDIA_DISCOVER_DROPPED_CHANNEL = "media:discover-dropped" as const;
 export const MEDIA_DISCOVERY_STATUS_CHANNEL =
   "media:get-discovery-status" as const;
-export const MEDIA_DISCOVERY_CANCEL_CHANNEL =
-  "media:cancel-discovery" as const;
+export const MEDIA_DISCOVERY_CANCEL_CHANNEL = "media:cancel-discovery" as const;
 
 export const mediaDiscoveryPathRequestSchema = z
   .object({
@@ -161,9 +160,7 @@ export type MediaDiscoveryProgress = z.infer<
 >;
 export type MediaDiscoveryItem = z.infer<typeof mediaDiscoveryItemSchema>;
 export type MediaDiscoveryIssue = z.infer<typeof mediaDiscoveryIssueSchema>;
-export type MediaDiscoverySummary = z.infer<
-  typeof mediaDiscoverySummarySchema
->;
+export type MediaDiscoverySummary = z.infer<typeof mediaDiscoverySummarySchema>;
 export type MediaDiscoveryStatusResult = z.infer<
   typeof mediaDiscoveryStatusResultSchema
 >;
