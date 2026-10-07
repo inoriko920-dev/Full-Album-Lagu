@@ -5,7 +5,7 @@ Planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
 Features: **FTR-005 Auto Susun Album + FTR-006 Artwork/Metadata/Dynamic Track Binding**  
 Cross-cut: **FTR-013 Unified Command History + FTR-018 Error/Offline**  
 Planning status: **COMPLETE / PASS**  
-Implementation status: **NOT STARTED**  
+Implementation status: **IN PROGRESS — T11-W04-01 PASS / VERIFIED; T11-W04-02 READY**  
 UI decision: **reuse frozen UI; no new UI prompt/image stage is required now**
 
 ## Goal
@@ -102,8 +102,8 @@ Draft form values, selected Inspector control, picker/dialog state and plan-prev
 
 ## Serial tasks
 
-1. **T11-W04-01 — Binding Schema + Resolver Contracts** — READY.
-2. **T11-W04-02 — Deterministic Auto Susun Planner + CommandBatch** — BLOCKED by 01.
+1. **T11-W04-01 — Binding Schema + Resolver Contracts** — PASS / VERIFIED.
+2. **T11-W04-02 — Deterministic Auto Susun Planner + CommandBatch** — READY.
 3. **T11-W04-03 — Artwork Intake + Binding Commands** — BLOCKED by 02.
 4. **T11-W04-04 — Metadata Override + Dynamic Binding Integration** — BLOCKED by 03.
 5. **T11-W04-05 — Frozen Auto Susun + Inspector UI Wiring** — BLOCKED by 04.
