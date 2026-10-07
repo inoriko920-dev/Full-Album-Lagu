@@ -1,12 +1,6 @@
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
-import {
-  mkdir,
-  readFile,
-  rm,
-  stat,
-  writeFile,
-} from "node:fs/promises";
+import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
 import { basename, join, resolve } from "node:path";
 
@@ -52,8 +46,8 @@ function makePcmWav(durationMs = 500, frequency = 440) {
 
 function pngBytes() {
   return Buffer.from([
-    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
-    0x00, 0x00, 0x00, 0x0d, 0x49, 0x48, 0x44, 0x52,
+    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
+    0x49, 0x48, 0x44, 0x52,
   ]);
 }
 
@@ -114,10 +108,7 @@ async function createProjectFixture({
     const digits = count >= 100 ? 3 : 2;
     const token = String(number).padStart(digits, "0");
     const sourcePath = join(audioDir, `${token} Source Track Ω.wav`);
-    await writeFile(
-      sourcePath,
-      makePcmWav(durationMs, 180 + (number % 120)),
-    );
+    await writeFile(sourcePath, makePcmWav(durationMs, 180 + (number % 120)));
     const details = await stat(sourcePath);
     const idToken = String(number).padStart(3, "0");
     const assetId = `audio-${idToken}`;
@@ -153,8 +144,7 @@ async function createProjectFixture({
   }
 
   const order =
-    initialOrder ??
-    Array.from({ length: count }, (_, index) => count - index);
+    initialOrder ?? Array.from({ length: count }, (_, index) => count - index);
   const tracks = order.map((number) => tracksByNumber.get(number));
   const project = {
     schemaVersion: 1,
@@ -288,11 +278,7 @@ const flowAfter = await snapshotLabeled(flowSources);
 const expectedFlowOrder = sortedTrackIds(12);
 
 const reopenEvidencePath = join(evidenceDir, "02-reopen.json");
-await runElectron(
-  "auto-binding-reopen",
-  flowProjectPath,
-  reopenEvidencePath,
-);
+await runElectron("auto-binding-reopen", flowProjectPath, reopenEvidencePath);
 const reopenEvidence = await loadEvidence(reopenEvidencePath);
 
 const missingRoot = join(fixturesDir, "Optional Artwork Missing Relink Ω");
@@ -363,11 +349,7 @@ await seedJson(scaleProjectPath, scaleFixture.project);
 const scaleBefore = await snapshotLabeled(scaleFixture.sourceEntries);
 const scaleEvidencePath = join(evidenceDir, "04-auto-arrange-scale-128.json");
 const scaleStartedAt = Date.now();
-await runElectron(
-  "auto-arrange-stress",
-  scaleProjectPath,
-  scaleEvidencePath,
-);
+await runElectron("auto-arrange-stress", scaleProjectPath, scaleEvidencePath);
 const scaleElapsedMs = Date.now() - scaleStartedAt;
 const scaleEvidence = await loadEvidence(scaleEvidencePath);
 const scaleAfter = await snapshotLabeled(scaleFixture.sourceEntries);
@@ -458,7 +440,10 @@ const assertions = {
 
   savePersistsCanonicalState:
     flowEvidence.saved?.dirty === false &&
-    sameOrder(savedFlowProject.tracks.map((track) => track.id), expectedFlowOrder) &&
+    sameOrder(
+      savedFlowProject.tracks.map((track) => track.id),
+      expectedFlowOrder,
+    ) &&
     targetTrack?.binding?.titleOverride === "Closure Manual Title Ω" &&
     targetTrack?.binding?.artistOverride === "Closure Artist Ω" &&
     targetTrack?.binding?.albumOverride === "Closure Album Ω" &&
@@ -470,11 +455,15 @@ const assertions = {
     flowEvidence.postSaveMutation?.dirty === true &&
     flowEvidence.undoToSaved?.dirty === false &&
     flowEvidence.undoToSaved?.canRedo === true &&
-    flowEvidence.undoToSaved?.inspectorText?.includes("Closure Manual Title Ω") &&
+    flowEvidence.undoToSaved?.inspectorText?.includes(
+      "Closure Manual Title Ω",
+    ) &&
     flowEvidence.redoAway?.dirty === true &&
     !flowEvidence.redoAway?.inspectorText?.includes("Closure Manual Title Ω") &&
     flowEvidence.finalState?.dirty === false &&
-    flowEvidence.finalState?.inspectorText?.includes("Closure Manual Title Ω") &&
+    flowEvidence.finalState?.inspectorText?.includes(
+      "Closure Manual Title Ω",
+    ) &&
     flowEvidence.finalState?.artworkText?.includes("Track Cover Ω.png"),
 
   reopenPersistsStateAndResetsHistory:
@@ -521,8 +510,7 @@ const assertions = {
       scaleEvidence.applied?.projectRevision &&
     scaleEvidence.noop?.autoArrangeState === "noop",
 
-  scale128Responsive:
-    scaleEvidence.elapsedMs < 15000 && scaleElapsedMs < 60000,
+  scale128Responsive: scaleEvidence.elapsedMs < 15000 && scaleElapsedMs < 60000,
 
   scale128SourcesUnchanged: fingerprintEvidence.scale128.unchanged,
 
@@ -605,8 +593,7 @@ const summary = {
       "real missing optional artwork scan remains ready with zero blockers then relinks",
     "AC-W11-04-13":
       "real UI artwork import+bind joins global history; canonical Undo/Redo atomic tests",
-    "AC-W11-04-14":
-      "live draft non-dirty then one metadata Apply history step",
+    "AC-W11-04-14": "live draft non-dirty then one metadata Apply history step",
     "AC-W11-04-15":
       "canonical metadata relink integration regression in Windows verify",
     "AC-W11-04-16":
