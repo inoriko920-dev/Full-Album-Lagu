@@ -314,5 +314,21 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 - 244 Vitest assertions plus STEP 10/W11-01..04/frozen UI/package/smoke/ZIP are green.
 - FTR-007/FTR-011 are not wave-VERIFIED yet.
 
+
+
+## T11-W05-02 completed
+- Status: **PASS / VERIFIED**.
+- Verified implementation head: `308a4800bcbfcf4e85828795e6573893622dd722`.
+- Windows CI: `37687361672` / #336 PASS; job `113018515599`.
+- Portable artifact: `11511078393`.
+- Frozen visual artifact: `11511467773`.
+- Evidence: `docs/step11/evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md`.
+- Official manual layer commands now cover add/remove/duplicate/reorder/transform/common/text-style through the shared CommandEngine.
+- Locked-layer mutation, stale revision/token, duplicate ID and invalid targets reject atomically.
+- Transform gesture preview is session-only; gesture end produces one guarded manual command/history node.
+- 128-layer / 64-edit full Undo/Redo stress is deterministic.
+- 256 Vitest assertions plus STEP 10/W11-01..04/frozen UI/package/smoke/ZIP are green.
+- FTR-007 is not wave-VERIFIED yet; FTR-011 has not started.
+
 ## Next exact action
-After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-02 — Manual Layer Commands + Gesture/History Semantics only**. Read W11-05 planning authority and T11-W05-01 evidence first. Do not start T11-W05-03, template store/UI, W11-06, W11-07 or STEP 12 in the same turn.
+After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-03 — Template Document + Local Store + Trial/Apply Core only**. Read W11-05 planning authority plus W05-01/W05-02 evidence first. Do not start T11-W05-04, Preview/UI wiring, W11-06, W11-07 or STEP 12 in the same turn.
