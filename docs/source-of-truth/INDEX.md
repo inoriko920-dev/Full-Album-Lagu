@@ -64,8 +64,8 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - W11-04 planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`.
 - W11-04 operational companions: `../../step11/WAVE_11_04_CHARTER.md`, `../../step11/TASK_CARDS_W11_04.md`, `../../step11/W11_04_ACCEPTANCE_MATRIX.md`, `../../step11/W11_04_DOR.md`.
 - W11-04 implementation evidence: `../../step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`, `../../step11/evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`, `../../step11/evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`, `../../step11/evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`, and `../../step11/evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
-- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; **W11-04 IN PROGRESS with T11-W04-01..05 PASS / VERIFIED**.
-- Only T11-W04-06 has SOL implementation authority next.
+- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; **W11-04 COMPLETE / PASS**.
+- Next authority: **ASTRA W11-05 planning only**; W11-05 implementation is not yet authorized.
 - Existing frozen Auto Susun/Inspector/Media/Timeline references are sufficient at planning time; no new UI prompt/image generation is required.
 
 
