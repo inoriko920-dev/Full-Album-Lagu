@@ -16,7 +16,7 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Wave charter: `docs/step11/WAVE_11_01_CHARTER.md`
 - Task cards: `docs/step11/TASK_CARDS_W11_01.md`
 
-## Active wave
+## Last completed wave
 **W11-01 Project Lifecycle & Recovery Core**
 - Features: FTR-001 Project Lifecycle + FTR-002 Autosave & Crash Recovery + FTR-018 Error/Offline cross-cut.
 - Status: COMPLETE / PASS.
