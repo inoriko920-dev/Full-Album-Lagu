@@ -61,6 +61,8 @@ describe("artwork intake contract", () => {
       },
       asset: { assetId: "image-1", fileName: "cover.png" },
     });
+    expect(result.status).toBe("imported");
+    if (result.status !== "imported") throw new Error("Expected imported.");
     expect(result.asset).toEqual({
       assetId: "image-1",
       fileName: "cover.png",

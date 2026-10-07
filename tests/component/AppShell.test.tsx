@@ -45,6 +45,10 @@ const getFoundationInfoMock = vi.fn<LfaBridge["getFoundationInfo"]>(
     phase: "foundation" as const,
   }),
 );
+const importArtworkMock = vi.fn<LfaBridge["importArtwork"]>(async () => ({
+  status: "cancelled" as const,
+  code: "MEDIA_SELECTION_CANCELLED" as const,
+}));
 const pickAudioFilesMock = vi.fn<LfaBridge["pickAudioFiles"]>(async () => ({
   status: "cancelled" as const,
   code: "MEDIA_SELECTION_CANCELLED" as const,
@@ -120,6 +124,7 @@ const relinkMissingMediaFolderMock = vi.fn<
 
 const bridge: LfaBridge = {
   getFoundationInfo: getFoundationInfoMock,
+  importArtwork: importArtworkMock,
   pickAudioFiles: pickAudioFilesMock,
   pickMediaFolder: pickMediaFolderMock,
   discoverDroppedMedia: discoverDroppedMediaMock,
@@ -165,6 +170,7 @@ beforeEach(() => {
   acceptRecoveryMock.mockClear();
   discardRecoveryMock.mockClear();
   getFoundationInfoMock.mockClear();
+  importArtworkMock.mockClear();
   pickAudioFilesMock.mockClear();
   pickMediaFolderMock.mockClear();
   discoverDroppedMediaMock.mockClear();
