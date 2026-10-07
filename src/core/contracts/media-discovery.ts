@@ -2,8 +2,7 @@ import { z } from "zod";
 
 export const MEDIA_PICK_AUDIO_FILES_CHANNEL = "media:pick-audio-files" as const;
 export const MEDIA_PICK_FOLDER_CHANNEL = "media:pick-folder" as const;
-export const MEDIA_DISCOVER_DROPPED_CHANNEL =
-  "media:discover-dropped" as const;
+export const MEDIA_DISCOVER_DROPPED_CHANNEL = "media:discover-dropped" as const;
 export const MEDIA_DISCOVERY_STATUS_CHANNEL =
   "media:get-discovery-status" as const;
 export const MEDIA_DISCOVERY_CANCEL_CHANNEL =
