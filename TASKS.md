@@ -377,8 +377,34 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `c505b14488735705401a0ffb6e1bd666dd77a996`
+- Windows CI: `37628187263` / run #211 — PASS
+- CI job: `112815298762`
+- Windows portable artifact: `11484699332`
+- Scope delivered:
+  - ProjectSession integrated with shared ProjectCommandEngine through ProjectSessionHistory;
+  - dirty/clean truth moved from revision equality to logical saved-state token checkpoint;
+  - numeric revision remains monotonic while Undo-to-saved becomes clean and Redo-away becomes dirty;
+  - savedRevision retained only for recovery compatibility;
+  - Open/New-style reset clears prior history and establishes a clean baseline;
+  - Recovery Accept resets history as dirty until primary Save;
+  - W11-02 media import + single/folder relink migrated into shared user history;
+  - passive missing-media scan remains non-history system reconciliation;
+  - passive reconciliation preserves current semantic state without false dirty/history noise.
+- Full Windows regression: PASS — STEP 10, W11-01, W11-02, exact frozen UI, package, smoke and portable ZIP.
+- Evidence: `docs/step11/evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`.
+- Out of scope honored: reorder/enable-disable commands, Undo/Redo product UI, Gemini, FFmpeg/FFprobe, Auto Susun, templates, layers, preview, transitions, keyframes and render.
+
+## T11-W03-03 — Reorder / Enable-Disable / Boundary Application Core
+- Owner: SOL
+- Priority: P0
+- Risk: HIGH
 - Status: READY
-- Dependency: T11-W03-01 PASS / VERIFIED.
+- Dependency: T11-W03-02 PASS / VERIFIED.
 - Scope authority: `docs/step11/TASK_CARDS_W11_03.md`.
-- T11-W03-03..06 remain BLOCKED serially.
+- T11-W03-04..06 remain BLOCKED serially.
 - W11-04 remains blocked until T11-W03-06 closes W11-03 COMPLETE / PASS.
