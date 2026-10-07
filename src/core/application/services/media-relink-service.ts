@@ -114,12 +114,10 @@ function replaceAsset(
   asset: MediaAssetReference,
   replacement: ValidatedReplacement,
 ): MediaAssetReference {
-  const {
-    errorCode: _oldError,
-    fingerprint: _oldFingerprint,
-    metadata: _oldMetadata,
-    ...base
-  } = asset;
+  const base = { ...asset };
+  delete base.errorCode;
+  delete base.fingerprint;
+  delete base.metadata;
 
   return {
     ...base,
