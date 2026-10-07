@@ -1,6 +1,7 @@
 import { app, dialog } from "electron";
 import { randomUUID } from "node:crypto";
 import { join, resolve } from "node:path";
+import { ArtworkIntakeService } from "../core/application/services/artwork-intake-service";
 import { MediaDiscoveryService } from "../core/application/services/media-discovery-service";
 import { MediaIntakeService } from "../core/application/services/media-intake-service";
 import { MediaRelinkService } from "../core/application/services/media-relink-service";
@@ -13,6 +14,7 @@ import {
 } from "../core/application/services/project-persistence";
 import { ProjectRecoveryService } from "../core/application/services/project-recovery-service";
 import type { MediaKind } from "../core/domain/media-asset";
+import { NodeArtworkProbePort } from "./infrastructure/media/node-artwork-probe-port";
 import { MusicMetadataProbePort } from "./infrastructure/media/music-metadata-probe-port";
 import { NodeMediaDiscoveryPort } from "./infrastructure/media/node-media-discovery-port";
 import { NodeMediaSourcePort } from "./infrastructure/media/node-media-source-port";
@@ -58,6 +60,11 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
   );
   const mediaProbePort = new MusicMetadataProbePort();
   const mediaSourcePort = new NodeMediaSourcePort();
+  const artworkIntakeService = new ArtworkIntakeService(
+    mediaSourcePort,
+    new NodeArtworkProbePort(),
+    randomUUID,
+  );
   const missingMediaService = new MissingMediaService(mediaSourcePort, 8);
   const mediaRelinkService = new MediaRelinkService(
     mediaSourcePort,
@@ -87,6 +94,8 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
   );
   const cancelMediaFiles = argv.includes("--w11-media-files-cancel");
   const cancelMediaFolders = argv.includes("--w11-media-folders-cancel");
+  const fixedArtworkFile = readArgValue(argv, "w11-artwork-file");
+  const cancelArtworkFile = argv.includes("--w11-artwork-file-cancel");
   const fixedRelinkFile = readArgValue(argv, "w11-relink-file");
   const fixedRelinkFolder = readArgValue(argv, "w11-relink-folder");
   const cancelRelinkFile = argv.includes("--w11-relink-file-cancel");
@@ -159,6 +168,25 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     return result.filePaths;
   };
 
+  const selectArtworkFile = async (): Promise<string | null> => {
+    if (cancelArtworkFile) return null;
+    if (fixedArtworkFile) return resolve(fixedArtworkFile);
+
+    const result = await dialog.showOpenDialog({
+      title: "Pilih Artwork",
+      filters: [
+        {
+          name: "Artwork",
+          extensions: ["png", "jpg", "jpeg", "webp"],
+        },
+      ],
+      properties: ["openFile"],
+    });
+
+    if (result.canceled || result.filePaths.length === 0) return null;
+    return result.filePaths[0] ?? null;
+  };
+
   const selectMediaFolders = async (): Promise<string[] | null> => {
     if (cancelMediaFolders) return null;
     if (fixedMediaFolders.length > 0) return [...fixedMediaFolders];
@@ -221,9 +249,11 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     recoveryService,
     mediaDiscoveryService,
     mediaIntakeService,
+    artworkIntakeService,
     missingMediaService,
     mediaRelinkService,
     selectAudioFiles,
+    selectArtworkFile,
     selectMediaFolders,
     selectRelinkFile,
     selectRelinkFolder,

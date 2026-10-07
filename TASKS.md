@@ -591,14 +591,24 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W04-02 PASS / VERIFIED
+- Verified implementation head: `f2e33b6ec6a08b3d92acbe4963a1cf73c7086825`
+- Windows CI: `37657078199` / run #278 — PASS
+- CI job: `112914788723`
+- Windows portable artifact: `11500071293`
+- Frozen visual artifact: `11498643123`
+- Evidence: `docs/step11/evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`
 
 ## T11-W04-04 — Metadata Override + Dynamic Binding Integration
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W04-03
+- Status: READY
+- Dependency: T11-W04-03 PASS / VERIFIED
 
 ## T11-W04-05 — Frozen Auto Susun + Inspector UI Wiring
 - Owner: SOL

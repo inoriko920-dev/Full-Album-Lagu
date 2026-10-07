@@ -47,6 +47,10 @@ const acceptRecoveryMock = vi.fn<LfaBridge["acceptRecovery"]>(async () => ({
 const discardRecoveryMock = vi.fn<LfaBridge["discardRecovery"]>(async () => ({
   status: "none" as const,
 }));
+const importArtworkMock = vi.fn<LfaBridge["importArtwork"]>(async () => ({
+  status: "cancelled" as const,
+  code: "MEDIA_SELECTION_CANCELLED" as const,
+}));
 const pickAudioFilesMock = vi.fn<LfaBridge["pickAudioFiles"]>(async () => ({
   status: "cancelled" as const,
   code: "MEDIA_SELECTION_CANCELLED" as const,
@@ -140,6 +144,7 @@ const relinkMissingMediaFolderMock = vi.fn<
 
 const bridge: LfaBridge = {
   getFoundationInfo: getFoundationInfoMock,
+  importArtwork: importArtworkMock,
   pickAudioFiles: pickAudioFilesMock,
   pickMediaFolder: pickMediaFolderMock,
   discoverDroppedMedia: discoverDroppedMediaMock,
@@ -289,6 +294,7 @@ function importedTwoTrackProject(): ProjectDocument {
 function resetMocks(): void {
   for (const mock of [
     getFoundationInfoMock,
+    importArtworkMock,
     saveProjectMock,
     saveProjectAsMock,
     openProjectMock,

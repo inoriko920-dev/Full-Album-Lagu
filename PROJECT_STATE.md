@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL (T11-W04-03 only; W11-04 implementation in progress)
+- Active role at current checkpoint: SOL (T11-W04-04 only; W11-04 implementation in progress)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 T11-W04-01..02 PASS / VERIFIED; T11-W04-03 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 T11-W04-01..03 PASS / VERIFIED; T11-W04-04 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-03 Album Timeline + Command History`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Current wave: `W11-04 Auto Susun + Track Binding` — T11-W04-01..02 PASS / VERIFIED; T11-W04-03 READY
+- Current wave: `W11-04 Auto Susun + Track Binding` — T11-W04-01..03 PASS / VERIFIED; T11-W04-04 READY
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -41,6 +41,7 @@
   - `T11-W03-06 Wave E2E, Drift Review & Evidence Closure` — PASS
   - `T11-W04-01 Binding Schema + Resolver Contracts` — PASS
   - `T11-W04-02 Deterministic Auto Susun Planner + CommandBatch` — PASS
+  - `T11-W04-03 Artwork Intake + Binding Commands` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -152,13 +153,19 @@
 - T11-W04-02 Windows portable artifact: `11497287480`
 - T11-W04-02 frozen visual artifact: `11496953525`
 - T11-W04-02 evidence: `docs/step11/evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`
-- Next authorized action: SOL `T11-W04-03 Artwork Intake + Binding Commands` only; T11-W04-04..06 remain blocked
+- T11-W04-03 verified implementation head: `f2e33b6ec6a08b3d92acbe4963a1cf73c7086825`
+- T11-W04-03 Windows CI: `37657078199` / run #278 — PASS
+- T11-W04-03 CI job: `112914788723`
+- T11-W04-03 Windows portable artifact: `11500071293`
+- T11-W04-03 frozen visual artifact: `11498643123`
+- T11-W04-03 evidence: `docs/step11/evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`
+- Next authorized action: SOL `T11-W04-04 Metadata Override + Dynamic Binding Integration` only; T11-W04-05..06 remain blocked
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W04-02 Deterministic Auto Susun Planner + CommandBatch VERIFIED.** Pure offline planning, deterministic comparator, idempotent no-op repeat, one auto-susun CommandBatch/one revision/one Undo, stale/tampered-plan atomic rejection, preservation rules and 128-track stress are verified. Windows CI #268 is fully green. T11-W04-03 is now the only READY implementation task.
+**PASS — T11-W04-03 Artwork Intake + Binding Commands VERIFIED.** Main-owned PNG/JPEG/WebP selection and signature validation, optional image lifecycle, album/per-track binding commands, atomic import+bind history, nonblocking missing artwork, relink identity and source-image byte/size/mtime immutability are verified. Windows CI #278 is fully green. T11-W04-04 is now the only READY implementation task.
 
 ## T11-W04-02 verification
 - Verified implementation head: `e2bf67f6bd276748b3852a233873210aae9dfdf4`.
@@ -301,4 +308,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: remain **SOL** and execute **T11-W04-03 — Artwork Intake + Binding Commands only**. Implement main-owned PNG/JPEG/WebP selection/validation, optional image media lifecycle, project-default/per-track artwork commands, atomic import+bind, cancel/error/relink behavior and source-image immutability proof. Do not implement metadata override integration, Inspector/UI wiring or T11-W04-04+ in the same turn.
+After the user says `lanjutkan`: remain **SOL** and execute **T11-W04-04 — Metadata Override + Dynamic Binding Integration only**. Implement explicit metadata Apply/Clear commands, derived fallback integration, relink/metadata refresh behavior and save/reopen semantics. Do not implement T11-W04-05 Inspector/UI wiring or later work in the same turn.

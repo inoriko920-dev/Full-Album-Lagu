@@ -54,8 +54,13 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: PASS / VERIFIED
 - Dependency: T11-W04-02 PASS / VERIFIED
+- Verified implementation head: `f2e33b6ec6a08b3d92acbe4963a1cf73c7086825`
+- Windows CI: `37657078199` / #278 PASS; job `112914788723`
+- Windows portable artifact: `11500071293`
+- Frozen visual artifact: `11498643123`
+- Evidence: `evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`
 - Scope:
   - main-owned PNG/JPEG/WebP selection/validation;
   - optional image media asset lifecycle;
@@ -74,7 +79,8 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W04-03
+- Status: READY
+- Dependency: T11-W04-03 PASS / VERIFIED
 - Scope:
   - explicit metadata override set/clear commands;
   - resolver integration with current selected track projection;
