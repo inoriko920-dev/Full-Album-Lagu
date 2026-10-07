@@ -52,6 +52,15 @@
 - One multi-track media import is also proven as one global UI Undo/Redo step.
 - These are **task-level verified contributions**, not premature final wave closure; T11-W03-05 hardening and T11-W03-06 closure remain required.
 
+## T11-W03-05 checkpoint evidence
+
+- T11-W03-05 status: **PASS / VERIFIED**.
+- Verified implementation head: `c1df8c4b101d69d3d5b28987efc88aaae0c44ce3`.
+- Windows CI: `37638091188` / #240 PASS.
+- Evidence: `evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`.
+- Verified contribution: AC-10 command/batch revision-history invariants; AC-11 deterministic Undo/Redo; AC-12 divergent Redo invalidation + stale expectation rejection; AC-13 atomic batch/one Undo; AC-14 manual/template/auto-susun/ai origin parity; AC-15 late Save logical checkpoint and dirty correctness; AC-16 late Recovery overwrite protection + autosave logical-dirty interaction; AC-18 128-track/60-batch/Undo/Redo stress; AC-19 sanitized offline errors and no provider dependency.
+- These are **task-level verified contributions**, not final wave closure; T11-W03-06 must still run the canonical full-flow E2E, final AC-W11-03-01..20 mapping and drift review.
+
 ## Closure rule
 
 W11-03 may close only when **AC-W11-03-01..20** are all PASS or any BLOCKED item is explicitly documented with evidence. No criterion is implied PASS merely because code exists.

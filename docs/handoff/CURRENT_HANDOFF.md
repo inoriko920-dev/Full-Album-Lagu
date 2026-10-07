@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01..04 are PASS / VERIFIED; T11-W03-05 is the only READY SOL task.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01..05 are PASS / VERIFIED; T11-W03-06 is the only READY SOL task.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -168,10 +168,25 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Disabled-only missing audio stops blocking Render immediately; Undo restores blocker.
 - Exact empty SCR-002A and permanent Gemini rail remain unchanged.
 
-## Next exact task
-**T11-W03-05 — Unified Batch History & Edge-Case Hardening — SOL only.**
+## T11-W03-05 completed
+- Status: PASS / VERIFIED.
+- Verified implementation head: `c1df8c4b101d69d3d5b28987efc88aaae0c44ce3`.
+- Windows CI: `37638091188` / #240 PASS; job `112849492104`.
+- Portable artifact: `11490767699`.
+- Frozen visual artifact: `11489524645`.
+- Evidence: `docs/step11/evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`.
+- Runtime origin whitelist enforces manual/template/auto-susun/ai.
+- Atomic batches are one revision/one history node/one Undo and fully roll back on stale/failed children.
+- Save can finish after newer edits without falsely clearing dirty or being misreported as failure.
+- Late Recovery is ignored if a newer user command exists, so newer work is not overwritten.
+- Saved-token/Redo/divergent-branch semantics are hardened.
+- 128-track / 60-batch / 60 Undo / 60 Redo deterministic stress passes.
+- Exact frozen UI and permanent Gemini rail remain unchanged.
 
-On the next user `lanjutkan`, harden atomic batch rollback/one-Undo behavior, origin unification, redo invalidation, saved-checkpoint/recovery/autosave edges, and 100+ track history/timeline stress. Do not implement templates, Auto Susun or Gemini themselves. Do not start T11-W03-06 closure in the same turn.
+## Next exact task
+**T11-W03-06 — Wave E2E, Drift Review & Evidence Closure — SOL only.**
+
+On the next user `lanjutkan`, perform the final W11-03 full-flow Windows evidence, map AC-W11-03-01..20, run architecture/UI/trust-boundary drift review, update closure source-of-truth, and close W11-03 only if all evidence is green. Do not start W11-04 in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.

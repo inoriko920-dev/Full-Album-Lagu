@@ -13,6 +13,14 @@ export const PROJECT_COMMAND_ORIGINS = [
 export type ProjectCommandOrigin = (typeof PROJECT_COMMAND_ORIGINS)[number];
 export type ProjectStateToken = string;
 
+const PROJECT_COMMAND_ORIGIN_SET = new Set<string>(PROJECT_COMMAND_ORIGINS);
+
+export function isProjectCommandOrigin(
+  origin: unknown,
+): origin is ProjectCommandOrigin {
+  return typeof origin === "string" && PROJECT_COMMAND_ORIGIN_SET.has(origin);
+}
+
 export interface ProjectCommand {
   kind: string;
   label: string;
@@ -129,8 +137,16 @@ function semanticallyEqual(
   );
 }
 
-function hasValidMetadata(command: { kind: string; label: string }): boolean {
-  return command.kind.trim().length > 0 && command.label.trim().length > 0;
+function hasValidMetadata(command: {
+  kind: string;
+  label: string;
+  origin: unknown;
+}): boolean {
+  return (
+    command.kind.trim().length > 0 &&
+    command.label.trim().length > 0 &&
+    isProjectCommandOrigin(command.origin)
+  );
 }
 
 export class ProjectCommandEngine {

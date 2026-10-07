@@ -614,4 +614,141 @@ describe("AppShell frozen timeline and global history wiring", () => {
       expect(shell).toHaveAttribute("data-project-dirty", "true");
     });
   });
+
+  it("keeps a newer edit dirty when an older Save finishes later", async () => {
+    const initial = albumProject();
+    getStartupProjectMock.mockResolvedValueOnce({
+      status: "loaded",
+      project: initial,
+      location: { kind: "known-path" },
+    });
+
+    let resolveSave:
+      | ((value: Awaited<ReturnType<LfaBridge["saveProject"]>>) => void)
+      | undefined;
+    saveProjectMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveSave = resolve;
+        }),
+    );
+
+    render(<AppShell />);
+    const shell = document.querySelector(".app-shell");
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", { name: "Pindahkan Track Tiga ke atas" }),
+      ).toBeEnabled();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Simpan" }));
+
+    await waitFor(() => {
+      expect(saveProjectMock).toHaveBeenCalledTimes(1);
+      expect(saveProjectMock.mock.calls[0]?.[0].project.revision).toBe(0);
+    });
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Pindahkan Track Tiga ke atas" }),
+    );
+
+    await waitFor(() => {
+      expect(shell).toHaveAttribute("data-project-revision", "1");
+      expect(shell).toHaveAttribute("data-project-dirty", "true");
+    });
+
+    resolveSave?.({
+      status: "saved",
+      projectRevision: 0,
+      location: { kind: "known-path" },
+    });
+
+    await waitFor(() => {
+      expect(shell).toHaveAttribute("data-persistence-state", "saved");
+      expect(shell).toHaveAttribute("data-project-revision", "1");
+      expect(shell).toHaveAttribute("data-project-dirty", "true");
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+
+    await waitFor(() => {
+      expect(shell).toHaveAttribute("data-project-revision", "2");
+      expect(shell).toHaveAttribute("data-project-dirty", "false");
+    });
+  });
+
+  it("does not let a late Recovery result overwrite a newer user command", async () => {
+    const primary = albumProject();
+    const recovered: ProjectDocument = {
+      ...albumProject(),
+      revision: 1,
+      name: "Recovery Lama",
+    };
+
+    getStartupProjectMock.mockResolvedValueOnce({
+      status: "loaded",
+      project: primary,
+      location: { kind: "known-path" },
+    });
+    getRecoveryStatusMock.mockResolvedValueOnce({
+      status: "available",
+      generation: 1,
+      project: recovered,
+    });
+
+    let resolveRecovery:
+      | ((value: Awaited<ReturnType<LfaBridge["acceptRecovery"]>>) => void)
+      | undefined;
+    acceptRecoveryMock.mockImplementationOnce(
+      () =>
+        new Promise((resolve) => {
+          resolveRecovery = resolve;
+        }),
+    );
+
+    render(<AppShell />);
+    const shell = document.querySelector(".app-shell");
+    const notice = await screen.findByRole("status", {
+      name: "Pemulihan proyek tersedia",
+    });
+
+    fireEvent.click(within(notice).getByRole("button", { name: "Pulihkan" }));
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Pindahkan Track Tiga ke atas" }),
+    );
+
+    await waitFor(() => {
+      expect(shell).toHaveAttribute("data-project-revision", "1");
+      expect(shell).toHaveAttribute("data-project-dirty", "true");
+    });
+
+    resolveRecovery?.({
+      status: "recovered",
+      generation: 1,
+      project: recovered,
+    });
+
+    await waitFor(() => {
+      expect(screen.getByText("Album Timeline UI")).toBeInTheDocument();
+      expect(screen.queryByText("Recovery Lama")).not.toBeInTheDocument();
+      expect(shell).toHaveAttribute("data-project-revision", "1");
+      expect(shell).toHaveAttribute("data-project-dirty", "true");
+      expect(
+        screen.getByRole("status", { name: "Pemulihan proyek tersedia" }),
+      ).toBeInTheDocument();
+      expect(
+        within(
+          screen.getByRole("status", { name: "Pemulihan proyek tersedia" }),
+        ).getByRole("button", { name: "Pulihkan" }),
+      ).toBeEnabled();
+    });
+
+    expect(
+      Array.from(document.querySelectorAll("[data-media-track-id]")).map(
+        (node) => node.getAttribute("data-media-track-id"),
+      ),
+    ).toEqual(["track-1", "track-3", "track-2"]);
+  });
 });

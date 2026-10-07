@@ -456,8 +456,33 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `c1df8c4b101d69d3d5b28987efc88aaae0c44ce3`
+- Windows CI: `37638091188` / run #240 — PASS
+- CI job: `112849492104`
+- Windows portable artifact: `11490767699`
+- Frozen visual artifact: `11489524645`
+- Scope delivered:
+  - runtime command-origin enforcement for manual/template/auto-susun/ai;
+  - ProjectSessionHistory atomic executeBatch seam;
+  - failed/stale child rollback and net-zero batch no-op;
+  - divergent Redo invalidation and saved-token separation;
+  - late Save captures/marks the requested logical checkpoint while newer edits stay dirty;
+  - late Recovery cannot overwrite a newer user command;
+  - dirty autosave uses the correct saved revision and logical dirty still controls scheduling;
+  - 128-track / 60-batch / 60 Undo / 60 Redo deterministic stress proof.
+- Full Windows regression: PASS — STEP 10, W11-01, W11-02, exact frozen UI, package, smoke and portable ZIP.
+- Evidence: `docs/step11/evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`.
+- Out of scope honored: Template/Auto Susun/Gemini features, persistent Undo history, FFmpeg/FFprobe, preview, layers, transitions, keyframes and render.
+
+## T11-W03-06 — Wave E2E, Drift Review & Evidence Closure
+- Owner: SOL
+- Priority: P0
+- Risk: MEDIUM
 - Status: READY
-- Dependency: T11-W03-04 PASS / VERIFIED.
+- Dependency: T11-W03-05 PASS / VERIFIED.
 - Scope authority: `docs/step11/TASK_CARDS_W11_03.md`.
-- T11-W03-06 remains BLOCKED serially.
-- W11-04 remains blocked until T11-W03-06 closes W11-03 COMPLETE / PASS.
+- W11-04 remains blocked until this closure task is COMPLETE / PASS.
