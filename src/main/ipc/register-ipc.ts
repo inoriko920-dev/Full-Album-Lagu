@@ -1,10 +1,10 @@
 import { ipcMain } from "electron";
 import { ProjectRecoveryStoreError } from "../../core/application/ports/project-recovery-store";
 import { ProjectStoreError } from "../../core/application/ports/project-store";
+import type { MediaDiscoveryService } from "../../core/application/services/media-discovery-service";
 import type { ProjectLifecycleService } from "../../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../../core/application/services/project-path-session";
 import type { LoadProjectUseCase } from "../../core/application/services/project-persistence";
-import type { MediaDiscoveryService } from "../../core/application/services/media-discovery-service";
 import type { ProjectRecoveryService } from "../../core/application/services/project-recovery-service";
 import {
   FOUNDATION_INFO_CHANNEL,
@@ -119,7 +119,6 @@ export function registerIpcHandlers(
     }),
   );
 
-
   const startMediaDiscovery = (paths: readonly string[]) => {
     try {
       const { batchId } = projectDependencies.mediaDiscoveryService.start(paths);
@@ -206,7 +205,9 @@ export function registerIpcHandlers(
       }
 
       return mediaDiscoveryStatusResultSchema.parse(
-        projectDependencies.mediaDiscoveryService.getStatus(request.data.batchId),
+        projectDependencies.mediaDiscoveryService.getStatus(
+          request.data.batchId,
+        ),
       );
     },
   );
@@ -223,7 +224,9 @@ export function registerIpcHandlers(
       }
 
       return mediaDiscoveryCancelResultSchema.parse(
-        projectDependencies.mediaDiscoveryService.cancel(request.data.batchId),
+        projectDependencies.mediaDiscoveryService.cancel(
+          request.data.batchId,
+        ),
       );
     },
   );
