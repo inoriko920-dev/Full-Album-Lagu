@@ -21,7 +21,7 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 ## STEP 11 — Feature Implementation Waves — IN PROGRESS
 
 - W11-01 Project Lifecycle & Recovery Core — COMPLETE / PASS.
-- W11-02 Media Intake Foundation — IN PROGRESS; T11-W02-01, T11-W02-02 and T11-W02-03 COMPLETE / PASS.
+- W11-02 Media Intake Foundation — IN PROGRESS; T11-W02-01..04 COMPLETE / PASS.
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut.
 - Current planning authority:
   - `docs/source-of-truth/planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
@@ -31,8 +31,9 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Completed: **T11-W02-01 Media Domain, Contracts & Project Compatibility — PASS / VERIFIED**.
 - Completed: **T11-W02-02 Picker/Drop Discovery, Batch Queue, Progress & Cancel — PASS / VERIFIED**.
 - Completed: **T11-W02-03 Audio Probe, Validation, Metadata & Deterministic Initial Order — PASS / VERIFIED**.
-- Next exact implementation task: **T11-W02-04 Missing Media Scan & Relink Core**.
-- One task per user turn; T11-W02-05 remains blocked until T11-W02-04 PASS.
+- Completed: **T11-W02-04 Missing Media Scan & Relink Core — PASS / VERIFIED**.
+- Next exact implementation task: **T11-W02-05 Frozen Media/Missing/Relink UI Wiring**.
+- One task per user turn; T11-W02-06 remains blocked until T11-W02-05 PASS.
 - Do not start W11-03 until W11-02 closes COMPLETE / PASS.
 - No new W11-02 UI prompt/image generation is needed; existing frozen states are authoritative.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.

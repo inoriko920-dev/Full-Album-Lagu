@@ -6,6 +6,8 @@ import {
   MediaIntakeStartError,
   type MediaIntakeService,
 } from "../../core/application/services/media-intake-service";
+import type { MediaRelinkService } from "../../core/application/services/media-relink-service";
+import type { MissingMediaService } from "../../core/application/services/missing-media-service";
 import type { ProjectLifecycleService } from "../../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../../core/application/services/project-path-session";
 import type { LoadProjectUseCase } from "../../core/application/services/project-persistence";
@@ -39,6 +41,18 @@ import {
   mediaIntakeStatusResultSchema,
 } from "../../core/contracts/media-intake-batch";
 import {
+  MEDIA_MISSING_SCAN_CHANNEL,
+  MEDIA_RELINK_FOLDER_CHANNEL,
+  MEDIA_RELINK_SINGLE_CHANNEL,
+  folderRelinkOperationResultSchema,
+  folderRelinkRequestSchema,
+  missingMediaScanRequestSchema,
+  missingMediaScanResultSchema,
+  singleRelinkOperationResultSchema,
+  singleRelinkRequestSchema,
+} from "../../core/contracts/media-relink";
+import type { MediaKind } from "../../core/domain/media-asset";
+import {
   PROJECT_AUTOSAVE_CHANNEL,
   PROJECT_RECOVERY_ACCEPT_CHANNEL,
   PROJECT_RECOVERY_DISCARD_CHANNEL,
@@ -71,8 +85,12 @@ export interface ProjectIpcDependencies {
   recoveryService: ProjectRecoveryService;
   mediaDiscoveryService: MediaDiscoveryService;
   mediaIntakeService: MediaIntakeService;
+  missingMediaService: MissingMediaService;
+  mediaRelinkService: MediaRelinkService;
   selectAudioFiles: () => Promise<string[] | null>;
   selectMediaFolders: () => Promise<string[] | null>;
+  selectRelinkFile: (kind: MediaKind) => Promise<string | null>;
+  selectRelinkFolder: () => Promise<string | null>;
   startupProjectPath?: string;
 }
 
@@ -321,6 +339,109 @@ export function registerIpcHandlers(
     },
   );
 
+  ipcMain.handle(
+    MEDIA_MISSING_SCAN_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = missingMediaScanRequestSchema.parse(payload);
+      const outcome = await projectDependencies.missingMediaService.scan(
+        request.project,
+      );
+      return missingMediaScanResultSchema.parse({
+        status: "scanned",
+        ...outcome,
+      });
+    },
+  );
+
+  ipcMain.handle(
+    MEDIA_RELINK_SINGLE_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = singleRelinkRequestSchema.parse(payload);
+      const asset = request.project.mediaAssets?.find(
+        (item) => item.id === request.assetId,
+      );
+      if (asset === undefined) {
+        return singleRelinkOperationResultSchema.parse({
+          status: "error",
+          result: {
+            status: "error",
+            code: "RELINK_FAILED",
+            assetId: request.assetId,
+            message: "Media asset tidak ditemukan di proyek.",
+          },
+        });
+      }
+
+      const replacementPath = await projectDependencies.selectRelinkFile(
+        asset.kind,
+      );
+      if (replacementPath === null) {
+        return singleRelinkOperationResultSchema.parse({
+          status: "cancelled",
+          result: {
+            status: "cancelled",
+            code: "RELINK_CANCELLED",
+            assetId: asset.id,
+          },
+        });
+      }
+
+      const outcome = await projectDependencies.mediaRelinkService.relinkSingle(
+        request.project,
+        request.assetId,
+        replacementPath,
+      );
+
+      if (
+        outcome.project !== undefined &&
+        outcome.result.status === "relinked"
+      ) {
+        return singleRelinkOperationResultSchema.parse({
+          status: "relinked",
+          project: outcome.project,
+          result: outcome.result,
+        });
+      }
+
+      return singleRelinkOperationResultSchema.parse({
+        status: "error",
+        result: outcome.result,
+      });
+    },
+  );
+
+  ipcMain.handle(
+    MEDIA_RELINK_FOLDER_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = folderRelinkRequestSchema.parse(payload);
+      const folderPath = await projectDependencies.selectRelinkFolder();
+      if (folderPath === null) {
+        return folderRelinkOperationResultSchema.parse({
+          status: "cancelled",
+          code: "RELINK_CANCELLED",
+        });
+      }
+
+      try {
+        const outcome =
+          await projectDependencies.mediaRelinkService.relinkFolder(
+            request.project,
+            folderPath,
+          );
+        return folderRelinkOperationResultSchema.parse({
+          status: "completed",
+          ...outcome,
+        });
+      } catch {
+        return folderRelinkOperationResultSchema.parse({
+          status: "error",
+          code: "RELINK_FAILED",
+          message: "Folder relink tidak dapat diproses dengan aman.",
+        });
+      }
+    },
+  );
+
   ipcMain.handle(PROJECT_SAVE_CHANNEL, async (_event, payload: unknown) => {
     const request = saveProjectRequestSchema.safeParse(payload);
     if (!request.success) {
@@ -399,9 +520,13 @@ export function registerIpcHandlers(
         return openProjectResultSchema.parse({ status: "cancelled" });
       }
 
+      const scannedProject = (
+        await projectDependencies.missingMediaService.scan(outcome.project)
+      ).project;
+
       return openProjectResultSchema.parse({
         status: "opened",
-        project: outcome.project,
+        project: scannedProject,
         location: { kind: "known-path" },
       });
     } catch (error) {
@@ -428,9 +553,13 @@ export function registerIpcHandlers(
         projectDependencies.startupProjectPath,
       );
 
+      const scannedProject = (
+        await projectDependencies.missingMediaService.scan(project)
+      ).project;
+
       return startupProjectResultSchema.parse({
         status: "loaded",
-        project,
+        project: scannedProject,
         location: { kind: "known-path" },
       });
     } catch (error) {

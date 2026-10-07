@@ -3,6 +3,8 @@ import { randomUUID } from "node:crypto";
 import { join, resolve } from "node:path";
 import { MediaDiscoveryService } from "../core/application/services/media-discovery-service";
 import { MediaIntakeService } from "../core/application/services/media-intake-service";
+import { MediaRelinkService } from "../core/application/services/media-relink-service";
+import { MissingMediaService } from "../core/application/services/missing-media-service";
 import { ProjectLifecycleService } from "../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../core/application/services/project-path-session";
 import {
@@ -10,8 +12,10 @@ import {
   SaveProjectUseCase,
 } from "../core/application/services/project-persistence";
 import { ProjectRecoveryService } from "../core/application/services/project-recovery-service";
+import type { MediaKind } from "../core/domain/media-asset";
 import { MusicMetadataProbePort } from "./infrastructure/media/music-metadata-probe-port";
 import { NodeMediaDiscoveryPort } from "./infrastructure/media/node-media-discovery-port";
+import { NodeMediaSourcePort } from "./infrastructure/media/node-media-source-port";
 import { JsonProjectRecoveryStore } from "./infrastructure/persistence/json-project-recovery-store";
 import { JsonProjectStore } from "./infrastructure/persistence/json-project-store";
 import type { ProjectIpcDependencies } from "./ipc/register-ipc";
@@ -53,6 +57,13 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     4,
   );
   const mediaProbePort = new MusicMetadataProbePort();
+  const mediaSourcePort = new NodeMediaSourcePort();
+  const missingMediaService = new MissingMediaService(mediaSourcePort, 8);
+  const mediaRelinkService = new MediaRelinkService(
+    mediaSourcePort,
+    mediaDiscoveryPort,
+    mediaProbePort,
+  );
   const mediaIntakeService = new MediaIntakeService(
     mediaDiscoveryService,
     mediaProbePort,
@@ -76,6 +87,10 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
   );
   const cancelMediaFiles = argv.includes("--w11-media-files-cancel");
   const cancelMediaFolders = argv.includes("--w11-media-folders-cancel");
+  const fixedRelinkFile = readArgValue(argv, "w11-relink-file");
+  const fixedRelinkFolder = readArgValue(argv, "w11-relink-folder");
+  const cancelRelinkFile = argv.includes("--w11-relink-file-cancel");
+  const cancelRelinkFolder = argv.includes("--w11-relink-folder-cancel");
 
   const selectSavePath = async (): Promise<string | null> => {
     if (cancelSave) return null;
@@ -157,6 +172,48 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     return result.filePaths;
   };
 
+  const selectRelinkFile = async (kind: MediaKind): Promise<string | null> => {
+    if (cancelRelinkFile) return null;
+    if (fixedRelinkFile) return resolve(fixedRelinkFile);
+
+    const extensions =
+      kind === "audio"
+        ? [
+            "mp3",
+            "wav",
+            "flac",
+            "m4a",
+            "aac",
+            "ogg",
+            "opus",
+            "wma",
+            "aiff",
+            "aif",
+          ]
+        : kind === "image"
+          ? ["png", "jpg", "jpeg", "webp", "bmp", "gif", "tif", "tiff"]
+          : ["mp4", "mov", "mkv", "webm", "avi", "m4v"];
+
+    const result = await dialog.showOpenDialog({
+      title: "Pilih Media Pengganti",
+      filters: [{ name: "Media", extensions }],
+      properties: ["openFile"],
+    });
+    if (result.canceled || result.filePaths.length === 0) return null;
+    return result.filePaths[0] ?? null;
+  };
+
+  const selectRelinkFolder = async (): Promise<string | null> => {
+    if (cancelRelinkFolder) return null;
+    if (fixedRelinkFolder) return resolve(fixedRelinkFolder);
+    const result = await dialog.showOpenDialog({
+      title: "Pilih Folder Relink",
+      properties: ["openDirectory"],
+    });
+    if (result.canceled || result.filePaths.length === 0) return null;
+    return result.filePaths[0] ?? null;
+  };
+
   const projectIpc: ProjectIpcDependencies = {
     lifecycle,
     loadProject,
@@ -164,8 +221,12 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     recoveryService,
     mediaDiscoveryService,
     mediaIntakeService,
+    missingMediaService,
+    mediaRelinkService,
     selectAudioFiles,
     selectMediaFolders,
+    selectRelinkFile,
+    selectRelinkFolder,
   };
 
   if (startupProjectPath) {

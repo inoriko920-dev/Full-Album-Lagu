@@ -93,6 +93,30 @@ const cancelMediaIntakeMock = vi.fn<LfaBridge["cancelMediaIntake"]>(
     batchId,
   }),
 );
+const scanMissingMediaMock = vi.fn<LfaBridge["scanMissingMedia"]>(
+  async (request) => ({
+    status: "scanned" as const,
+    project: request.project,
+    items: [],
+    readiness: { ready: true, blockers: [] },
+  }),
+);
+const relinkMediaAssetMock = vi.fn<LfaBridge["relinkMediaAsset"]>(
+  async (request) => ({
+    status: "cancelled" as const,
+    result: {
+      status: "cancelled" as const,
+      code: "RELINK_CANCELLED" as const,
+      assetId: request.assetId,
+    },
+  }),
+);
+const relinkMissingMediaFolderMock = vi.fn<
+  LfaBridge["relinkMissingMediaFolder"]
+>(async () => ({
+  status: "cancelled" as const,
+  code: "RELINK_CANCELLED" as const,
+}));
 
 const bridge: LfaBridge = {
   getFoundationInfo: getFoundationInfoMock,
@@ -104,6 +128,9 @@ const bridge: LfaBridge = {
   startMediaIntake: startMediaIntakeMock,
   getMediaIntakeStatus: getMediaIntakeStatusMock,
   cancelMediaIntake: cancelMediaIntakeMock,
+  scanMissingMedia: scanMissingMediaMock,
+  relinkMediaAsset: relinkMediaAssetMock,
+  relinkMissingMediaFolder: relinkMissingMediaFolderMock,
   saveProject: saveProjectMock,
   saveProjectAs: saveProjectAsMock,
   openProject: openProjectMock,
@@ -146,6 +173,9 @@ beforeEach(() => {
   startMediaIntakeMock.mockClear();
   getMediaIntakeStatusMock.mockClear();
   cancelMediaIntakeMock.mockClear();
+  scanMissingMediaMock.mockClear();
+  relinkMediaAssetMock.mockClear();
+  relinkMissingMediaFolderMock.mockClear();
 });
 
 afterEach(() => {

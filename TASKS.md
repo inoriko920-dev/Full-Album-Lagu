@@ -242,17 +242,34 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: T11-W02-03 PASS.
-- Scope: missing-media scan, required-audio vs optional-visual distinction, individual relink, deterministic folder relink matching and ambiguity handling only.
-- Gate: must PASS before T11-W02-05.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `b9e22a6c4c1e986d0592dd914d7977eb3678701d`
+- Windows CI run: `37603548993` — PASS
+- CI job: `112733462189`
+- Scope delivered:
+  - main-owned missing-media scan on Open/Startup plus explicit scan API;
+  - required audio versus optional visual readiness distinction;
+  - explicit single-file relink with validation before mutation;
+  - recursive deterministic folder relink;
+  - exact normalized filename + size/duration confidence;
+  - unique-best auto-resolve; ambiguous/no-match preserved unresolved;
+  - typed preload/IPC contracts with path-free public summaries;
+  - moved Track 5, Unicode/spaces, invalid replacement, ambiguity, no-match and source non-destructive Windows tests.
+- No frozen media/relink UI wiring, Gemini or runtime FFmpeg/FFprobe added.
+- Evidence: `docs/step11/evidence/T11_W02_04_MISSING_MEDIA_RELINK_CORE_EVIDENCE.md`.
 
 ## T11-W02-05 — Frozen Media/Missing/Relink UI Wiring
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W02-04.
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: T11-W02-04 PASS.
+- Scope: wire import/progress/error/missing/relink states into the existing frozen UI hierarchy and approved references only; no redesign.
+- Gate: must PASS before T11-W02-06.
 
 ## T11-W02-06 — Wave E2E, Drift Review & Evidence Closure
 - Owner: SOL
