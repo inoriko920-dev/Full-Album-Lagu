@@ -11,6 +11,14 @@ import type {
   MediaIntakeStatusResult,
 } from "./media-intake-batch";
 import type {
+  FolderRelinkOperationResult,
+  FolderRelinkRequest,
+  MissingMediaScanRequest,
+  MissingMediaScanResult,
+  SingleRelinkOperationResult,
+  SingleRelinkRequest,
+} from "./media-relink";
+import type {
   AutosaveRecoveryRequest,
   AutosaveRecoveryResult,
   RecoveryAcceptRequest,
@@ -41,6 +49,15 @@ export interface LfaBridge {
   ): Promise<MediaIntakeStartResult>;
   getMediaIntakeStatus(batchId: string): Promise<MediaIntakeStatusResult>;
   cancelMediaIntake(batchId: string): Promise<MediaIntakeCancelResult>;
+  scanMissingMedia(
+    request: MissingMediaScanRequest,
+  ): Promise<MissingMediaScanResult>;
+  relinkMediaAsset(
+    request: SingleRelinkRequest,
+  ): Promise<SingleRelinkOperationResult>;
+  relinkMissingMediaFolder(
+    request: FolderRelinkRequest,
+  ): Promise<FolderRelinkOperationResult>;
   saveProject(request: SaveProjectRequest): Promise<SaveProjectResult>;
   saveProjectAs(request: SaveProjectRequest): Promise<SaveProjectResult>;
   openProject(): Promise<OpenProjectResult>;
