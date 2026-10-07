@@ -209,6 +209,443 @@ describe("AppShell", () => {
     ).toBeEnabled();
   });
 
+  it("wires native audio import through discovery and intake into the frozen Media panel", async () => {
+    const importedProject = {
+      schemaVersion: 1 as const,
+      projectId: "project-media-ui",
+      name: "Album Media",
+      revision: 1,
+      tracks: [
+        {
+          id: "track-1",
+          title: "01 Opening",
+          sourcePath: "D:/Album/01 Opening.mp3",
+          audioAssetId: "asset-1",
+        },
+      ],
+      mediaAssets: [
+        {
+          id: "asset-1",
+          kind: "audio" as const,
+          required: true,
+          sourcePath: "D:/Album/01 Opening.mp3",
+          fileName: "01 Opening.mp3",
+          sizeBytes: 1200,
+          availability: "ready" as const,
+          metadata: {
+            durationMs: 5000,
+            artist: "Fixture Artist",
+          },
+        },
+      ],
+    };
+
+    pickAudioFilesMock.mockResolvedValueOnce({
+      status: "started",
+      batchId: "discovery-ui-1",
+    });
+    getMediaDiscoveryStatusMock
+      .mockResolvedValueOnce({
+        status: "discovering",
+        batchId: "discovery-ui-1",
+        progress: {
+          rootsTotal: 1,
+          rootsProcessed: 1,
+          directoriesVisited: 0,
+          filesDiscovered: 1,
+          duplicatesSkipped: 0,
+          pendingEntries: 1,
+        },
+      })
+      .mockResolvedValueOnce({
+        status: "completed",
+        batchId: "discovery-ui-1",
+        summary: {
+          rootsSelected: 1,
+          directoriesVisited: 0,
+          filesDiscovered: 1,
+          duplicatesSkipped: 0,
+          issues: [],
+          items: [
+            {
+              discoveryId: "discovery-ui-1:item:000001",
+              fileName: "01 Opening.mp3",
+              sizeBytes: 1200,
+            },
+          ],
+        },
+      });
+    startMediaIntakeMock.mockResolvedValueOnce({
+      status: "started",
+      batchId: "intake-ui-1",
+    });
+    getMediaIntakeStatusMock
+      .mockResolvedValueOnce({
+        status: "probing",
+        batchId: "intake-ui-1",
+        progress: {
+          discovered: 1,
+          processed: 0,
+          accepted: 0,
+          rejected: 0,
+        },
+      })
+      .mockResolvedValueOnce({
+        status: "completed",
+        batchId: "intake-ui-1",
+        progress: {
+          discovered: 1,
+          processed: 1,
+          accepted: 1,
+          rejected: 0,
+        },
+        summary: {
+          discovered: 1,
+          accepted: 1,
+          rejected: 0,
+          cancelled: 0,
+          items: [
+            {
+              assetId: "asset-1",
+              fileName: "01 Opening.mp3",
+              kind: "audio",
+              status: "ready",
+            },
+          ],
+        },
+        project: importedProject,
+      });
+
+    render(<AppShell />);
+    fireEvent.click(
+      within(screen.getByLabelText("Aksi proyek")).getByRole("button", {
+        name: "Impor Audio",
+      }),
+    );
+
+    expect(
+      await screen.findByRole("status", { name: "Proses impor media" }),
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getAllByText("01 Opening")).toHaveLength(2);
+      expect(screen.getByText("Fixture Artist")).toBeInTheDocument();
+      expect(document.querySelector(".app-shell")).toHaveAttribute(
+        "data-media-state",
+        "completed",
+      );
+      expect(document.querySelector(".app-shell")).toHaveAttribute(
+        "data-project-dirty",
+        "true",
+      );
+    });
+
+    expect(startMediaIntakeMock).toHaveBeenCalledWith({
+      discoveryBatchId: "discovery-ui-1",
+      project: expect.objectContaining({ schemaVersion: 1 }),
+    });
+    expect(
+      screen.getByRole("complementary", { name: "Gemini Agent" }),
+    ).toBeInTheDocument();
+  });
+
+  it("shows import cancellation inside the frozen Media panel", async () => {
+    pickAudioFilesMock.mockResolvedValueOnce({
+      status: "cancelled",
+      code: "MEDIA_SELECTION_CANCELLED",
+    });
+
+    render(<AppShell />);
+    fireEvent.click(
+      within(screen.getByLabelText("Aksi proyek")).getByRole("button", {
+        name: "Impor Audio",
+      }),
+    );
+
+    expect(await screen.findByText("Impor dibatalkan.")).toBeInTheDocument();
+    expect(document.querySelector(".app-shell")).toHaveAttribute(
+      "data-media-state",
+      "cancelled",
+    );
+  });
+
+  it("routes dropped files through the typed bridge without exposing filesystem APIs", async () => {
+    discoverDroppedMediaMock.mockResolvedValueOnce({
+      status: "error",
+      code: "MEDIA_DISCOVERY_FAILED",
+      message: "Fixture drop stopped before discovery.",
+    });
+
+    render(<AppShell />);
+    const panel = document.querySelector("#work-panel-media");
+    expect(panel).not.toBeNull();
+    const droppedFile = new File(["audio"], "Dropped Song.mp3", {
+      type: "audio/mpeg",
+    });
+
+    fireEvent.drop(panel as Element, {
+      dataTransfer: { files: [droppedFile] },
+    });
+
+    await waitFor(() => {
+      expect(discoverDroppedMediaMock).toHaveBeenCalledWith([droppedFile]);
+      expect(
+        screen.getByText("Fixture drop stopped before discovery."),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("shows frozen missing-media warning, blocks Render, and completes single relink", async () => {
+    const missingProject = {
+      schemaVersion: 1 as const,
+      projectId: "project-missing-ui",
+      name: "Album Missing",
+      revision: 4,
+      tracks: [
+        {
+          id: "track-5",
+          title: "Track 5",
+          sourcePath: "D:/Old/05 Track 5.mp3",
+          audioAssetId: "asset-5",
+        },
+      ],
+      mediaAssets: [
+        {
+          id: "asset-5",
+          kind: "audio" as const,
+          required: true,
+          sourcePath: "D:/Old/05 Track 5.mp3",
+          fileName: "05 Track 5.mp3",
+          sizeBytes: 1000,
+          availability: "missing" as const,
+          errorCode: "MEDIA_NOT_FOUND" as const,
+          metadata: { durationMs: 5000 },
+        },
+      ],
+    };
+    const relinkedProject = {
+      schemaVersion: 1 as const,
+      projectId: "project-missing-ui",
+      name: "Album Missing",
+      revision: 5,
+      tracks: [
+        {
+          id: "track-5",
+          title: "Track 5",
+          sourcePath: "D:/Moved/05 Track 5.mp3",
+          audioAssetId: "asset-5",
+        },
+      ],
+      mediaAssets: [
+        {
+          id: "asset-5",
+          kind: "audio" as const,
+          required: true,
+          sourcePath: "D:/Moved/05 Track 5.mp3",
+          fileName: "05 Track 5.mp3",
+          sizeBytes: 1000,
+          availability: "ready" as const,
+          metadata: { durationMs: 5000 },
+        },
+      ],
+    };
+
+    getStartupProjectMock.mockResolvedValueOnce({
+      status: "loaded",
+      project: missingProject,
+      location: { kind: "known-path" },
+    });
+    scanMissingMediaMock
+      .mockResolvedValueOnce({
+        status: "scanned",
+        project: missingProject,
+        items: [
+          {
+            assetId: "asset-5",
+            fileName: "05 Track 5.mp3",
+            kind: "audio",
+            required: true,
+            availability: "missing",
+            code: "MEDIA_NOT_FOUND",
+          },
+        ],
+        readiness: {
+          ready: false,
+          blockers: [
+            {
+              assetId: "asset-5",
+              fileName: "05 Track 5.mp3",
+              kind: "audio",
+              code: "REQUIRED_MEDIA_MISSING",
+            },
+          ],
+        },
+      })
+      .mockResolvedValueOnce({
+        status: "scanned",
+        project: relinkedProject,
+        items: [],
+        readiness: { ready: true, blockers: [] },
+      });
+    relinkMediaAssetMock.mockResolvedValueOnce({
+      status: "relinked",
+      project: relinkedProject,
+      result: {
+        status: "relinked",
+        assetId: "asset-5",
+        fileName: "05 Track 5.mp3",
+      },
+    });
+
+    render(<AppShell />);
+
+    const notice = await screen.findByRole("status", {
+      name: "Media proyek tidak ditemukan",
+    });
+    expect(
+      within(notice).getByText("1 media wajib tidak ditemukan."),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Render" })).toBeDisabled();
+
+    fireEvent.click(
+      within(notice).getByRole("button", { name: "Perbaiki Media" }),
+    );
+
+    const dialog = await screen.findByRole("dialog", {
+      name: "Media Tidak Ditemukan",
+    });
+    expect(within(dialog).getByText("05 Track 5.mp3")).toBeInTheDocument();
+    expect(
+      within(dialog).getByText("Wajib • menghambat render • tidak ditemukan"),
+    ).toBeInTheDocument();
+
+    fireEvent.click(within(dialog).getByRole("button", { name: "Cari File" }));
+
+    await waitFor(() => {
+      expect(
+        within(dialog).getByText("Semua media sudah terhubung."),
+      ).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: "Render" })).toBeEnabled();
+      expect(document.querySelector(".app-shell")).toHaveAttribute(
+        "data-missing-media-count",
+        "0",
+      );
+    });
+    expect(relinkMediaAssetMock).toHaveBeenCalledWith({
+      project: missingProject,
+      assetId: "asset-5",
+    });
+  });
+
+  it("keeps ambiguous folder relink unresolved and explains the partial result", async () => {
+    const missingProject = {
+      schemaVersion: 1 as const,
+      projectId: "project-ambiguous-ui",
+      name: "Album Ambiguous",
+      revision: 2,
+      tracks: [
+        {
+          id: "track-5",
+          title: "Track 5",
+          sourcePath: "D:/Old/05 Track 5.mp3",
+          audioAssetId: "asset-5",
+        },
+      ],
+      mediaAssets: [
+        {
+          id: "asset-5",
+          kind: "audio" as const,
+          required: true,
+          sourcePath: "D:/Old/05 Track 5.mp3",
+          fileName: "05 Track 5.mp3",
+          sizeBytes: 1000,
+          availability: "missing" as const,
+          errorCode: "MEDIA_NOT_FOUND" as const,
+          metadata: { durationMs: 5000 },
+        },
+      ],
+    };
+    const missingScan = {
+      status: "scanned" as const,
+      project: missingProject,
+      items: [
+        {
+          assetId: "asset-5",
+          fileName: "05 Track 5.mp3",
+          kind: "audio" as const,
+          required: true,
+          availability: "missing" as const,
+          code: "MEDIA_NOT_FOUND" as const,
+        },
+      ],
+      readiness: {
+        ready: false,
+        blockers: [
+          {
+            assetId: "asset-5",
+            fileName: "05 Track 5.mp3",
+            kind: "audio" as const,
+            code: "REQUIRED_MEDIA_MISSING" as const,
+          },
+        ],
+      },
+    };
+
+    getStartupProjectMock.mockResolvedValueOnce({
+      status: "loaded",
+      project: missingProject,
+      location: { kind: "known-path" },
+    });
+    scanMissingMediaMock
+      .mockResolvedValueOnce(missingScan)
+      .mockResolvedValueOnce(missingScan);
+    relinkMissingMediaFolderMock.mockResolvedValueOnce({
+      status: "completed",
+      project: missingProject,
+      results: [
+        {
+          status: "ambiguous",
+          code: "RELINK_AMBIGUOUS",
+          assetId: "asset-5",
+          candidates: [
+            {
+              fileName: "05 Track 5.mp3",
+              sizeBytes: 1000,
+              durationMs: 5000,
+            },
+            {
+              fileName: "05 Track 5.mp3",
+              sizeBytes: 1000,
+              durationMs: 5000,
+            },
+          ],
+        },
+      ],
+    });
+
+    render(<AppShell />);
+    const notice = await screen.findByRole("status", {
+      name: "Media proyek tidak ditemukan",
+    });
+    fireEvent.click(
+      within(notice).getByRole("button", { name: "Perbaiki Media" }),
+    );
+    const dialog = await screen.findByRole("dialog", {
+      name: "Media Tidak Ditemukan",
+    });
+
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Cari dalam Folder" }),
+    );
+
+    expect(
+      await within(dialog).findByText(
+        "1 media memiliki beberapa kandidat. Pilih file satu per satu.",
+      ),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Render" })).toBeDisabled();
+  });
+
   it("keeps the permanent Gemini rail visible while the left work rail changes tabs", () => {
     render(<AppShell />);
 

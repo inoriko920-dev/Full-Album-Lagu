@@ -265,16 +265,35 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: T11-W02-04 PASS.
-- Scope: wire import/progress/error/missing/relink states into the existing frozen UI hierarchy and approved references only; no redesign.
-- Gate: must PASS before T11-W02-06.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `28c9fe1f1581482a4440ff894532d34f0b0f0a4c`
+- Windows CI run: `37607158798` — PASS
+- CI job: `112745333468`
+- Frozen visual artifact: `11475113563`
+- Scope delivered:
+  - import/select/discover/probe/commit/cancel/error states in the frozen Media panel;
+  - imported track list and conditional Album Timeline track strip;
+  - UI-IMG-002F missing-media warning;
+  - DLG-005 unresolved and partial-result relink states from UI-IMG-009A/009B;
+  - required missing audio blocks Render while optional visual remains non-blocking;
+  - individual and folder relink actions through typed bridge only;
+  - drag/drop routing through the existing preload seam;
+  - accessibility roles/copy and component state/action tests;
+  - exact default SCR-002A frozen visual baseline remains PASS.
+- No new UI prompt/image generation, shell redesign, renderer filesystem access, Gemini, FFmpeg/FFprobe, or W11-02 closure work added.
+- Evidence: `docs/step11/evidence/T11_W02_05_FROZEN_MEDIA_RELINK_UI_EVIDENCE.md`.
 
 ## T11-W02-06 — Wave E2E, Drift Review & Evidence Closure
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W02-05.
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: T11-W02-05 PASS.
+- Scope: execute final W11-02 acceptance matrix/E2E evidence, architecture/UI drift review, consolidate evidence, and close W11-02 only if every required criterion passes.
+- Gate: W11-02 must close COMPLETE / PASS before W11-03 can start.
 
 W11-03 remains blocked until W11-02 closes COMPLETE / PASS.

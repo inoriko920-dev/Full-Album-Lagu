@@ -6,7 +6,7 @@
 - Active role at current checkpoint: SOL
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 planning/implementation COMPLETE; W11-02 ASTRA planning = PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 T11-W02-01..04 COMPLETE / PASS
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 T11-W02-01..05 COMPLETE / PASS
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-01 Project Lifecycle & Recovery Core`
@@ -31,6 +31,7 @@
   - `T11-W02-02 Picker/Drop Discovery, Batch Queue, Progress & Cancel` — PASS
   - `T11-W02-03 Audio Probe, Validation, Metadata & Deterministic Initial Order` — PASS
   - `T11-W02-04 Missing Media Scan & Relink Core` — PASS
+  - `T11-W02-05 Frozen Media/Missing/Relink UI Wiring` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -64,21 +65,27 @@
 - T11-W02-04 Windows CI: `37603548993` — PASS
 - T11-W02-04 CI job: `112733462189`
 - T11-W02-04 evidence: `docs/step11/evidence/T11_W02_04_MISSING_MEDIA_RELINK_CORE_EVIDENCE.md`
-- Next READY implementation task: `T11-W02-05 Frozen Media/Missing/Relink UI Wiring` — SOL
+- T11-W02-05 verified implementation head: `28c9fe1f1581482a4440ff894532d34f0b0f0a4c`
+- T11-W02-05 Windows CI: `37607158798` — PASS
+- T11-W02-05 CI job: `112745333468`
+- T11-W02-05 frozen visual artifact: `11475113563`
+- T11-W02-05 evidence: `docs/step11/evidence/T11_W02_05_FROZEN_MEDIA_RELINK_UI_EVIDENCE.md`
+- Next READY implementation task: `T11-W02-06 Wave E2E, Drift Review & Evidence Closure` — SOL
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W02-04 MISSING MEDIA SCAN & RELINK CORE VERIFIED.** Open/startup scan now classifies missing/unreadable references without mutating source files; required missing audio blocks media readiness while optional visual media remains a non-blocking warning class; explicit relink validates before mutation; recursive folder relink auto-resolves only unique high-confidence exact-name matches and preserves ambiguous/no-match references. Unicode/spaces, moved Track 5, invalid replacement and non-destructive source evidence all PASS on Windows. Frozen UI wiring has not started.
+**PASS — T11-W02-05 FROZEN MEDIA / MISSING / RELINK UI WIRING VERIFIED.** Media import/progress/cancel/error states are wired into the approved Media hierarchy; required missing audio surfaces the UI-IMG-002F warning and blocks Render readiness; DLG-005 single/folder relink states map to UI-IMG-009A/009B; ambiguous/no-match results remain unresolved; renderer ownership stays filesystem-free. The exact frozen SCR-002A visual baseline remains PASS, proving the default empty editor was not redesigned.
 
-## T11-W02-04 verification
-- Verified implementation head: `b9e22a6c4c1e986d0592dd914d7977eb3678701d`.
-- Windows CI run: `37603548993` — PASS.
-- CI job: `112733462189`.
-- Full verify + runtime audit + STEP 10 SLC + W11-01 lifecycle/recovery + frozen visual + Windows package/smoke/ZIP: PASS.
-- Evidence: `docs/step11/evidence/T11_W02_04_MISSING_MEDIA_RELINK_CORE_EVIDENCE.md`.
-- T11-W02-05 is now READY; T11-W02-06 remains blocked.
+## T11-W02-05 verification
+- Verified implementation head: `28c9fe1f1581482a4440ff894532d34f0b0f0a4c`.
+- Windows CI run: `37607158798` — PASS.
+- CI job: `112745333468`.
+- Exact frozen SCR-002A baseline: PASS; artifact `11475113563`.
+- Full verify + runtime audit + STEP 10 SLC + W11-01 lifecycle/recovery + Windows package/smoke/ZIP: PASS.
+- Evidence: `docs/step11/evidence/T11_W02_05_FROZEN_MEDIA_RELINK_UI_EVIDENCE.md`.
+- T11-W02-06 is now READY; W11-03 remains blocked until W11-02 closure.
 
 ## W11-02 planning decisions
 - One canonical Media Intake pipeline for picker, drag-drop file and drag-drop folder.
@@ -101,4 +108,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: execute **T11-W02-05 Frozen Media/Missing/Relink UI Wiring only** as SOL. Do not start T11-W02-06 in the same turn.
+After the user says `lanjutkan`: execute **T11-W02-06 Wave E2E, Drift Review & Evidence Closure only** as SOL. Do not start W11-03 in the same turn.

@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 is IN PROGRESS; T11-W02-01..04 are COMPLETE / PASS, and T11-W02-05 is READY.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 is IN PROGRESS; T11-W02-01..05 are COMPLETE / PASS, and T11-W02-06 is READY.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -88,26 +88,23 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 **W11-02 Media Intake Foundation**
 - Planning: ASTRA COMPLETE / PASS; DoR PASS.
 - Features: FTR-003 + FTR-016 + FTR-018 cross-cut.
-- T11-W02-01: COMPLETE / PASS / VERIFIED.
-- T11-W02-02: COMPLETE / PASS / VERIFIED.
-- T11-W02-03: COMPLETE / PASS / VERIFIED.
-- T11-W02-04: COMPLETE / PASS / VERIFIED.
-- T11-W02-04 verified implementation head: `b9e22a6c4c1e986d0592dd914d7977eb3678701d`.
-- Windows CI: `37603548993` PASS; job `112733462189`.
-- Evidence: `docs/step11/evidence/T11_W02_04_MISSING_MEDIA_RELINK_CORE_EVIDENCE.md`.
-- Open/startup scans referenced media through a main-owned read-only source adapter.
-- Required missing audio becomes a readiness blocker; missing optional visual remains non-blocking.
-- Explicit relink validates replacement media before changing project references.
-- Folder relink is recursive/deterministic and requires exact normalized filename plus size/duration confidence; only a unique best candidate auto-resolves.
-- Ambiguous/no-match candidates remain unresolved; no fuzzy guessing.
-- Moved Track 5, Unicode/spaces, invalid replacement, ambiguous/no-match and source byte/mtime preservation all PASS on Windows.
-- Renderer remains filesystem-free; public missing/relink summaries remain path-sanitized.
-- Frozen media/missing/relink presentation has not been wired yet; T11-W02-05 owns that work.
+- T11-W02-01..05: COMPLETE / PASS / VERIFIED.
+- T11-W02-05 verified implementation head: `28c9fe1f1581482a4440ff894532d34f0b0f0a4c`.
+- Windows CI: `37607158798` PASS; job `112745333468`.
+- Evidence: `docs/step11/evidence/T11_W02_05_FROZEN_MEDIA_RELINK_UI_EVIDENCE.md`.
+- Media import now exposes selecting/discovery/probe/commit/cancel/error states inside the approved frozen Media hierarchy.
+- Imported tracks appear conditionally in Media and Album Timeline without changing the empty SCR-002A state.
+- Required missing audio exposes UI-IMG-002F warning and blocks Render readiness; optional missing visual remains non-blocking.
+- DLG-005 unresolved/partial relink states are wired to typed single/folder relink actions and preserve ambiguous/no-match outcomes.
+- Renderer remains filesystem/dialog/subprocess/provider-free.
+- Permanent Gemini rail and frozen global hierarchy remain unchanged.
+- Exact default SCR-002A frozen visual baseline PASS; visual artifact `11475113563`.
+- T11-W02-06 owns final wave acceptance, drift review and evidence closure; it has not started yet.
 
 ## Next exact task
-**T11-W02-05 Frozen Media/Missing/Relink UI Wiring** — SOL only.
+**T11-W02-06 Wave E2E, Drift Review & Evidence Closure** — SOL only.
 
-Wire only the already-approved frozen media import/progress/error/missing/relink states into the existing hierarchy and typed bridge. Use UI-IMG-002A/002B/002F/009A/009B as authority; do not redesign the shell, do not start T11-W02-06 wave closure, and do not start W11-03 in the same turn.
+Execute the final W11-02 acceptance matrix/E2E verification, architecture/UI/trust-boundary drift review, and evidence consolidation. Close W11-02 only if every required criterion passes. Do not start W11-03 in the same turn.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
