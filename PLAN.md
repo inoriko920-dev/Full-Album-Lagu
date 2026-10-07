@@ -59,8 +59,19 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Proof: Windows CI `37642774190` / #244 PASS; AC-W11-03-01..20 ALL PASS; 12-track canonical full-flow PASS; 128-track live renderer/history PASS in 970 ms; `docs/step11/evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`.
 - Architecture/UI/trust-boundary drift: **PASS — NO MATERIAL DRIFT**; `docs/step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`.
 - **W11-03 COMPLETE / PASS.**
-- Next exact action: **ASTRA planning for W11-04 Auto Susun + Track Binding**. A detailed planning DOCX/charter/task cards/acceptance/DoR must be created and merged before SOL implementation begins.
-- No new W11-02 UI prompt/image generation is needed; existing frozen states are authoritative.
+- W11-04 Auto Susun + Track Binding ASTRA planning — **COMPLETE / PASS**.
+- W11-04 baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`.
+- W11-04 planning authority:
+  - `docs/source-of-truth/planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+  - `docs/step11/WAVE_11_04_CHARTER.md`
+  - `docs/step11/TASK_CARDS_W11_04.md`
+  - `docs/step11/W11_04_ACCEPTANCE_MATRIX.md`
+  - `docs/step11/W11_04_DOR.md`
+- DoR: **PASS**; AC-W11-04-01..22 defined.
+- Next exact implementation task: **T11-W04-01 Binding Schema + Resolver Contracts — SOL only**.
+- T11-W04-02..06 remain serially blocked.
+- Existing frozen Auto Susun/Inspector/Media/Timeline surfaces are authoritative; no new UI prompt/image generation is required now.
+- If a required W11-04 visual state cannot be represented by the frozen pack, implementation must STOP and return to ASTRA/UI governance.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.
 
 ## Later
