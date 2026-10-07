@@ -61,7 +61,7 @@ export const mediaBatchProgressSchema = z
     }
   });
 
-const mediaBatchSummarySchema = z
+export const mediaBatchSummarySchema = z
   .object({
     discovered: z.number().int().nonnegative(),
     accepted: z.number().int().nonnegative(),
