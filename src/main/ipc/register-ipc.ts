@@ -121,7 +121,8 @@ export function registerIpcHandlers(
 
   const startMediaDiscovery = (paths: readonly string[]) => {
     try {
-      const { batchId } = projectDependencies.mediaDiscoveryService.start(paths);
+      const { batchId } =
+        projectDependencies.mediaDiscoveryService.start(paths);
       return mediaDiscoveryStartResultSchema.parse({
         status: "started",
         batchId,
@@ -224,9 +225,7 @@ export function registerIpcHandlers(
       }
 
       return mediaDiscoveryCancelResultSchema.parse(
-        projectDependencies.mediaDiscoveryService.cancel(
-          request.data.batchId,
-        ),
+        projectDependencies.mediaDiscoveryService.cancel(request.data.batchId),
       );
     },
   );
