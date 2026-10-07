@@ -10,39 +10,41 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY **only after planning PR merge**
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependencies: W11-04 COMPLETE / PASS; FTR-013 verified.
-- Goal:
-  - establish additive schema-v1 `visualScene` and supported layer contracts;
-  - define stable IDs/canonical order/logical canvas;
-  - pure deterministic selected-track scene projection using W11-04 bindings.
-- In scope:
-  - background/artwork/text/spectrum/progress structural layer schema;
-  - transform/common state;
-  - text roles/style contract;
-  - legacy schema-v1 round-trip;
-  - dynamic title/artist/artwork projection;
-  - no derived value duplication.
-- Out of scope:
-  - commands/UI/template store;
-  - audio-reactive runtime;
-  - playback/keyframes/transitions;
-  - Gemini/FFmpeg.
+- Verified implementation head: `137e8d31a08b804498b56a9b9cb094bcc4add8f0`
+- Windows CI: `37682820030` / run #321 — PASS
+- CI job: `113003054180`
+- Windows portable artifact: `11509257626`
+- Frozen visual artifact: `11510031703`
+- Implemented:
+  - additive schema-v1 `visualScene`;
+  - stable unique IDs and canonical `layers[]` back-to-front order;
+  - normalized logical canvas transform contract;
+  - background/artwork/text/spectrum/progress structural layer families;
+  - supported text style/role validation;
+  - pure selected-track / first-enabled-track projection;
+  - W11-04 title/artist/artwork dynamic binding reuse;
+  - schema-v1 JSON round-trip without derived-value persistence.
 - Mandatory proof:
-  - legacy project compatibility;
-  - unique/stable layer IDs;
-  - canonical array order;
-  - invalid/malformed layer reject;
-  - pure/offline projection;
-  - no source mutation;
-  - prior-wave regression gate.
-- Exit gate: PASS / VERIFIED before 02 may start.
-
+  - legacy project compatibility PASS;
+  - duplicate/malformed validation PASS;
+  - pure/offline projection PASS;
+  - source references unchanged PASS;
+  - 244 Vitest assertions PASS;
+  - STEP 10 + W11-01..04 + frozen UI + Windows package/smoke/ZIP PASS.
+- Evidence:
+  - `docs/step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`
+- Exit gate: **PASS / VERIFIED**.
+- Dependency unlock: **T11-W05-02 READY**. T11-W05-03..07 remain BLOCKED.
 ## T11-W05-02 — Manual Layer Commands + Gesture/History Semantics
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-01 PASS / VERIFIED.
 - Goal:
   - implement official manual command family over shared CommandEngine.
