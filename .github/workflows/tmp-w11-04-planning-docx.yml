@@ -1,0 +1,244 @@
+name: Temporary W11-04 Planning DOCX Builder
+
+on:
+  push:
+    branches:
+      - astra/w11-04-planning
+
+permissions:
+  contents: write
+
+jobs:
+  build-docx:
+    if: ${{ !contains(github.event.head_commit.message, '[w11-04-docx]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: astra/w11-04-planning
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install python-docx
+      - name: Build W11-04 planning DOCX from authoritative planning companions
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          from docx import Document
+          from docx.shared import Inches, Pt, RGBColor
+          from docx.enum.text import WD_ALIGN_PARAGRAPH
+          from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
+          from docx.oxml import OxmlElement
+          from docx.oxml.ns import qn
+
+          out = Path("docs/source-of-truth/planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx")
+          sources = [
+              Path("docs/step11/WAVE_11_04_CHARTER.md"),
+              Path("docs/step11/TASK_CARDS_W11_04.md"),
+              Path("docs/step11/W11_04_ACCEPTANCE_MATRIX.md"),
+              Path("docs/step11/W11_04_DOR.md"),
+          ]
+
+          doc = Document()
+          sec = doc.sections[0]
+          sec.top_margin = Inches(0.65)
+          sec.bottom_margin = Inches(0.65)
+          sec.left_margin = Inches(0.72)
+          sec.right_margin = Inches(0.72)
+
+          styles = doc.styles
+          styles["Normal"].font.name = "Aptos"
+          styles["Normal"]._element.rPr.rFonts.set(qn("w:eastAsia"), "Aptos")
+          styles["Normal"].font.size = Pt(9.2)
+          styles["Normal"].paragraph_format.space_after = Pt(4)
+          styles["Normal"].paragraph_format.line_spacing = 1.05
+          for name, size, color in [
+              ("Title", 23, "17365D"),
+              ("Heading 1", 15, "17365D"),
+              ("Heading 2", 12, "2F5597"),
+              ("Heading 3", 10.5, "44546A"),
+          ]:
+              s = styles[name]
+              s.font.name = "Aptos Display" if name in ("Title", "Heading 1") else "Aptos"
+              s._element.rPr.rFonts.set(qn("w:eastAsia"), s.font.name)
+              s.font.size = Pt(size)
+              s.font.color.rgb = RGBColor.from_string(color)
+              s.font.bold = True
+
+          def shade(cell, fill):
+              tc_pr = cell._tc.get_or_add_tcPr()
+              shd = OxmlElement("w:shd")
+              shd.set(qn("w:fill"), fill)
+              tc_pr.append(shd)
+
+          def add_inline(paragraph, text):
+              parts = re.split(r"(\*\*.*?\*\*|\`.*?\`)", text)
+              for part in parts:
+                  if not part:
+                      continue
+                  if part.startswith("**") and part.endswith("**"):
+                      run = paragraph.add_run(part[2:-2])
+                      run.bold = True
+                  elif part.startswith("`") and part.endswith("`"):
+                      run = paragraph.add_run(part[1:-1])
+                      run.font.name = "Cascadia Mono"
+                      run._element.rPr.rFonts.set(qn("w:eastAsia"), "Cascadia Mono")
+                      run.font.size = Pt(8.6)
+                  else:
+                      paragraph.add_run(part)
+
+          title = doc.add_paragraph(style="Title")
+          title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+          title.add_run("STEP 11 — W11-04\nAuto Susun + Track Binding")
+          sub = doc.add_paragraph()
+          sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
+          r = sub.add_run("ASTRA Planning Charter v1.0 • Lagu Full Album")
+          r.bold = True
+          r.font.color.rgb = RGBColor(68, 84, 106)
+          meta = doc.add_table(rows=5, cols=2)
+          meta.alignment = WD_TABLE_ALIGNMENT.CENTER
+          meta.style = "Table Grid"
+          meta_rows = [
+              ("Planning baseline", "main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442"),
+              ("Features", "FTR-005 Auto Susun Album + FTR-006 Artwork/Metadata/Dynamic Track Binding"),
+              ("Cross-cut", "FTR-013 Unified Command History + FTR-018 Error/Offline"),
+              ("Planning gate", "PASS — DoR PASS; AC-W11-04-01..22 defined"),
+              ("Implementation authorization", "T11-W04-01 only; T11-W04-02..06 serially blocked"),
+          ]
+          for row, (k, v) in zip(meta.rows, meta_rows):
+              row.cells[0].text = k
+              row.cells[1].text = v
+              shade(row.cells[0], "D9EAF7")
+              row.cells[0].vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+              row.cells[1].vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+              row.cells[0].paragraphs[0].runs[0].bold = True
+
+          p = doc.add_paragraph()
+          p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+          rr = p.add_run(
+              "Source-of-truth planning bundle. Existing frozen UI remains authoritative; "
+              "no new UI prompt/image stage is required unless implementation proves a required state is missing."
+          )
+          rr.italic = True
+          rr.font.size = Pt(8.7)
+          rr.font.color.rgb = RGBColor(89, 89, 89)
+
+          for src_index, src in enumerate(sources):
+              doc.add_page_break()
+              lines = src.read_text(encoding="utf-8").splitlines()
+              i = 0
+              in_code = False
+              code_lines = []
+              while i < len(lines):
+                  raw = lines[i].rstrip()
+                  stripped = raw.strip()
+                  if stripped.startswith("```"):
+                      if not in_code:
+                          in_code = True
+                          code_lines = []
+                      else:
+                          p = doc.add_paragraph()
+                          run = p.add_run("\n".join(code_lines))
+                          run.font.name = "Cascadia Mono"
+                          run._element.rPr.rFonts.set(qn("w:eastAsia"), "Cascadia Mono")
+                          run.font.size = Pt(8.0)
+                          shade_cell = None
+                          in_code = False
+                      i += 1
+                      continue
+                  if in_code:
+                      code_lines.append(raw)
+                      i += 1
+                      continue
+                  if not stripped:
+                      i += 1
+                      continue
+
+                  if stripped.startswith("|") and i + 1 < len(lines) and re.match(r"^\s*\|?\s*:?-{3,}", lines[i+1]):
+                      header = [x.strip() for x in stripped.strip("|").split("|")]
+                      i += 2
+                      rows = []
+                      while i < len(lines) and lines[i].strip().startswith("|"):
+                          rows.append([x.strip() for x in lines[i].strip().strip("|").split("|")])
+                          i += 1
+                      table = doc.add_table(rows=1, cols=len(header))
+                      table.style = "Table Grid"
+                      table.alignment = WD_TABLE_ALIGNMENT.CENTER
+                      for j, value in enumerate(header):
+                          table.rows[0].cells[j].text = re.sub(r"\*\*|\`", "", value)
+                          shade(table.rows[0].cells[j], "2F5597")
+                          for run in table.rows[0].cells[j].paragraphs[0].runs:
+                              run.font.color.rgb = RGBColor(255,255,255)
+                              run.bold = True
+                      for values in rows:
+                          cells = table.add_row().cells
+                          for j in range(len(header)):
+                              cells[j].text = re.sub(r"\*\*|\`", "", values[j] if j < len(values) else "")
+                              cells[j].vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.TOP
+                      continue
+
+                  m = re.match(r"^(#{1,3})\s+(.*)$", stripped)
+                  if m:
+                      level = len(m.group(1))
+                      text = m.group(2)
+                      if level == 1 and src_index > 0:
+                          text = f"{src.stem.replace('_',' ')} — {text}"
+                      doc.add_heading(re.sub(r"\*\*|\`", "", text), level=level)
+                      i += 1
+                      continue
+
+                  m = re.match(r"^[-*]\s+(.*)$", stripped)
+                  if m:
+                      p = doc.add_paragraph(style="List Bullet")
+                      add_inline(p, m.group(1))
+                      i += 1
+                      continue
+
+                  m = re.match(r"^\d+[.)]\s+(.*)$", stripped)
+                  if m:
+                      p = doc.add_paragraph(style="List Number")
+                      add_inline(p, m.group(1))
+                      i += 1
+                      continue
+
+                  p = doc.add_paragraph()
+                  add_inline(p, stripped)
+                  i += 1
+
+          doc.add_page_break()
+          doc.add_heading("ASTRA Gate Verdict", level=1)
+          p = doc.add_paragraph()
+          r = p.add_run("PASS — W11-04 planning is complete.")
+          r.bold = True
+          r.font.color.rgb = RGBColor(31, 120, 50)
+          doc.add_paragraph(
+              "Only T11-W04-01 Binding Schema + Resolver Contracts is authorized next. "
+              "No production coding beyond that task is authorized until its gate passes."
+          )
+          doc.add_paragraph(
+              "If implementation needs a visual state outside the frozen UI pack, STOP and return "
+              "to ASTRA/UI governance before any new prompt/image or redesign."
+          )
+
+          for section in doc.sections:
+              footer = section.footer.paragraphs[0]
+              footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
+              footer.add_run("Lagu Full Album • W11-04 ASTRA Planning • Source of Truth")
+
+          out.parent.mkdir(parents=True, exist_ok=True)
+          doc.save(out)
+          print(out)
+          PY
+      - name: Commit planning DOCX
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/source-of-truth/planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "docs(step11): add W11-04 planning DOCX [w11-04-docx]"
+          git push origin HEAD:astra/w11-04-planning
