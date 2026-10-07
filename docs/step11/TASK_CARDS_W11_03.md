@@ -118,8 +118,11 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: PASS / VERIFIED
 - Dependency: T11-W03-04 PASS / VERIFIED
+- Verified implementation head: `c1df8c4b101d69d3d5b28987efc88aaae0c44ce3`
+- Windows CI: `37638091188` / #240 PASS; job `112849492104`
+- Evidence: `evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`
 - Purpose:
   - prove multi-command atomic transaction/one Undo;
   - enforce origin unification for manual/template/auto-susun/ai contract;
@@ -141,7 +144,8 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W03-05
+- Status: READY
+- Dependency: T11-W03-05 PASS / VERIFIED
 - Purpose:
   - full import/load -> reorder -> disable -> boundary -> save/reopen flow;
   - Undo/Redo + saved checkpoint proof;

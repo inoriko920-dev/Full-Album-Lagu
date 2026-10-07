@@ -6,7 +6,7 @@
 - Active role at current checkpoint: SOL (next task only)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01..04 PASS / VERIFIED; T11-W03-05 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01..05 PASS / VERIFIED; T11-W03-06 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-02 Media Intake Foundation`
@@ -37,6 +37,7 @@
   - `T11-W03-02 Existing Mutation Migration + Session Checkpoint Semantics` — PASS
   - `T11-W03-03 Reorder / Enable-Disable / Boundary Application Core` — PASS
   - `T11-W03-04 Frozen Album Timeline + Global Undo/Redo UI Wiring` — PASS
+  - `T11-W03-05 Unified Batch History & Edge-Case Hardening` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -113,13 +114,28 @@
 - T11-W03-04 Windows portable artifact: `11489515325`
 - T11-W03-04 frozen visual artifact: `11489775014`
 - T11-W03-04 evidence: `docs/step11/evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`
-- Next READY implementation task: `T11-W03-05 Unified Batch History & Edge-Case Hardening` — SOL
+- T11-W03-05 verified implementation head: `c1df8c4b101d69d3d5b28987efc88aaae0c44ce3`
+- T11-W03-05 Windows CI: `37638091188` / run #240 — PASS
+- T11-W03-05 CI job: `112849492104`
+- T11-W03-05 Windows portable artifact: `11490767699`
+- T11-W03-05 frozen visual artifact: `11489524645`
+- T11-W03-05 evidence: `docs/step11/evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`
+- Next READY implementation task: `T11-W03-06 Wave E2E, Drift Review & Evidence Closure` — SOL
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W03-04 Frozen Album Timeline + Global Undo/Redo UI Wiring VERIFIED.** Existing frozen album/timeline surfaces now expose selection, reorder, enabled state, derived boundaries and global Undo/Redo through the single shared ProjectSessionHistory/CommandEngine path. Selection/zoom remain session-only and non-dirty, one multi-track import is one UI Undo, disabled-only missing audio no longer blocks Render, and exact empty SCR-002A remains unchanged. Windows CI #233 is fully green. T11-W03-05 is now the only READY implementation task.
+**PASS — T11-W03-05 Unified Batch History & Edge-Case Hardening VERIFIED.** Batch publication/rollback, all four official origins, divergent Redo invalidation, logical Save checkpoint races, late Recovery overwrite protection, dirty autosave checkpoint semantics and 128-track history/timeline stress are verified. Windows CI #240 is fully green including prior lifecycle/media/frozen UI/package regressions. T11-W03-06 is now the only READY implementation task.
+
+## T11-W03-05 verification
+- Verified implementation head: `c1df8c4b101d69d3d5b28987efc88aaae0c44ce3`.
+- Windows CI: `37638091188` / #240 — PASS.
+- CI job: `112849492104`.
+- Windows portable artifact: `11490767699`.
+- Frozen visual artifact: `11489524645`.
+- Evidence: `docs/step11/evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`.
+- No Template/Auto Susun/Gemini feature, persistent Undo history, runtime provider/tool integration or UI redesign was pulled forward.
 
 ## T11-W03-04 verification
 - Verified implementation head: `96233d99ecf420ac1c3b583c959a63610c709c27`.
@@ -206,4 +222,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: execute **T11-W03-05 — Unified Batch History & Edge-Case Hardening only** as SOL. Re-read the W11-03 task card and T11-W03-04 evidence first. Harden atomic batch/origin/history branches/save-recovery edge cases and 100+ stress proof. Do not start T11-W03-06 closure in the same turn.
+After the user says `lanjutkan`: execute **T11-W03-06 — Wave E2E, Drift Review & Evidence Closure only** as SOL. Re-read the W11-03 charter, acceptance matrix and T11-W03-01..05 evidence first. Run the full import/load -> reorder -> disable -> boundary -> save/reopen + Undo/Redo saved-checkpoint flow, 100+ Windows proof, map AC-W11-03-01..20, perform architecture/UI/trust-boundary drift review, and close W11-03 only if all gates PASS. Do not start W11-04 in the same turn.

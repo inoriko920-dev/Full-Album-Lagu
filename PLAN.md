@@ -53,8 +53,10 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Proof: Windows CI `37631324251` / #225 PASS; `docs/step11/evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`.
 - Completed: **T11-W03-04 Frozen Album Timeline + Global Undo/Redo UI Wiring — PASS / VERIFIED**.
 - Proof: Windows CI `37634883632` / #233 PASS; exact frozen SCR-002A PASS; `docs/step11/evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`.
-- Next exact implementation task: **T11-W03-05 Unified Batch History & Edge-Case Hardening — SOL only**.
-- T11-W03-06 remains blocked; W11-04 remains blocked until W11-03 closure.
+- Completed: **T11-W03-05 Unified Batch History & Edge-Case Hardening — PASS / VERIFIED**.
+- Proof: Windows CI `37638091188` / #240 PASS; 128-track history/timeline stress PASS; `docs/step11/evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`.
+- Next exact implementation task: **T11-W03-06 Wave E2E, Drift Review & Evidence Closure — SOL only**.
+- W11-04 remains blocked until T11-W03-06 closes W11-03 COMPLETE / PASS.
 - No new W11-02 UI prompt/image generation is needed; existing frozen states are authoritative.
 - Exact Gemini and FFmpeg/FFprobe integration remain later integration work.
 
