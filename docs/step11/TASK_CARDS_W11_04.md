@@ -79,8 +79,13 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: PASS / VERIFIED
 - Dependency: T11-W04-03 PASS / VERIFIED
+- Verified implementation head: `ea2b6230af036f9eed05232d5ef0cd96609abb7d`
+- Windows CI: `37659863455` / #283 PASS; job `112924307870`
+- Windows portable artifact: `11500660174`
+- Frozen visual artifact: `11499639091`
+- Evidence: `evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`
 - Scope:
   - explicit metadata override set/clear commands;
   - resolver integration with current selected track projection;
@@ -97,7 +102,8 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W04-04
+- Status: READY
+- Dependency: T11-W04-04 PASS / VERIFIED
 - Scope:
   - enable frozen Auto Susun toolbar action;
   - wire selected-track Inspector metadata/artwork controls;
