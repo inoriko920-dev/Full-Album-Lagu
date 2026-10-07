@@ -328,7 +328,7 @@ describe("AppShell", () => {
     ).toBeInTheDocument();
 
     await waitFor(() => {
-      expect(screen.getByText("01 Opening")).toBeInTheDocument();
+      expect(screen.getAllByText("01 Opening")).toHaveLength(2);
       expect(screen.getByText("Fixture Artist")).toBeInTheDocument();
       expect(document.querySelector(".app-shell")).toHaveAttribute(
         "data-media-state",
