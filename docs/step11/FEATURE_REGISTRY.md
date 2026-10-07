@@ -3,7 +3,7 @@
 Planning role: **ASTRA**  
 Planning baseline analyzed: `main@da5b6786d0daa472c474a33ffd83a5834af24f82`  
 Status: **NORMALIZED / W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 PLANNING COMPLETE / PASS**  
-Implementation status: **W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 IN PROGRESS — T11-W04-01..05 PASS / VERIFIED; T11-W04-06 READY**
+Implementation status: **W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS**
 
 The complete planning authority is the companion DOCX:
 `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
@@ -14,8 +14,8 @@ The complete planning authority is the companion DOCX:
 | FTR-002 | Autosave & Crash Recovery | F-001/F-017; FR-004 | MUST | FTR-001 | VERIFIED W11-01 |
 | FTR-003 | Media Intake & Validation | F-002; FR-005..008 | MUST | FTR-001 | VERIFIED W11-02 |
 | FTR-004 | Track Timeline & Track State | F-003; FR-009..011 | MUST | FTR-003 | VERIFIED W11-03 |
-| FTR-005 | Auto Susun Album | F-004; FR-012 | MUST | FTR-003,FTR-004,FTR-013 | CORE + FROZEN UI WIRING PASS T11-W04-02/05 / ACTIVE |
-| FTR-006 | Artwork/Metadata/Dynamic Track Binding | F-005; FR-013..015 | MUST | FTR-003,FTR-004 | CORE + FROZEN INSPECTOR WIRING PASS T11-W04-01/03/04/05 / ACTIVE |
+| FTR-005 | Auto Susun Album | F-004; FR-012 | MUST | FTR-003,FTR-004,FTR-013 | VERIFIED W11-04 |
+| FTR-006 | Artwork/Metadata/Dynamic Track Binding | F-005; FR-013..015 | MUST | FTR-003,FTR-004 | VERIFIED W11-04 |
 | FTR-007 | Manual Layer Editor | F-006; FR-016..019 | MUST | FTR-013 + UI Freeze | PLANNED W11-05 |
 | FTR-008 | Audio-Reactive Visual Engine | F-007; FR-020..022 | MUST | FTR-003,FTR-012; later tool boundary | PLANNED W11-06 |
 | FTR-009 | Animation & Limited Keyframes | F-008; FR-023..024 | MUST | FTR-007,FTR-013 | PLANNED W11-07 |
@@ -27,7 +27,7 @@ The complete planning authority is the companion DOCX:
 | FTR-015 | Gemini Credential Vault & Failover | F-015/F-016; FR-042..047 | MUST | OS secure storage / provider | DEFER STEP 12 |
 | FTR-016 | Missing Media Detection & Relink | F-017; FR-049..050 | MUST | FTR-003 | VERIFIED W11-02 |
 | FTR-017 | MP4 Render & Preflight | F-018; FR-051..054 | MUST | most visual/media capabilities + STEP 12 tool integration | PLANNED W11-08 |
-| FTR-018 | Error/Diagnostics/Offline Cross-Cutting | F-019/F-020; FR-048,055..056 | MUST | all waves | W11-01 PASS / W11-02 PASS / W11-03 PASS / W11-04 T11-W04-01..03 PASS CROSS-CUT |
+| FTR-018 | Error/Diagnostics/Offline Cross-Cutting | F-019/F-020; FR-048,055..056 | MUST | all waves | W11-01 PASS / W11-02 PASS / W11-03 PASS / W11-04 PASS CROSS-CUT |
 | FTR-019 | Background Video | F-021; FR-057 | SHOULD | media/render capability | CONDITIONAL |
 | FTR-020 | Extended Effects & Branding | F-022/F-024; FR-058..059 | SHOULD | visual engine | CONDITIONAL |
 | FTR-021 | 1440p / 4K Render Presets | F-023 | SHOULD | render capability/hardware | CONDITIONAL |
@@ -105,3 +105,13 @@ The complete planning authority is the companion DOCX:
 - T11-W04-04 Metadata Override + Dynamic Binding Integration: PASS / VERIFIED.
 - T11-W04-05 Frozen Auto Susun + Inspector UI Wiring: PASS / VERIFIED.
 - T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure: READY; FTR-005/FTR-006 are not wave-VERIFIED until W11-04 closure.
+
+
+## W11-04 closure
+- FTR-005 Auto Susun Album: **VERIFIED W11-04**.
+- FTR-006 Artwork/Metadata/Dynamic Track Binding: **VERIFIED W11-04**.
+- FTR-013 shared history dependency: regression PASS.
+- FTR-018 W11-04 cross-cut: PASS.
+- AC-W11-04-01..22: ALL PASS.
+- Evidence: `evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md`, `evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md`.
+- W11-05 FTR-007 + FTR-011 is dependency-unlocked for ASTRA planning only.
