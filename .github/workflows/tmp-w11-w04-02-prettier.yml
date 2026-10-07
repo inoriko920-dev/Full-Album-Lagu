@@ -1,0 +1,36 @@
+name: Temporary W11-04-02 Prettier
+
+on:
+  push:
+    branches:
+      - sol/t11-w04-02-auto-susun-planner
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: ${{ !contains(github.event.head_commit.message, '[prettier-w04-02]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: sol/t11-w04-02-auto-susun-planner
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Format T11-W04-02 files
+        run: npx prettier --write src/core/application/services/auto-arrange-service.ts tests/unit/auto-arrange-service.test.ts
+      - name: Commit formatting
+        shell: bash
+        run: |
+          if git diff --quiet -- src/core/application/services/auto-arrange-service.ts tests/unit/auto-arrange-service.test.ts; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/core/application/services/auto-arrange-service.ts tests/unit/auto-arrange-service.test.ts
+          git commit -m "chore: format T11-W04-02 [prettier-w04-02]"
+          git push origin HEAD:sol/t11-w04-02-auto-susun-planner
