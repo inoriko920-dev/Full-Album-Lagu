@@ -89,9 +89,9 @@ The complete planning authority is the companion DOCX:
 - T11-W04-03 Artwork Intake + Binding Commands: PASS / VERIFIED; evidence `evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`.
 - T11-W04-04 Metadata Override + Dynamic Binding Integration: PASS / VERIFIED; evidence `evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`.
 - T11-W04-05 Frozen Auto Susun + Inspector UI Wiring: PASS / VERIFIED; evidence `evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
-- T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure: READY.
-- FTR-005/FTR-006 are **not VERIFIED yet**; verification requires W11-04 implementation and closure evidence.
-- FTR-018 remains active cross-cutting work for W11-04.
+- T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure: PASS / VERIFIED.
+- FTR-005/FTR-006 are **VERIFIED W11-04**.
+- FTR-018 cross-cut is PASS for W11-04 and remains active for later waves.
 - Frozen UI pack is sufficient at planning time; no new UI prompt/image generation is authorized.
 
 ## T11-W04-02 verification
@@ -104,7 +104,7 @@ The complete planning authority is the companion DOCX:
 - T11-W04-03 Artwork Intake + Binding Commands: PASS / VERIFIED.
 - T11-W04-04 Metadata Override + Dynamic Binding Integration: PASS / VERIFIED.
 - T11-W04-05 Frozen Auto Susun + Inspector UI Wiring: PASS / VERIFIED.
-- T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure: READY; FTR-005/FTR-006 are not wave-VERIFIED until W11-04 closure.
+- T11-W04-06 Wave E2E, Stress, Drift Review & Evidence Closure: PASS / VERIFIED; FTR-005/FTR-006 are wave-VERIFIED and W11-04 is COMPLETE / PASS.
 
 
 ## W11-04 closure
