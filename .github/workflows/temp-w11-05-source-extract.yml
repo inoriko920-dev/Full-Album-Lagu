@@ -1,0 +1,79 @@
+name: Temporary W11-05 Source Extract
+
+on:
+  push:
+    branches:
+      - astra/w11-05-planning
+    paths:
+      - ".github/workflows/temp-w11-05-source-extract.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Extract planning DOCX text
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import xml.etree.ElementTree as ET
+
+          ns = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+          docs = [
+              "docs/source-of-truth/planning/current/00_MASTER_PRODUCT_DEFINITION_LAGU_FULL_ALBUM_REPO_COMPACT.docx",
+              "docs/source-of-truth/planning/current/02_STEP_01_PRODUCT_DEFINITION_BASELINE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT.docx",
+              "docs/source-of-truth/planning/current/04_STEP_03_UI_UX_INVENTORY_LAGU_FULL_ALBUM_v1_1_REVISED_GEMINI_AGENT_REPO_COMPACT.docx",
+              "docs/source-of-truth/planning/current/05_STEP_04_UI_DESIGN_SYSTEM_PROMPT_PACK_LAGU_FULL_ALBUM_v1_1_REVISED_GEMINI_AGENT_REPO_COMPACT.docx",
+              "docs/source-of-truth/planning/current/07_STEP_05_UI_FREEZE_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx",
+              "docs/source-of-truth/planning/current/08_STEP_06_ARCHITECTURE_TECHNOLOGY_DECISION_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx",
+              "docs/source-of-truth/planning/current/09_STEP_07_CODE_CONSTITUTION_REPOSITORY_ARCHITECTURE_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx",
+              "docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx",
+              "docs/source-of-truth/planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx",
+              "docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_TEXT_COMPACT.docx",
+          ]
+
+          out = Path("artifacts/w11-05-source-text")
+          out.mkdir(parents=True, exist_ok=True)
+
+          def extract_docx(path: Path) -> str:
+              with ZipFile(path) as z:
+                  xml = z.read("word/document.xml")
+              root = ET.fromstring(xml)
+              lines = []
+              for para in root.findall(".//w:p", ns):
+                  parts = []
+                  for node in para.iter():
+                      tag = node.tag.split("}")[-1]
+                      if tag == "t" and node.text:
+                          parts.append(node.text)
+                      elif tag == "tab":
+                          parts.append("\t")
+                      elif tag == "br":
+                          parts.append("\n")
+                  text = "".join(parts).strip()
+                  if text:
+                      lines.append(text)
+              return "\n".join(lines)
+
+          manifest = []
+          for src in docs:
+              p = Path(src)
+              text = extract_docx(p)
+              dest = out / (p.stem + ".txt")
+              dest.write_text(text, encoding="utf-8")
+              manifest.append(f"{src}\t{len(text)} chars\t{dest}")
+          (out / "MANIFEST.txt").write_text("\n".join(manifest), encoding="utf-8")
+          PY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: W11-05-Source-Text
+          path: artifacts/w11-05-source-text/**
+          if-no-files-found: error
+          retention-days: 1
