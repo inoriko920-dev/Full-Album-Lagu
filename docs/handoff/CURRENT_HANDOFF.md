@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01, W11-02 and **W11-03 are COMPLETE / PASS**. **W11-04 is in implementation: T11-W04-01..02 are PASS / VERIFIED and T11-W04-03 is the only READY SOL task.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01, W11-02 and **W11-03 are COMPLETE / PASS**. **W11-04 is in implementation: T11-W04-01..03 are PASS / VERIFIED and T11-W04-04 is the only READY SOL task.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -210,8 +210,9 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Existing frozen Auto Susun/Inspector/Media/Timeline UI is sufficient at planning time; no new UI prompt/image stage is required.
 - T11-W04-01 Binding Schema + Resolver Contracts: PASS / VERIFIED.
 - T11-W04-02 Deterministic Auto Susun Planner + CommandBatch: PASS / VERIFIED.
-- T11-W04-03 Artwork Intake + Binding Commands: READY.
-- T11-W04-04..06 remain serially blocked.
+- T11-W04-03 Artwork Intake + Binding Commands: PASS / VERIFIED.
+- T11-W04-04 Metadata Override + Dynamic Binding Integration: READY.
+- T11-W04-05..06 remain serially blocked.
 
 ## T11-W04-01 completed
 - Status: PASS / VERIFIED.
@@ -240,10 +241,19 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - Disabled state, manual binding overrides, IDs/audio links/source refs are preserved.
 - 128-track deterministic core stress and all previous regressions pass.
 
-## Next exact task
-**T11-W04-03 — Artwork Intake + Binding Commands — SOL only.**
+## T11-W04-03 completed
+- Status: PASS / VERIFIED.
+- Verified implementation head: `f2e33b6ec6a08b3d92acbe4963a1cf73c7086825`.
+- Windows CI: `37657078199` / #278 PASS; job `112914788723`.
+- Portable artifact: `11500071293`.
+- Frozen visual artifact: `11498643123`.
+- Evidence: `docs/step11/evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`.
+- PNG/JPEG/WebP main-owned intake, signature validation, optional image lifecycle, album/per-track binding, one-step import+bind history, nonblocking missing artwork, relink identity and source-image immutability are proven.
 
-On the next user `lanjutkan`, implement main-owned PNG/JPEG/WebP artwork intake/validation, optional image media assets, album-default/per-track artwork commands, atomic import+bind, cancel/error/relink behavior, missing-artwork nonblocking semantics and source-image immutability. Do not implement metadata override integration or Inspector/UI wiring in the same turn.
+## Next exact task
+**T11-W04-04 — Metadata Override + Dynamic Binding Integration — SOL only.**
+
+On the next user `lanjutkan`, implement explicit metadata Apply/Clear commands, dynamic fallback/relink integration and save/reopen semantics. Do not implement T11-W04-05 Inspector/UI wiring or later work.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.

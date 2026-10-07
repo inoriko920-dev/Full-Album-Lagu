@@ -63,7 +63,7 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - W11-03 implementation evidence: `../../step11/evidence/T11_W03_01_TIMELINE_COMMAND_ENGINE_EVIDENCE.md`, `../../step11/evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`, `../../step11/evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`, `../../step11/evidence/T11_W03_04_FROZEN_TIMELINE_HISTORY_UI_EVIDENCE.md`, `../../step11/evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`, `../../step11/evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`, and `../../step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`.
 - W11-04 planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`.
 - W11-04 operational companions: `../../step11/WAVE_11_04_CHARTER.md`, `../../step11/TASK_CARDS_W11_04.md`, `../../step11/W11_04_ACCEPTANCE_MATRIX.md`, `../../step11/W11_04_DOR.md`.
-- W11-04 implementation evidence: `../../step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md` and `../../step11/evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`.
-- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; **W11-04 IN PROGRESS with T11-W04-01..02 PASS / VERIFIED**.
-- Only T11-W04-03 has SOL implementation authority next; T11-W04-04..06 remain serially blocked.
+- W11-04 implementation evidence: `../../step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`, `../../step11/evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`, and `../../step11/evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`.
+- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; **W11-04 IN PROGRESS with T11-W04-01..03 PASS / VERIFIED**.
+- Only T11-W04-04 has SOL implementation authority next; T11-W04-05..06 remain serially blocked.
 - Existing frozen Auto Susun/Inspector/Media/Timeline references are sufficient at planning time; no new UI prompt/image generation is required.

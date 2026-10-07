@@ -47,6 +47,15 @@ Planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
 - Verified contribution: AC-05 deterministic comparator independent of media-array completion order; AC-06 repeat no-op/idempotence; AC-07 IDs/audio/source/disabled/manual binding preservation; AC-08 one auto-susun CommandBatch/one revision/one Undo-Redo step; AC-09 stale revision/token + tampered plan atomic rejection; AC-18 core Undo/Redo semantic restoration; AC-19 128-track deterministic stress; AC-21 provider-free architecture/secrets/paths gate; AC-22 prior-wave/frozen UI/package regressions.
 - These are **task-level verified contributions**, not final wave closure.
 
+## T11-W04-03 checkpoint evidence
+
+- T11-W04-03 status: **PASS / VERIFIED**.
+- Verified implementation head: `f2e33b6ec6a08b3d92acbe4963a1cf73c7086825`.
+- Windows CI: `37657078199` / #278 PASS; job `112914788723`.
+- Evidence: `evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`.
+- Verified contribution: AC-10 main-owned PNG/JPEG/WebP optional source-preserving intake; AC-11 per-track artwork priority and clear-to-default/placeholder behavior; AC-12 missing optional artwork stays nonblocking while corrupt/unsupported intake fails safely; AC-13 one import+bind is one atomic manual history step with Undo/Redo; AC-18 artwork history semantics; AC-20 source-image byte/size/mtime immutability contribution; AC-21 architecture/secrets/portable-path/provider-free gates; AC-22 prior-wave/frozen-UI/package/smoke/ZIP regression contribution.
+- Full SHA-256/source-immutability matrix and final AC-W11-04-01..22 closure remain owned by T11-W04-06.
+
 ## Closure rule
 
 W11-04 is not COMPLETE because code exists. T11-W04-06 must provide final Windows evidence, map AC-W11-04-01..22 to PASS, and record an architecture/UI/trust-boundary drift review with **no material drift**.
