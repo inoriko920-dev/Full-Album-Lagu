@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL (next task only)
+- Active role at current checkpoint: ASTRA (next wave planning only)
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 T11-W03-01..05 PASS / VERIFIED; T11-W03-06 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 NOT STARTED / ASTRA PLANNING READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
-- Last completed wave: `W11-02 Media Intake Foundation`
+- Last completed wave: `W11-03 Album Timeline + Command History`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Active planned wave: `W11-03 Album Timeline + Command History`
+- Next planned wave: `W11-04 Auto Susun + Track Binding` — ASTRA planning required before SOL implementation
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -38,6 +38,7 @@
   - `T11-W03-03 Reorder / Enable-Disable / Boundary Application Core` — PASS
   - `T11-W03-04 Frozen Album Timeline + Global Undo/Redo UI Wiring` — PASS
   - `T11-W03-05 Unified Batch History & Edge-Case Hardening` — PASS
+  - `T11-W03-06 Wave E2E, Drift Review & Evidence Closure` — PASS
 - T11-W01-02 verified branch SHA: `119e039bc42da84dc8a9950d7744e3ea519552a3`
 - T11-W01-02 Windows CI: `37534906938` — PASS
 - T11-W01-02 CI job: `112513587662`
@@ -120,13 +121,37 @@
 - T11-W03-05 Windows portable artifact: `11490767699`
 - T11-W03-05 frozen visual artifact: `11489524645`
 - T11-W03-05 evidence: `docs/step11/evidence/T11_W03_05_UNIFIED_HISTORY_HARDENING_EVIDENCE.md`
-- Next READY implementation task: `T11-W03-06 Wave E2E, Drift Review & Evidence Closure` — SOL
+- T11-W03-06 verified implementation head: `8464da5bbbff20ff23636a2b4894952949f6d070`
+- T11-W03-06 Windows CI: `37642774190` / run #244 — PASS
+- T11-W03-06 CI job: `112865244896`
+- W11-03 closure artifact: `11493061001`
+- W11-03 Windows portable artifact: `11491964745`
+- W11-03 frozen visual artifact: `11494045003`
+- W11-03 closure evidence: `docs/step11/evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`
+- W11-03 drift review: `docs/step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`
+- W11-03 acceptance: AC-W11-03-01..20 ALL PASS
+- Next authorized action: ASTRA planning for `W11-04 Auto Susun + Track Binding`; no W11-04 implementation is authorized yet
 - Frozen UI: `LFA-UI-REFERENCE-v1.1` / `LFA-UI-FREEZE-v1.0`
 - STEP 10 proven SLC: `SLC-010-001 Save & Reopen Empty Project`
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — T11-W03-05 Unified Batch History & Edge-Case Hardening VERIFIED.** Batch publication/rollback, all four official origins, divergent Redo invalidation, logical Save checkpoint races, late Recovery overwrite protection, dirty autosave checkpoint semantics and 128-track history/timeline stress are verified. Windows CI #240 is fully green including prior lifecycle/media/frozen UI/package regressions. T11-W03-06 is now the only READY implementation task.
+**PASS — W11-03 Album Timeline + Command History COMPLETE / VERIFIED.** T11-W03-01..06 are PASS. Windows CI #244 proves the canonical 12-track import/load/reorder/disable/boundary/Save-reopen/history flow, the 128-track live renderer/history scenario, all prior lifecycle/media regressions, exact frozen UI, package, smoke and portable ZIP. AC-W11-03-01..20 are ALL PASS and architecture/UI/trust-boundary drift is PASS with no material drift.
+
+## T11-W03-06 verification
+- Verified implementation head: `8464da5bbbff20ff23636a2b4894952949f6d070`.
+- Windows CI: `37642774190` / #244 — PASS.
+- CI job: `112865244896`.
+- Closure evidence artifact: `11493061001`.
+- Windows portable artifact: `11491964745`.
+- Frozen visual artifact: `11494045003`.
+- 12-track full-flow: PASS.
+- 128-track live renderer/history flow: PASS in 970 ms.
+- Failed assertions: none.
+- Acceptance AC-W11-03-01..20: ALL PASS.
+- Evidence: `docs/step11/evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`.
+- Drift review: `docs/step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`.
+- W11-04 has not started.
 
 ## T11-W03-05 verification
 - Verified implementation head: `c1df8c4b101d69d3d5b28987efc88aaae0c44ce3`.
@@ -222,4 +247,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: execute **T11-W03-06 — Wave E2E, Drift Review & Evidence Closure only** as SOL. Re-read the W11-03 charter, acceptance matrix and T11-W03-01..05 evidence first. Run the full import/load -> reorder -> disable -> boundary -> save/reopen + Undo/Redo saved-checkpoint flow, 100+ Windows proof, map AC-W11-03-01..20, perform architecture/UI/trust-boundary drift review, and close W11-03 only if all gates PASS. Do not start W11-04 in the same turn.
+After the user says `lanjutkan`: switch to **ASTRA** and plan **W11-04 — Auto Susun + Track Binding (FTR-005 + FTR-006, with FTR-013/FTR-018 cross-cut as applicable)**. Create the required detailed planning DOCX plus operational charter/task cards/acceptance/DoR source-of-truth before any W11-04 SOL implementation. Do not code W11-04 before that planning gate passes.

@@ -144,8 +144,13 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: PASS / VERIFIED
 - Dependency: T11-W03-05 PASS / VERIFIED
+- Verified implementation head: `8464da5bbbff20ff23636a2b4894952949f6d070`
+- Windows CI: `37642774190` / #244 PASS; job `112865244896`
+- Closure artifact: `11493061001`
+- Evidence: `evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`
+- Drift review: `evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`
 - Purpose:
   - full import/load -> reorder -> disable -> boundary -> save/reopen flow;
   - Undo/Redo + saved checkpoint proof;
@@ -162,4 +167,4 @@ Execution rule: **one SOL task at a time**.
 
 ## Release-to-next-wave condition
 
-W11-04 remains blocked until T11-W03-06 is COMPLETE / PASS and registry/dependency graph/state/handoff explicitly close W11-03.
+**SATISFIED.** T11-W03-06 is PASS / VERIFIED; registry/dependency graph/state/handoff close W11-03 as COMPLETE / PASS; AC-W11-03-01..20 are ALL PASS. W11-04 is unlocked for ASTRA planning only.

@@ -753,6 +753,320 @@ function createMainWindow(): BrowserWindow {
               };
             }
 
+            if (
+              mode === "timeline-history-flow" ||
+              mode === "timeline-history-reopen"
+            ) {
+              const waitFor = async (predicate, message, maxAttempts = 500) => {
+                for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+                  if (predicate()) return;
+                  await new Promise((resolveWait) =>
+                    setTimeout(resolveWait, 20),
+                  );
+                }
+                throw new Error(message);
+              };
+
+              const shell = () => document.querySelector(".app-shell");
+              const mediaRows = () =>
+                Array.from(document.querySelectorAll("[data-media-track-id]"));
+              const timelineRows = () =>
+                Array.from(
+                  document.querySelectorAll("[data-timeline-track-id]"),
+                );
+              const buttonByText = (label) =>
+                Array.from(document.querySelectorAll("button")).find(
+                  (button) => button.textContent?.trim() === label,
+                );
+              const mediaRowById = (trackId) =>
+                mediaRows().find(
+                  (row) => row.getAttribute("data-media-track-id") === trackId,
+                );
+
+              const snapshotUi = () => {
+                const root = shell();
+                if (!root) throw new Error("App shell is unavailable.");
+
+                return {
+                  projectId: root.getAttribute("data-project-id"),
+                  projectRevision: Number(
+                    root.getAttribute("data-project-revision"),
+                  ),
+                  projectSource: root.getAttribute("data-project-source"),
+                  persistenceState: root.getAttribute(
+                    "data-persistence-state",
+                  ),
+                  dirty: root.getAttribute("data-project-dirty") === "true",
+                  canUndo: root.getAttribute("data-can-undo") === "true",
+                  canRedo: root.getAttribute("data-can-redo") === "true",
+                  selectedTrackId:
+                    root.getAttribute("data-selected-track-id") ?? "",
+                  timelineZoom: Number(
+                    root.getAttribute("data-timeline-zoom"),
+                  ),
+                  mediaOrder: mediaRows().map((row) =>
+                    row.getAttribute("data-media-track-id"),
+                  ),
+                  timelineOrder: timelineRows().map((row) =>
+                    row.getAttribute("data-timeline-track-id"),
+                  ),
+                  enabled: mediaRows().map((row) => ({
+                    trackId: row.getAttribute("data-media-track-id"),
+                    enabled:
+                      row.querySelector('input[type="checkbox"]')?.checked ??
+                      false,
+                  })),
+                  timeline: timelineRows().map((row) => ({
+                    trackId: row.getAttribute("data-timeline-track-id"),
+                    title:
+                      row.querySelector("strong")?.textContent?.trim() ?? "",
+                    timing:
+                      row.querySelector("small")?.textContent?.trim() ?? "",
+                    disabled: row.classList.contains(
+                      "timeline-track--disabled",
+                    ),
+                  })),
+                };
+              };
+
+              await waitFor(
+                () => {
+                  const root = shell();
+                  return (
+                    root?.getAttribute("data-project-source") === "loaded" &&
+                    mediaRows().length >= 3 &&
+                    timelineRows().length === mediaRows().length
+                  );
+                },
+                "Timed out waiting for W11-03 album renderer readiness.",
+              );
+
+              const initial = snapshotUi();
+
+              if (mode === "timeline-history-reopen") {
+                return {
+                  mode,
+                  startupStatus: startup.status,
+                  initial,
+                };
+              }
+
+              if (initial.dirty || initial.canUndo || initial.canRedo) {
+                throw new Error(
+                  "W11-03 full-flow must start from a clean loaded history.",
+                );
+              }
+
+              const firstId = initial.mediaOrder[0];
+              const secondId = initial.mediaOrder[1];
+              const thirdId = initial.mediaOrder[2];
+              if (!firstId || !secondId || !thirdId) {
+                throw new Error("W11-03 full-flow requires at least 3 tracks.");
+              }
+
+              const firstTimeline = timelineRows().find(
+                (row) =>
+                  row.getAttribute("data-timeline-track-id") === firstId,
+              );
+              const zoomIn = document.querySelector(
+                'button[aria-label="Perbesar timeline"]',
+              );
+              firstTimeline?.click();
+              zoomIn?.click();
+
+              await waitFor(
+                () => {
+                  const root = shell();
+                  return (
+                    root?.getAttribute("data-selected-track-id") === firstId &&
+                    root?.getAttribute("data-timeline-zoom") === "125"
+                  );
+                },
+                "Session-only selection/zoom did not settle.",
+              );
+              const sessionOnly = snapshotUi();
+
+              const thirdRow = mediaRowById(thirdId);
+              const moveUp = thirdRow?.querySelector(
+                'button[aria-label$="ke atas"]',
+              );
+              if (!(moveUp instanceof HTMLButtonElement)) {
+                throw new Error("Track reorder control was not found.");
+              }
+              moveUp.click();
+
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === initial.projectRevision + 1 &&
+                    current.dirty &&
+                    current.mediaOrder[0] === firstId &&
+                    current.mediaOrder[1] === thirdId &&
+                    current.mediaOrder[2] === secondId
+                  );
+                },
+                "Track reorder did not update canonical UI state.",
+              );
+              const reordered = snapshotUi();
+
+              const secondRow = mediaRowById(secondId);
+              const enabledToggle = secondRow?.querySelector(
+                'input[type="checkbox"]',
+              );
+              if (!(enabledToggle instanceof HTMLInputElement)) {
+                throw new Error("Track enabled toggle was not found.");
+              }
+              enabledToggle.click();
+
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  const secondEnabled = current.enabled.find(
+                    (item) => item.trackId === secondId,
+                  )?.enabled;
+                  const secondTimeline = current.timeline.find(
+                    (item) => item.trackId === secondId,
+                  );
+                  return (
+                    current.projectRevision === initial.projectRevision + 2 &&
+                    current.dirty &&
+                    secondEnabled === false &&
+                    secondTimeline?.disabled === true &&
+                    secondTimeline.timing === "Nonaktif"
+                  );
+                },
+                "Track disable did not update project/timeline state.",
+              );
+              const disabled = snapshotUi();
+
+              const saveButton = document.querySelector(
+                'button[data-action="save-project"]',
+              );
+              if (!(saveButton instanceof HTMLButtonElement)) {
+                throw new Error("Save control was not found.");
+              }
+              saveButton.click();
+
+              await waitFor(
+                () => {
+                  const root = shell();
+                  return (
+                    root?.getAttribute("data-persistence-state") === "saved" &&
+                    root?.getAttribute("data-project-dirty") === "false"
+                  );
+                },
+                "Saved checkpoint did not become clean.",
+              );
+              const saved = snapshotUi();
+
+              const toggleAfterSave = mediaRowById(secondId)?.querySelector(
+                'input[type="checkbox"]',
+              );
+              if (!(toggleAfterSave instanceof HTMLInputElement)) {
+                throw new Error(
+                  "Track enabled toggle was unavailable after Save.",
+                );
+              }
+              toggleAfterSave.click();
+
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === saved.projectRevision + 1 &&
+                    current.dirty &&
+                    current.enabled.find(
+                      (item) => item.trackId === secondId,
+                    )?.enabled === true
+                  );
+                },
+                "Post-Save command did not make the project dirty.",
+              );
+              const postSaveCommand = snapshotUi();
+
+              const undoButton = buttonByText("Undo");
+              if (!(undoButton instanceof HTMLButtonElement)) {
+                throw new Error("Undo control was not found.");
+              }
+              undoButton.click();
+
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === saved.projectRevision + 2 &&
+                    !current.dirty &&
+                    current.canRedo &&
+                    current.enabled.find(
+                      (item) => item.trackId === secondId,
+                    )?.enabled === false
+                  );
+                },
+                "Undo did not return exactly to the saved checkpoint.",
+              );
+              const undoToSaved = snapshotUi();
+
+              const redoButton = buttonByText("Redo");
+              if (!(redoButton instanceof HTMLButtonElement)) {
+                throw new Error("Redo control was not found.");
+              }
+              redoButton.click();
+
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === saved.projectRevision + 3 &&
+                    current.dirty &&
+                    current.enabled.find(
+                      (item) => item.trackId === secondId,
+                    )?.enabled === true
+                  );
+                },
+                "Redo did not move away from the saved checkpoint.",
+              );
+              const redoAway = snapshotUi();
+
+              const finalUndoButton = buttonByText("Undo");
+              if (!(finalUndoButton instanceof HTMLButtonElement)) {
+                throw new Error("Final Undo control was not found.");
+              }
+              finalUndoButton.click();
+
+              await waitFor(
+                () => {
+                  const current = snapshotUi();
+                  return (
+                    current.projectRevision === saved.projectRevision + 4 &&
+                    !current.dirty &&
+                    current.enabled.find(
+                      (item) => item.trackId === secondId,
+                    )?.enabled === false
+                  );
+                },
+                "Final Undo did not restore the saved logical state.",
+              );
+              const finalState = snapshotUi();
+
+              return {
+                mode,
+                startupStatus: startup.status,
+                firstId,
+                secondId,
+                thirdId,
+                initial,
+                sessionOnly,
+                reordered,
+                disabled,
+                saved,
+                postSaveCommand,
+                undoToSaved,
+                redoAway,
+                finalState,
+              };
+            }
+
             throw new Error("Unsupported W11 lifecycle probe mode: " + mode);
           })()
         `)) as Record<string, unknown>;

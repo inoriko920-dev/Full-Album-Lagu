@@ -61,6 +61,41 @@
 - Verified contribution: AC-10 command/batch revision-history invariants; AC-11 deterministic Undo/Redo; AC-12 divergent Redo invalidation + stale expectation rejection; AC-13 atomic batch/one Undo; AC-14 manual/template/auto-susun/ai origin parity; AC-15 late Save logical checkpoint and dirty correctness; AC-16 late Recovery overwrite protection + autosave logical-dirty interaction; AC-18 128-track/60-batch/Undo/Redo stress; AC-19 sanitized offline errors and no provider dependency.
 - These are **task-level verified contributions**, not final wave closure; T11-W03-06 must still run the canonical full-flow E2E, final AC-W11-03-01..20 mapping and drift review.
 
+## T11-W03-06 final closure
+
+- Status: **PASS / VERIFIED**.
+- Verified implementation head: `8464da5bbbff20ff23636a2b4894952949f6d070`.
+- Windows CI: `37642774190` / #244 PASS; job `112865244896`.
+- Closure artifact: `11493061001`.
+- 12-track canonical full-flow: PASS.
+- 128-track live renderer/history scenario: PASS in 970 ms.
+- Failed closure assertions: none.
+- Architecture/UI/trust-boundary drift: PASS — no material drift.
+- **AC-W11-03-01..20 = ALL PASS.**
+
+| Acceptance | Final result | Final evidence |
+| --- | --- | --- |
+| AC-W11-03-01 | PASS | schema-v1/legacy tests + persisted optional disabled state in closure |
+| AC-W11-03-02 | PASS | pure projection tests + closure derived timeline labels |
+| AC-W11-03-03 | PASS | UI reorder -> Save -> process restart/reopen |
+| AC-W11-03-04 | PASS | reordered/disabled cumulative boundary labels in closure |
+| AC-W11-03-05 | PASS | disabled exclusion + source SHA-256/size/mtime unchanged |
+| AC-W11-03-06 | PASS | re-enable/Undo/Redo restoration + canonical readiness tests |
+| AC-W11-03-07 | PASS | stable track IDs/audioAssetId/source references |
+| AC-W11-03-08 | PASS | selection + zoom session-only, no dirty/revision change |
+| AC-W11-03-09 | PASS | architecture gate + one ProjectSessionHistory/CommandEngine mutation owner |
+| AC-W11-03-10 | PASS | Windows command/no-op tests |
+| AC-W11-03-11 | PASS | closure Undo/Redo exact semantic restoration |
+| AC-W11-03-12 | PASS | divergent branch tests + saved-state preservation |
+| AC-W11-03-13 | PASS | atomic batch tests, one revision/one Undo |
+| AC-W11-03-14 | PASS | manual/template/auto-susun/ai origin parity |
+| AC-W11-03-15 | PASS | Save -> command dirty -> Undo-to-saved clean -> Redo-away dirty |
+| AC-W11-03-16 | PASS | reopen history reset + recovery/passive reconciliation regressions |
+| AC-W11-03-17 | PASS | global history UI + exact frozen SCR-002A |
+| AC-W11-03-18 | PASS | 128-track live Windows scenario 970 ms + prior 60-batch stress |
+| AC-W11-03-19 | PASS | architecture/secrets/paths gates + sanitized offline evidence |
+| AC-W11-03-20 | PASS | STEP10/W11-01/W11-02/frozen UI/package/smoke/ZIP all green |
+
 ## Closure rule
 
-W11-03 may close only when **AC-W11-03-01..20** are all PASS or any BLOCKED item is explicitly documented with evidence. No criterion is implied PASS merely because code exists.
+Closure condition satisfied: **AC-W11-03-01..20 ALL PASS** with canonical Windows evidence and no BLOCKED item. W11-03 is COMPLETE / PASS.

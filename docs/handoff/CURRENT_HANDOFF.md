@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 is in implementation: T11-W03-01..05 are PASS / VERIFIED; T11-W03-06 is the only READY SOL task.** STEP 11 remains in progress overall.
+STEP 10 is complete. W11-01, W11-02 and **W11-03 are COMPLETE / PASS**. T11-W03-01..06 are PASS / VERIFIED. **W11-04 is not started; the only next authorized action is ASTRA planning for W11-04 Auto Susun + Track Binding.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -19,18 +19,20 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - W11-02 acceptance matrix: `docs/step11/W11_02_ACCEPTANCE_MATRIX.md`
 
 ## Last completed wave
-**W11-02 Media Intake Foundation**
-- Features: FTR-003 Media Intake & Validation + FTR-016 Missing Media Detection & Relink + FTR-018 Error/Offline cross-cut.
+**W11-03 Album Timeline + Command History**
+- Features: FTR-004 Track Timeline & Track State + FTR-013 Unified Command History / Undo-Redo + FTR-018 cross-cut.
 - Status: COMPLETE / PASS.
-- Acceptance: AC-W11-02-01..18 all PASS.
+- Acceptance: AC-W11-03-01..20 ALL PASS.
 - Drift review: PASS — no material architecture/UI/trust-boundary drift.
-- Verified closure head: `2af8e653fae57c216be63a7f1c9f866c269b36e9`.
-- Clean Windows CI: `37616435681` / run #177 PASS; job `112775774987`.
-- Closure evidence artifact: `11481085315`.
-- Windows portable artifact: `11480135988`.
-- Frozen visual artifact: `11479776589`.
-- Closure evidence: `docs/step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
-- Drift review: `docs/step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`.
+- Verified implementation head: `8464da5bbbff20ff23636a2b4894952949f6d070`.
+- Windows CI: `37642774190` / run #244 PASS; job `112865244896`.
+- Closure artifact: `11493061001`.
+- Windows portable artifact: `11491964745`.
+- Frozen visual artifact: `11494045003`.
+- 12-track canonical full-flow PASS.
+- 128-track live renderer/history flow PASS in 970 ms.
+- Closure evidence: `docs/step11/evidence/W11_03_WAVE_CLOSURE_EVIDENCE.md`.
+- Drift review: `docs/step11/evidence/W11_03_ARCHITECTURE_DRIFT_REVIEW.md`.
 
 ## Completed STEP 11 tasks
 ### T11-W01-01 Lifecycle Contracts & Session Path Ownership — PASS / VERIFIED
@@ -183,10 +185,20 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - 128-track / 60-batch / 60 Undo / 60 Redo deterministic stress passes.
 - Exact frozen UI and permanent Gemini rail remain unchanged.
 
-## Next exact task
-**T11-W03-06 — Wave E2E, Drift Review & Evidence Closure — SOL only.**
+## T11-W03-06 completed
+- Status: PASS / VERIFIED.
+- Windows CI #244 passed full verify, runtime audit, STEP 10, W11-01, W11-02, W11-03 closure E2E, exact frozen UI, Windows package, smoke and portable ZIP.
+- Canonical W11-03 closure flow imported 12 real WAV tracks, reordered, disabled, verified derived boundaries, saved, exercised Undo/Redo saved-checkpoint truth, restarted/reopened and preserved canonical saved state.
+- 128-track live renderer/history scenario completed in 970 ms.
+- Track/media identity remained stable and source file hash/size/mtime remained unchanged.
+- Public evidence has no raw-path keys or provider secrets.
+- AC-W11-03-01..20 ALL PASS.
+- W11-03 = COMPLETE / PASS.
 
-On the next user `lanjutkan`, perform the final W11-03 full-flow Windows evidence, map AC-W11-03-01..20, run architecture/UI/trust-boundary drift review, update closure source-of-truth, and close W11-03 only if all evidence is green. Do not start W11-04 in the same turn.
+## Next exact task
+**ASTRA planning for W11-04 — Auto Susun + Track Binding.**
+
+On the next user `lanjutkan`, do not code W11-04. First create the detailed W11-04 planning DOCX and operational charter/task cards/acceptance/DoR, respecting all Software Factory and frozen-UI rules. SOL implementation remains blocked until the new planning/source-of-truth gate passes.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
