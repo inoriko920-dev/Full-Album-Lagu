@@ -50,21 +50,19 @@
 - Current external-integration rule: Gemini/credential provider and FFmpeg exact integration remain STEP 12 owned.
 
 ## Current gate
-**PASS — W11-02 ASTRA PLANNING COMPLETE.** Requirements F-002/F-017 and FR-005..008/048..050/055..056 are mapped; W11-01 prerequisite is complete; scope, architecture ownership, additive schema-v1 strategy, missing/relink semantics, UI authority, dependency posture, error taxonomy, 18 acceptance criteria, six serial tasks, test/evidence strategy, rollback and review triggers are defined. No media feature code was changed in this planning checkpoint.
+**PASS — W11-02 ASTRA PLANNING COMPLETE.** FTR-003 + FTR-016 + FTR-018 are mapped into an explicit media-intake/relink charter, 18 acceptance criteria, 6 sequential SOL task cards, architecture ownership, dependency decision, performance/cancellation policy, frozen UI authority, and test/evidence gates. No media feature code was introduced during planning.
 
 ## W11-02 planning decisions
-- One canonical main-process Media Intake pipeline serves picker, drop-file and drop-folder inputs.
-- Preferred metadata/duration adapter: `music-metadata`, subject to implementation-time lock/audit/CI.
-- Exact FFmpeg/FFprobe executable integration remains outside W11-02 and STEP 12-owned.
-- Renderer retains no direct filesystem/dialog/subprocess/provider ownership.
-- Project schema stays v1 with additive optional media fields unless implementation proves a blocking incompatibility.
-- Import is non-destructive; source media is never renamed/moved/edited by the intake/relink workflow.
-- 20+/100+ batch operations must be asynchronous, bounded, observable and cancellable.
-- Initial ordering is deterministic: metadata track number -> filename number -> filename -> stable tie-break.
-- Missing mandatory audio and optional visual references are distinct states.
-- Relink only auto-resolves unique high-confidence candidates; ambiguity remains unresolved.
-- Existing frozen UI states 002A/002B/002F/009A/009B are sufficient; no new UI prompt/image generation is required.
-- W11-02 acceptance: AC-W11-02-01..18 planned and mapped.
+- One canonical Media Intake pipeline for picker, drag-drop file and drag-drop folder.
+- Main-owned filesystem/discovery/probe/relink; renderer remains filesystem-free.
+- Additive schema-v1 media references; no destructive migration planned.
+- Preferred metadata/duration adapter: `music-metadata`, subject to implementation dependency/license/audit gate.
+- FFmpeg/FFprobe exact integration remains deferred; W11-02 must not silently pull it forward.
+- 20+ and 100+ batch import must be progressive, bounded and cancellable.
+- Initial order is deterministic: metadata track number -> filename number -> filename -> stable tie-break.
+- Missing required audio is distinct from optional visual assets.
+- Relink auto-resolves only unique high-confidence matches; ambiguous matches remain unresolved.
+- Existing frozen references UI-IMG-002A/002B/002F/009A/009B are sufficient; no new UI prompt/image stage is required.
 
 ## Protected decisions
 Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works without AI; one Project State/official mutation path; JSON versioned project; track-boundary model; portable Windows ZIP; final MP4; OS-protected secrets; frozen UI cannot be silently redesigned.
