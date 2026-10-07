@@ -304,11 +304,7 @@ const importedIdentities = new Map(
 );
 
 const flowEvidencePath = join(evidenceDir, "02-timeline-history-flow.json");
-await runElectron(
-  "timeline-history-flow",
-  flowProjectPath,
-  flowEvidencePath,
-);
+await runElectron("timeline-history-flow", flowProjectPath, flowEvidencePath);
 const flowEvidence = await loadEvidence(flowEvidencePath);
 const savedProject = JSON.parse(await readFile(flowProjectPath, "utf8"));
 const expectedSavedOrder = [
@@ -344,11 +340,7 @@ await seedJson(scaleProjectPath, scaleProject);
 
 const scaleEvidencePath = join(evidenceDir, "04-scale-128-history-flow.json");
 const scaleStartedAt = Date.now();
-await runElectron(
-  "timeline-history-flow",
-  scaleProjectPath,
-  scaleEvidencePath,
-);
+await runElectron("timeline-history-flow", scaleProjectPath, scaleEvidencePath);
 const scaleElapsedMs = Date.now() - scaleStartedAt;
 const scaleEvidence = await loadEvidence(scaleEvidencePath);
 const scaleSavedProject = JSON.parse(await readFile(scaleProjectPath, "utf8"));
@@ -516,26 +508,36 @@ const summary = {
   assertions,
   failedAssertions,
   acceptanceCoverage: {
-    "AC-W11-03-01": "schema/legacy round-trip in canonical verify + persisted disabled state in closure",
-    "AC-W11-03-02": "derived boundary projection in canonical verify + closure timeline labels",
+    "AC-W11-03-01":
+      "schema/legacy round-trip in canonical verify + persisted disabled state in closure",
+    "AC-W11-03-02":
+      "derived boundary projection in canonical verify + closure timeline labels",
     "AC-W11-03-03": "UI reorder -> Save -> process restart/reopen",
     "AC-W11-03-04": "closure boundary labels after reorder/disable",
     "AC-W11-03-05": "disabled track excluded; source fingerprints unchanged",
-    "AC-W11-03-06": "re-enable/Undo/Redo state restoration + canonical readiness tests",
+    "AC-W11-03-06":
+      "re-enable/Undo/Redo state restoration + canonical readiness tests",
     "AC-W11-03-07": "track/audio/source identities stable across closure flow",
     "AC-W11-03-08": "selection + zoom session-only before project mutation",
-    "AC-W11-03-09": "architecture gate + shared ProjectSessionHistory/CommandEngine",
+    "AC-W11-03-09":
+      "architecture gate + shared ProjectSessionHistory/CommandEngine",
     "AC-W11-03-10": "canonical command/no-op tests in Windows verify",
     "AC-W11-03-11": "closure Undo/Redo semantic restoration",
     "AC-W11-03-12": "canonical divergent branch tests in Windows verify",
     "AC-W11-03-13": "canonical atomic batch tests in Windows verify",
-    "AC-W11-03-14": "manual/template/auto-susun/ai contract tests in Windows verify",
-    "AC-W11-03-15": "closure Save checkpoint -> dirty command -> Undo clean -> Redo dirty",
-    "AC-W11-03-16": "reopen history reset + canonical recovery/passive-scan regressions",
+    "AC-W11-03-14":
+      "manual/template/auto-susun/ai contract tests in Windows verify",
+    "AC-W11-03-15":
+      "closure Save checkpoint -> dirty command -> Undo clean -> Redo dirty",
+    "AC-W11-03-16":
+      "reopen history reset + canonical recovery/passive-scan regressions",
     "AC-W11-03-17": "frozen UI/component regression + canonical SCR-002A gate",
-    "AC-W11-03-18": "128-track live renderer/history closure scenario + Windows unit stress",
-    "AC-W11-03-19": "architecture/secrets/paths gates + sanitized closure evidence",
-    "AC-W11-03-20": "canonical STEP10/W11-01/W11-02/UI/package/smoke/ZIP workflow",
+    "AC-W11-03-18":
+      "128-track live renderer/history closure scenario + Windows unit stress",
+    "AC-W11-03-19":
+      "architecture/secrets/paths gates + sanitized closure evidence",
+    "AC-W11-03-20":
+      "canonical STEP10/W11-01/W11-02/UI/package/smoke/ZIP workflow",
   },
   fixturePathPolicy:
     "spaces + Unicode exercised; raw fixture paths omitted from public evidence",
