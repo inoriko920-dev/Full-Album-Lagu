@@ -776,8 +776,7 @@ function createMainWindow(): BrowserWindow {
                 );
               const buttonByText = (label) =>
                 Array.from(document.querySelectorAll("button")).find(
-                  (button) =>
-                    button.textContent?.replace(/\s+/g, " ").trim() === label,
+                  (button) => button.textContent?.trim() === label,
                 );
               const mediaRowById = (trackId) =>
                 mediaRows().find(
