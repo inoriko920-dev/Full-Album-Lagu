@@ -34,7 +34,8 @@
     "test:integration": "vitest run tests/integration",
     "e2e:slc:save-reopen": "node scripts/run-slc-save-reopen.mjs",
     "e2e:w11:lifecycle": "node scripts/run-w11-project-lifecycle.mjs",
-    "e2e:w11:recovery": "node scripts/run-w11-recovery.mjs"
+    "e2e:w11:recovery": "node scripts/run-w11-recovery.mjs",
+    "e2e:w11:media-closure": "node scripts/run-w11-media-intake-closure.mjs"
   },
   "dependencies": {
     "music-metadata": "12.0.0",
