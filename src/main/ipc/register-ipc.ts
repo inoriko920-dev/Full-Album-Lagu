@@ -1,12 +1,28 @@
 import { ipcMain } from "electron";
+import { ProjectRecoveryStoreError } from "../../core/application/ports/project-recovery-store";
 import { ProjectStoreError } from "../../core/application/ports/project-store";
 import type { ProjectLifecycleService } from "../../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../../core/application/services/project-path-session";
 import type { LoadProjectUseCase } from "../../core/application/services/project-persistence";
+import type { ProjectRecoveryService } from "../../core/application/services/project-recovery-service";
 import {
   FOUNDATION_INFO_CHANNEL,
   foundationInfoSchema,
 } from "../../core/contracts/foundation-info";
+import {
+  PROJECT_AUTOSAVE_CHANNEL,
+  PROJECT_RECOVERY_ACCEPT_CHANNEL,
+  PROJECT_RECOVERY_DISCARD_CHANNEL,
+  PROJECT_RECOVERY_STATUS_CHANNEL,
+  autosaveRecoveryRequestSchema,
+  autosaveRecoveryResultSchema,
+  recoveryAcceptRequestSchema,
+  recoveryAcceptResultSchema,
+  recoveryDiscardRequestSchema,
+  recoveryDiscardResultSchema,
+  recoveryStatusRequestSchema,
+  recoveryStatusResultSchema,
+} from "../../core/contracts/project-recovery";
 import {
   PROJECT_OPEN_CHANNEL,
   PROJECT_SAVE_AS_CHANNEL,
@@ -23,6 +39,7 @@ export interface ProjectIpcDependencies {
   lifecycle: ProjectLifecycleService;
   loadProject: LoadProjectUseCase;
   pathSession: ProjectPathSession;
+  recoveryService: ProjectRecoveryService;
   startupProjectPath?: string;
 }
 
@@ -36,6 +53,30 @@ function mapProjectError(
   message: string;
 } {
   if (error instanceof ProjectStoreError) {
+    return {
+      status: "error",
+      code: error.code,
+      message: error.message,
+    };
+  }
+
+  return {
+    status: "error",
+    code: fallbackCode,
+    message: fallbackMessage,
+  };
+}
+
+function mapRecoveryError(
+  error: unknown,
+  fallbackCode: "RECOVERY_INVALID" | "AUTOSAVE_WRITE_FAILED",
+  fallbackMessage: string,
+): {
+  status: "error";
+  code: "RECOVERY_INVALID" | "AUTOSAVE_WRITE_FAILED";
+  message: string;
+} {
+  if (error instanceof ProjectRecoveryStoreError) {
     return {
       status: "error",
       code: error.code,
@@ -183,4 +224,118 @@ export function registerIpcHandlers(
       );
     }
   });
+
+  ipcMain.handle(PROJECT_AUTOSAVE_CHANNEL, async (_event, payload: unknown) => {
+    const request = autosaveRecoveryRequestSchema.safeParse(payload);
+    if (!request.success) {
+      return autosaveRecoveryResultSchema.parse({
+        status: "error",
+        code: "RECOVERY_INVALID",
+        message: "Autosave recovery request is invalid.",
+      });
+    }
+
+    try {
+      return autosaveRecoveryResultSchema.parse(
+        await projectDependencies.recoveryService.autosave(
+          request.data.project,
+          request.data.savedRevision,
+        ),
+      );
+    } catch (error) {
+      return autosaveRecoveryResultSchema.parse(
+        mapRecoveryError(
+          error,
+          "AUTOSAVE_WRITE_FAILED",
+          "Recovery autosave could not be written.",
+        ),
+      );
+    }
+  });
+
+  ipcMain.handle(
+    PROJECT_RECOVERY_STATUS_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = recoveryStatusRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return recoveryStatusResultSchema.parse({
+          status: "invalid",
+          code: "RECOVERY_INVALID",
+          message: "Recovery status request is invalid.",
+        });
+      }
+
+      try {
+        return recoveryStatusResultSchema.parse(
+          await projectDependencies.recoveryService.inspect(
+            request.data.primaryProject,
+          ),
+        );
+      } catch {
+        return recoveryStatusResultSchema.parse({
+          status: "invalid",
+          code: "RECOVERY_INVALID",
+          message: "Recovery status could not be determined safely.",
+        });
+      }
+    },
+  );
+
+  ipcMain.handle(
+    PROJECT_RECOVERY_ACCEPT_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = recoveryAcceptRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return recoveryAcceptResultSchema.parse({
+          status: "error",
+          code: "RECOVERY_INVALID",
+          message: "Recovery request is invalid.",
+        });
+      }
+
+      try {
+        return recoveryAcceptResultSchema.parse(
+          await projectDependencies.recoveryService.accept(
+            request.data.primaryProject,
+          ),
+        );
+      } catch {
+        return recoveryAcceptResultSchema.parse({
+          status: "error",
+          code: "RECOVERY_INVALID",
+          message: "Recovery could not be accepted safely.",
+        });
+      }
+    },
+  );
+
+  ipcMain.handle(
+    PROJECT_RECOVERY_DISCARD_CHANNEL,
+    async (_event, payload: unknown) => {
+      const request = recoveryDiscardRequestSchema.safeParse(payload);
+      if (!request.success) {
+        return recoveryDiscardResultSchema.parse({
+          status: "error",
+          code: "RECOVERY_INVALID",
+          message: "Recovery discard request is invalid.",
+        });
+      }
+
+      try {
+        return recoveryDiscardResultSchema.parse(
+          await projectDependencies.recoveryService.discard(
+            request.data.projectId,
+          ),
+        );
+      } catch (error) {
+        return recoveryDiscardResultSchema.parse(
+          mapRecoveryError(
+            error,
+            "AUTOSAVE_WRITE_FAILED",
+            "Recovery artifact could not be discarded.",
+          ),
+        );
+      }
+    },
+  );
 }
