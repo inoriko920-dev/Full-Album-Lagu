@@ -148,7 +148,6 @@ export function useProjectSession(): ProjectSessionView {
   >([]);
 
   const projectRef = useRef(project);
-  projectRef.current = project;
   const mediaBusyRef = useRef(false);
   const activeMediaBatchRef = useRef<
     | { phase: "discovery"; batchId: string }
@@ -157,6 +156,10 @@ export function useProjectSession(): ProjectSessionView {
   >(null);
 
   const dirty = isProjectDirty(project.revision, savedRevision);
+
+  useEffect(() => {
+    projectRef.current = project;
+  }, [project]);
 
   const scanAndApplyMissingMedia = useCallback(
     async (targetProject: ProjectDocument): Promise<ProjectDocument> => {
