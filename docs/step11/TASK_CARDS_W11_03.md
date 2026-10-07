@@ -36,8 +36,11 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: PASS / VERIFIED
 - Dependency: T11-W03-01 PASS / VERIFIED
+- Verified implementation head: `c505b14488735705401a0ffb6e1bd666dd77a996`
+- Windows CI: `37628187263` / #211 PASS; job `112815298762`
+- Evidence: `evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`
 - Purpose:
   - integrate CommandEngine with ProjectSession;
   - migrate existing W11-02 user-driven media import/relink project commits into shared history semantics where applicable;
@@ -59,7 +62,8 @@ Execution rule: **one SOL task at a time**.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED_BY T11-W03-02
+- Status: READY
+- Dependency: T11-W03-02 PASS / VERIFIED
 - Purpose:
   - validated `track.reorder` and `track.set-enabled` commands;
   - canonical order remains `tracks[]`;
