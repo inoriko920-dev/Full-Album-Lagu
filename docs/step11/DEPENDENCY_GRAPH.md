@@ -169,7 +169,7 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - T11-W04-03 verification: implementation head `f2e33b6ec6a08b3d92acbe4963a1cf73c7086825`; Windows CI `37657078199` / #278 PASS; evidence `evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`.
 - T11-W04-04 verification: implementation head `ea2b6230af036f9eed05232d5ef0cd96609abb7d`; Windows CI `37659863455` / #283 PASS; evidence `evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`.
 - T11-W04-05 verification: implementation head `986e13f186d4dbc6bbb621f77a222fe8d30fa9f4`; Windows CI `37662992589` / #290 PASS; evidence `evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
-- Dependency unlock: W11-05 planning PASS; T11-W05-01 READY after planning merge.
+- Dependency unlock: W11-05 T11-W05-01 PASS / VERIFIED; T11-W05-02 READY.
 
 
 ## W11-04 completion
@@ -180,7 +180,7 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Verified implementation head: `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`.
 - Windows CI `37672986946` / #304 PASS.
 - **W11-04 COMPLETE / PASS.**
-- Dependency unlock: W11-05 planning/DoR PASS; SOL T11-W05-01 may begin only after the planning pack is merged.
+- Dependency unlock: W11-05 T11-W05-01 PASS / VERIFIED; SOL T11-W05-02 is the only next task.
 
 
 ## W11-05 planning checkpoint
