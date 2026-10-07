@@ -16,7 +16,7 @@ Dependency semantics:
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **COMPLETE / PASS**
 4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **COMPLETE / PASS**
-5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013 — **IN PROGRESS; T11-W05-01 PASS / VERIFIED; T11-W05-02 READY**
+5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013 — **IN PROGRESS; T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY**
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
 7. **W11-07 — Animation + Boundary Transitions** — FTR-009 + FTR-010
 8. **W11-08 — Render Readiness Contract** — FTR-017 + FTR-018
@@ -189,7 +189,7 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Features: FTR-007 + FTR-011; FTR-013/FTR-018 cross-cut.
 - Planning/DoR: COMPLETE / PASS.
 - Acceptance: AC-W11-05-01..25.
-- Serial order: T11-W05-01 PASS -> T11-W05-02 READY -> T11-W05-03 BLOCKED -> T11-W05-04 BLOCKED -> T11-W05-05 BLOCKED -> T11-W05-06 BLOCKED -> T11-W05-07 BLOCKED.
+- Serial order: T11-W05-01 PASS -> T11-W05-02 PASS -> T11-W05-03 READY -> T11-W05-04 BLOCKED -> T11-W05-05 BLOCKED -> T11-W05-06 BLOCKED -> T11-W05-07 BLOCKED.
 - Scene/layer state is additive schema-v1, stable-ID, canonical-array-order and CommandEngine-owned.
 - Templates are local visual configuration only; Try is session-only and Apply is one template-origin atomic history unit.
 - Frozen SCR-002C/SCR-003A/SCR-003B/DLG-008 are sufficient; no new UI prompt/image generation.
@@ -203,4 +203,15 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Windows CI `37682820030` / #321 PASS.
 - AC-W11-05-01..03 task-owned foundation: PASS at task level.
 - FTR-007 scene/schema/projection foundation is available to downstream manual commands.
-- Dependency unlock: **T11-W05-02 READY**. T11-W05-03..07 remain blocked.
+- Dependency unlock: T11-W05-02 PASS / VERIFIED; **T11-W05-03 READY**. T11-W05-04..07 remain blocked.
+
+
+## T11-W05-02 completion
+- Manual layer command/history core: PASS / VERIFIED.
+- Verified implementation head: `308a4800bcbfcf4e85828795e6573893622dd722`.
+- Windows CI `37687361672` / #336 PASS.
+- Shared CommandEngine remains the only mutation/history authority.
+- Stable-ID CRUD/reorder/transform/common/text-style + locked/stale guards verified.
+- Session-only gesture preview -> one manual commit/history node verified.
+- 128-layer / 64-edit full Undo/Redo stress PASS.
+- Dependency unlock: **T11-W05-03 READY**. T11-W05-04..07 remain blocked.
