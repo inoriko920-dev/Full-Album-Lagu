@@ -62,8 +62,8 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
   const fixedMediaFiles = readArgValues(argv, "w11-media-file").map((path) =>
     resolve(path),
   );
-  const fixedMediaFolders = readArgValues(argv, "w11-media-folder").map((path) =>
-    resolve(path),
+  const fixedMediaFolders = readArgValues(argv, "w11-media-folder").map(
+    (path) => resolve(path),
   );
   const cancelMediaFiles = argv.includes("--w11-media-files-cancel");
   const cancelMediaFolders = argv.includes("--w11-media-folders-cancel");
