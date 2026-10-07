@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { isProjectDirty } from "../../../core/application/services/project-dirty-state";
+import { ProjectSessionHistory } from "../../../core/application/services/project-session-history";
 import type { ProjectLocation } from "../../../core/contracts/project-lifecycle";
 import type {
   MediaBatchSummary,
@@ -105,9 +105,22 @@ export interface ProjectSessionView {
 }
 
 export function useProjectSession(): ProjectSessionView {
-  const [project, setProject] = useState<ProjectDocument>(() =>
-    createSessionProject(),
+  const initialProjectRef = useRef<ProjectDocument | null>(null);
+  if (initialProjectRef.current === null) {
+    initialProjectRef.current = createSessionProject();
+  }
+
+  const historyRef = useRef<ProjectSessionHistory | null>(null);
+  if (historyRef.current === null) {
+    historyRef.current = new ProjectSessionHistory(initialProjectRef.current);
+  }
+
+  const [historySnapshot, setHistorySnapshot] = useState(() =>
+    historyRef.current!.snapshot(),
   );
+  const project = historySnapshot.project;
+  const dirty = historySnapshot.dirty;
+  const savedRevision = historySnapshot.savedRevision;
   const [sourceState, setSourceState] = useState<ProjectSourceState>("new");
   const [persistenceState, setPersistenceState] =
     useState<ProjectPersistenceState>("idle");
@@ -123,7 +136,6 @@ export function useProjectSession(): ProjectSessionView {
   const [location, setLocation] = useState<ProjectLocation>({
     kind: "unsaved",
   });
-  const [savedRevision, setSavedRevision] = useState(0);
 
   const [mediaOperationState, setMediaOperationState] =
     useState<MediaOperationState>("idle");
@@ -155,24 +167,27 @@ export function useProjectSession(): ProjectSessionView {
     | null
   >(null);
 
-  const dirty = isProjectDirty(project.revision, savedRevision);
+  const publishHistorySnapshot = useCallback(() => {
+    const snapshot = historyRef.current!.snapshot();
+    projectRef.current = snapshot.project;
+    setHistorySnapshot(snapshot);
+    return snapshot;
+  }, []);
 
   useEffect(() => {
     projectRef.current = project;
   }, [project]);
 
-  const scanAndApplyMissingMedia = useCallback(
+  const scanMissingMediaState = useCallback(
     async (targetProject: ProjectDocument): Promise<ProjectDocument> => {
       try {
         const scan = await window.lfa.scanMissingMedia({
           project: targetProject,
         });
-        setProject(scan.project);
         setMissingMediaItems(scan.items);
         setMediaReadiness(scan.readiness);
         return scan.project;
       } catch {
-        setProject(targetProject);
         setMediaError({
           code: "MEDIA_DISCOVERY_FAILED",
           message: "Status media proyek tidak dapat diperiksa.",
@@ -183,6 +198,37 @@ export function useProjectSession(): ProjectSessionView {
     [],
   );
 
+  const reconcileMissingMedia = useCallback(
+    async (targetProject: ProjectDocument): Promise<ProjectDocument> => {
+      const scannedProject = await scanMissingMediaState(targetProject);
+      historyRef.current!.reconcileSystemProject(scannedProject);
+      return publishHistorySnapshot().project;
+    },
+    [publishHistorySnapshot, scanMissingMediaState],
+  );
+
+  const commitUserProjectMutation = useCallback(
+    (
+      targetProject: ProjectDocument,
+      kind: string,
+      label: string,
+    ): ProjectDocument => {
+      const result = historyRef.current!.commitExternalProject({
+        kind,
+        label,
+        origin: "manual",
+        project: targetProject,
+      });
+
+      if (result.status === "rejected") {
+        throw new Error("Project mutation could not be committed safely.");
+      }
+
+      return publishHistorySnapshot().project;
+    },
+    [publishHistorySnapshot],
+  );
+
   useEffect(() => {
     let alive = true;
 
@@ -191,10 +237,11 @@ export function useProjectSession(): ProjectSessionView {
       if (!alive) return;
 
       if (result.status === "loaded") {
-        const scannedProject = await scanAndApplyMissingMedia(result.project);
+        const scannedProject = await scanMissingMediaState(result.project);
         if (!alive) return;
 
-        setSavedRevision(result.project.revision);
+        historyRef.current!.resetClean(scannedProject);
+        publishHistorySnapshot();
         setSourceState("loaded");
         setLocation(result.location);
         setErrorCode(null);
@@ -232,7 +279,7 @@ export function useProjectSession(): ProjectSessionView {
     return () => {
       alive = false;
     };
-  }, [scanAndApplyMissingMedia]);
+  }, [publishHistorySnapshot, scanMissingMediaState]);
 
   useEffect(() => {
     if (!dirty || sourceState === "load-error") {
@@ -283,8 +330,9 @@ export function useProjectSession(): ProjectSessionView {
     try {
       const result = await window.lfa.saveProject({ project });
       if (result.status === "saved") {
+        historyRef.current!.markSaved(result.projectRevision);
+        publishHistorySnapshot();
         setPersistenceState("saved");
-        setSavedRevision(result.projectRevision);
         setLocation(result.location);
       } else if (result.status === "cancelled") {
         setPersistenceState("cancelled");
@@ -304,7 +352,7 @@ export function useProjectSession(): ProjectSessionView {
       setErrorCode(result.code);
       return result;
     }
-  }, [persistenceState, project]);
+  }, [persistenceState, project, publishHistorySnapshot]);
 
   const acceptRecovery =
     useCallback(async (): Promise<RecoveryAcceptResult> => {
@@ -321,7 +369,14 @@ export function useProjectSession(): ProjectSessionView {
         });
 
         if (result.status === "recovered") {
-          await scanAndApplyMissingMedia(result.project);
+          const savedRevisionBeforeRecovery =
+            historyRef.current!.snapshot().savedRevision;
+          const scannedProject = await scanMissingMediaState(result.project);
+          historyRef.current!.resetDirty(
+            scannedProject,
+            savedRevisionBeforeRecovery,
+          );
+          publishHistorySnapshot();
           setRecoveryState({ status: "none" });
           setRecoveryActionState("idle");
         } else if (result.status === "stale") {
@@ -346,7 +401,11 @@ export function useProjectSession(): ProjectSessionView {
         setRecoveryActionState("error");
         return result;
       }
-    }, [recoveryActionState, scanAndApplyMissingMedia]);
+    }, [
+      publishHistorySnapshot,
+      recoveryActionState,
+      scanMissingMediaState,
+    ]);
 
   const discardRecovery =
     useCallback(async (): Promise<RecoveryDiscardResult> => {
@@ -506,7 +565,12 @@ export function useProjectSession(): ProjectSessionView {
               phase: "committing",
               ...intake.progress,
             });
-            await scanAndApplyMissingMedia(intake.project);
+            const committedProject = commitUserProjectMutation(
+              intake.project,
+              "media.import",
+              "Impor media",
+            );
+            await reconcileMissingMedia(committedProject);
             return;
           }
         }
@@ -521,7 +585,7 @@ export function useProjectSession(): ProjectSessionView {
         mediaBusyRef.current = false;
       }
     },
-    [scanAndApplyMissingMedia],
+    [commitUserProjectMutation, reconcileMissingMedia],
   );
 
   const importAudio = useCallback(
@@ -557,8 +621,8 @@ export function useProjectSession(): ProjectSessionView {
   }, []);
 
   const refreshMissingMedia = useCallback(async (): Promise<void> => {
-    await scanAndApplyMissingMedia(projectRef.current);
-  }, [scanAndApplyMissingMedia]);
+    await reconcileMissingMedia(projectRef.current);
+  }, [reconcileMissingMedia]);
 
   const relinkMediaAsset = useCallback(
     async (assetId: string): Promise<SingleRelinkOperationResult> => {
@@ -584,7 +648,12 @@ export function useProjectSession(): ProjectSessionView {
 
         if (result.status === "relinked") {
           setLastRelinkResults([result.result]);
-          await scanAndApplyMissingMedia(result.project);
+          const committedProject = commitUserProjectMutation(
+            result.project,
+            "media.relink.single",
+            "Relink media",
+          );
+          await reconcileMissingMedia(committedProject);
           setRelinkActionState("idle");
         } else if (result.status === "cancelled") {
           setLastRelinkResults([result.result]);
@@ -622,7 +691,11 @@ export function useProjectSession(): ProjectSessionView {
         return result;
       }
     },
-    [relinkActionState, scanAndApplyMissingMedia],
+    [
+      commitUserProjectMutation,
+      reconcileMissingMedia,
+      relinkActionState,
+    ],
   );
 
   const relinkMissingMediaFolder =
@@ -644,7 +717,12 @@ export function useProjectSession(): ProjectSessionView {
 
         if (result.status === "completed") {
           setLastRelinkResults(result.results);
-          await scanAndApplyMissingMedia(result.project);
+          const committedProject = commitUserProjectMutation(
+            result.project,
+            "media.relink.folder",
+            "Relink media dari folder",
+          );
+          await reconcileMissingMedia(committedProject);
           setRelinkActionState("idle");
         } else if (result.status === "cancelled") {
           setRelinkActionState("idle");
@@ -664,7 +742,11 @@ export function useProjectSession(): ProjectSessionView {
         setMediaError({ code: result.code, message: result.message });
         return result;
       }
-    }, [relinkActionState, scanAndApplyMissingMedia]);
+    }, [
+      commitUserProjectMutation,
+      reconcileMissingMedia,
+      relinkActionState,
+    ]);
 
   return {
     project,
