@@ -67,3 +67,11 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; **W11-04 IN PROGRESS with T11-W04-01..05 PASS / VERIFIED**.
 - Only T11-W04-06 has SOL implementation authority next.
 - Existing frozen Auto Susun/Inspector/Media/Timeline references are sufficient at planning time; no new UI prompt/image generation is required.
+
+
+## W11-04 closure authority
+- `docs/step11/evidence/W11_04_WAVE_CLOSURE_EVIDENCE.md` — T11-W04-06 canonical Windows E2E/stress/source-fingerprint closure; PASS.
+- `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md` — architecture/UI/trust-boundary review; PASS — NO MATERIAL DRIFT.
+- Windows CI `37672986946` / #304; verified head `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`.
+- AC-W11-04-01..22 ALL PASS; **W11-04 COMPLETE / PASS**.
+- Next source-of-truth work: **ASTRA W11-05 planning only**; implementation remains blocked until its DoR passes.
