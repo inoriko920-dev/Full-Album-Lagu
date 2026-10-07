@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL closure COMPLETE; next authorized role is ASTRA for W11-05 planning only
+- Active role at current checkpoint: ASTRA W11-05 planning COMPLETE / PASS; next authorized role is SOL T11-W05-01 only after planning merge
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
-- STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 not planned yet
+- STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 ASTRA planning COMPLETE / PASS
+- STEP 11 implementation: IN_PROGRESS — W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 NOT STARTED
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-04 Auto Susun + Track Binding`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Current wave: `W11-04 Auto Susun + Track Binding` — COMPLETE / PASS; W11-05 ASTRA planning is next
+- Current wave: `W11-05 Manual Layer Editor + Templates` — PLANNING COMPLETE / PASS; T11-W05-01 READY after planning merge
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -317,6 +317,21 @@
 - FTR-005 + FTR-006: VERIFIED W11-04.
 - FTR-018 cross-cut: PASS for W11-04.
 
+## W11-05 planning checkpoint
+- Planning baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`.
+- Features: FTR-007 Manual Layer Editor + FTR-011 Template Workflow; FTR-013/FTR-018 cross-cut.
+- Planning DOCX: `docs/source-of-truth/planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Operational charter: `docs/step11/WAVE_11_05_CHARTER.md`.
+- Task cards: `docs/step11/TASK_CARDS_W11_05.md`.
+- Acceptance matrix: `docs/step11/W11_05_ACCEPTANCE_MATRIX.md`.
+- DoR: `docs/step11/W11_05_DOR.md` — PASS.
+- Acceptance planned: AC-W11-05-01..25.
+- Serial tasks: T11-W05-01 READY after planning merge; T11-W05-02..07 BLOCKED.
+- Frozen UI authority is sufficient: SCR-002C, SCR-003A, SCR-003B and DLG-008/UI-IMG-012. No new UI prompt/image generation is required.
+- W11-05 owns static visual scene/layer state + local visual-only template workflow.
+- Audio-reactive/playback remains W11-06; keyframes/transitions remain W11-07; Gemini/FFmpeg remains STEP 12.
+- Governance repair: the previously missing STEP 11 registry/dependency DOCX is restored at its expected path as an explicitly labelled reconstructed repository copy; it is not claimed byte-identical to the historical missing artifact.
+
 ## W11-02 planning decisions
 - One canonical Media Intake pipeline for picker, drag-drop file and drag-drop folder.
 - Main-owned filesystem/discovery/probe/relink; renderer remains filesystem-free.
@@ -338,4 +353,4 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: switch to **ASTRA** and perform **W11-05 Manual Layer Editor + Templates planning only**. Create/update the detailed planning source-of-truth and DoR before any W11-05 coding. Do not start SOL implementation, W11-06, or STEP 12 in the same turn.
+After the user says `lanjutkan`: switch to **SOL** and execute **T11-W05-01 — Visual Scene + Layer Schema & Pure Projection only**. Do not start T11-W05-02, template storage/UI, W11-06, W11-07, or STEP 12 in the same turn.
