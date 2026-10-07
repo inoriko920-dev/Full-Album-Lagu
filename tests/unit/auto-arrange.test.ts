@@ -368,9 +368,7 @@ describe("deterministic Auto Susun planner + CommandBatch", () => {
         availability: "ready" as const,
         metadata: {
           durationMs: 1000 + index,
-          ...(index % 3 === 0
-            ? { trackNumber: ((index * 13) % 50) + 1 }
-            : {}),
+          ...(index % 3 === 0 ? { trackNumber: ((index * 13) % 50) + 1 } : {}),
         },
       })),
       tracks: Array.from({ length: count }, (_, index) => ({
