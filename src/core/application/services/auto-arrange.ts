@@ -25,8 +25,8 @@ export interface AutoArrangePlan {
 interface AutoArrangeSortRecord {
   trackId: string;
   originalIndex: number;
-  metadataTrackNumber?: number;
-  filenameNumber?: number;
+  metadataTrackNumber: number | undefined;
+  filenameNumber: number | undefined;
   normalizedName: string;
 }
 
