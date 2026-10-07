@@ -140,11 +140,11 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Features: FTR-005 + FTR-006; FTR-013/FTR-018 cross-cut.
 - Planning/DoR: PASS.
 - Acceptance: AC-W11-04-01..22.
-- Serial order: T11-W04-01 PASS -> T11-W04-02 PASS -> T11-W04-03 PASS -> T11-W04-04 PASS -> T11-W04-05 PASS -> T11-W04-06 READY.
+- Serial order: T11-W04-01 PASS -> T11-W04-02 PASS -> T11-W04-03 PASS -> T11-W04-04 PASS -> T11-W04-05 PASS -> T11-W04-06 PASS.
 - Auto Susun must be deterministic/offline and publish through the existing CommandEngine/CommandBatch seam.
 - Track binding/default artwork is additive schema-v1; resolved values remain derived.
 - Existing frozen UI is reused; no new UI prompt/image generation is required now.
-- W11-05 remains blocked until W11-04 reaches COMPLETE / PASS.
+- W11-05 is dependency-unlocked for **ASTRA planning only**; implementation remains blocked until its own planning/DoR gate passes.
 
 ## T11-W04-01 verification
 
