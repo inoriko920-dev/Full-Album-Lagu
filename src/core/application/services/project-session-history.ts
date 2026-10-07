@@ -1,6 +1,7 @@
 import {
   ProjectCommandEngine,
   type ProjectCommand,
+  type ProjectCommandBatch,
   type ProjectCommandEngineSnapshot,
   type ProjectCommandExecutionResult,
   type ProjectCommandOrigin,
@@ -69,6 +70,10 @@ export class ProjectSessionHistory {
     return this.engine.execute(command);
   }
 
+  executeBatch(batch: ProjectCommandBatch): ProjectCommandExecutionResult {
+    return this.engine.executeBatch(batch);
+  }
+
   commitExternalProject(
     mutation: ExternalProjectMutation,
   ): ProjectCommandExecutionResult {
@@ -106,8 +111,21 @@ export class ProjectSessionHistory {
       );
     }
 
+    this.markSavedCheckpoint(snapshot.stateToken, savedRevision);
+  }
+
+  markSavedCheckpoint(
+    stateToken: ProjectStateToken,
+    savedRevision: number,
+  ): void {
+    if (stateToken.trim().length === 0) {
+      throw new Error("Saved project state token must be non-empty.");
+    }
+
+    const snapshot = this.engine.snapshot();
+    validateSavedRevision(snapshot.project, savedRevision);
     this.savedRevision = savedRevision;
-    this.savedStateToken = snapshot.stateToken;
+    this.savedStateToken = stateToken;
   }
 
   resetClean(projectInput: ProjectDocument): void {
