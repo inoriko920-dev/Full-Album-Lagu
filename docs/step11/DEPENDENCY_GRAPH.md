@@ -14,7 +14,7 @@ Dependency semantics:
 
 1. **W11-01 — Project Lifecycle & Recovery Core** — FTR-001 + FTR-002 + FTR-018 — **COMPLETE / PASS**
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
-3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **IN PROGRESS; T11-W03-01..02 PASS / VERIFIED; T11-W03-03 READY**
+3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **IN PROGRESS; T11-W03-01..03 PASS / VERIFIED; T11-W03-04 READY**
 4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006
 5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
@@ -43,7 +43,7 @@ STEP 10 already proved one thin persistence path. W11-01 extends that seam into 
 
 W11-01 dependency unlock is proven and closed. FTR-001 and FTR-002 are verified and may now serve as prerequisites for later waves. FTR-018 remains active cross-cutting work.
 
-W11-02 ASTRA planning and implementation are complete. T11-W02-01..06 are COMPLETE / PASS, all AC-W11-02-01..18 PASS, and the architecture/UI drift review is PASS with no material drift. W11-03 ASTRA planning is COMPLETE / PASS with DoR PASS. T11-W03-01..02 are PASS / VERIFIED; T11-W03-03 is the only READY implementation task.
+W11-02 ASTRA planning and implementation are complete. T11-W02-01..06 are COMPLETE / PASS, all AC-W11-02-01..18 PASS, and the architecture/UI drift review is PASS with no material drift. W11-03 ASTRA planning is COMPLETE / PASS with DoR PASS. T11-W03-01..03 are PASS / VERIFIED; T11-W03-04 is the only READY implementation task.
 
 
 ## W11-02 planning checkpoint
@@ -58,7 +58,7 @@ W11-02 ASTRA planning and implementation are complete. T11-W02-01..06 are COMPLE
 - W11-03 planning baseline: `main@6f296f7cc8e8b81e86bde71f8cd3a32c0d0f1bd2`.
 - W11-03 features: FTR-004 + FTR-013 + FTR-018.
 - W11-03 planning/DoR: PASS.
-- Serial order: T11-W03-01 PASS -> T11-W03-02 PASS -> T11-W03-03 READY -> T11-W03-04 BLOCKED -> 05 -> 06.
+- Serial order: T11-W03-01 PASS -> T11-W03-02 PASS -> T11-W03-03 PASS -> T11-W03-04 READY -> T11-W03-05 BLOCKED -> 06.
 - W11-04 remains blocked until W11-03 closes COMPLETE / PASS.
 
 ## T11-W03-01 verification
@@ -80,3 +80,15 @@ W11-02 ASTRA planning and implementation are complete. T11-W02-01..06 are COMPLE
 - All prior lifecycle/media/frozen UI/package regressions are green.
 - Evidence: `evidence/T11_W03_02_SESSION_CHECKPOINT_MUTATION_MIGRATION_EVIDENCE.md`.
 - Dependency unlock: T11-W03-03 READY. Later W11-03 tasks remain serially blocked.
+
+## T11-W03-03 verification
+
+- Verified implementation head: `83fd9a0772c72c38a995ccd2609a910692a0e61a`.
+- Windows CI: `37631324251` / #225 PASS; job `112826044830`.
+- Validated reorder and enabled-state commands use the shared CommandEngine.
+- Canonical order remains tracks[]; cumulative boundaries remain derived.
+- Required audio follows effective enabled usage, including shared-asset behavior.
+- Missing disabled-only audio no longer blocks readiness; re-enable restores the blocker.
+- First/middle/last reorder, 105-track deterministic behavior, Save/Close/Reopen, Unicode/spaces and source-byte immutability are green.
+- Evidence: `evidence/T11_W03_03_TRACK_APPLICATION_CORE_EVIDENCE.md`.
+- Dependency unlock: T11-W03-04 READY. T11-W03-05..06 remain serially blocked.
