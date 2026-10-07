@@ -5,7 +5,7 @@ Planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
 Features: **FTR-005 Auto Susun Album + FTR-006 Artwork/Metadata/Dynamic Track Binding**  
 Cross-cut: **FTR-013 Unified Command History + FTR-018 Error/Offline**  
 Planning status: **COMPLETE / PASS**  
-Implementation status: **IN PROGRESS — T11-W04-01..04 PASS / VERIFIED; T11-W04-05 READY**  
+Implementation status: **IN PROGRESS — T11-W04-01..05 PASS / VERIFIED; T11-W04-06 READY**  
 UI decision: **reuse frozen UI; no new UI prompt/image stage is required now**
 
 ## Goal
@@ -106,8 +106,8 @@ Draft form values, selected Inspector control, picker/dialog state and plan-prev
 2. **T11-W04-02 — Deterministic Auto Susun Planner + CommandBatch** — PASS / VERIFIED.
 3. **T11-W04-03 — Artwork Intake + Binding Commands** — PASS / VERIFIED.
 4. **T11-W04-04 — Metadata Override + Dynamic Binding Integration** — PASS / VERIFIED.
-5. **T11-W04-05 — Frozen Auto Susun + Inspector UI Wiring** — READY.
-6. **T11-W04-06 — Wave E2E, Stress, Drift Review & Evidence Closure** — BLOCKED by 05.
+5. **T11-W04-05 — Frozen Auto Susun + Inspector UI Wiring** — PASS / VERIFIED.
+6. **T11-W04-06 — Wave E2E, Stress, Drift Review & Evidence Closure** — READY.
 
 Only one task may be executed per user turn.
 
@@ -128,4 +128,4 @@ At least 128 tracks with mixed track numbers, filename numbers, missing metadata
 
 ## Planning verdict
 
-**PASS.** Planning remains authoritative. T11-W04-01..04 are verified; only T11-W04-05 is authorized next for SOL. W11-05+, STEP 12 integrations and all out-of-scope features remain blocked.
+**PASS.** Planning remains authoritative. T11-W04-01..05 are verified; only T11-W04-06 is authorized next for SOL. W11-05+, STEP 12 integrations and all out-of-scope features remain blocked.

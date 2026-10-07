@@ -623,13 +623,23 @@
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W04-04 PASS / VERIFIED
+- Verified implementation head: `986e13f186d4dbc6bbb621f77a222fe8d30fa9f4`
+- Windows CI: `37662992589` / run #290 — PASS
+- CI job: `112934968106`
+- Windows portable artifact: `11501198106`
+- Frozen visual artifact: `11501427907`
+- Evidence: `docs/step11/evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`
 - UI rule: existing frozen pack is authoritative; if a required visual state is missing, STOP and return to ASTRA/UI governance.
 
 ## T11-W04-06 — Wave E2E, Stress, Drift Review & Evidence Closure
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W04-05
+- Status: READY
+- Dependency: T11-W04-05 PASS / VERIFIED
 - W11-05 remains blocked until W11-04 closes COMPLETE / PASS.

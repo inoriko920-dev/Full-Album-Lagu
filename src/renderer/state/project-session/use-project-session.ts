@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  createAutoArrangeCommandBatch,
+  createAutoArrangePlan,
+} from "../../../core/application/services/auto-arrange-service";
+import {
+  createSetAlbumArtworkCommand,
+  createSetTrackArtworkCommand,
+} from "../../../core/application/services/project-artwork-commands";
+import {
   createClearTrackMetadataOverridesCommand,
   createSetTrackMetadataOverridesCommand,
   type TrackMetadataOverrideField,
@@ -8,12 +16,14 @@ import {
 import { ProjectSessionHistory } from "../../../core/application/services/project-session-history";
 import {
   createTrackMetadataDraft as buildTrackMetadataDraft,
+  overridesFromTrackMetadataDraft,
   type TrackMetadataDraft,
 } from "../../../core/application/services/track-metadata-draft";
 import {
   createTrackReorderCommand,
   createTrackSetEnabledCommand,
 } from "../../../core/application/services/project-track-commands";
+import type { ArtworkBindingTarget } from "../../../core/contracts/artwork-intake";
 import type { ProjectLocation } from "../../../core/contracts/project-lifecycle";
 import type {
   MediaBatchSummary,
@@ -58,6 +68,10 @@ export type MediaOperationState =
   | "cancelled"
   | "error";
 export type RelinkActionState = "idle" | "working" | "error";
+export type AutoArrangeActionState =
+  "idle" | "planning" | "applying" | "applied" | "noop" | "error";
+export type ArtworkActionState = "idle" | "working" | "cancelled" | "error";
+export type MetadataDraftApplyResult = "applied" | "noop" | "error";
 
 export interface MediaUiProgress {
   phase: "discovering" | "probing" | "committing";
@@ -113,6 +127,9 @@ export interface ProjectSessionView {
   mediaReadiness: MediaReadiness;
   relinkActionState: RelinkActionState;
   lastRelinkResults: MediaRelinkResult[];
+  autoArrangeState: AutoArrangeActionState;
+  artworkActionState: ArtworkActionState;
+  artworkError: MediaUiError | null;
   reorderTrack(trackId: string, toIndex: number): boolean;
   setTrackEnabled(trackId: string, enabled: boolean): boolean;
   selectedTrackProjection(trackId: string | null): SelectedTrackProjection;
@@ -121,10 +138,16 @@ export interface ProjectSessionView {
     trackId: string,
     overrides: TrackMetadataOverrides,
   ): boolean;
+  applyTrackMetadataDraft(draft: TrackMetadataDraft): MetadataDraftApplyResult;
   clearTrackMetadataOverrides(
     trackId: string,
     fields?: readonly TrackMetadataOverrideField[],
   ): boolean;
+  autoArrangeAlbum(): "applied" | "noop" | "error";
+  importTrackArtwork(trackId: string): Promise<boolean>;
+  importAlbumArtwork(): Promise<boolean>;
+  clearTrackArtwork(trackId: string): boolean;
+  clearAlbumArtwork(): boolean;
   undo(): boolean;
   redo(): boolean;
   save(): Promise<SaveProjectResult>;
@@ -186,6 +209,11 @@ export function useProjectSession(): ProjectSessionView {
   const [lastRelinkResults, setLastRelinkResults] = useState<
     MediaRelinkResult[]
   >([]);
+  const [autoArrangeState, setAutoArrangeState] =
+    useState<AutoArrangeActionState>("idle");
+  const [artworkActionState, setArtworkActionState] =
+    useState<ArtworkActionState>("idle");
+  const [artworkError, setArtworkError] = useState<MediaUiError | null>(null);
 
   const projectRef = useRef(project);
   const mediaBusyRef = useRef(false);
@@ -470,6 +498,182 @@ export function useProjectSession(): ProjectSessionView {
     },
     [history, publishHistorySnapshot],
   );
+
+  const applyTrackMetadataDraft = useCallback(
+    (draft: TrackMetadataDraft): MetadataDraftApplyResult => {
+      let overrides: TrackMetadataOverrides;
+      try {
+        overrides = overridesFromTrackMetadataDraft(draft);
+      } catch {
+        return "error";
+      }
+
+      const before = history.snapshot();
+      const result = history.executeBatch({
+        kind: "metadata.apply-draft",
+        label: `Terapkan metadata track ${draft.trackId}`,
+        origin: "manual",
+        expectedBaseRevision: before.project.revision,
+        expectedStateToken: before.stateToken,
+        commands: [
+          createClearTrackMetadataOverridesCommand({
+            trackId: draft.trackId,
+          }),
+          createSetTrackMetadataOverridesCommand({
+            trackId: draft.trackId,
+            overrides,
+          }),
+        ],
+      });
+
+      if (result.status === "rejected") return "error";
+      if (result.status === "noop") return "noop";
+      publishHistorySnapshot();
+      return "applied";
+    },
+    [history, publishHistorySnapshot],
+  );
+
+  const autoArrangeAlbum = useCallback((): "applied" | "noop" | "error" => {
+    const before = history.snapshot();
+    setAutoArrangeState("planning");
+
+    try {
+      const plan = createAutoArrangePlan(before.project, before.stateToken);
+      if (!plan.changed) {
+        setAutoArrangeState("noop");
+        return "noop";
+      }
+
+      setAutoArrangeState("applying");
+      const result = history.executeBatch(createAutoArrangeCommandBatch(plan));
+      if (result.status === "rejected") {
+        setAutoArrangeState("error");
+        return "error";
+      }
+      if (result.status === "noop") {
+        setAutoArrangeState("noop");
+        return "noop";
+      }
+
+      const snapshot = publishHistorySnapshot();
+      syncMediaProjection(snapshot.project);
+      setAutoArrangeState("applied");
+      return "applied";
+    } catch {
+      setAutoArrangeState("error");
+      return "error";
+    }
+  }, [history, publishHistorySnapshot, syncMediaProjection]);
+
+  const importArtwork = useCallback(
+    async (target: ArtworkBindingTarget): Promise<boolean> => {
+      if (artworkActionState === "working") return false;
+
+      const base = history.snapshot();
+      setArtworkActionState("working");
+      setArtworkError(null);
+
+      try {
+        const result = await window.lfa.importArtwork({
+          project: base.project,
+          target,
+        });
+
+        if (result.status === "cancelled") {
+          setArtworkActionState("cancelled");
+          return false;
+        }
+
+        if (result.status === "error") {
+          setArtworkActionState("error");
+          setArtworkError({ code: result.code, message: result.message });
+          return false;
+        }
+
+        const current = history.snapshot();
+        if (
+          current.stateToken !== base.stateToken ||
+          current.project.revision !== base.project.revision
+        ) {
+          setArtworkActionState("error");
+          setArtworkError({
+            code: "STALE_ARTWORK_SELECTION",
+            message:
+              "Proyek berubah saat pemilihan artwork. Pilih artwork kembali.",
+          });
+          return false;
+        }
+
+        const committed = history.commitExternalProject({
+          kind: "artwork.import-bind",
+          label:
+            target.kind === "album-default"
+              ? "Impor dan pasang artwork album"
+              : `Impor dan pasang artwork track ${target.trackId}`,
+          origin: "manual",
+          project: result.project,
+        });
+        if (committed.status === "rejected") {
+          throw new Error("Artwork project could not be committed safely.");
+        }
+
+        const snapshot = publishHistorySnapshot();
+        syncMediaProjection(snapshot.project);
+        setArtworkActionState("idle");
+        return committed.status === "applied";
+      } catch {
+        setArtworkActionState("error");
+        setArtworkError({
+          code: "MEDIA_PROBE_FAILED",
+          message: "Artwork tidak dapat diterapkan dengan aman.",
+        });
+        return false;
+      }
+    },
+    [artworkActionState, history, publishHistorySnapshot, syncMediaProjection],
+  );
+
+  const importTrackArtwork = useCallback(
+    async (trackId: string): Promise<boolean> =>
+      importArtwork({ kind: "track", trackId }),
+    [importArtwork],
+  );
+
+  const importAlbumArtwork = useCallback(
+    async (): Promise<boolean> => importArtwork({ kind: "album-default" }),
+    [importArtwork],
+  );
+
+  const clearTrackArtwork = useCallback(
+    (trackId: string): boolean => {
+      const before = history.snapshot();
+      const result = history.execute(
+        createSetTrackArtworkCommand({
+          trackId,
+          expectedBaseRevision: before.project.revision,
+          expectedStateToken: before.stateToken,
+        }),
+      );
+      if (result.status === "rejected") return false;
+      if (result.status === "applied") publishHistorySnapshot();
+      return result.status === "applied";
+    },
+    [history, publishHistorySnapshot],
+  );
+
+  const clearAlbumArtwork = useCallback((): boolean => {
+    const before = history.snapshot();
+    const result = history.execute(
+      createSetAlbumArtworkCommand({
+        expectedBaseRevision: before.project.revision,
+        expectedStateToken: before.stateToken,
+      }),
+    );
+    if (result.status === "rejected") return false;
+    if (result.status === "applied") publishHistorySnapshot();
+    return result.status === "applied";
+  }, [history, publishHistorySnapshot]);
 
   const undo = useCallback((): boolean => {
     const result = history.undo();
@@ -964,12 +1168,21 @@ export function useProjectSession(): ProjectSessionView {
     mediaReadiness,
     relinkActionState,
     lastRelinkResults,
+    autoArrangeState,
+    artworkActionState,
+    artworkError,
     reorderTrack,
     setTrackEnabled,
     selectedTrackProjection,
     createTrackMetadataDraft,
     applyTrackMetadataOverrides,
+    applyTrackMetadataDraft,
     clearTrackMetadataOverrides,
+    autoArrangeAlbum,
+    importTrackArtwork,
+    importAlbumArtwork,
+    clearTrackArtwork,
+    clearAlbumArtwork,
     undo,
     redo,
     save,

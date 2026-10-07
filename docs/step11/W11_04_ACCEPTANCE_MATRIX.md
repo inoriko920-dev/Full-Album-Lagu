@@ -65,6 +65,15 @@ Planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`
 - Verified contribution: AC-03 manual override priority/provenance integration; AC-11 artwork remains preserved while metadata fields are set/cleared; AC-14 Apply/Clear use manual command history while draft helpers remain session-only/non-dirty; AC-15 relink-refreshed audio metadata becomes the derived fallback when no manual override blocks the field; AC-16 explicit overrides persist through Save/Reopen without derived duplication; AC-18 Undo/Redo restores metadata semantic state and the logical saved checkpoint with monotonic revision; AC-21 architecture/secrets/portable-path/provider-free gates; AC-22 prior-wave/frozen-UI/package/smoke/ZIP regression contribution.
 - Final complete AC-W11-04-01..22 closure remains owned by T11-W04-06.
 
+## T11-W04-05 checkpoint evidence
+
+- T11-W04-05 status: **PASS / VERIFIED**.
+- Verified implementation head: `986e13f186d4dbc6bbb621f77a222fe8d30fa9f4`.
+- Windows CI: `37662992589` / #290 PASS; job `112934968106`.
+- Evidence: `evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
+- Verified contribution: AC-08 Auto Susun UI action publishes one official auto-susun CommandBatch/history step; AC-09 plan no-op/error state stays atomic; AC-11 Inspector artwork priority/clear wiring; AC-13 artwork import+bind reaches global Undo/Redo as one manual history step; AC-14 draft typing stays session-only/non-dirty and explicit Apply/Clear uses manual history; AC-17 frozen Auto Susun/Inspector/Media/Timeline wiring preserves shell hierarchy and permanent Gemini rail; AC-18 global Undo/Redo restores Auto Susun/manual binding semantic state; AC-21 renderer trust boundary/provider-free wiring; AC-22 exact frozen UI and prior-wave regression contribution.
+- Final complete AC-W11-04-01..22 closure remains owned by T11-W04-06.
+
 ## Closure rule
 
 W11-04 is not COMPLETE because code exists. T11-W04-06 must provide final Windows evidence, map AC-W11-04-01..22 to PASS, and record an architecture/UI/trust-boundary drift review with **no material drift**.
