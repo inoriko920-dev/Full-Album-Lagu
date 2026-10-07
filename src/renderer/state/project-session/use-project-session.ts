@@ -365,10 +365,7 @@ export function useProjectSession(): ProjectSessionView {
           const savedRevisionBeforeRecovery =
             history.snapshot().savedRevision;
           const scannedProject = await scanMissingMediaState(result.project);
-          history.resetDirty(
-            scannedProject,
-            savedRevisionBeforeRecovery,
-          );
+          history.resetDirty(scannedProject, savedRevisionBeforeRecovery);
           publishHistorySnapshot();
           setRecoveryState({ status: "none" });
           setRecoveryActionState("idle");
