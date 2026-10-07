@@ -25,7 +25,9 @@ export interface LfaBridge {
   getFoundationInfo(): Promise<FoundationInfo>;
   pickAudioFiles(): Promise<MediaDiscoveryStartResult>;
   pickMediaFolder(): Promise<MediaDiscoveryStartResult>;
-  discoverDroppedMedia(files: readonly File[]): Promise<MediaDiscoveryStartResult>;
+  discoverDroppedMedia(
+    files: readonly File[],
+  ): Promise<MediaDiscoveryStartResult>;
   getMediaDiscoveryStatus(
     batchId: string,
   ): Promise<MediaDiscoveryStatusResult>;
