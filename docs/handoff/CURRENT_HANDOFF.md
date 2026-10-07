@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01 is COMPLETE / PASS. **W11-02 is COMPLETE / PASS; T11-W02-01..06 are VERIFIED and AC-W11-02-01..18 all PASS.** STEP 11 remains in progress overall. The next checkpoint is ASTRA planning for W11-03; W11-03 SOL implementation has not started.
+STEP 10 is complete. W11-01 and W11-02 are COMPLETE / PASS. **W11-03 ASTRA planning is COMPLETE / PASS with DoR PASS; implementation has not started. T11-W03-01 is the only READY SOL task.** STEP 11 remains in progress overall.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -98,10 +98,25 @@ AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Fin
 - architecture gate + exact frozen UI + Windows package/smoke/ZIP PASS;
 - W11-02 final status COMPLETE / PASS.
 
-## Next exact task
-**ASTRA W11-03 Album Timeline + Command History planning/charter checkpoint — planning only.**
+## W11-03 planning checkpoint
+- Features: FTR-004 + FTR-013 + FTR-018 cross-cut.
+- Planning baseline: `main@6f296f7cc8e8b81e86bde71f8cd3a32c0d0f1bd2`.
+- Source-of-truth DOCX: `docs/source-of-truth/planning/current/12_STEP_11_W11_03_ALBUM_TIMELINE_COMMAND_HISTORY_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Operational charter: `docs/step11/WAVE_11_03_CHARTER.md`.
+- Task cards: `docs/step11/TASK_CARDS_W11_03.md`.
+- Acceptance: `docs/step11/W11_03_ACCEPTANCE_MATRIX.md` (AC-01..20).
+- DoR: `docs/step11/W11_03_DOR.md` — PASS.
+- Canonical order = tracks array; enabled is additive/optional; boundaries are derived.
+- One CommandEngine/history must serve manual/template/Auto Susun/AI mutation origins.
+- Batch mutations are atomic and one batch is one Undo.
+- Dirty/save/recovery must use logical history checkpoint while revision stays monotonic.
+- No new UI prompt/image generation; existing frozen album/timeline references are authority.
+- No Gemini/FFmpeg/Auto Susun/template/layer/preview/transition/render implementation is authorized by this planning checkpoint.
 
-Before any W11-03 coding, create and commit the detailed planning DOCX, operational charter, task cards, acceptance matrix, DoR and source-of-truth/handoff updates for FTR-004 + FTR-013 + FTR-018. SOL implementation remains blocked until that planning gate passes.
+## Next exact task
+**T11-W03-01 — Timeline Domain + CommandEngine Core — SOL only.**
+
+On the next user `lanjutkan`, execute T11-W03-01 only. Do not start T11-W03-02 or product UI wiring in the same turn. Re-read the W11-03 charter/task card before modifying code.
 
 ## Protected boundaries
 Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Media intake/relink filesystem ownership belongs to Electron main behind typed preload/IPC. Source media must remain non-destructive. Recovery artifacts remain separate from primary Save. Frozen UI cannot be silently redesigned. Gemini and exact FFmpeg/FFprobe concrete integrations remain STEP 12 owned.
