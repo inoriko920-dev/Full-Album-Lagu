@@ -417,13 +417,30 @@ export function useProjectSession(): ProjectSessionView {
       return { status: "cancelled" };
     }
 
+    const saveCheckpoint = history.snapshot();
     setPersistenceState("saving");
     setErrorCode(null);
 
     try {
-      const result = await window.lfa.saveProject({ project });
+      const result = await window.lfa.saveProject({
+        project: saveCheckpoint.project,
+      });
       if (result.status === "saved") {
-        history.markSaved(result.projectRevision);
+        if (result.projectRevision !== saveCheckpoint.project.revision) {
+          const invalidResult: SaveProjectResult = {
+            status: "error",
+            code: "PROJECT_WRITE_FAILED",
+            message: "Saved project revision did not match the requested checkpoint.",
+          };
+          setPersistenceState("error");
+          setErrorCode(invalidResult.code);
+          return invalidResult;
+        }
+
+        history.markSavedCheckpoint(
+          saveCheckpoint.stateToken,
+          result.projectRevision,
+        );
         publishHistorySnapshot();
         setPersistenceState("saved");
         setLocation(result.location);
@@ -445,7 +462,7 @@ export function useProjectSession(): ProjectSessionView {
       setErrorCode(result.code);
       return result;
     }
-  }, [history, persistenceState, project, publishHistorySnapshot]);
+  }, [history, persistenceState, publishHistorySnapshot]);
 
   const acceptRecovery =
     useCallback(async (): Promise<RecoveryAcceptResult> => {
@@ -457,14 +474,32 @@ export function useProjectSession(): ProjectSessionView {
       setRecoveryErrorCode(null);
 
       try {
+        const recoveryBase = history.snapshot();
         const result = await window.lfa.acceptRecovery({
-          primaryProject: projectRef.current,
+          primaryProject: recoveryBase.project,
         });
 
         if (result.status === "recovered") {
-          const savedRevisionBeforeRecovery = history.snapshot().savedRevision;
+          const beforeScan = history.snapshot();
+          if (
+            beforeScan.stateToken !== recoveryBase.stateToken ||
+            beforeScan.project.revision !== recoveryBase.project.revision
+          ) {
+            setRecoveryActionState("idle");
+            return { status: "none" };
+          }
+
           const scannedProject = await scanMissingMediaState(result.project);
-          history.resetDirty(scannedProject, savedRevisionBeforeRecovery);
+          const beforePublish = history.snapshot();
+          if (
+            beforePublish.stateToken !== recoveryBase.stateToken ||
+            beforePublish.project.revision !== recoveryBase.project.revision
+          ) {
+            setRecoveryActionState("idle");
+            return { status: "none" };
+          }
+
+          history.resetDirty(scannedProject, recoveryBase.savedRevision);
           publishHistorySnapshot();
           setRecoveryState({ status: "none" });
           setRecoveryActionState("idle");
