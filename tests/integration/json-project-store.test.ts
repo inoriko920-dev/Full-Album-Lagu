@@ -109,6 +109,7 @@ describe("JsonProjectStore", () => {
           title: "Intro",
           sourcePath: "D:/Album/01 Intro.mp3",
           audioAssetId: "asset-audio-1",
+          enabled: false,
         },
       ],
     };
