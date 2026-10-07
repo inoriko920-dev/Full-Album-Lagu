@@ -24,3 +24,15 @@ This register ties the original conversation/workspace artifacts to the reposito
 Repository compact planning DOCX files preserve the extracted planning content for handoff and are the operative repository copies. The UI visual compact DOCX is a binary copy generated from the approved UI reference and contains all 29 images; only embedded-image quality was reduced to keep the repository lightweight.
 
 No compacting operation changes the locked product/UI/architecture decisions.
+
+
+## Repository-created planning authorities and repairs
+
+These files were created inside the repository after the original artifact import. They are intentionally separated from the **Original artifacts and hashes** table above.
+
+| Repository artifact | Provenance | Repository role |
+|---|---|---|
+| `10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` | **RECONSTRUCTED REPOSITORY COPY**. The previously referenced historical compact DOCX was missing from checkout. Rebuilt from current normalized Feature Registry + Dependency Graph with an explicit integrity notice. Not claimed byte-identical to the missing historical artifact. | mandatory STEP 11 registry/dependency handoff authority |
+| `14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` | Created by ASTRA from the verified Product Definition, Product Baseline, frozen UI authority, architecture/constitution, W11-04 closure and normalized registry/dependency sources. | current W11-05 detailed planning source-of-truth |
+
+The Git blob SHA of these repository-created DOCX files is authoritative for the committed repository snapshot; do not substitute an original-artifact hash for the reconstructed STEP 11 file.
