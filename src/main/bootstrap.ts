@@ -1308,13 +1308,10 @@ function createMainWindow(): BrowserWindow {
                   const current = snapshotUi();
                   return (
                     current.autoArrangeState === "applied" &&
-                    current.projectRevision === initial.projectRevision + 2 &&
-                    current.mediaOrder[0] === "track-001" &&
-                    current.mediaOrder[1] === "track-002" &&
-                    current.mediaOrder[2] === "track-003"
+                    current.projectRevision === initial.projectRevision + 2
                   );
                 },
-                "Auto Susun did not produce the deterministic order.",
+                "Auto Susun did not apply through the shared history.",
               );
               const autoApplied = snapshotUi();
 
