@@ -290,12 +290,12 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 ## W11-05 planning completed
 - Role: ASTRA.
 - Baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`.
-- Status: **PLANNING COMPLETE / PASS**; T11-W05-01 PASS / VERIFIED; T11-W05-02 READY.
+- Status: **PLANNING COMPLETE / PASS**; current implementation checkpoint is T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY.
 - Features: FTR-007 Manual Layer Editor + FTR-011 Template Workflow; FTR-013/FTR-018 cross-cut.
 - Planning DOCX: `docs/source-of-truth/planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
 - Companion authority: `WAVE_11_05_CHARTER.md`, `TASK_CARDS_W11_05.md`, `W11_05_ACCEPTANCE_MATRIX.md`, `W11_05_DOR.md`.
 - DoR: PASS; AC-W11-05-01..25 defined.
-- Serial tasks: T11-W05-01 PASS / VERIFIED; T11-W05-02 READY; T11-W05-03..07 BLOCKED.
+- Serial tasks: T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY; T11-W05-04..07 BLOCKED.
 - UI authority already frozen: SCR-002C (Layer), SCR-003A/003B (Template/Try), DLG-008/UI-IMG-012 (Save Template). No new UI prompt/image generation is needed.
 - Scope boundary: static scene/layer editing + visual-only local templates. Playback/audio-reactive remains W11-06; animation/transitions remains W11-07; Gemini/FFmpeg remains STEP 12.
 - Governance repair: `10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` was absent from checkout and is restored as a **reconstructed repository copy** with an integrity notice. Never describe it as the missing historical original.
