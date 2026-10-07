@@ -283,23 +283,22 @@ describe("T11-W05-02 manual layer commands", () => {
       redoDepth: 0,
       dirty: true,
     });
-    expect(session.snapshot().project.visualScene?.layers[1]?.transform).toEqual(
-      changedTransform,
-    );
+    expect(
+      session.snapshot().project.visualScene?.layers[1]?.transform,
+    ).toEqual(changedTransform);
 
     expect(session.undo().status).toBe("applied");
-    expect(session.snapshot().project.visualScene?.layers[1]?.transform).toEqual(
-      transform,
-    );
+    expect(
+      session.snapshot().project.visualScene?.layers[1]?.transform,
+    ).toEqual(transform);
     expect(session.snapshot().dirty).toBe(false);
 
     expect(session.redo().status).toBe("applied");
-    expect(session.snapshot().project.visualScene?.layers[1]?.transform).toEqual(
-      changedTransform,
-    );
+    expect(
+      session.snapshot().project.visualScene?.layers[1]?.transform,
+    ).toEqual(changedTransform);
   });
 });
-
 
 describe("T11-W05-02 lock, style, stale and gesture semantics", () => {
   it("allows explicit unlock but rejects other mutations while a layer is locked", () => {
@@ -502,14 +501,14 @@ describe("T11-W05-02 lock, style, stale and gesture semantics", () => {
       redoDepth: 0,
       dirty: true,
     });
-    expect(session.snapshot().project.visualScene?.layers[1]?.transform).toEqual(
-      finalPreview,
-    );
+    expect(
+      session.snapshot().project.visualScene?.layers[1]?.transform,
+    ).toEqual(finalPreview);
 
     expect(session.undo().status).toBe("applied");
-    expect(session.snapshot().project.visualScene?.layers[1]?.transform).toEqual(
-      transform,
-    );
+    expect(
+      session.snapshot().project.visualScene?.layers[1]?.transform,
+    ).toEqual(transform);
     expect(session.snapshot().dirty).toBe(false);
   });
 
