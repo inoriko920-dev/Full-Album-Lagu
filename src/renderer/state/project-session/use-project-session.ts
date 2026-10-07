@@ -394,7 +394,12 @@ export function useProjectSession(): ProjectSessionView {
         setRecoveryActionState("error");
         return result;
       }
-    }, [publishHistorySnapshot, recoveryActionState, scanMissingMediaState]);
+    }, [
+      history,
+      publishHistorySnapshot,
+      recoveryActionState,
+      scanMissingMediaState,
+    ]);
 
   const discardRecovery =
     useCallback(async (): Promise<RecoveryDiscardResult> => {
