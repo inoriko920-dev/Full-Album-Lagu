@@ -13,7 +13,8 @@
 10. `planning/current/09_STEP_07_CODE_CONSTITUTION_REPOSITORY_ARCHITECTURE_LAGU_FULL_ALBUM_v1_0_REPO_COMPACT.docx`
 11. `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
 12. `planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
-13. `factory/SOFTWARE_FACTORY_V2_COMPLETE_GUIDE.txt`
+13. `planning/current/12_STEP_11_W11_03_ALBUM_TIMELINE_COMMAND_HISTORY_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+14. `factory/SOFTWARE_FACTORY_V2_COMPLETE_GUIDE.txt`
 14. `../../ui/manifests/UI_REFERENCE_MANIFEST.json`
 15. `../../ui/manifests/UI_FREEZE_MANIFEST.json`
 16. `../../architecture/ARCHITECTURE.md`
@@ -50,9 +51,11 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 
 ## STEP 11 current planning
 - Registry/wave-order baseline: `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
-- Current W11-02 authority: `planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
-- Operational companions: `../../step11/FEATURE_REGISTRY.md`, `../../step11/DEPENDENCY_GRAPH.md`, `../../step11/WAVE_11_02_CHARTER.md`, `../../step11/TASK_CARDS_W11_02.md`, `../../step11/W11_02_ACCEPTANCE_MATRIX.md`.
+- W11-02 authority: `planning/current/11_STEP_11_W11_02_MEDIA_INTAKE_FOUNDATION_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Current W11-03 authority: `planning/current/12_STEP_11_W11_03_ALBUM_TIMELINE_COMMAND_HISTORY_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Operational companions: `../../step11/FEATURE_REGISTRY.md`, `../../step11/DEPENDENCY_GRAPH.md`, W11-02 closure documents, and current W11-03 `WAVE_11_03_CHARTER.md`, `TASK_CARDS_W11_03.md`, `W11_03_ACCEPTANCE_MATRIX.md`, `W11_03_DOR.md`.
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`.
 - W11-02 closure evidence: `../../step11/evidence/W11_02_WAVE_CLOSURE_EVIDENCE.md`.
 - W11-02 drift review: `../../step11/evidence/W11_02_ARCHITECTURE_DRIFT_REVIEW.md`.
-- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS with AC-W11-02-01..18 PASS and drift review PASS. Next checkpoint: ASTRA planning for W11-03; no W11-03 implementation authority exists yet.
+- W11-03 planning baseline: `main@6f296f7cc8e8b81e86bde71f8cd3a32c0d0f1bd2`.
+- Status: W11-01 COMPLETE / PASS; W11-02 COMPLETE / PASS; W11-03 ASTRA planning COMPLETE / PASS with DoR PASS. Only T11-W03-01 has implementation authority; later W11-03 tasks remain blocked serially.
