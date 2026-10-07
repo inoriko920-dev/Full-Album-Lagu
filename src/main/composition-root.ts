@@ -2,6 +2,7 @@ import { app, dialog } from "electron";
 import { randomUUID } from "node:crypto";
 import { join, resolve } from "node:path";
 import { MediaDiscoveryService } from "../core/application/services/media-discovery-service";
+import { MediaIntakeService } from "../core/application/services/media-intake-service";
 import { ProjectLifecycleService } from "../core/application/services/project-lifecycle-service";
 import { ProjectPathSession } from "../core/application/services/project-path-session";
 import {
@@ -9,6 +10,7 @@ import {
   SaveProjectUseCase,
 } from "../core/application/services/project-persistence";
 import { ProjectRecoveryService } from "../core/application/services/project-recovery-service";
+import { MusicMetadataProbePort } from "./infrastructure/media/music-metadata-probe-port";
 import { NodeMediaDiscoveryPort } from "./infrastructure/media/node-media-discovery-port";
 import { JsonProjectRecoveryStore } from "./infrastructure/persistence/json-project-recovery-store";
 import { JsonProjectStore } from "./infrastructure/persistence/json-project-store";
@@ -47,6 +49,13 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
   const mediaDiscoveryPort = new NodeMediaDiscoveryPort();
   const mediaDiscoveryService = new MediaDiscoveryService(
     mediaDiscoveryPort,
+    randomUUID,
+    4,
+  );
+  const mediaProbePort = new MusicMetadataProbePort();
+  const mediaIntakeService = new MediaIntakeService(
+    mediaDiscoveryService,
+    mediaProbePort,
     randomUUID,
     4,
   );
@@ -154,6 +163,7 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     pathSession,
     recoveryService,
     mediaDiscoveryService,
+    mediaIntakeService,
     selectAudioFiles,
     selectMediaFolders,
   };
