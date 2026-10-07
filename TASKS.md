@@ -176,17 +176,32 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
-- Start condition: user says `lanjutkan`.
-- Dependency: ASTRA-W11-02-PLAN PASS.
-- Purpose: additive media domain/reference model, typed ports/contracts, schema-v1/W11-01 compatibility only.
-- Out of scope: picker, discovery queue, metadata library, relink implementation, UI.
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
+- Verified implementation head: `bc63f368af86d9c6f418a683b7fee47d4093a4df`
+- Windows CI run: `37586453731` — PASS
+- CI job: `112677579172`
+- Scope delivered:
+  - additive schema-v1 `mediaAssets` and track `audioAssetId`;
+  - explicit media kind/availability/issue invariants;
+  - required-media readiness blocker projection without raw source paths;
+  - strict public media batch/relink contracts;
+  - narrow internal media source/probe ports;
+  - real JsonProjectStore legacy and additive-media round-trip compatibility tests.
+- No runtime dependency, renderer/preload/IPC media API, picker, probe adapter, relink service or UI added.
+- Evidence: `docs/step11/evidence/T11_W02_01_MEDIA_DOMAIN_CONTRACTS_EVIDENCE.md`.
 
 ## T11-W02-02 — Picker/Drop Discovery, Batch Queue, Progress & Cancel
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED_BY T11-W02-01.
+- Status: READY
+- Start condition: user says `lanjutkan`.
+- Dependency: T11-W02-01 PASS.
+- Scope: native multi-file picker, drag/drop path seam, recursive deterministic folder discovery, batch dedupe, bounded queue, progress and cancel only.
+- Gate: must PASS before T11-W02-03.
 
 ## T11-W02-03 — Audio Probe, Validation, Metadata & Deterministic Initial Order
 - Owner: SOL

@@ -2,8 +2,8 @@
 
 Planning role: **ASTRA**  
 Planning baseline analyzed: `main@da5b6786d0daa472c474a33ffd83a5834af24f82`  
-Status: **NORMALIZED / W11-01 COMPLETE; W11-02 PLANNING PASS**  
-Implementation status: **W11-01 COMPLETE / PASS; W11-02 READY for serial SOL execution**
+Status: **NORMALIZED / W11-01 COMPLETE; W11-02 IN PROGRESS**  
+Implementation status: **W11-01 COMPLETE / PASS; W11-02 T11-W02-01 PASS; T11-W02-02 READY**
 
 The complete planning authority is the companion DOCX:
 `docs/source-of-truth/planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
@@ -12,7 +12,7 @@ The complete planning authority is the companion DOCX:
 |---|---|---|---|---|---|
 | FTR-001 | Project Lifecycle | F-001; FR-001..003 | MUST | STEP 10 persistence seam | VERIFIED W11-01 |
 | FTR-002 | Autosave & Crash Recovery | F-001/F-017; FR-004 | MUST | FTR-001 | VERIFIED W11-01 |
-| FTR-003 | Media Intake & Validation | F-002; FR-005..008 | MUST | FTR-001 | READY W11-02 |
+| FTR-003 | Media Intake & Validation | F-002; FR-005..008 | MUST | FTR-001 | IN PROGRESS W11-02 |
 | FTR-004 | Track Timeline & Track State | F-003; FR-009..011 | MUST | FTR-003 | PLANNED W11-03 |
 | FTR-005 | Auto Susun Album | F-004; FR-012 | MUST | FTR-003,FTR-004,FTR-013 | PLANNED W11-04 |
 | FTR-006 | Artwork/Metadata/Dynamic Track Binding | F-005; FR-013..015 | MUST | FTR-003,FTR-004 | PLANNED W11-04 |
@@ -49,6 +49,7 @@ The complete planning authority is the companion DOCX:
 - FTR-018 cross-cut for W11-01: PASS; remains active for later waves.
 - All W11-01 acceptance AC-01..14: PASS.
 - Evidence: `evidence/W11_01_WAVE_CLOSURE_EVIDENCE.md`.
-- W11-02 Media Intake Foundation planning: PASS / READY.
+- W11-02 Media Intake Foundation planning: PASS.
+- T11-W02-01 media domain/contracts/project compatibility: PASS / VERIFIED.
 - W11-02 planning authority: `WAVE_11_02_CHARTER.md`, `TASK_CARDS_W11_02.md`, `W11_02_ACCEPTANCE_MATRIX.md` and source-of-truth planning DOCX.
-- Next implementation task: T11-W02-01 only.
+- Next implementation task: T11-W02-02 only.
