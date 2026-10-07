@@ -24,14 +24,6 @@ export interface MissingMediaScanOutcome {
   readiness: ReturnType<typeof getProjectMediaReadiness>;
 }
 
-function withoutErrorCode(
-  asset: MediaAssetReference,
-): Omit<MediaAssetReference, "errorCode"> {
-  const rest = { ...asset };
-  delete rest.errorCode;
-  return rest;
-}
-
 function markFound(asset: MediaAssetReference): MediaAssetReference {
   if (
     asset.availability !== "missing" &&
@@ -53,10 +45,12 @@ function markFound(asset: MediaAssetReference): MediaAssetReference {
     };
   }
 
-  return {
-    ...withoutErrorCode(asset),
+  const readyAsset: MediaAssetReference = {
+    ...asset,
     availability: "ready",
   };
+  delete readyAsset.errorCode;
+  return readyAsset;
 }
 
 function markMissing(asset: MediaAssetReference): MediaAssetReference {
