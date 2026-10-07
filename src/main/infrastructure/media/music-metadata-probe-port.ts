@@ -126,6 +126,15 @@ export class MusicMetadataProbePort implements MediaProbePort {
       };
     }
 
+    const container = cleanString(parsed.format.container, 100);
+    const codec = cleanString(parsed.format.codec, 100);
+    if (container === undefined && codec === undefined) {
+      return invalidResult(
+        "MEDIA_CORRUPT",
+        "File audio rusak atau struktur medianya tidak valid.",
+      );
+    }
+
     const durationSeconds = parsed.format.duration;
     if (
       typeof durationSeconds !== "number" ||
@@ -148,8 +157,6 @@ export class MusicMetadataProbePort implements MediaProbePort {
     const album = cleanString(parsed.common.album, 500);
     const trackNumber = positiveInteger(parsed.common.track?.no);
     const year = validYear(parsed.common.year);
-    const container = cleanString(parsed.format.container, 100);
-    const codec = cleanString(parsed.format.codec, 100);
 
     if (title !== undefined) metadata.title = title;
     if (artist !== undefined) metadata.artist = artist;
