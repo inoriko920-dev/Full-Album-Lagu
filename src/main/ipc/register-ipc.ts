@@ -388,9 +388,7 @@ export function registerIpcHandlers(
     if (outcome.project !== undefined && outcome.result.status === "relinked") {
       return singleRelinkOperationResultSchema.parse({
         status: "relinked",
-        project: (
-          await projectDependencies.missingMediaService.scan(outcome.project)
-        ).project,
+        project: outcome.project,
         result: outcome.result,
       });
     }
@@ -507,9 +505,13 @@ export function registerIpcHandlers(
         return openProjectResultSchema.parse({ status: "cancelled" });
       }
 
+      const scannedProject = (
+        await projectDependencies.missingMediaService.scan(outcome.project)
+      ).project;
+
       return openProjectResultSchema.parse({
         status: "opened",
-        project: outcome.project,
+        project: scannedProject,
         location: { kind: "known-path" },
       });
     } catch (error) {
