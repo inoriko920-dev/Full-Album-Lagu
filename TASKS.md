@@ -693,14 +693,20 @@
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY_AFTER_PLANNING_MERGE
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: ASTRA-W11-05-PLAN PASS.
-- Scope/acceptance authority: `docs/step11/TASK_CARDS_W11_05.md`.
-- Later W11-05 tasks remain serially blocked.
-
+- Verified implementation head: `137e8d31a08b804498b56a9b9cb094bcc4add8f0`
+- Windows CI: `37682820030` / #321 PASS; job `113003054180`.
+- Evidence: `docs/step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md`.
+- Result: additive schema-v1 visualScene + normalized logical canvas + pure W11-04-bound projection verified.
+- Regression: 244 Vitest assertions + STEP 10/W11-01..04/frozen UI/package/smoke/ZIP PASS.
+- Dependency unlock: T11-W05-02 READY; later W11-05 tasks remain serially blocked.
 ## T11-W05-02 — Manual Layer Commands + Gesture/History Semantics
 - Owner: SOL
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-01 PASS / VERIFIED.
 
 ## T11-W05-03 — Template Document + Local Store + Trial/Apply Core
