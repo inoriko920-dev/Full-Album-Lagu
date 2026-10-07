@@ -60,14 +60,14 @@ class SlowDiscoveryPort implements MediaDiscoveryPort {
 
 describe("MediaDiscoveryService queue", () => {
   it("never exceeds configured concurrency", async () => {
-    const paths = Array.from({ length: 40 }, (_, index) => `/file-${index}.mp3`);
+    const paths = Array.from(
+      { length: 40 },
+      (_, index) => `/file-${index}.mp3`,
+    );
     const port = new SlowDiscoveryPort(2);
     const service = new MediaDiscoveryService(port, () => "bounded", 4);
 
-    const result = await waitForTerminal(
-      service,
-      service.start(paths).batchId,
-    );
+    const result = await waitForTerminal(service, service.start(paths).batchId);
 
     expect(result.status).toBe("completed");
     expect(port.maxActive).toBeLessThanOrEqual(4);
