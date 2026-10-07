@@ -290,9 +290,11 @@ const assertions = {
       (path) => path.includes(" ") && path.includes("Ω"),
     ),
 
-  publicEvidenceContainsNoRawPaths: [importEvidence, relinkEvidence, batchEvidence].every(
-    (item) => !Object.keys(item).some((key) => /path/i.test(key)),
-  ),
+  publicEvidenceContainsNoRawPaths: [
+    importEvidence,
+    relinkEvidence,
+    batchEvidence,
+  ].every((item) => !Object.keys(item).some((key) => /path/i.test(key))),
 };
 
 const failedAssertions = Object.entries(assertions)
