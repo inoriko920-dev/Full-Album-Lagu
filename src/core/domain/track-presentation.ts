@@ -189,7 +189,9 @@ export function resolveTrackPresentation(
   trackId: string,
 ): ResolvedTrackPresentation {
   const project = projectDocumentSchema.parse(projectInput);
-  const canonicalIndex = project.tracks.findIndex((track) => track.id === trackId);
+  const canonicalIndex = project.tracks.findIndex(
+    (track) => track.id === trackId,
+  );
 
   if (canonicalIndex < 0) {
     throw new Error("Track presentation cannot resolve an unknown track ID.");

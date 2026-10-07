@@ -100,25 +100,28 @@ describe("project document", () => {
       albumPresentation: undefined,
       trackBinding: { artworkAssetId: "unknown-image" },
     },
-  ])("rejects $label artwork references", ({ albumPresentation, trackBinding }) => {
-    const result = projectDocumentSchema.safeParse({
-      schemaVersion: 1,
-      projectId: "project-binding-unknown",
-      name: "Album Binding",
-      revision: 0,
-      ...(albumPresentation === undefined ? {} : { albumPresentation }),
-      tracks: [
-        {
-          id: "track-1",
-          title: "Song",
-          sourcePath: "D:/Album/01 Song.wav",
-          ...(trackBinding === undefined ? {} : { binding: trackBinding }),
-        },
-      ],
-    });
+  ])(
+    "rejects $label artwork references",
+    ({ albumPresentation, trackBinding }) => {
+      const result = projectDocumentSchema.safeParse({
+        schemaVersion: 1,
+        projectId: "project-binding-unknown",
+        name: "Album Binding",
+        revision: 0,
+        ...(albumPresentation === undefined ? {} : { albumPresentation }),
+        tracks: [
+          {
+            id: "track-1",
+            title: "Song",
+            sourcePath: "D:/Album/01 Song.wav",
+            ...(trackBinding === undefined ? {} : { binding: trackBinding }),
+          },
+        ],
+      });
 
-    expect(result.success).toBe(false);
-  });
+      expect(result.success).toBe(false);
+    },
+  );
 
   it.each([
     {
@@ -185,5 +188,4 @@ describe("project document", () => {
 
     expect(result.success).toBe(false);
   });
-
 });

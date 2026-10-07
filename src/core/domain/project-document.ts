@@ -91,7 +91,8 @@ export const projectDocumentSchema = z
         if (asset === undefined) {
           context.addIssue({
             code: "custom",
-            message: "Track audioAssetId must reference an existing media asset.",
+            message:
+              "Track audioAssetId must reference an existing media asset.",
             path: ["tracks", index, "audioAssetId"],
           });
         } else if (asset.kind !== "audio") {
