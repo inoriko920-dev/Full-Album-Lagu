@@ -44,34 +44,42 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W05-01 PASS / VERIFIED.
-- Goal:
-  - implement official manual command family over shared CommandEngine.
-- In scope:
-  - add/remove/duplicate/reorder;
-  - transform/common/text style;
-  - visibility/lock;
-  - stale guards;
-  - locked-layer rejection;
-  - one continuous gesture -> one coalesced history entry;
-  - 128-layer core stress.
-- Protected behavior:
-  - remove never deletes source media;
-  - duplicate creates new ID;
-  - command references stable IDs;
-  - one explicit action = one revision/history unit unless a batch is explicitly required.
-- Out of scope:
-  - renderer UI gestures;
-  - template storage/UI;
-  - playback/audio-reactive/keyframes/transitions.
-- Exit gate: PASS / VERIFIED before 03.
-
+- Verified implementation head: `308a4800bcbfcf4e85828795e6573893622dd722`
+- Windows CI: `37687361672` / run #336 — PASS
+- CI job: `113018515599`
+- Windows portable artifact: `11511078393`
+- Frozen visual artifact: `11511467773`
+- Implemented:
+  - layer add/remove/duplicate/reorder commands;
+  - transform/common/text-style commands;
+  - stable-ID targeting and canonical-array z-order;
+  - locked-layer rejection with explicit unlock exception;
+  - revision/state-token stale guards;
+  - session-only transform gesture preview;
+  - one gesture-end commit = one manual history entry;
+  - 128-layer core command/history stress.
+- Mandatory proof:
+  - 50 preview updates + one commit => one revision/history node PASS;
+  - duplicate ID/locked target/stale target atomic reject PASS;
+  - no-op suppression PASS;
+  - source media references/tracks unchanged by layer remove PASS;
+  - 128-layer / 64 edits / full Undo/Redo deterministic PASS;
+  - 256 Vitest assertions PASS;
+  - STEP 10 + W11-01..04 + frozen UI + Windows package/smoke/ZIP PASS.
+- Evidence:
+  - `docs/step11/evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md`
+- Exit gate: **PASS / VERIFIED**.
+- Dependency unlock: **T11-W05-03 READY**. T11-W05-04..07 remain BLOCKED.
 ## T11-W05-03 — Template Document + Local Store + Trial/Apply Core
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-02 PASS / VERIFIED.
 - Goal:
   - create reusable visual-only TemplateDocument and main-owned local catalog/store;
