@@ -658,7 +658,9 @@
   outline-offset: 2px;
 }
 .template-browser__item.is-selected {
-  box-shadow: 0 0 0 1px #2563eb40, 0 5px 14px #2563eb12;
+  box-shadow:
+    0 0 0 1px #2563eb40,
+    0 5px 14px #2563eb12;
 }
 .template-browser__item .template-browser__thumbnail {
   border-radius: 7px;
