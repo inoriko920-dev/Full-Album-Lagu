@@ -97,6 +97,14 @@ export async function captureW1105State(
             el => el.textContent?.trim() === "Coba Template"
           );
           await wait(() => !!trialButton() && !trialButton().disabled, "loaded template");
+          const alreadySelected = browserPanel.querySelector(".template-browser__item.is-selected");
+          if (!alreadySelected) throw new Error("No selected local template to reselect");
+          const selectedName = alreadySelected.querySelector("strong")?.textContent?.trim();
+          alreadySelected.click();
+          if (!selectedName || trialButton()?.disabled ||
+              browserPanel.querySelector(".template-browser__detail h3")?.textContent?.trim() !== selectedName) {
+            throw new Error("Reselecting the loaded template disabled Try or changed its detail");
+          }
           const category = browserPanel.querySelector('[aria-label="Kategori Template"]');
           const search = browserPanel.querySelector('[aria-label="Cari Template"]');
           if (!category || !search) throw new Error("Frozen local template filters missing");
