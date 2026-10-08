@@ -138,7 +138,11 @@ function createMainWindow(): BrowserWindow {
       // Electron supplies initiatorOrigin from Chromium, not from the
       // request\x27s forgeable Origin header. Browser-initiated media requests
       // may legitimately have no initiator origin.
-      const initiatorOrigin = request.initiatorOrigin;
+      const initiatorOrigin =
+        "initiatorOrigin" in request &&
+        typeof request.initiatorOrigin === "string"
+          ? request.initiatorOrigin
+          : undefined;
       if (initiatorOrigin !== undefined && initiatorOrigin !== rendererOrigin) {
         return new Response(null, {
           status: 403,
