@@ -51,8 +51,13 @@ export const TemplateArtwork = memo(function TemplateArtwork({
   const coastal = style === "seaside" || style === "mountain";
   const electric = style === "neon" || style === "studio";
   const dark = style === "night" || style === "neon" || style === "studio";
+  const premiumSunset =
+    style === "sunset" &&
+    (category === "Premium" || templateId.toLowerCase().includes("premium"));
   const colors = {
-    sunset: ["#456eae", "#eda88d", "#fcd694", "#253c66", "#314a71"],
+    sunset: premiumSunset
+      ? ["#49345f", "#eaa06d", "#ffe7ad", "#5f3a54", "#292947"]
+      : ["#456eae", "#eda88d", "#fcd694", "#253c66", "#314a71"],
     mountain: ["#a2c5db", "#f4c8bd", "#fef0d3", "#7699ae", "#456b82"],
     neon: ["#10153b", "#592d87", "#ee5992", "#151942", "#0b234b"],
     vinyl: ["#2a1b23", "#c68c57", "#f8d8a0", "#402e40", "#171521"],

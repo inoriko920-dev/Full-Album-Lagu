@@ -99,6 +99,14 @@ export async function captureW1105State(
           await wait(() => !!trialButton() && !trialButton().disabled, "loaded template");
           const alreadySelected = browserPanel.querySelector(".template-browser__item.is-selected");
           if (!alreadySelected) throw new Error("No selected local template to reselect");
+          const catalogCards = Array.from(browserPanel.querySelectorAll(".template-browser__item"));
+          if (catalogCards.slice(0, 3).some(card => {
+            const art = card.querySelector(".template-browser__thumbnail");
+            const bounds = art?.getBoundingClientRect();
+            return !bounds || bounds.width < 150 || bounds.height < 75;
+          })) {
+            throw new Error("Template Browser illustration cards are clipped or too small");
+          }
           const selectedName = alreadySelected.querySelector("strong")?.textContent?.trim();
           alreadySelected.click();
           if (!selectedName || trialButton()?.disabled ||
@@ -151,9 +159,12 @@ export async function captureW1105State(
             throw new Error("Trial Preview/gallery geometry unavailable");
           }
           const sceneEdge = trialScene.getBoundingClientRect().right;
-          const galleryEdge = trialGallery.getBoundingClientRect().left;
-          if (sceneEdge + 8 > galleryEdge) {
-            throw new Error("Trial gallery obscures static Preview scene");
+          const galleryBounds = trialGallery.getBoundingClientRect();
+          if (sceneEdge + 8 > galleryBounds.left ||
+              galleryBounds.width < 220 ||
+              galleryBounds.right > window.innerWidth - 8 ||
+              galleryBounds.bottom > window.innerHeight - 8) {
+            throw new Error("Trial gallery is too small, out of bounds or obscures static Preview");
           }
           if (Number(shell.getAttribute("data-project-revision")) !== beforeRevision ||
               shell.getAttribute("data-project-dirty") !== beforeDirty) {
@@ -166,6 +177,11 @@ export async function captureW1105State(
           if (!dialog.textContent?.includes("kredensial AI") ||
               !dialog.querySelector('[aria-label="Pratinjau Template Disimpan"]')) {
             throw new Error("Frozen save dialog exclusion copy or thumbnail missing");
+          }
+          const dialogBounds = dialog.getBoundingClientRect();
+          if (dialogBounds.left < 8 || dialogBounds.right > window.innerWidth - 8 ||
+              dialogBounds.top < 8 || dialogBounds.bottom > window.innerHeight - 8) {
+            throw new Error("Save as Template modal is clipped outside the Windows viewport");
           }
         } else if (mode === "FLOW" || mode === "FLOW_SECOND") {
           const localItems = () => Array.from(document.querySelectorAll(".template-browser__item"));

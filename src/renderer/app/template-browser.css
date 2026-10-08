@@ -633,3 +633,98 @@
 .app-shell--template-trial .preview-stage {
   padding-right: clamp(232px, 18vw, 270px);
 }
+
+/*
+ * W05-07 R23: bounded static presentation polish only.
+ * Keep all nine deterministic local starters and all frozen workflow semantics.
+ * Samples are illustrations, not decoded artwork or responsive audio.
+ */
+.template-browser__grid {
+  gap: 14px;
+  padding: 2px 2px 14px;
+}
+.template-browser__item {
+  padding: 8px;
+  gap: 7px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px #203a5b0a;
+}
+.template-browser__item:hover {
+  border-color: #8faed5;
+  box-shadow: 0 4px 14px #203a5b16;
+}
+.template-browser__item:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+}
+.template-browser__item.is-selected {
+  box-shadow: 0 0 0 1px #2563eb40, 0 5px 14px #2563eb12;
+}
+.template-browser__item .template-browser__thumbnail {
+  border-radius: 7px;
+  box-shadow: inset 0 0 0 1px #e1e8f066;
+}
+.template-trial-overlay__gallery {
+  box-sizing: border-box;
+  width: clamp(224px, 16vw, 256px);
+  max-height: calc(100% - 118px);
+  overflow-y: auto;
+  padding: 14px;
+}
+.template-trial-overlay__gallery-grid {
+  gap: 9px;
+  margin-top: 12px;
+}
+.template-trial-overlay__gallery-card {
+  padding: 5px;
+  border-radius: 7px;
+  background: #f8fbff;
+}
+.template-trial-overlay__gallery-card[aria-current="true"] {
+  background: #eaf3ff;
+  box-shadow: 0 0 0 1px #2563eb22;
+}
+.template-trial-overlay__gallery-card small {
+  font-size: 10px;
+  margin-top: 4px;
+}
+.app-shell--template-trial .preview-stage {
+  padding-right: clamp(274px, 20vw, 310px);
+}
+.template-browser__save-dialog {
+  width: min(92vw, 700px);
+  column-gap: 24px;
+  row-gap: 16px;
+  padding: 26px 28px;
+}
+.template-browser__save-dialog > .template-browser__save-thumbnail {
+  border-radius: 8px;
+}
+.template-browser__save-dialog > .template-browser__save-scope {
+  gap: 10px;
+  padding: 15px 16px;
+}
+.template-browser__save-scope-item {
+  padding: 10px;
+  border: 1px solid #e4ecf7;
+  border-radius: 7px;
+  background: #f8fbff;
+}
+@media (max-width: 1100px) {
+  .template-trial-overlay__gallery {
+    width: 208px;
+    padding: 11px;
+  }
+  .app-shell--template-trial .preview-stage {
+    padding-right: 250px;
+  }
+}
+@media (max-width: 640px) {
+  .template-browser__save-dialog {
+    padding: 18px;
+    row-gap: 12px;
+  }
+  .template-browser__save-dialog > .template-browser__save-scope {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
