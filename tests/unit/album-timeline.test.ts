@@ -147,7 +147,6 @@ describe("album timeline projection", () => {
   });
 });
 
-
 describe("W11-06 playback position — pure canonical album clock", () => {
   it("maps exact enabled-track boundaries and never selects a disabled track", () => {
     const project = makeProject([1000, 2000, 3000], [1]);

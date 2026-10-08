@@ -145,7 +145,6 @@ export function projectAlbumTimeline(
   };
 }
 
-
 export type AlbumPlaybackBlockReason =
   | "invalid-position"
   | "no-enabled-track"
