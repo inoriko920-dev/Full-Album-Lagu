@@ -48,6 +48,7 @@ export function TemplateBrowser({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] =
     useState<TemplateDocument | null>(null);
+  const [templateLoadRetry, setTemplateLoadRetry] = useState(0);
   const [filter, setFilter] = useState<Filter>("Semua");
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
@@ -177,7 +178,7 @@ export function TemplateBrowser({
     return () => {
       requestVersion.current += 1;
     };
-  }, [selectedId]);
+  }, [selectedId, templateLoadRetry]);
 
   const filtered = useMemo(
     () =>
@@ -453,6 +454,10 @@ export function TemplateBrowser({
                       if (entry.templateId !== selectedId) {
                         setSelectedTemplate(null);
                         setSelectedId(entry.templateId);
+                      } else if (activeTemplate === null) {
+                        // A failed same-ID load must be retryable without
+                        // switching templates or mutating the project.
+                        setTemplateLoadRetry((prior) => prior + 1);
                       }
                     }
                   }}
