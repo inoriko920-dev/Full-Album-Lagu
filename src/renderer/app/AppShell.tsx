@@ -299,26 +299,6 @@ function MediaPanel({
   );
 }
 
-function LayerPanel() {
-  return (
-    <div className="work-panel work-panel--empty" id="work-panel-layer">
-      <div className="work-panel__header">
-        <div>
-          <p className="eyebrow">STRUKTUR VISUAL</p>
-          <h2>Layer</h2>
-        </div>
-      </div>
-      <div className="empty-card">
-        <span className="empty-card__icon">
-          <AppIcon name="layers" size={28} />
-        </span>
-        <strong>Belum ada layer</strong>
-        <p>Layer akan muncul setelah media atau template ditambahkan.</p>
-      </div>
-    </div>
-  );
-}
-
 function provenanceLabel(value: string): string {
   switch (value) {
     case "manual-override":
@@ -1292,6 +1272,7 @@ export function AppShell() {
   const [selectionSession] = useState(() => new VisualSelectionSession());
   const [visualUiState, setVisualUiState] = useState(() => selectionSession.snapshot());
   const gestureStartedRef = useRef(false);
+  const pendingLayerSelectRef = useRef<string | null>(null);
   const visualProjectMarker = useRef({
     projectId: projectSession.project.projectId,
     revision: projectSession.project.revision,
@@ -1310,11 +1291,20 @@ export function AppShell() {
   useEffect(() => {
     const marker = visualProjectMarker.current;
     if (marker.projectId !== projectSession.project.projectId) {
+      pendingLayerSelectRef.current = null;
       selectionSession.reset();
       projectSession.cancelVisualLayerGesture();
       gestureStartedRef.current = false;
       syncVisualUi();
     } else if (marker.revision !== projectSession.project.revision) {
+      const pendingId = pendingLayerSelectRef.current;
+      pendingLayerSelectRef.current = null;
+      if (pendingId !== null) {
+        selectionSession.selectFromLayerList(
+          buildStaticScenePreview(projectSession.project),
+          pendingId,
+        );
+      }
       selectionSession.discardGesture();
       projectSession.cancelVisualLayerGesture();
       gestureStartedRef.current = false;
@@ -1336,6 +1326,9 @@ export function AppShell() {
     if (ok) {
       syncVisualUi();
       if (fromCanvas) setActiveTab("layer");
+    } else if (layerId !== null && !fromCanvas) {
+      // The newly added/duplicated layer appears after the CommandEngine publication.
+      pendingLayerSelectRef.current = layerId;
     }
   }
 
@@ -1526,7 +1519,7 @@ export function AppShell() {
         <TimelinePanel
           projectSession={projectSession}
           selectedTrackId={selectedTrackId}
-          onSelectTrack={setSelectedTrackId}
+          onSelectTrack={(id) => { setSelectedTrackId(id); selectLayer(null); }}
           zoom={timelineZoom}
           onZoomChange={setTimelineZoom}
         />
