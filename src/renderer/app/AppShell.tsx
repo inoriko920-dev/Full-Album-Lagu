@@ -7,6 +7,7 @@ import type { VisualLayerTransform } from "../../core/domain/visual-scene-schema
 import { VisualSelectionSession } from "../state/ui-session/visual-selection-session";
 import { StaticScenePreview } from "../visual/StaticScenePreview";
 import { VisualLayerInspector, VisualLayerPanel } from "./VisualLayerControls";
+import { TemplateBrowser } from "./TemplateBrowser";
 import {
   isProjectTrackEnabled,
   projectAlbumTimeline,
@@ -1288,6 +1289,7 @@ function MissingMediaDialog({
 export function AppShell() {
   const [activeTab, setActiveTab] = useState<WorkRailTab>("media");
   const [missingDialogOpen, setMissingDialogOpen] = useState(false);
+  const [templateBrowserOpen, setTemplateBrowserOpen] = useState(false);
   const [selectedTrackIdState, setSelectedTrackId] = useState<string | null>(
     null,
   );
@@ -1477,7 +1479,12 @@ export function AppShell() {
             }
             onClick={() => projectSession.autoArrangeAlbum()}
           />
-          <ActionButton variant="toolbar" label="Template" icon="template" />
+          <ActionButton
+            variant="toolbar"
+            label="Template"
+            icon="template"
+            onClick={() => setTemplateBrowserOpen(true)}
+          />
           {showHistoryControls ? (
             <>
               <ActionButton
@@ -1573,6 +1580,14 @@ export function AppShell() {
           onZoomChange={setTimelineZoom}
         />
       </div>
+
+      {templateBrowserOpen ? (
+        <TemplateBrowser
+          session={projectSession}
+          selectedTrackId={selectedTrackId}
+          onClose={() => setTemplateBrowserOpen(false)}
+        />
+      ) : null}
 
       {missingDialogOpen ? (
         <MissingMediaDialog
