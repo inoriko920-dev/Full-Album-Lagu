@@ -302,6 +302,54 @@ describe("T11-W06-02 main-owned audio lease gateway", () => {
     gateway.revoke(token);
   });
 
+  it("extends a valid token only after an authorized Range stream opens", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "lfa-w06-ttl-"));
+    directories.push(directory);
+    const sourcePath = join(directory, "ttl.wav");
+    await writeFile(sourcePath, Buffer.from("RIFFABCDEFGH"));
+    let clock = 1000;
+    const gateway = new NodePreviewAudioLeaseStore(() => clock, 1000);
+    services.push(gateway);
+    const token = await gateway.issueTrustedGrant({
+      projectId: "project-A",
+      assetId: "ttl-test",
+      ownerWebContentsId: 7,
+      sourcePath,
+    });
+
+    clock = 1900;
+    const first = await gateway.openRange({
+      token,
+      projectId: "project-A",
+      ownerWebContentsId: 7,
+      rangeHeader: "bytes=0-3",
+    });
+    expect(first.status).toBe(206);
+    if (first.status !== 206) throw new Error("expected first range");
+    expect(await readBytes(first.stream)).toEqual(Buffer.from("RIFF"));
+
+    clock = 2700;
+    const second = await gateway.openRange({
+      token,
+      projectId: "project-A",
+      ownerWebContentsId: 7,
+      rangeHeader: "bytes=4-7",
+    });
+    expect(second.status).toBe(206);
+    if (second.status !== 206) throw new Error("expected renewed range");
+    expect(await readBytes(second.stream)).toEqual(Buffer.from("ABCD"));
+
+    clock = 3701;
+    expect(
+      await gateway.openRange({
+        token,
+        projectId: "project-A",
+        ownerWebContentsId: 7,
+        rangeHeader: "bytes=0-1",
+      }),
+    ).toEqual({ status: 403 });
+  });
+
   it("does not mutate source bytes across read and revoked sessions", async () => {
     const { gateway, token, bytes, sourcePath } = await sample();
     const before = await readFile(sourcePath);

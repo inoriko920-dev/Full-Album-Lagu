@@ -28,7 +28,7 @@ interface AudioGrant {
   readonly mtimeMs: number;
   readonly sizeBytes: number;
   readonly mime: string;
-  readonly expiresAtMs: number;
+  expiresAtMs: number;
 }
 
 export type PreviewAudioStreamResult =
@@ -174,6 +174,18 @@ export class NodePreviewAudioLeaseStore {
       this.revoke(request.token);
       return { status: 410 };
     }
+
+    // Parallel browser Range requests share one grant instance. Refresh the
+    // deadline in place to avoid invalidating another in-flight request.
+    // A concurrent revoke must not resurrect a token while fs.stat awaits.
+    if (
+      this.grants.get(request.token) !== grant ||
+      this.now() >= grant.expiresAtMs
+    ) {
+      await handle.close();
+      return { status: 403 };
+    }
+    grant.expiresAtMs = this.now() + this.ttlMs;
 
     const stream = handle.createReadStream({
       start: plan.start,
