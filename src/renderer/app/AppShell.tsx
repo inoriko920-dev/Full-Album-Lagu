@@ -705,6 +705,8 @@ function PreviewPanel({ visualModel, onSelectLayer }: {
             <strong>Belum ada visual</strong>
             <span>Impor audio atau pilih template untuk memulai.</span>
           </div>
+          </>
+          )}
         </div>
       </div>
       <div className="transport-bar" aria-label="Kontrol playback">
