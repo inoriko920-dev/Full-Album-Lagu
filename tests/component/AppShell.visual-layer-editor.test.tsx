@@ -730,15 +730,10 @@ describe("T11-W05-07 frozen remediation: editor-hosted Trial, scoped Save and ca
         screen.getByRole("button", { name: /Minimal Biru/ }),
       ).toBeInTheDocument(),
     );
-    await waitFor(() =>
-      expect(
-        screen.getByRole("button", { name: "Coba Template" }),
-      ).toBeEnabled(),
-    );
+    const tryButton = screen.getByRole("button", { name: "Coba Template" });
+    await waitFor(() => expect(tryButton).toBeEnabled());
     fireEvent.click(screen.getByRole("button", { name: /Minimal Biru/ }));
-    expect(
-      screen.getByRole("button", { name: "Coba Template" }),
-    ).toBeEnabled();
+    expect(tryButton).toBeEnabled();
     expect(screen.getByLabelText("Detail Template")).toHaveTextContent(
       "Minimal Biru",
     );
