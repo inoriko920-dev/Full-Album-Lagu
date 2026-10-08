@@ -329,6 +329,52 @@ describe("MediaIntakeService", () => {
     expect(result.summary.cancelled).toBeGreaterThan(0);
     expect("project" in result).toBe(false);
   });
+  it("keeps main-picker-authorized ready sources after 25 imports but releases on revoke", async () => {
+    const track = source(0, "01 Album.mp3");
+    const service = new MediaIntakeService(
+      new FakeDiscovery([track]),
+      {
+        async probe() {
+          return { status: "ready", metadata: { durationMs: 1000 } };
+        },
+      },
+      sequentialIds("many"),
+    );
+    let project = createEmptyProject("project-many");
+    let firstBatchId = "";
+    let firstAssetId = "";
+    let untrustedBatchId = "";
+    for (let index = 0; index < 25; index += 1) {
+      const batchId = service.start("discovery-1", project).batchId;
+      if (index === 0) firstBatchId = batchId;
+      if (index === 1) untrustedBatchId = batchId;
+      if (index !== 1) {
+        expect(
+          service.retainTrustedAudioBatch(batchId, project.projectId),
+        ).toBe(true);
+      }
+      const result = await waitForTerminal(service, batchId);
+      expect(result.status).toBe("completed");
+      if (result.status !== "completed") throw new Error("Not completed");
+      project = result.project;
+      if (index === 0) firstAssetId = project.mediaAssets?.[0]?.id ?? "";
+    }
+    expect(service.getStatus(firstBatchId).status).toBe("error");
+    expect(
+      service.getTrustedAudioSource(firstBatchId, "project-many", firstAssetId),
+    ).toEqual(track);
+    expect(
+      service.getTrustedAudioSource(firstBatchId, "another-project", firstAssetId),
+    ).toBeNull();
+    expect(
+      service.getTrustedAudioSource(untrustedBatchId, "project-many", "many-4"),
+    ).toBeNull();
+    service.releaseTrustedAudioBatch(firstBatchId);
+    expect(
+      service.getTrustedAudioSource(firstBatchId, "project-many", firstAssetId),
+    ).toBeNull();
+  });
+
   it("only grants main-verified, ready audio assets after a completed import", async () => {
     const good = source(0, "01 Good.mp3");
     const invalid = source(1, "02 Invalid.mp3");

@@ -9,6 +9,8 @@ export interface TrustedIntakeLookup {
     projectId: string,
     assetId: string,
   ): MediaSourceDescriptor | null;
+  retainTrustedAudioBatch?(batchId: string, projectId: string): boolean;
+  releaseTrustedAudioBatch?(batchId: string): void;
 }
 
 interface BoundIntake {
@@ -59,6 +61,9 @@ export class PreviewAudioAccessService {
     projectId: string,
   ): boolean {
     if (this.selected.get(discoveryBatchId) !== ownerWebContentsId) {
+      return false;
+    }
+    if (this.sources.retainTrustedAudioBatch?.(batchId, projectId) === false) {
       return false;
     }
 
@@ -168,6 +173,7 @@ export class PreviewAudioAccessService {
     for (const [batchId, bound] of this.intake) {
       if (bound.ownerWebContentsId === ownerWebContentsId) {
         this.intake.delete(batchId);
+        this.sources.releaseTrustedAudioBatch?.(batchId);
       }
     }
     for (const [batchId, entry] of this.relink) {
