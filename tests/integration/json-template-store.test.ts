@@ -135,9 +135,11 @@ describe("T11-W05-03 main-owned local template store", () => {
       "utf8",
     );
     expect(Buffer.byteLength(persisted, "utf8")).toBe(expectedBytes);
-    expect((await store.list()).some(
-      (entry) => entry.templateId === "large-unicode-scene",
-    )).toBe(true);
+    expect(
+      (await store.list()).some(
+        (entry) => entry.templateId === "large-unicode-scene",
+      ),
+    ).toBe(true);
     expect(await store.load("large-unicode-scene")).toEqual(largeTemplate);
   });
 
