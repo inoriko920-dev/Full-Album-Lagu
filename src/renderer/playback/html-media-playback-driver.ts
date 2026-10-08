@@ -25,6 +25,8 @@ export interface TrustedAudioBatch {
 
 export interface MediaElementPort {
   src: string;
+  /** Set BEFORE src: WebAudio otherwise silences cross-origin protocol media. */
+  crossOrigin?: string | null;
   currentTime: number;
   play(): Promise<void>;
   pause(): void;
@@ -334,6 +336,10 @@ export class HtmlMediaPlaybackDriver {
     try {
       // Attach the analyser to the very same element, never to a second
       // synthetic/demo audio player. Failure leaves preview sound usable.
+      // WebAudio MediaElementAudioSourceNode is mandated to output silence
+      // for non-CORS media from a different scheme. The private protocol only
+      // allows the current editor origin and a scoped main-issued token.
+      element.crossOrigin = "anonymous";
       this.spectrum?.attach(element as HTMLMediaElement);
       this.emitSpectrum();
       element.src = result.url;
