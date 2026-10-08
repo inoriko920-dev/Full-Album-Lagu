@@ -512,8 +512,15 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
 describe("T11-W05-07 live renderer wave stress and frozen safety", () => {
   beforeEach(() => {
     bridge.listTemplates = async () => ({
-      status: "ok", entries: [
-        { templateId: "minimal-biru", name: "Minimal Biru", category: "Minimal", origin: "built-in", readOnly: true },
+      status: "ok",
+      entries: [
+        {
+          templateId: "minimal-biru",
+          name: "Minimal Biru",
+          category: "Minimal",
+          origin: "built-in",
+          readOnly: true,
+        },
         ...Array.from({ length: 100 }, (_, i) => ({
           templateId: `stress-${String(i).padStart(3, "0")}`,
           name: `Stress Template ${String(i).padStart(3, "0")}`,
@@ -524,9 +531,13 @@ describe("T11-W05-07 live renderer wave stress and frozen safety", () => {
       ],
     });
     bridge.loadTemplate = async (id) => ({
-      status: "ok", template: { ...minimalTemplate, templateId: id },
+      status: "ok",
+      template: { ...minimalTemplate, templateId: id },
     });
-    bridge.saveTemplate = async (template) => ({ status: "ok", templateId: template.templateId });
+    bridge.saveTemplate = async (template) => ({
+      status: "ok",
+      templateId: template.templateId,
+    });
   });
 
   it("projects 128 actual scene layers into frozen AppShell and supports selection and one history edit", async () => {
@@ -537,44 +548,79 @@ describe("T11-W05-07 live renderer wave stress and frozen safety", () => {
     getStartupProjectMock.mockResolvedValue({
       status: "loaded",
       project: {
-        schemaVersion: 1, projectId: "stress-live", name: "Stress Live", revision: 0,
+        schemaVersion: 1,
+        projectId: "stress-live",
+        name: "Stress Live",
+        revision: 0,
         tracks: [],
         visualScene: { sceneVersion: 1, layers },
       },
       location: { kind: "known-path" },
     });
     render(<AppShell />);
-    await waitFor(() => expect(shell().getAttribute("data-project-id")).toBe("stress-live"));
+    await waitFor(() =>
+      expect(shell().getAttribute("data-project-id")).toBe("stress-live"),
+    );
     openLayerTab();
-    expect(screen.getByLabelText("Daftar layer").querySelectorAll("[data-layer-id]")).toHaveLength(128);
-    expect(screen.getByLabelText("Preview visual statis").querySelectorAll("[data-scene-layer-id]")).toHaveLength(128);
-    fireEvent.click(screen.getByRole("button", { name: "Pilih Layer Stress 063" }));
-    expect(shell().getAttribute("data-selected-layer-id")).toBe("stress-layer-63");
+    expect(
+      screen.getByLabelText("Daftar layer").querySelectorAll("[data-layer-id]"),
+    ).toHaveLength(128);
+    expect(
+      screen
+        .getByLabelText("Preview visual statis")
+        .querySelectorAll("[data-scene-layer-id]"),
+    ).toHaveLength(128);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Pilih Layer Stress 063" }),
+    );
+    expect(shell().getAttribute("data-selected-layer-id")).toBe(
+      "stress-layer-63",
+    );
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
     fireEvent.click(screen.getByRole("tab", { name: "Inspector" }));
-    fireEvent.change(screen.getByLabelText("Perataan"), { target: { value: "right" } });
+    fireEvent.change(screen.getByLabelText("Perataan"), {
+      target: { value: "right" },
+    });
     expect(shell().getAttribute("data-project-dirty")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
-    expect(screen.getByRole("complementary", { name: "Gemini Agent" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("complementary", { name: "Gemini Agent" }),
+    ).toBeInTheDocument();
   }, 30000);
 
   it("filters and trials 100 user templates locally without freezing or mutating canonical history", async () => {
     render(<AppShell />);
     fireEvent.click(screen.getByRole("button", { name: "Template" }));
     const grid = await screen.findByLabelText("Daftar Template");
-    await waitFor(() => expect(within(grid).getAllByRole("button")).toHaveLength(101));
-    fireEvent.change(screen.getByLabelText("Cari Template"), { target: { value: "Stress Template 099" } });
+    await waitFor(() =>
+      expect(within(grid).getAllByRole("button")).toHaveLength(101),
+    );
+    fireEvent.change(screen.getByLabelText("Cari Template"), {
+      target: { value: "Stress Template 099" },
+    });
     expect(within(grid).getAllByRole("button")).toHaveLength(1);
-    fireEvent.click(within(grid).getByRole("button", { name: /Stress Template 099/ }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Coba Template" })).toBeEnabled());
+    fireEvent.click(
+      within(grid).getByRole("button", { name: /Stress Template 099/ }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Coba Template" }),
+      ).toBeEnabled(),
+    );
     fireEvent.click(screen.getByRole("button", { name: "Coba Template" }));
-    expect(screen.getByText("Mode Coba — perubahan belum disimpan ke proyek.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Mode Coba — perubahan belum disimpan ke proyek."),
+    ).toBeInTheDocument();
     expect(shell().getAttribute("data-project-revision")).toBe("0");
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
-    fireEvent.click(screen.getByRole("button", { name: "Kembali ke Sebelumnya" }));
+    fireEvent.click(
+      screen.getByRole("button", { name: "Kembali ke Sebelumnya" }),
+    );
     fireEvent.click(screen.getByRole("button", { name: "Kembali ke Editor" }));
     expect(shell().getAttribute("data-project-revision")).toBe("0");
-    expect(screen.getByRole("complementary", { name: "Gemini Agent" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("complementary", { name: "Gemini Agent" }),
+    ).toBeInTheDocument();
   }, 30000);
 });

@@ -223,5 +223,15 @@
   }
 }
 
-.template-browser__save-thumbnail { width: 196px; max-width: 100%; aspect-ratio: 16/9; border-radius: 6px; background: #10253d; border: 1px solid #cbd7e7; overflow: hidden; }
-.template-browser__save-thumbnail .static-scene-preview { height: 100%; }
+.template-browser__save-thumbnail {
+  width: 196px;
+  max-width: 100%;
+  aspect-ratio: 16/9;
+  border-radius: 6px;
+  background: #10253d;
+  border: 1px solid #cbd7e7;
+  overflow: hidden;
+}
+.template-browser__save-thumbnail .static-scene-preview {
+  height: 100%;
+}
