@@ -196,7 +196,11 @@ export class HtmlMediaPlaybackDriver {
     ) {
       return;
     }
-    if (result.status !== "granted") {
+    if (
+      result.status !== "granted" ||
+      !/^lfa-preview:\/\/media\/[0-9a-f]{64}$/.test(result.url)
+    ) {
+      // Accept only opaque private grants; never raw file or web URLs.
       this.fail(effect.generation);
       return;
     }

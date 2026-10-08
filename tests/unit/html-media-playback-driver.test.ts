@@ -263,6 +263,31 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(failure.src).toBe("");
   });
 
+  it("rejects file and network URLs even if a grant caller returns granted", async () => {
+    const created: FakeMedia[] = [];
+    for (const unsafe of [
+      "file:///C:/secret.mp3",
+      "https://example.test/track.mp3",
+      "lfa-preview://media/short-token",
+    ]) {
+      const driver = new HtmlMediaPlaybackDriver(
+        project(),
+        trusted,
+        async () => ({ status: "granted", url: unsafe }),
+        () => {
+          const audio = new FakeMedia();
+          created.push(audio);
+          return audio;
+        },
+      );
+      driver.play();
+      await flush();
+      expect(driver.snapshot.phase).toBe("error");
+      driver.close();
+    }
+    expect(created).toHaveLength(0);
+  });
+
   it("discards late URL response after Stop and does not resurrect sound", async () => {
     let resolve!: (value: PreviewAudioIssueResult) => void;
     const deferred = new Promise<PreviewAudioIssueResult>((finish) => {
