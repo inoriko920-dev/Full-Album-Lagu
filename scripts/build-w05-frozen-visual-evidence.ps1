@@ -36,7 +36,7 @@ foreach ($screen in $mapping.Keys) {
     $w = $ref.Width
     $h = $ref.Height
     $header = 32
-    $comparison = New-Object System.Drawing.Bitmap (($w * 2)), (($h + $header))
+    $comparison = [System.Drawing.Bitmap]::new(($w * 2), ($h + $header))
     $g = [System.Drawing.Graphics]::FromImage($comparison)
     try {
       $g.Clear([System.Drawing.Color]::White)
