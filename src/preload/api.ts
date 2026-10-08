@@ -69,7 +69,27 @@ import {
   startupProjectResultSchema,
 } from "../core/contracts/project-persistence";
 
+import {
+  TEMPLATE_LIST_CHANNEL, TEMPLATE_LOAD_CHANNEL, TEMPLATE_SAVE_CHANNEL,
+  templateListResultSchema, templateLoadRequestSchema, templateLoadResultSchema,
+  templateSaveRequestSchema, templateSaveResultSchema,
+} from "../core/contracts/template-ipc";
+
 export const lfaBridge: LfaBridge = {
+  async listTemplates() {
+    const payload: unknown = await ipcRenderer.invoke(TEMPLATE_LIST_CHANNEL);
+    return templateListResultSchema.parse(payload);
+  },
+  async loadTemplate(templateId) {
+    const validated = templateLoadRequestSchema.parse({ templateId });
+    const payload: unknown = await ipcRenderer.invoke(TEMPLATE_LOAD_CHANNEL, validated);
+    return templateLoadResultSchema.parse(payload);
+  },
+  async saveTemplate(template) {
+    const validated = templateSaveRequestSchema.parse({ template });
+    const payload: unknown = await ipcRenderer.invoke(TEMPLATE_SAVE_CHANNEL, validated);
+    return templateSaveResultSchema.parse(payload);
+  },
   async getFoundationInfo() {
     const payload: unknown = await ipcRenderer.invoke(FOUNDATION_INFO_CHANNEL);
     return foundationInfoSchema.parse(payload);
