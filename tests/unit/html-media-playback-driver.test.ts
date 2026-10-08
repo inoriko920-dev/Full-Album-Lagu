@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { LiveSpectrumRuntime } from "../../src/renderer/playback/live-spectrum-runtime";
 import type { ProjectDocument } from "../../src/core/domain/project-document";
 import type { PreviewAudioIssueResult } from "../../src/core/contracts/preview-audio-ipc";
 import {
@@ -524,6 +525,116 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(created).toHaveLength(0);
     expect(driver.snapshot.phase).toBe("ready");
     expect(driver.snapshot.albumTimeMs).toBe(0);
+    driver.close();
+  });
+
+  it("samples the SAME current media with genuine FFT and zeroes after pause/seek/close", async () => {
+    const media: FakeMedia[] = [];
+    const graphSources: unknown[] = [];
+    let disconnected = 0;
+    let closed = 0;
+    const bins = new Uint8Array(1024);
+    bins[20] = 235;
+    const runtime = new LiveSpectrumRuntime(() => {
+      const analyser = {
+        fftSize: 0,
+        smoothingTimeConstant: 0,
+        frequencyBinCount: 1024,
+        getByteFrequencyData(target: Uint8Array) {
+          target.set(bins);
+        },
+        connect() {},
+        disconnect() {
+          disconnected += 1;
+        },
+      };
+      return {
+        destination: {},
+        createAnalyser: () => analyser,
+        createMediaElementSource(element: unknown) {
+          graphSources.push(element);
+          return {
+            connect() {},
+            disconnect() {
+              disconnected += 1;
+            },
+          };
+        },
+        async resume() {},
+        async close() {
+          closed += 1;
+        },
+      } as unknown as AudioContext;
+    });
+    const spectrumEvents: number[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      project(),
+      trusted,
+      async () => granted,
+      () => {
+        const audio = new FakeMedia();
+        media.push(audio);
+        return audio;
+      },
+      () => undefined,
+      Date.now,
+      undefined,
+      runtime,
+      (value) => {
+        spectrumEvents.push(Math.max(...value.barLevels));
+      },
+    );
+    driver.play();
+    await flush();
+    expect(graphSources).toEqual([media[0]]);
+    media[0]!.emit("loadedmetadata");
+    await flush();
+    media[0]!.currentTime = 0.2;
+    media[0]!.emit("timeupdate");
+    expect(driver.sampleSpectrum()).toMatchObject({ active: true });
+    expect(Math.max(...driver.sampleSpectrum()!.barLevels)).toBeGreaterThan(0.7);
+
+    driver.pause();
+    expect(driver.sampleSpectrum()).toMatchObject({ active: false });
+    expect(Math.max(...driver.sampleSpectrum()!.barLevels)).toBe(0);
+    driver.seek(1200);
+    await flush();
+    expect(graphSources).toEqual([media[0], media[1]]);
+    expect(disconnected).toBeGreaterThanOrEqual(2);
+    media[0]!.emit("timeupdate");
+    media[0]!.emit("ended");
+    expect(driver.snapshot.phase).toBe("loading");
+    expect(Math.max(...driver.sampleSpectrum()!.barLevels)).toBe(0);
+    driver.close();
+    expect(Math.max(...driver.sampleSpectrum()!.barLevels)).toBe(0);
+    expect(closed).toBeGreaterThanOrEqual(2);
+    expect(spectrumEvents.some((value) => value > 0.7)).toBe(true);
+    expect(spectrumEvents.at(-1)).toBe(0);
+  });
+
+  it("allows sound playback when AudioContext cannot be created (no fake bars)", async () => {
+    const audio = new FakeMedia();
+    const runtime = new LiveSpectrumRuntime(() => {
+      throw new Error("No usable device");
+    });
+    const driver = new HtmlMediaPlaybackDriver(
+      project(),
+      trusted,
+      async () => granted,
+      () => audio,
+      () => undefined,
+      Date.now,
+      undefined,
+      runtime,
+    );
+    driver.play();
+    await flush();
+    audio.emit("loadedmetadata");
+    await flush();
+    expect(driver.snapshot.phase).toBe("playing");
+    expect(audio.playCount).toBe(1);
+    expect(driver.sampleSpectrum()?.active).toBe(false);
+    expect(Math.max(...driver.sampleSpectrum()!.barLevels)).toBe(0);
     driver.close();
   });
 });
