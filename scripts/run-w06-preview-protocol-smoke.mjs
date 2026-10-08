@@ -121,6 +121,16 @@ async function main() {
       );
     }
   }
+  if (
+    report.driver?.mainIssuedGrant !== true ||
+    report.driver?.pauseSeekNextPrevious !== true ||
+    report.driver?.relinkRevoked !== true ||
+    report.driver?.projectSwitchStopped !== true ||
+    report.driver?.closeStopped !== true ||
+    report.driver?.createdElements < 4
+  ) {
+    throw new Error("Real packaged T03 HtmlMediaPlaybackDriver proof failed.");
+  }
   const after = await Promise.all(audioPaths.map(fingerprint));
   if (JSON.stringify(before) !== JSON.stringify(after)) {
     throw new Error("Preview audio process modified source file fingerprints.");

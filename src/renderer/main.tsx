@@ -11,3 +11,14 @@ createRoot(rootElement).render(
     <AppShell />
   </StrictMode>,
 );
+
+
+// Only the CI-authorized packaged audio probe loads this test helper.
+if (
+  window.location.protocol === "file:" &&
+  new URLSearchParams(window.location.search).get("w06-driver") === "1"
+) {
+  void import("./playback/w06-packaged-driver-proof").then(({ installW06DriverProof }) => {
+    installW06DriverProof();
+  });
+}
