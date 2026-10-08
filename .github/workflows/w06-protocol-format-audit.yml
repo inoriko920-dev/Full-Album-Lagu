@@ -1,0 +1,22 @@
+name: W06 protocol formatting audit
+on:
+  pull_request:
+    paths:
+      - "tests/unit/preview-audio-protocol.test.ts"
+      - ".github/workflows/w06-protocol-format-audit.yml"
+permissions:
+  contents: read
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Print exact formatting diff without pushing
+        run: |
+          npx prettier --write tests/unit/preview-audio-protocol.test.ts
+          git diff -- tests/unit/preview-audio-protocol.test.ts
