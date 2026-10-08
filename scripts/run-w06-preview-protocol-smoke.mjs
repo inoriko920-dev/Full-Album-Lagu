@@ -100,6 +100,22 @@ async function main() {
   if (!report.success || !report.wav?.decoded || !report.mp3?.decoded) {
     throw new Error("Packaged Windows failed MP3/WAV preview decoding.");
   }
+  for (const [index, kind] of ["wav", "mp3"].entries()) {
+    const result = report[kind];
+    const expectedBytes = before[index]?.size;
+    if (
+      !Number.isSafeInteger(result?.streamedBytes) ||
+      result.streamedBytes <= 0 ||
+      result.streamedBytes !== expectedBytes ||
+      result.range206 !== true ||
+      result.range416 !== true ||
+      result.crossProjectBlocked !== true
+    ) {
+      throw new Error(
+        `Invalid real ${kind} stream proof: ${result?.streamedBytes} vs ${expectedBytes}`,
+      );
+    }
+  }
   const after = await Promise.all(audioPaths.map(fingerprint));
   if (JSON.stringify(before) !== JSON.stringify(after)) {
     throw new Error("Preview audio process modified source file fingerprints.");
