@@ -22,9 +22,7 @@ export interface StaticScenePreviewOptions {
   };
 }
 
-export interface StaticSceneLayer extends ResolvedVisualLayer {
-  selected: boolean;
-}
+export type StaticSceneLayer = ResolvedVisualLayer & { selected: boolean };
 
 export interface StaticSceneLayerListItem {
   id: string;
