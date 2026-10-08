@@ -93,6 +93,7 @@ async function main() {
     throw new Error("Real packaged codec smoke must run on Windows.");
   }
   const audioPaths = await prepareAudioFiles();
+  await mkdir(join(root, "user-data"), { recursive: true });
   const before = await Promise.all(audioPaths.map(fingerprint));
   const launch = await launchPackaged(audioPaths);
   const report = JSON.parse(await readFile(evidence, "utf8"));
