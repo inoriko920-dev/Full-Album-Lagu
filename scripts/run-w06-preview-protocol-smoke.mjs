@@ -109,7 +109,12 @@ async function main() {
       result.streamedBytes !== expectedBytes ||
       result.range206 !== true ||
       result.range416 !== true ||
-      result.crossProjectBlocked !== true
+      result.crossProjectBlocked !== true ||
+      result.nativePlayback !== true ||
+      !Number.isFinite(result.playbackProgressMs) ||
+      result.playbackProgressMs < 25 ||
+      !Number.isFinite(result.seekPositionMs) ||
+      result.seekPositionMs < 0
     ) {
       throw new Error(
         `Invalid real ${kind} stream proof: ${result?.streamedBytes} vs ${expectedBytes}`,
