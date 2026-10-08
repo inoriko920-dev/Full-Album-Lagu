@@ -1312,16 +1312,24 @@ export function AppShell() {
   );
   const visualModel = useMemo(
     () =>
-      buildStaticScenePreview(projectSession.templateTrialProject ?? projectSession.project, {
-        ...(selectedTrackIdState === null
-          ? {}
-          : { selectedTrackId: selectedTrackIdState }),
-        selectedLayerId: visualUiState.selectedLayerId,
-        ...(visualUiState.gesturePreview === null
-          ? {}
-          : { gesturePreview: visualUiState.gesturePreview }),
-      }),
-    [projectSession.project, projectSession.templateTrialProject, selectedTrackIdState, visualUiState],
+      buildStaticScenePreview(
+        projectSession.templateTrialProject ?? projectSession.project,
+        {
+          ...(selectedTrackIdState === null
+            ? {}
+            : { selectedTrackId: selectedTrackIdState }),
+          selectedLayerId: visualUiState.selectedLayerId,
+          ...(visualUiState.gesturePreview === null
+            ? {}
+            : { gesturePreview: visualUiState.gesturePreview }),
+        },
+      ),
+    [
+      projectSession.project,
+      projectSession.templateTrialProject,
+      selectedTrackIdState,
+      visualUiState,
+    ],
   );
 
   const cancelVisualLayerGesture = projectSession.cancelVisualLayerGesture;

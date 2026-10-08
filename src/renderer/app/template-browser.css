@@ -271,41 +271,77 @@
 .template-browser__category-rail button:focus-visible {
   outline: 2px solid #2563eb;
 }
-.template-browser__catalog { padding: 16px; }
-.template-browser__filters { grid-template-columns: minmax(0,1fr) 132px; }
+.template-browser__catalog {
+  padding: 16px;
+}
+.template-browser__filters {
+  grid-template-columns: minmax(0, 1fr) 132px;
+}
 .template-browser__item .template-browser__thumbnail {
   background:
     radial-gradient(circle at 72% 36%, #ffdc8d 0 12%, transparent 13%),
     linear-gradient(165deg, #6aa4dc 0%, #f1aa91 53%, #163a67 100%);
 }
 .template-browser__item[data-category="Premium"] .template-browser__thumbnail,
-.template-browser__item[data-category="Classic Album"] .template-browser__thumbnail {
-  background: radial-gradient(ellipse at 60% 52%, #ffd386 0 9%, transparent 11%), linear-gradient(135deg,#271629,#975c36 51%,#101a31);
+.template-browser__item[data-category="Classic Album"]
+  .template-browser__thumbnail {
+  background:
+    radial-gradient(ellipse at 60% 52%, #ffd386 0 9%, transparent 11%),
+    linear-gradient(135deg, #271629, #975c36 51%, #101a31);
 }
 .template-browser__item[data-category="Neon"] .template-browser__thumbnail,
-.template-browser__item[data-category="Dark Studio"] .template-browser__thumbnail {
-  background: radial-gradient(ellipse at 48% 48%, #33c0ed5e, transparent 40%), linear-gradient(130deg,#080e31,#753fe0 46%,#0c2857);
+.template-browser__item[data-category="Dark Studio"]
+  .template-browser__thumbnail {
+  background:
+    radial-gradient(ellipse at 48% 48%, #33c0ed5e, transparent 40%),
+    linear-gradient(130deg, #080e31, #753fe0 46%, #0c2857);
 }
 .template-browser__item[data-category="Ambient"] .template-browser__thumbnail,
-.template-browser__item[data-category="Light Clean"] .template-browser__thumbnail {
-  background: radial-gradient(ellipse at 70% 28%,#fef3d6,transparent 33%),linear-gradient(140deg,#8ac3cc,#e3b3b2 50%,#637b95);
+.template-browser__item[data-category="Light Clean"]
+  .template-browser__thumbnail {
+  background:
+    radial-gradient(ellipse at 70% 28%, #fef3d6, transparent 33%),
+    linear-gradient(140deg, #8ac3cc, #e3b3b2 50%, #637b95);
 }
 .template-browser__item[data-category="Retro"] .template-browser__thumbnail,
-.template-browser__item[data-category="Motion Editor"] .template-browser__thumbnail {
-  background: radial-gradient(circle at 68% 50%,#ee4786 0 12%,transparent 14%),linear-gradient(135deg,#24134d,#884cb2 49%,#12305a);
+.template-browser__item[data-category="Motion Editor"]
+  .template-browser__thumbnail {
+  background:
+    radial-gradient(circle at 68% 50%, #ee4786 0 12%, transparent 14%),
+    linear-gradient(135deg, #24134d, #884cb2 49%, #12305a);
 }
 .template-browser__thumbnail::before {
   content: "";
   position: absolute;
   inset: 57% 0 0;
   background: #0e3153;
-  opacity: .6;
-  clip-path: polygon(0 45%,13% 17%,29% 53%,43% 9%,57% 40%,70% 15%,83% 36%,100% 8%,100% 100%,0 100%);
+  opacity: 0.6;
+  clip-path: polygon(
+    0 45%,
+    13% 17%,
+    29% 53%,
+    43% 9%,
+    57% 40%,
+    70% 15%,
+    83% 36%,
+    100% 8%,
+    100% 100%,
+    0 100%
+  );
 }
 .template-browser__thumbnail-art,
-.template-browser__thumbnail-line { z-index: 1; }
-.template-browser__thumbnail-art { font-size: 19px; opacity: .64; }
-.template-browser__save-dialog { width: min(92vw, 560px); max-height: 87vh; overflow: auto; }
+.template-browser__thumbnail-line {
+  z-index: 1;
+}
+.template-browser__thumbnail-art {
+  font-size: 19px;
+  opacity: 0.64;
+}
+.template-browser__save-dialog {
+  width: min(92vw, 560px);
+  max-height: 87vh;
+  overflow: auto;
+}
 .template-browser__save-scope {
   border: 1px solid #d8e5f3;
   border-radius: 8px;
@@ -328,13 +364,34 @@
   gap: 9px !important;
   cursor: pointer;
 }
-.template-browser__save-scope-item input { min-width: 14px; margin-top: 3px; }
-.template-browser__save-scope-item span { display: flex; flex-direction: column; gap: 3px; }
-.template-browser__save-scope-item small { color: #718197; font-weight: 400; }
-.template-browser__save-scope > small { grid-column: 1 / -1; font-size: 11px; color: #66788c; }
-.template-browser--save-dialog { background: transparent; pointer-events: none; }
-.template-browser--save-dialog .template-browser__window { display: none; }
-.template-browser--save-dialog .template-browser__dialog-backdrop { pointer-events: auto; }
+.template-browser__save-scope-item input {
+  min-width: 14px;
+  margin-top: 3px;
+}
+.template-browser__save-scope-item span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.template-browser__save-scope-item small {
+  color: #718197;
+  font-weight: 400;
+}
+.template-browser__save-scope > small {
+  grid-column: 1 / -1;
+  font-size: 11px;
+  color: #66788c;
+}
+.template-browser--save-dialog {
+  background: transparent;
+  pointer-events: none;
+}
+.template-browser--save-dialog .template-browser__window {
+  display: none;
+}
+.template-browser--save-dialog .template-browser__dialog-backdrop {
+  pointer-events: auto;
+}
 
 .template-trial-overlay {
   position: fixed;
@@ -360,9 +417,22 @@
   gap: 12px;
   padding: 9px 13px;
 }
-.template-trial-overlay__banner strong { display: block; font-size: 12px; color: #145393; }
-.template-trial-overlay__banner small { display: block; font-size: 10px; color: #55728e; }
-.template-trial-overlay__controls { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.template-trial-overlay__banner strong {
+  display: block;
+  font-size: 12px;
+  color: #145393;
+}
+.template-trial-overlay__banner small {
+  display: block;
+  font-size: 10px;
+  color: #55728e;
+}
+.template-trial-overlay__controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
 .template-trial-overlay__gallery {
   pointer-events: auto;
   position: absolute;
@@ -375,19 +445,58 @@
   background: #fff;
   box-shadow: 0 8px 22px #142c4c2e;
 }
-.template-trial-overlay__gallery > strong { font-size: 12px; display: block; }
-.template-trial-overlay__gallery > small { font-size: 10px; color: #6e7f96; }
-.template-trial-overlay__gallery-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 7px; margin-top: 12px; }
-.template-trial-overlay__gallery-card { min-width: 0; border: 1px solid #dbe5ef; border-radius: 5px; padding: 3px; }
-.template-trial-overlay__gallery-card[aria-current="true"] { border-color: #2563eb; }
-.template-trial-overlay__gallery-thumb {
-  aspect-ratio: 16 / 9; border-radius: 3px; display: grid; place-items: center;
-  background: linear-gradient(135deg,#122f58,#7e9fdc 55%,#e8a7aa); color: #fff;
+.template-trial-overlay__gallery > strong {
+  font-size: 12px;
+  display: block;
 }
-.template-trial-overlay__gallery-card small { display: block; font-size: 9px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.template-trial-overlay__gallery p { font-size: 10px; line-height: 1.5; color: #687d96; }
+.template-trial-overlay__gallery > small {
+  font-size: 10px;
+  color: #6e7f96;
+}
+.template-trial-overlay__gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 12px;
+}
+.template-trial-overlay__gallery-card {
+  min-width: 0;
+  border: 1px solid #dbe5ef;
+  border-radius: 5px;
+  padding: 3px;
+}
+.template-trial-overlay__gallery-card[aria-current="true"] {
+  border-color: #2563eb;
+}
+.template-trial-overlay__gallery-thumb {
+  aspect-ratio: 16 / 9;
+  border-radius: 3px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #122f58, #7e9fdc 55%, #e8a7aa);
+  color: #fff;
+}
+.template-trial-overlay__gallery-card small {
+  display: block;
+  font-size: 9px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.template-trial-overlay__gallery p {
+  font-size: 10px;
+  line-height: 1.5;
+  color: #687d96;
+}
 @media (max-width: 1024px) {
-  .template-browser__body { grid-template-columns: 140px minmax(300px,1fr) minmax(300px,40%); }
-  .template-trial-overlay__banner { left: 19%; right: 19%; }
-  .template-trial-overlay__gallery { right: 19%; }
+  .template-browser__body {
+    grid-template-columns: 140px minmax(300px, 1fr) minmax(300px, 40%);
+  }
+  .template-trial-overlay__banner {
+    left: 19%;
+    right: 19%;
+  }
+  .template-trial-overlay__gallery {
+    right: 19%;
+  }
 }
