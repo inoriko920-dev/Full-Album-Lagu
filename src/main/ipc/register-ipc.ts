@@ -258,19 +258,22 @@ export function registerIpcHandlers(
     }
   });
 
-  ipcMain.handle(PREVIEW_AUDIO_ISSUE_CHANNEL, async (event, payload: unknown) => {
-    const request = previewAudioIssueRequestSchema.safeParse(payload);
-    if (!request.success || !projectDependencies.previewAudioAccess) {
-      return previewAudioIssueResultSchema.parse({ status: "blocked" });
-    }
-    const url = await projectDependencies.previewAudioAccess.issue({
-      ...request.data,
-      ownerWebContentsId: event.sender.id,
-    });
-    return previewAudioIssueResultSchema.parse(
-      url === null ? { status: "blocked" } : { status: "granted", url },
-    );
-  });
+  ipcMain.handle(
+    PREVIEW_AUDIO_ISSUE_CHANNEL,
+    async (event, payload: unknown) => {
+      const request = previewAudioIssueRequestSchema.safeParse(payload);
+      if (!request.success || !projectDependencies.previewAudioAccess) {
+        return previewAudioIssueResultSchema.parse({ status: "blocked" });
+      }
+      const url = await projectDependencies.previewAudioAccess.issue({
+        ...request.data,
+        ownerWebContentsId: event.sender.id,
+      });
+      return previewAudioIssueResultSchema.parse(
+        url === null ? { status: "blocked" } : { status: "granted", url },
+      );
+    },
+  );
 
   ipcMain.handle(FOUNDATION_INFO_CHANNEL, () =>
     foundationInfoSchema.parse({

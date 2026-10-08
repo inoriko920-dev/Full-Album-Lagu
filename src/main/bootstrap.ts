@@ -116,15 +116,22 @@ function createMainWindow(): BrowserWindow {
   });
 
   const ownerWebContentsId = window.webContents.id;
-  window.webContents.session.protocol.handle(PREVIEW_AUDIO_SCHEME, (request) => {
-    const context = previewAudioAccess.context(ownerWebContentsId);
-    return context === null
-      ? new Response(null, {
-          status: 403,
-          headers: { "Cache-Control": "no-store" },
-        })
-      : createPreviewAudioProtocolResponse(request, context, previewAudioStore);
-  });
+  window.webContents.session.protocol.handle(
+    PREVIEW_AUDIO_SCHEME,
+    (request) => {
+      const context = previewAudioAccess.context(ownerWebContentsId);
+      return context === null
+        ? new Response(null, {
+            status: 403,
+            headers: { "Cache-Control": "no-store" },
+          })
+        : createPreviewAudioProtocolResponse(
+            request,
+            context,
+            previewAudioStore,
+          );
+    },
+  );
   window.webContents.on("did-navigate", () => {
     previewAudioAccess.revokeWindow(ownerWebContentsId);
   });

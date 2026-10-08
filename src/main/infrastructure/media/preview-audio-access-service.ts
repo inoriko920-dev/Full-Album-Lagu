@@ -40,7 +40,10 @@ export class PreviewAudioAccessService {
     private readonly sources: TrustedIntakeLookup,
   ) {}
 
-  trustPickerDiscovery(ownerWebContentsId: number, discoveryBatchId: string): void {
+  trustPickerDiscovery(
+    ownerWebContentsId: number,
+    discoveryBatchId: string,
+  ): void {
     this.selected.set(discoveryBatchId, ownerWebContentsId);
   }
 
@@ -66,9 +69,7 @@ export class PreviewAudioAccessService {
     ownerWebContentsId: number;
   } | null {
     const projectId = this.activeProjects.get(ownerWebContentsId);
-    return projectId === undefined
-      ? null
-      : { projectId, ownerWebContentsId };
+    return projectId === undefined ? null : { projectId, ownerWebContentsId };
   }
 
   async issue(request: PreviewAudioIssueRequest): Promise<string | null> {
@@ -100,7 +101,8 @@ export class PreviewAudioAccessService {
       // A slow filesystem probe must never resurrect a revoked project.
       if (
         this.intake.get(request.batchId) !== bound ||
-        this.activeProjects.get(request.ownerWebContentsId) !== request.projectId
+        this.activeProjects.get(request.ownerWebContentsId) !==
+          request.projectId
       ) {
         this.store.revoke(token);
         return null;
