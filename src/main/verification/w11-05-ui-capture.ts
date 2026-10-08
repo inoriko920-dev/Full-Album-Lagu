@@ -17,6 +17,20 @@ export async function captureW1105State(
           if (value) return value;
           await new Promise((resolveWait) => setTimeout(resolveWait, 65));
         }
+        if (reason === "nine local templates") {
+          const catalog = await window.lfa.listTemplates().catch(error => ({
+            status: "exception", message: String(error),
+          }));
+          const browser = document.querySelector(".template-browser");
+          const alerts = Array.from(document.querySelectorAll('[role="alert"]')).map(el => el.textContent?.trim());
+          throw new Error("W05 local template diagnosis: " + JSON.stringify({
+            catalogStatus: catalog.status, catalogError: catalog.message,
+            catalogEntries: catalog.entries?.length ?? null,
+            browserMounted: !!browser,
+            gridCount: document.querySelectorAll(".template-browser__item").length,
+            alerts,
+          }));
+        }
         throw new Error("W05 UI probe timed out: " + reason);
       };
       const press = (label, scope = document) => {
