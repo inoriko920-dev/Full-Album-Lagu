@@ -1,4 +1,4 @@
-import { access } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import { spawnSync } from "node:child_process";
 import { resolve } from "node:path";
 
@@ -14,6 +14,30 @@ try {
 } catch {
   console.error(`Packaged executable not found: ${executable}`);
   process.exit(3);
+}
+
+const templateCatalogPath = resolve(
+  "out",
+  "win-unpacked",
+  "resources",
+  "templates",
+  "catalog.json",
+);
+try {
+  const templates = JSON.parse(await readFile(templateCatalogPath, "utf8"));
+  if (
+    !Array.isArray(templates) ||
+    templates.length !== 9 ||
+    !templates.some((entry) => entry.templateId === "minimal-biru")
+  ) {
+    throw new Error("Packaged template catalog is missing required starters.");
+  }
+} catch (error) {
+  console.error(
+    "Packaged template resource verification failed:",
+    error instanceof Error ? error.message : String(error),
+  );
+  process.exit(7);
 }
 
 const result = spawnSync(executable, ["--smoke-test"], {
