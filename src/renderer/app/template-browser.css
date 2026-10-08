@@ -534,20 +534,23 @@
   display: block;
   background: #fff;
 }
-.template-browser:not(.template-browser--save-dialog) .template-browser__window {
+.template-browser:not(.template-browser--save-dialog)
+  .template-browser__window {
   width: 100%;
   height: 100%;
   border: 0;
   border-radius: 0;
   box-shadow: none;
 }
-.template-browser:not(.template-browser--save-dialog) .template-browser__header {
+.template-browser:not(.template-browser--save-dialog)
+  .template-browser__header {
   flex: 0 0 auto;
   min-height: 58px;
   padding: 12px 20px;
   background: var(--surface);
 }
-.template-browser:not(.template-browser--save-dialog) .template-browser__body {
+.template-browser:not(.template-browser--save-dialog)
+  .template-browser__body {
   min-height: 0;
 }
 .template-trial-overlay {
