@@ -85,14 +85,12 @@ export class NodePreviewAudioLeaseStore {
     }
 
     const filePath = resolve(source.sourcePath);
-    const canonicalPath = await realpath(filePath);
-    if (
-      canonicalPath.toLowerCase() !== filePath.toLowerCase() ||
-      !(await lstat(filePath)).isFile()
-    ) {
+    // Reject a final-component symlink without rejecting legitimate Windows
+    // canonical path aliases (drive casing, long-path prefix, temp junctions).
+    if (!(await lstat(filePath)).isFile()) {
       throw new Error("Audio source cannot traverse a symbolic link.");
     }
-
+    const canonicalPath = await realpath(filePath);
     const info = await stat(canonicalPath);
     if (!info.isFile() || !Number.isSafeInteger(info.size) || info.size <= 0) {
       throw new Error("Audio source must be a non-empty regular file.");
