@@ -53,6 +53,9 @@ export function TemplateBrowser({
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
   const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [templateLoadError, setTemplateLoadError] = useState<string | null>(
+    null,
+  );
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [saveCategory, setSaveCategory] = useState<TemplateCategory>("Minimal");
@@ -191,16 +194,18 @@ export function TemplateBrowser({
         if (requestVersion.current !== version) return;
         templateLoadPending.current = false;
         if (result.status === "error") {
-          setCatalogError(result.message);
+          setTemplateLoadError(result.message);
         } else {
-          setCatalogError(null);
+          // A successful document load must not erase a catalog refresh
+          // warning from a separate, already-successful template save.
+          setTemplateLoadError(null);
           setSelectedTemplate(result.template);
         }
       })
       .catch(() => {
         if (requestVersion.current === version) {
           templateLoadPending.current = false;
-          setCatalogError("Template tidak dapat dimuat.");
+          setTemplateLoadError("Template tidak dapat dimuat.");
         }
       });
     return () => {
@@ -262,6 +267,7 @@ export function TemplateBrowser({
       : (nextVisible[0]?.templateId ?? null);
     if (nextId !== selectedId) {
       setSelectedTemplate(null);
+      setTemplateLoadError(null);
       setSelectedId(nextId);
     }
   }
@@ -482,6 +488,7 @@ export function TemplateBrowser({
                       setSavedMessage(null);
                       if (entry.templateId !== selectedId) {
                         setSelectedTemplate(null);
+                        setTemplateLoadError(null);
                         setSelectedId(entry.templateId);
                       } else if (
                         activeTemplate === null &&
@@ -551,9 +558,9 @@ export function TemplateBrowser({
                 </p>
               ) : null}
               {savedMessage ? <p role="status">{savedMessage}</p> : null}
-              {session.templateError || catalogError ? (
+              {session.templateError || catalogError || templateLoadError ? (
                 <p role="alert" className="template-browser__error">
-                  {session.templateError ?? catalogError}
+                  {session.templateError ?? catalogError ?? templateLoadError}
                 </p>
               ) : null}
               <div className="template-browser__actions">
