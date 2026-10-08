@@ -190,17 +190,48 @@ export function TemplateBrowser({
       ),
     [entries, filter, search],
   );
+  // Only a template currently visible in the local catalog may be previewed
+  // or tried. Filtering cannot leave a hidden/stale selection actionable.
+  const activeTemplate =
+    selectedTemplate?.templateId === selectedId &&
+    filtered.some((entry) => entry.templateId === selectedId)
+      ? selectedTemplate
+      : null;
+  const galleryEntries = useMemo(() => {
+    const initial = entries.slice(0, 6);
+    const chosen = entries.find((entry) => entry.templateId === selectedId);
+    return chosen && !initial.some((entry) => entry.templateId === chosen.templateId)
+      ? [...initial.slice(0, 5), chosen]
+      : initial;
+  }, [entries, selectedId]);
   const inTrial = session.templateTrialProject !== null;
   const previewSource: ProjectDocument =
     session.templateTrialProject ??
-    (selectedTemplate
-      ? { ...session.project, visualScene: selectedTemplate.scene }
+    (activeTemplate
+      ? { ...session.project, visualScene: activeTemplate.scene }
       : session.project);
   const preview = buildStaticScenePreview(
     previewSource,
     selectedTrackId === null ? {} : { selectedTrackId },
   );
   const categories: Filter[] = ["Semua", ...templateCategorySchema.options];
+
+  function updateVisibleSelection(nextFilter: Filter, nextSearch: string) {
+    const nextVisible = entries.filter(
+      (entry) =>
+        (nextFilter === "Semua" || entry.category === nextFilter) &&
+        entry.name
+          .toLocaleLowerCase("id")
+          .includes(nextSearch.trim().toLocaleLowerCase("id")),
+    );
+    const nextId = nextVisible.some((entry) => entry.templateId === selectedId)
+      ? selectedId
+      : (nextVisible[0]?.templateId ?? null);
+    if (nextId !== selectedId) {
+      setSelectedTemplate(null);
+      setSelectedId(nextId);
+    }
+  }
 
   function closeBrowser() {
     if (busy) return;
@@ -209,8 +240,8 @@ export function TemplateBrowser({
   }
 
   function tryTemplate() {
-    if (selectedTemplate === null || busy) return;
-    if (session.beginTemplateTrial(selectedTemplate)) onTrialStart();
+    if (activeTemplate === null || busy) return;
+    if (session.beginTemplateTrial(activeTemplate)) onTrialStart();
   }
 
   function revert() {
@@ -286,7 +317,7 @@ export function TemplateBrowser({
           <strong>Template Album</strong>
           <small>{selectedTemplate?.name ?? session.templateTrialName}</small>
           <div className="template-trial-overlay__gallery-grid">
-            {entries.slice(0, 6).map((entry) => (
+            {galleryEntries.map((entry) => (
               <div
                 key={entry.templateId}
                 className="template-trial-overlay__gallery-card"
@@ -354,7 +385,10 @@ export function TemplateBrowser({
                 type="button"
                 className={filter === category ? "is-active" : ""}
                 aria-pressed={filter === category}
-                onClick={() => setFilter(category)}
+                onClick={() => {
+                  setFilter(category);
+                  updateVisibleSelection(category, search);
+                }}
               >
                 {category}
               </button>
@@ -371,7 +405,11 @@ export function TemplateBrowser({
                   type="search"
                   aria-label="Cari Template"
                   value={search}
-                  onChange={(event) => setSearch(event.currentTarget.value)}
+                  onChange={(event) => {
+                    const nextSearch = event.currentTarget.value;
+                    setSearch(nextSearch);
+                    updateVisibleSelection(filter, nextSearch);
+                  }}
                   placeholder="Cari template lokal..."
                 />
               </label>
@@ -380,9 +418,11 @@ export function TemplateBrowser({
                 <select
                   aria-label="Kategori Template"
                   value={filter}
-                  onChange={(event) =>
-                    setFilter(event.currentTarget.value as Filter)
-                  }
+                  onChange={(event) => {
+                    const nextFilter = event.currentTarget.value as Filter;
+                    setFilter(nextFilter);
+                    updateVisibleSelection(nextFilter, search);
+                  }}
                 >
                   {categories.map((category) => (
                     <option key={category} value={category}>
@@ -444,19 +484,19 @@ export function TemplateBrowser({
               <StaticScenePreview
                 model={preview}
                 templateArtwork={
-                  selectedTemplate === null
+                  activeTemplate === null
                     ? undefined
                     : {
-                        templateId: selectedTemplate.templateId,
-                        category: selectedTemplate.category,
+                        templateId: activeTemplate.templateId,
+                        category: activeTemplate.category,
                       }
                 }
               />
             </div>
             <div className="template-browser__details">
               <div>
-                <h3>{selectedTemplate?.name ?? "Pilih template"}</h3>
-                <p>{selectedTemplate?.category ?? "Kategori template"}</p>
+                <h3>{activeTemplate?.name ?? "Pilih template"}</h3>
+                <p>{activeTemplate?.category ?? "Kategori template"}</p>
               </div>
               <p>Urutan track dan durasi tidak berubah.</p>
               <p>
@@ -495,7 +535,7 @@ export function TemplateBrowser({
                     variant="primary"
                     label="Coba Template"
                     onClick={tryTemplate}
-                    disabled={selectedTemplate === null || busy}
+                    disabled={activeTemplate === null || busy}
                   />
                 )}
                 <ActionButton
