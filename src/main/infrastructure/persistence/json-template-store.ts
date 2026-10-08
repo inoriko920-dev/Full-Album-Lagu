@@ -20,7 +20,8 @@ import {
   type TemplateDocument,
 } from "../../../core/domain/template-document";
 
-const MAX_TEMPLATE_BYTES = 2 * 1024 * 1024;
+const MAX_BUILT_IN_CATALOG_BYTES = 2 * 1024 * 1024;
+const MAX_USER_TEMPLATE_BYTES = 8 * 1024 * 1024;
 
 function nodeCode(error: unknown): string | undefined {
   return error instanceof Error && "code" in error
@@ -43,7 +44,7 @@ async function readTemplateFile(path: string): Promise<TemplateDocument> {
   let raw: string;
   try {
     const metadata = await lstat(path);
-    if (!metadata.isFile() || metadata.size > MAX_TEMPLATE_BYTES) {
+    if (!metadata.isFile() || metadata.size > MAX_USER_TEMPLATE_BYTES) {
       throw new TemplateStoreError(
         "TEMPLATE_INVALID",
         "Template file is invalid.",
@@ -96,7 +97,7 @@ export class JsonTemplateStore implements TemplateStore {
     let raw: string;
     try {
       const metadata = await lstat(path);
-      if (!metadata.isFile() || metadata.size > MAX_TEMPLATE_BYTES) {
+      if (!metadata.isFile() || metadata.size > MAX_BUILT_IN_CATALOG_BYTES) {
         throw new TemplateStoreError(
           "TEMPLATE_INVALID",
           "Built-in template catalog is invalid.",
@@ -203,6 +204,15 @@ export class JsonTemplateStore implements TemplateStore {
       );
     }
 
+    const payload = `${JSON.stringify(template, null, 2)}\n`;
+    // Never acknowledge a save that the guarded reader would later reject.
+    if (Buffer.byteLength(payload, "utf8") > MAX_USER_TEMPLATE_BYTES) {
+      throw new TemplateStoreError(
+        "TEMPLATE_INVALID",
+        "Template exceeds the maximum supported file size.",
+      );
+    }
+
     const root = this.userRoot();
     const target = join(root, `${template.templateId}.template.json`);
     const temporary = join(
@@ -212,7 +222,7 @@ export class JsonTemplateStore implements TemplateStore {
 
     try {
       await mkdir(root, { recursive: true });
-      await writeFile(temporary, `${JSON.stringify(template, null, 2)}\n`, {
+      await writeFile(temporary, payload, {
         encoding: "utf8",
         flag: "wx",
       });
