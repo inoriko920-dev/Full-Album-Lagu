@@ -785,3 +785,7 @@
 - PR #51 DRAFT; not merged. Fix frozen UI deviations and retest without pulling forward audio-reactive runtime.
 - Evidence: `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` and GitHub Actions artifact `11529287105`.
 - Dependency: T11-W05-06 PASS / VERIFIED.
+
+## W05-07 R02 remediation checkpoint
+- **W05-07 R02 (2026-10-08 WIB):** editor-hosted Try/Preview, simultaneous left Layer+Inspector, frozen category rail, real visual-only scope Save dialog over editor implemented. Windows CI #427 / `37730737210` **PASS 301 tests** (153 unit, 59 contract, 47 component, 42 integration), Windows Electron/screenshots/source fingerprints/portable/previous waves PASS. **UI imagery/layout visual acceptance still pending**; do not merge draft PR #51 or start W11-06. Evidence: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R02.md` (relative from docs files: `step11/evidence/...`).
+- Task remains **IN_PROGRESS / frozen design gate FAIL**; no merge, no new wave until visual comparison is accepted. Read the four-screen R02 evidence and prior initial gate fail report.

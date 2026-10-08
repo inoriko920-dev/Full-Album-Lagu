@@ -135,3 +135,12 @@ These task-level statuses do not close W11-05; final closure remains T11-W05-07 
 - **AC-W11-05-21: FAIL / BLOCKER** after direct human visual review of frozen-vs-Electron SCR-002C, SCR-003A, SCR-003B and DLG-008 screenshots. See `evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md`. Main Editor's visual composition, local gallery, Try mode and Save dialog differ materially from frozen references. Pixel-exact comparison was neither used nor claimed due differing image resolutions.
 - **Other conditions:** functional, schema, template, protection, stress, trust boundary and prior-wave regression evidence PASS at test level; final whole-wave PASS is withheld until AC21 is remediated and all 25 ACs are rechecked.
 - **Wave gate: FAIL; W11-05 remains IN PROGRESS; T11-W05-07 corrective work is the only authorized next step.**
+
+## W05-07 R02 new evidence — unchanged wave gate
+- **W05-07 R02 (2026-10-08 WIB):** editor-hosted Try/Preview, simultaneous left Layer+Inspector, frozen category rail, real visual-only scope Save dialog over editor implemented. Windows CI #427 / `37730737210` **PASS 301 tests** (153 unit, 59 contract, 47 component, 42 integration), Windows Electron/screenshots/source fingerprints/portable/previous waves PASS. **UI imagery/layout visual acceptance still pending**; do not merge draft PR #51 or start W11-06. Evidence: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R02.md` (relative from docs files: `step11/evidence/...`).
+- AC-W11-05-04/06: **PASS / R02 UI wiring evidence** — selected layer + editable Inspector simultaneously in left rail, non-dirty session selection.
+- AC-W11-05-15/16/17: **PASS / R02 renderer evidence** — actual trial-mode scene projected in Main Editor without history; Revert/Apply behavior and Undo/Redo pass Windows Electron.
+- AC-W11-05-19: **PASS / R02 scoped Save evidence** — visual layer-group options actually filter persisted reusable template; second-project dynamic binding, no dirty and protected source metadata preserved.
+- AC-W11-05-21: **PARTIAL / DESIGN REVIEW STILL FAIL** — key workflow topology repaired, but visual fidelity and thumbnail/reference composition differences remain; no whole-wave PASS.
+- AC-W11-05-22/23/24/25: **PASS task-level Windows CI #427** — immutable source SHA-256/size/mtime, 128/100 stress, protected paths, 29 references, frozen SCR-002A baseline, portable executable smoke and ZIP, old waves regression.
+- W11-05 still **IN_PROGRESS**, W05-07 only authorized next.

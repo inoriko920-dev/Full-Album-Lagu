@@ -48,3 +48,7 @@ The all-green technical CI does **not** constitute UI design approval. AC-W11-05
 5. Rerun and inspect side-by-side reference/actual images plus exact SCR-002A unchanged baseline; require no remaining material hierarchy/copy drift. Then update all AC-W11-05-01..25 with final evidence and only then grant wave PASS / merge PR.
 
 The user must not be told W11-05 is complete. Resume **T11-W05-07 corrective work only** on the next `lanjutkan`, preserving exact planning and frozen UI authority.
+
+## R02 observation update (2026-10-08 WIB)
+- Historical FAIL screenshots above are **before** fixes. Subsequent commit and Windows CI #427 fixed browser-hosted trial, Save dialog host+scope, vertical category rail, and simultaneous Layer/Inspector. Current evidence: `T11_W05_07_VISUAL_REMEDIATION_R02.md`.
+- Remaining frozen visual imagery/composition differences keep W11-05 UI gate open. No attempt was made to silently advance W11-06 or claim pixel-exact mockup equality.
