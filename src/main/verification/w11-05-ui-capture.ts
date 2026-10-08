@@ -154,9 +154,14 @@ export async function captureW1105State(
   await mkdir(dirname(destination), { recursive: true });
   if (screen.startsWith("SCR-") || screen === "DLG-008") {
     const image = await browser.webContents.capturePage();
-    if (image.isEmpty()) throw new Error(`W05 screenshot capture empty: ${screen}`);
+    if (image.isEmpty())
+      throw new Error(`W05 screenshot capture empty: ${screen}`);
     await writeFile(destination, image.toPNG());
     rendererEvidence.capture = image.getSize();
   }
-  await writeFile(destination.replace(/\.png$/i, "-dom.json"), JSON.stringify(rendererEvidence, null, 2), "utf8");
+  await writeFile(
+    destination.replace(/\.png$/i, "-dom.json"),
+    JSON.stringify(rendererEvidence, null, 2),
+    "utf8",
+  );
 }
