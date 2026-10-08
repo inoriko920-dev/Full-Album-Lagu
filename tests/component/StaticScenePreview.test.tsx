@@ -223,4 +223,38 @@ describe("T11-W05-04 static visual renderer", () => {
       container.querySelector("[data-scene-layer-id='layer-127']"),
     ).not.toBeNull();
   });
+  it("binds only supplied real FFT levels and real album progress to frozen layers", () => {
+    const project = fixture();
+    project.visualScene!.layers[4]!.visible = true;
+    const original = structuredClone(project);
+    const model = buildStaticScenePreview(project);
+    const { container, rerender } = render(
+      <StaticScenePreview
+        model={model}
+        spectrumLevels={[0, 0.25, 0.5, 1]}
+        progressFraction={0.5}
+      />,
+    );
+
+    const bars = container.querySelectorAll(".static-scene-preview__bar");
+    expect(bars).toHaveLength(4);
+    expect(bars[0]?.getAttribute("style")).toContain("height: 0%");
+    expect(bars[1]?.getAttribute("style")).toContain("height: 25%");
+    expect(bars[3]?.getAttribute("style")).toContain("height: 100%");
+    expect(within(container).getByLabelText("Spectrum audio")).toBeTruthy();
+    expect(
+      container.querySelector(".static-scene-preview__progress-track")?.getAttribute("style"),
+    ).toContain("50%");
+    expect(project).toEqual(original);
+
+    rerender(
+      <StaticScenePreview model={model} spectrumLevels={[0, 0, 0, 0]} progressFraction={0} />,
+    );
+    expect(
+      [...container.querySelectorAll(".static-scene-preview__bar")].every(
+        (bar) => bar.getAttribute("style")?.includes("height: 0%"),
+      ),
+    ).toBe(true);
+  });
+
 });
