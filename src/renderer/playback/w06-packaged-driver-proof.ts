@@ -81,6 +81,9 @@ async function run(
       audioElements.push(audio);
       return audio;
     },
+    () => undefined,
+    Date.now,
+    (handler) => window.lfa.onPlaybackPowerChange?.(handler) ?? (() => undefined),
   );
   try {
     driver.play();

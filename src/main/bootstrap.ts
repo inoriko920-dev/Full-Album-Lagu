@@ -1,4 +1,5 @@
-import { app, BrowserWindow, protocol } from "electron";
+import { app, BrowserWindow, powerMonitor, protocol } from "electron";
+import { PLAYBACK_POWER_CHANNEL } from "../core/contracts/playback-power";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
@@ -131,6 +132,21 @@ function createMainWindow(): BrowserWindow {
   });
 
   const ownerWebContentsId = window.webContents.id;
+  // Suspend invalidates grants before notifying the renderer. Resume never
+  // mints a new token or restarts audio; main picker authorization is required.
+  const onSystemSuspend = (): void => {
+    previewAudioAccess.revokeWindow(ownerWebContentsId);
+    if (!window.webContents.isDestroyed()) {
+      window.webContents.send(PLAYBACK_POWER_CHANNEL, "suspend");
+    }
+  };
+  const onSystemResume = (): void => {
+    if (!window.webContents.isDestroyed()) {
+      window.webContents.send(PLAYBACK_POWER_CHANNEL, "resume");
+    }
+  };
+  powerMonitor.on("suspend", onSystemSuspend);
+  powerMonitor.on("resume", onSystemResume);
   window.webContents.session.protocol.handle(
     PREVIEW_AUDIO_SCHEME,
     async (request) => {
@@ -182,6 +198,8 @@ function createMainWindow(): BrowserWindow {
   });
   window.webContents.on("destroyed", () => {
     previewAudioAccess.revokeWindow(ownerWebContentsId);
+    powerMonitor.removeListener("suspend", onSystemSuspend);
+    powerMonitor.removeListener("resume", onSystemResume);
   });
 
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));

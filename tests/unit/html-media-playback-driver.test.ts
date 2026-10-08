@@ -426,6 +426,81 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     driver.close();
   });
 
+  it("Suspend revokes live audio and Resume cannot auto-play an expired grant", async () => {
+    const audio: FakeMedia[] = [];
+    const lifecycle: { callback?: (state: "suspend" | "resume") => void } = {};
+    let unsubscribed = 0;
+    const driver = new HtmlMediaPlaybackDriver(
+      project(),
+      trusted,
+      async () => granted,
+      () => {
+        const element = new FakeMedia();
+        audio.push(element);
+        return element;
+      },
+      () => undefined,
+      Date.now,
+      (handler) => {
+        lifecycle.callback = handler;
+        return () => {
+          unsubscribed += 1;
+          delete lifecycle.callback;
+        };
+      },
+    );
+    driver.play();
+    await flush();
+    audio[0]!.emit("loadedmetadata");
+    await flush();
+    expect(driver.snapshot.phase).toBe("playing");
+    lifecycle.callback?.("suspend");
+    expect(driver.snapshot.phase).toBe("ready");
+    expect(audio[0]!.src).toBe("");
+    audio[0]!.emit("ended");
+    lifecycle.callback?.("resume");
+    expect(driver.snapshot.phase).toBe("ready");
+    driver.play();
+    expect(driver.snapshot.phase).toBe("error");
+    expect(audio).toHaveLength(1);
+    driver.switchProject(project(), trusted);
+    driver.play();
+    await flush();
+    expect(audio).toHaveLength(2);
+    driver.close();
+    expect(unsubscribed).toBe(1);
+    expect(lifecycle.callback).toBeUndefined();
+  });
+
+  it("Suspend invalidates in-flight IPC grants and stale load callbacks", async () => {
+    let resolve!: (result: PreviewAudioIssueResult) => void;
+    const pending = new Promise<PreviewAudioIssueResult>((done) => {
+      resolve = done;
+    });
+    const audio: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      project(),
+      trusted,
+      () => pending,
+      () => {
+        const element = new FakeMedia();
+        audio.push(element);
+        return element;
+      },
+    );
+    driver.play();
+    expect(driver.snapshot.phase).toBe("loading");
+    driver.onSystemPower("suspend");
+    resolve(granted);
+    await flush();
+    expect(driver.snapshot.phase).toBe("ready");
+    expect(audio).toHaveLength(0);
+    driver.onSystemPower("resume");
+    driver.play();
+    expect(driver.snapshot.phase).toBe("error");
+    driver.close();
+  });
+
   it("discards late URL response after Stop and does not resurrect sound", async () => {
     let resolve!: (value: PreviewAudioIssueResult) => void;
     const deferred = new Promise<PreviewAudioIssueResult>((finish) => {

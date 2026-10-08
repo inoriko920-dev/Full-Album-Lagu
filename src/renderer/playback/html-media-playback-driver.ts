@@ -7,6 +7,7 @@ import type {
   PreviewAudioIssueResult,
 } from "../../core/contracts/preview-audio-ipc";
 import type { PlaybackClockSnapshot } from "../../core/contracts/playback";
+import type { PlaybackPowerState } from "../../core/contracts/playback-power";
 import type { ProjectDocument } from "../../core/domain/project-document";
 
 /**
@@ -56,6 +57,7 @@ export class HtmlMediaPlaybackDriver {
   private closed = false;
   private pausedAtMs: number | null = null;
   private trustedBatch: TrustedAudioBatch | null;
+  private readonly unsubscribePower: (() => void) | null;
 
   constructor(
     project: ProjectDocument,
@@ -65,9 +67,14 @@ export class HtmlMediaPlaybackDriver {
     private readonly notify: (snapshot: PlaybackClockSnapshot) => void = () =>
       undefined,
     private readonly nowMs: () => number = Date.now,
+    subscribePower?: (
+      callback: (state: PlaybackPowerState) => void,
+    ) => () => void,
   ) {
     this.transport = new AlbumPlaybackTransport(project);
     this.trustedBatch = trustedBatch;
+    this.unsubscribePower =
+      subscribePower?.((state) => this.onSystemPower(state)) ?? null;
   }
 
   get snapshot(): PlaybackClockSnapshot {
@@ -126,8 +133,15 @@ export class HtmlMediaPlaybackDriver {
     this.perform(this.transport.stop());
   }
 
+  /** Suspend tears down decoded media and revokes renderer-side batch trust. */
+  onSystemPower(state: PlaybackPowerState): void {
+    if (this.closed || state !== "suspend") return;
+    this.revokeMedia();
+  }
+
   close(): void {
     if (this.closed) return;
+    this.unsubscribePower?.();
     this.perform(this.transport.stop());
     this.closed = true;
     this.trustedBatch = null;

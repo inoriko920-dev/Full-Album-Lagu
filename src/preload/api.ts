@@ -1,4 +1,5 @@
 import { ipcRenderer, webUtils } from "electron";
+import { PLAYBACK_POWER_CHANNEL } from "../core/contracts/playback-power";
 import {
   PREVIEW_AUDIO_ISSUE_CHANNEL,
   previewAudioIssueRequestSchema,
@@ -86,6 +87,16 @@ import {
 } from "../core/contracts/template-ipc";
 
 export const lfaBridge: LfaBridge = {
+  onPlaybackPowerChange(listener) {
+    const handler = (
+      _event: Electron.IpcRendererEvent,
+      state: unknown,
+    ): void => {
+      if (state === "suspend" || state === "resume") listener(state);
+    };
+    ipcRenderer.on(PLAYBACK_POWER_CHANNEL, handler);
+    return () => ipcRenderer.removeListener(PLAYBACK_POWER_CHANNEL, handler);
+  },
   async requestAudioPreview(request) {
     const validated = previewAudioIssueRequestSchema.parse(request);
     const response: unknown = await ipcRenderer.invoke(
