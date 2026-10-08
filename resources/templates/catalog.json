@@ -1,0 +1,1208 @@
+[
+  {
+    "templateSchemaVersion": 1,
+    "templateId": "minimal-biru",
+    "name": "Minimal Biru",
+    "category": "Minimal",
+    "scene": {
+      "sceneVersion": 1,
+      "layers": [
+        {
+          "id": "background",
+          "kind": "background",
+          "name": "Background",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 1,
+            "height": 1,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "fill": {
+            "type": "solid",
+            "color": "#0B1F38FF"
+          }
+        },
+        {
+          "id": "artwork",
+          "kind": "artwork",
+          "name": "Artwork",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.27,
+            "y": 0.48,
+            "width": 0.34,
+            "height": 0.6,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "binding": "active-track-artwork"
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "name": "Judul Track",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.43,
+            "width": 0.5,
+            "height": 0.13,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "title",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.057,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#3A9EFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "artist",
+          "kind": "text",
+          "name": "Artis",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.55,
+            "width": 0.45,
+            "height": 0.08,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "artist",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.036,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFFFFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "spectrum",
+          "kind": "spectrum",
+          "name": "Spectrum",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.7,
+            "y": 0.75,
+            "width": 0.5,
+            "height": 0.12,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "progress",
+          "name": "Progress Bar",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.93,
+            "width": 0.85,
+            "height": 0.025,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "templateSchemaVersion": 1,
+    "templateId": "premium-emas",
+    "name": "Premium Emas",
+    "category": "Premium",
+    "scene": {
+      "sceneVersion": 1,
+      "layers": [
+        {
+          "id": "background",
+          "kind": "background",
+          "name": "Background",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 1,
+            "height": 1,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "fill": {
+            "type": "solid",
+            "color": "#241C24FF"
+          }
+        },
+        {
+          "id": "artwork",
+          "kind": "artwork",
+          "name": "Artwork",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.27,
+            "y": 0.48,
+            "width": 0.34,
+            "height": 0.6,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "binding": "active-track-artwork"
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "name": "Judul Track",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.43,
+            "width": 0.5,
+            "height": 0.13,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "title",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.057,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#EBC672FF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "artist",
+          "kind": "text",
+          "name": "Artis",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.55,
+            "width": 0.45,
+            "height": 0.08,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "artist",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.036,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFFFFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "spectrum",
+          "kind": "spectrum",
+          "name": "Spectrum",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.7,
+            "y": 0.75,
+            "width": 0.5,
+            "height": 0.12,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "progress",
+          "name": "Progress Bar",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.93,
+            "width": 0.85,
+            "height": 0.025,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "templateSchemaVersion": 1,
+    "templateId": "neon-malam",
+    "name": "Neon Malam",
+    "category": "Neon",
+    "scene": {
+      "sceneVersion": 1,
+      "layers": [
+        {
+          "id": "background",
+          "kind": "background",
+          "name": "Background",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 1,
+            "height": 1,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "fill": {
+            "type": "solid",
+            "color": "#130F2CFF"
+          }
+        },
+        {
+          "id": "artwork",
+          "kind": "artwork",
+          "name": "Artwork",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.27,
+            "y": 0.48,
+            "width": 0.34,
+            "height": 0.6,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "binding": "active-track-artwork"
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "name": "Judul Track",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.43,
+            "width": 0.5,
+            "height": 0.13,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "title",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.057,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#E44CFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "artist",
+          "kind": "text",
+          "name": "Artis",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.55,
+            "width": 0.45,
+            "height": 0.08,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "artist",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.036,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFFFFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "spectrum",
+          "kind": "spectrum",
+          "name": "Spectrum",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.7,
+            "y": 0.75,
+            "width": 0.5,
+            "height": 0.12,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "progress",
+          "name": "Progress Bar",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.93,
+            "width": 0.85,
+            "height": 0.025,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "templateSchemaVersion": 1,
+    "templateId": "ambient-senja",
+    "name": "Ambient Senja",
+    "category": "Ambient",
+    "scene": {
+      "sceneVersion": 1,
+      "layers": [
+        {
+          "id": "background",
+          "kind": "background",
+          "name": "Background",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 1,
+            "height": 1,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "fill": {
+            "type": "solid",
+            "color": "#35233CFF"
+          }
+        },
+        {
+          "id": "artwork",
+          "kind": "artwork",
+          "name": "Artwork",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.27,
+            "y": 0.48,
+            "width": 0.34,
+            "height": 0.6,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "binding": "active-track-artwork"
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "name": "Judul Track",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.43,
+            "width": 0.5,
+            "height": 0.13,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "title",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.057,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFB98CFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "artist",
+          "kind": "text",
+          "name": "Artis",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.55,
+            "width": 0.45,
+            "height": 0.08,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "artist",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.036,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFFFFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "spectrum",
+          "kind": "spectrum",
+          "name": "Spectrum",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.7,
+            "y": 0.75,
+            "width": 0.5,
+            "height": 0.12,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "progress",
+          "name": "Progress Bar",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.93,
+            "width": 0.85,
+            "height": 0.025,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "templateSchemaVersion": 1,
+    "templateId": "classic-album",
+    "name": "Classic Album",
+    "category": "Classic Album",
+    "scene": {
+      "sceneVersion": 1,
+      "layers": [
+        {
+          "id": "background",
+          "kind": "background",
+          "name": "Background",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 1,
+            "height": 1,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "fill": {
+            "type": "solid",
+            "color": "#302E35FF"
+          }
+        },
+        {
+          "id": "artwork",
+          "kind": "artwork",
+          "name": "Artwork",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.27,
+            "y": 0.48,
+            "width": 0.34,
+            "height": 0.6,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "binding": "active-track-artwork"
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "name": "Judul Track",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.43,
+            "width": 0.5,
+            "height": 0.13,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "title",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.057,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#F5EFE4FF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "artist",
+          "kind": "text",
+          "name": "Artis",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.55,
+            "width": 0.45,
+            "height": 0.08,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "artist",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.036,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFFFFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "spectrum",
+          "kind": "spectrum",
+          "name": "Spectrum",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.7,
+            "y": 0.75,
+            "width": 0.5,
+            "height": 0.12,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "progress",
+          "name": "Progress Bar",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.93,
+            "width": 0.85,
+            "height": 0.025,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "templateSchemaVersion": 1,
+    "templateId": "dark-studio",
+    "name": "Dark Studio",
+    "category": "Dark",
+    "scene": {
+      "sceneVersion": 1,
+      "layers": [
+        {
+          "id": "background",
+          "kind": "background",
+          "name": "Background",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 1,
+            "height": 1,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "fill": {
+            "type": "solid",
+            "color": "#10151FFF"
+          }
+        },
+        {
+          "id": "artwork",
+          "kind": "artwork",
+          "name": "Artwork",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.27,
+            "y": 0.48,
+            "width": 0.34,
+            "height": 0.6,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "binding": "active-track-artwork"
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "name": "Judul Track",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.43,
+            "width": 0.5,
+            "height": 0.13,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "title",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.057,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#A7B4D2FF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "artist",
+          "kind": "text",
+          "name": "Artis",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.55,
+            "width": 0.45,
+            "height": 0.08,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "artist",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.036,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFFFFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "spectrum",
+          "kind": "spectrum",
+          "name": "Spectrum",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.7,
+            "y": 0.75,
+            "width": 0.5,
+            "height": 0.12,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "progress",
+          "name": "Progress Bar",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.93,
+            "width": 0.85,
+            "height": 0.025,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "templateSchemaVersion": 1,
+    "templateId": "light-clean",
+    "name": "Light Clean",
+    "category": "Light",
+    "scene": {
+      "sceneVersion": 1,
+      "layers": [
+        {
+          "id": "background",
+          "kind": "background",
+          "name": "Background",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 1,
+            "height": 1,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "fill": {
+            "type": "solid",
+            "color": "#EFF4F8FF"
+          }
+        },
+        {
+          "id": "artwork",
+          "kind": "artwork",
+          "name": "Artwork",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.27,
+            "y": 0.48,
+            "width": 0.34,
+            "height": 0.6,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "binding": "active-track-artwork"
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "name": "Judul Track",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.43,
+            "width": 0.5,
+            "height": 0.13,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "title",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.057,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#19436EFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "artist",
+          "kind": "text",
+          "name": "Artis",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.55,
+            "width": 0.45,
+            "height": 0.08,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "artist",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.036,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFFFFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "spectrum",
+          "kind": "spectrum",
+          "name": "Spectrum",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.7,
+            "y": 0.75,
+            "width": 0.5,
+            "height": 0.12,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "progress",
+          "name": "Progress Bar",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.93,
+            "width": 0.85,
+            "height": 0.025,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "templateSchemaVersion": 1,
+    "templateId": "retro-kaset",
+    "name": "Retro Kaset",
+    "category": "Retro",
+    "scene": {
+      "sceneVersion": 1,
+      "layers": [
+        {
+          "id": "background",
+          "kind": "background",
+          "name": "Background",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 1,
+            "height": 1,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "fill": {
+            "type": "solid",
+            "color": "#4F332CFF"
+          }
+        },
+        {
+          "id": "artwork",
+          "kind": "artwork",
+          "name": "Artwork",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.27,
+            "y": 0.48,
+            "width": 0.34,
+            "height": 0.6,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "binding": "active-track-artwork"
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "name": "Judul Track",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.43,
+            "width": 0.5,
+            "height": 0.13,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "title",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.057,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#F0B982FF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "artist",
+          "kind": "text",
+          "name": "Artis",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.55,
+            "width": 0.45,
+            "height": 0.08,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "artist",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.036,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFFFFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "spectrum",
+          "kind": "spectrum",
+          "name": "Spectrum",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.7,
+            "y": 0.75,
+            "width": 0.5,
+            "height": 0.12,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "progress",
+          "name": "Progress Bar",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.93,
+            "width": 0.85,
+            "height": 0.025,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        }
+      ]
+    }
+  },
+  {
+    "templateSchemaVersion": 1,
+    "templateId": "motion-biru",
+    "name": "Motion Biru",
+    "category": "Motion",
+    "scene": {
+      "sceneVersion": 1,
+      "layers": [
+        {
+          "id": "background",
+          "kind": "background",
+          "name": "Background",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.5,
+            "width": 1,
+            "height": 1,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "fill": {
+            "type": "solid",
+            "color": "#061C2CFF"
+          }
+        },
+        {
+          "id": "artwork",
+          "kind": "artwork",
+          "name": "Artwork",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.27,
+            "y": 0.48,
+            "width": 0.34,
+            "height": 0.6,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "binding": "active-track-artwork"
+        },
+        {
+          "id": "title",
+          "kind": "text",
+          "name": "Judul Track",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.43,
+            "width": 0.5,
+            "height": 0.13,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "title",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.057,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#44DBE9FF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "artist",
+          "kind": "text",
+          "name": "Artis",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.72,
+            "y": 0.55,
+            "width": 0.45,
+            "height": 0.08,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          },
+          "role": "artist",
+          "style": {
+            "fontFamily": "Inter",
+            "fontSizeRatio": 0.036,
+            "fontWeight": "semibold",
+            "italic": false,
+            "align": "center",
+            "color": "#FFFFFFFF",
+            "letterSpacingRatio": 0,
+            "lineHeight": 1.2
+          }
+        },
+        {
+          "id": "spectrum",
+          "kind": "spectrum",
+          "name": "Spectrum",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.7,
+            "y": 0.75,
+            "width": 0.5,
+            "height": 0.12,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        },
+        {
+          "id": "progress",
+          "kind": "progress",
+          "name": "Progress Bar",
+          "visible": true,
+          "locked": false,
+          "transform": {
+            "x": 0.5,
+            "y": 0.93,
+            "width": 0.85,
+            "height": 0.025,
+            "rotationDeg": 0,
+            "opacity": 1,
+            "anchor": "center"
+          }
+        }
+      ]
+    }
+  }
+]
