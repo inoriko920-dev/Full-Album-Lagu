@@ -1,4 +1,9 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { buildStaticScenePreview, type StaticScenePreviewModel } from "../../core/domain/static-scene-preview";
+import type { VisualLayerTransform } from "../../core/domain/visual-scene-schema";
+import { VisualSelectionSession } from "../state/ui-session/visual-selection-session";
+import { StaticScenePreview } from "../visual/StaticScenePreview";
+import { VisualLayerInspector, VisualLayerPanel } from "./VisualLayerControls";
 import {
   isProjectTrackEnabled,
   projectAlbumTimeline,
@@ -573,10 +578,24 @@ function SelectedTrackInspector({
 function InspectorPanel({
   projectSession,
   selectedTrackId,
+  visualModel,
+  onPreviewTransform,
+  onCommitTransform,
+  onCancelTransform,
 }: {
   projectSession: ReturnType<typeof useProjectSession>;
   selectedTrackId: string | null;
+  visualModel: StaticScenePreviewModel;
+  onPreviewTransform: (transform: VisualLayerTransform) => void;
+  onCommitTransform: () => void;
+  onCancelTransform: () => void;
 }) {
+  if (visualModel.selectedLayerId !== null) {
+    return <VisualLayerInspector key={visualModel.selectedLayerId} model={visualModel} session={projectSession}
+      onPreviewTransform={onPreviewTransform} onCommitTransform={onCommitTransform}
+      onCancelTransform={onCancelTransform} />;
+  }
+
   if (selectedTrackId !== null) {
     const projection = projectSession.selectedTrackProjection(selectedTrackId);
     if (projection.status === "selected") {
@@ -616,12 +635,22 @@ function WorkRail({
   projectSession,
   selectedTrackId,
   onSelectTrack,
+  visualModel,
+  onSelectLayer,
+  onPreviewTransform,
+  onCommitTransform,
+  onCancelTransform,
 }: {
   activeTab: WorkRailTab;
   onTabChange: (tab: WorkRailTab) => void;
   projectSession: ReturnType<typeof useProjectSession>;
   selectedTrackId: string | null;
   onSelectTrack: (trackId: string) => void;
+  visualModel: StaticScenePreviewModel;
+  onSelectLayer: (id: string | null) => void;
+  onPreviewTransform: (transform: VisualLayerTransform) => void;
+  onCommitTransform: () => void;
+  onCancelTransform: () => void;
 }) {
   return (
     <aside className="work-rail" aria-label="Panel kerja manual">
@@ -653,11 +682,17 @@ function WorkRail({
             onSelectTrack={onSelectTrack}
           />
         ) : null}
-        {activeTab === "layer" ? <LayerPanel /> : null}
+        {activeTab === "layer" ? (
+          <VisualLayerPanel model={visualModel} session={projectSession} onSelectLayer={onSelectLayer} />
+        ) : null}
         {activeTab === "inspector" ? (
           <InspectorPanel
             projectSession={projectSession}
             selectedTrackId={selectedTrackId}
+            visualModel={visualModel}
+            onPreviewTransform={onPreviewTransform}
+            onCommitTransform={onCommitTransform}
+            onCancelTransform={onCancelTransform}
           />
         ) : null}
       </div>
@@ -665,11 +700,18 @@ function WorkRail({
   );
 }
 
-function PreviewPanel() {
+function PreviewPanel({ visualModel, onSelectLayer }: {
+  visualModel: StaticScenePreviewModel;
+  onSelectLayer: (layerId: string) => void;
+}) {
   return (
     <section className="preview-panel" aria-label="Preview video">
       <div className="preview-stage">
-        <div className="preview-frame">
+        <div className={`preview-frame${visualModel.layers.length > 0 ? " preview-frame--visual" : ""}`}>
+          {visualModel.layers.length > 0 ? (
+            <StaticScenePreview model={visualModel} onSelectLayer={onSelectLayer} />
+          ) : (
+          <>
           <div className="preview-scenery" aria-hidden="true">
             <span className="preview-scenery__sun" />
             <span className="preview-scenery__mountain preview-scenery__mountain--far" />
@@ -1247,6 +1289,83 @@ export function AppShell() {
   );
   const [timelineZoom, setTimelineZoom] = useState(100);
   const projectSession = useProjectSession();
+  const [selectionSession] = useState(() => new VisualSelectionSession());
+  const [visualUiState, setVisualUiState] = useState(() => selectionSession.snapshot());
+  const gestureStartedRef = useRef(false);
+  const visualProjectMarker = useRef({
+    projectId: projectSession.project.projectId,
+    revision: projectSession.project.revision,
+  });
+
+  const syncVisualUi = () => setVisualUiState(selectionSession.snapshot());
+  const visualModel = useMemo(
+    () => buildStaticScenePreview(projectSession.project, {
+      selectedTrackId: selectedTrackIdState ?? undefined,
+      selectedLayerId: visualUiState.selectedLayerId,
+      gesturePreview: visualUiState.gesturePreview ?? undefined,
+    }),
+    [projectSession.project, selectedTrackIdState, visualUiState],
+  );
+
+  useEffect(() => {
+    const marker = visualProjectMarker.current;
+    if (marker.projectId !== projectSession.project.projectId) {
+      selectionSession.reset();
+      projectSession.cancelVisualLayerGesture();
+      gestureStartedRef.current = false;
+      syncVisualUi();
+    } else if (marker.revision !== projectSession.project.revision) {
+      selectionSession.discardGesture();
+      projectSession.cancelVisualLayerGesture();
+      gestureStartedRef.current = false;
+      selectionSession.reconcile(buildStaticScenePreview(projectSession.project, {
+        selectedLayerId: selectionSession.snapshot().selectedLayerId,
+      }));
+      syncVisualUi();
+    }
+    marker.projectId = projectSession.project.projectId;
+    marker.revision = projectSession.project.revision;
+  }, [projectSession.project, selectionSession]);
+
+  function selectLayer(layerId: string | null, fromCanvas = false) {
+    projectSession.cancelVisualLayerGesture();
+    gestureStartedRef.current = false;
+    const ok = fromCanvas && layerId !== null
+      ? selectionSession.selectFromCanvas(visualModel, layerId)
+      : selectionSession.selectFromLayerList(visualModel, layerId);
+    if (ok) {
+      syncVisualUi();
+      if (fromCanvas) setActiveTab("layer");
+    }
+  }
+
+  function previewLayerTransform(transform: VisualLayerTransform) {
+    const id = selectionSession.snapshot().selectedLayerId;
+    if (id === null) return;
+    if (!gestureStartedRef.current) {
+      if (!projectSession.beginVisualLayerGesture(id)) return;
+      gestureStartedRef.current = true;
+    }
+    if (selectionSession.previewGesture(visualModel, transform)) syncVisualUi();
+  }
+
+  function commitLayerTransform() {
+    if (!gestureStartedRef.current) return;
+    const transform = selectionSession.snapshot().gesturePreview?.transform;
+    if (transform !== undefined) projectSession.commitVisualLayerGesture(transform);
+    else projectSession.cancelVisualLayerGesture();
+    gestureStartedRef.current = false;
+    selectionSession.discardGesture();
+    syncVisualUi();
+  }
+
+  function cancelLayerTransform() {
+    gestureStartedRef.current = false;
+    projectSession.cancelVisualLayerGesture();
+    selectionSession.discardGesture();
+    syncVisualUi();
+  }
+
   const selectedTrackId =
     selectedTrackIdState !== null &&
     projectSession.project.tracks.some(
@@ -1284,6 +1403,7 @@ export function AppShell() {
       data-missing-media-count={projectSession.missingMediaItems.length}
       data-media-ready={projectSession.mediaReadiness.ready ? "true" : "false"}
       data-selected-track-id={selectedTrackId ?? ""}
+      data-selected-layer-id={visualModel.selectedLayerId ?? ""}
       data-timeline-zoom={timelineZoom}
       data-can-undo={projectSession.canUndo ? "true" : "false"}
       data-can-redo={projectSession.canRedo ? "true" : "false"}
@@ -1394,9 +1514,14 @@ export function AppShell() {
           onTabChange={setActiveTab}
           projectSession={projectSession}
           selectedTrackId={selectedTrackId}
-          onSelectTrack={setSelectedTrackId}
+          onSelectTrack={(id) => { setSelectedTrackId(id); selectLayer(null); }}
+          visualModel={visualModel}
+          onSelectLayer={(id) => selectLayer(id)}
+          onPreviewTransform={previewLayerTransform}
+          onCommitTransform={commitLayerTransform}
+          onCancelTransform={cancelLayerTransform}
         />
-        <PreviewPanel />
+        <PreviewPanel visualModel={visualModel} onSelectLayer={(id) => selectLayer(id, true)} />
         <GeminiRail />
         <TimelinePanel
           projectSession={projectSession}
