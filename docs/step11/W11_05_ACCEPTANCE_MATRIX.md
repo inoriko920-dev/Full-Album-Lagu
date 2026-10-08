@@ -171,3 +171,10 @@ These task-level statuses do not close W11-05; final closure remains T11-W05-07 
 - Fixed genuine Template Browser issue: clicking the already-selected catalog card previously cleared `selectedTemplate` without changing `selectedId`, so the loader effect never reran and `Coba Template` became disabled. Now clear/load only when the entry ID actually changes.
 - Added component and **real Electron Windows SCR-003A** reselect regression requiring Try remains enabled and matching detail heading. Windows **CI #482 / `37744819940` SUCCESS** on `e658752df7a3eee0ff1555ba419d41186ccc979f`: 301 tests, genuine W05-07 Electron E2E/four screenshots, 128-layer/100-template stress, source SHA-256/size/mtime, previous waves, packaged Windows smoke and portable ZIP PASS. Artifact `11535790571`.
 - Evidence: `evidence/T11_W05_07_R11_ACTIVE_TEMPLATE_RESELECTION_FIX.md`; improved AC14 catalog usability and AC21 picker interaction **at technical level only**. **AC21 remains OPEN pending explicit UI-owner decision** and **AC25 final held by AC21**. Do not claim 25/25 PASS, merge draft PR #51, or start W11-06/W11-07/STEP 12.
+
+
+## T11-W05-07 R12 — recover transient selected-template load, UI signoff unchanged (2026-10-08 WIB)
+- `TemplateBrowser.tsx`: same card click **retains loaded state when successful**, or **retries once on user action when no template is loaded**. Existing async response-version guard still prevents stale selection.
+- `tests/component/AppShell.visual-layer-editor.test.tsx`: first load fails, second same-ID click succeeds, Try enables, alert clears, revision/dirty remain unchanged. **Windows CI #488 / `37745862253` SUCCESS** at `c0a6fd7995dc3b631aa620b8955dfa5dc3bb7b10`, **302 tests** (153 unit, 59 contract, 48 component, 42 integration), real Electron four-state capture, previous-wave E2E, source fingerprints, 128/100 stress, Windows packaged smoke, portable ZIP PASS. Artifact `11535972213`.
+- Evidence `evidence/T11_W05_07_R12_TEMPLATE_LOAD_RETRY.md`.
+- **AC21 remains OPEN pending explicit UI acceptance; AC25 technical green but final closure held. W11-05 IN_PROGRESS, PR #51 DRAFT/NOT MERGED, W11-06/07 and STEP12 BLOCKED.**
