@@ -537,3 +537,11 @@ After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation 
 - `crossOrigin="anonymous"` before setting private `lfa-preview:` URL was essential: the original packaged FFT returned zero despite native audio clock advancing, due to cross-origin WebAudio silence. Fixed without wildcard CORS.
 - Evidence `docs/step11/evidence/T11_W06_04_REAL_WEB_AUDIO_FFT_WINDOWS_CLOSURE_20261008.md`.
 - **Next:** finish exact-head CI #651 and controlled merge, then T11-W06-05 frozen UI wiring. T05 is NOT STARTED. T06/T07 and MP4 remain blocked/future. No visual control/button changes in T04.
+
+## 2026-10-09 WIB — Most recent T11-W06-05 handoff (supersedes stale T04-next notes above)
+- Active work: **T11-W06-05 on Draft PR #58**, branch `sol/t11-w06-05-frozen-ui-binding-20261008`. **NO MERGE**, T06/next task **BLOCKED** pending explicit T05 closure.
+- W11-06 Task01..04 merged; T05 already wired real Play/Pause/Prev/Next/Mute, timecode, true spectrum/progress and timeline playhead inside frozen Main Editor.
+- Exact code verification: [Windows CI #685](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/37826288115), tested commit `e5392cafd210d518d10dff614b56b4611a58370a`, SUCCESS (229+59+56+43=387 tests); Windows executable, previous W11-01..05 E2E and 4 frozen screen comparisons, packaged private decoder/real FFT, and NEW real packaged user-control 3/128 track UI PASS. New screenshot/JSON evidence artifact ID `11571691622`.
+- Files added for this gate: `src/main/verification/w11-06-editor-ui-probe.ts`, `scripts/run-w06-packaged-editor-controls.mjs`; CI-only guarded bootstrap plus `.github/workflows/ci-windows-foundation.yml` step. No UI redesign. 25 sequential imports secure retention verified in repeated tests; 128 album packaged UI directly tested.
+- Formal T05 gate pending fresh Windows CI **on the final documentation commit**, evidence/screenshot audit and controlled PR merge decision. UI does not offer a frozen-design-approved Seek button (controller seek remains tested). Neither physical speaker listening nor MP4 output is claimed.
+- Closure source of truth: `docs/step11/evidence/T11_W06_05_PACKAGED_EDITOR_CONTROLS_WINDOWS_VERIFIED_20261009.md`. Follow `AGENTS.md` mandatory read order, test exact head, do not start T06 until after T05 merge verification.
