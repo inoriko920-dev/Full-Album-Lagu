@@ -1,0 +1,24 @@
+name: W06-04 temporary exact-format audit
+on:
+  pull_request:
+    paths:
+      - "src/renderer/playback/w06-packaged-spectrum-proof.ts"
+      - "tests/unit/html-media-playback-driver.test.ts"
+      - "scripts/run-w06-preview-protocol-smoke.mjs"
+      - ".github/workflows/w06-04-format-audit.yml"
+permissions:
+  contents: read
+jobs:
+  prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Print precise Prettier diff, no push
+        run: |
+          npx prettier --write src/renderer/playback/w06-packaged-spectrum-proof.ts tests/unit/html-media-playback-driver.test.ts scripts/run-w06-preview-protocol-smoke.mjs
+          git diff -- src/renderer/playback/w06-packaged-spectrum-proof.ts tests/unit/html-media-playback-driver.test.ts scripts/run-w06-preview-protocol-smoke.mjs
