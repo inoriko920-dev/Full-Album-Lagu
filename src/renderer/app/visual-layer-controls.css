@@ -147,3 +147,21 @@
   display: none;
   pointer-events: none;
 }
+
+/* W05-07 SCR-002C: selected layer properties visible beneath the layer list. */
+.visual-layer-combined .visual-layer-panel,
+.visual-layer-combined .visual-layer-inspector {
+  min-height: 0;
+}
+.visual-layer-combined .visual-layer-panel {
+  padding-bottom: 10px;
+}
+.visual-layer-combined .visual-layer-list {
+  max-height: 234px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.visual-layer-combined .visual-layer-inspector {
+  border-top: 1px solid var(--border);
+  padding-top: 13px;
+}
