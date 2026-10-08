@@ -1312,7 +1312,7 @@ export function AppShell() {
   );
   const visualModel = useMemo(
     () =>
-      buildStaticScenePreview(projectSession.project, {
+      buildStaticScenePreview(projectSession.templateTrialProject ?? projectSession.project, {
         ...(selectedTrackIdState === null
           ? {}
           : { selectedTrackId: selectedTrackIdState }),
@@ -1321,7 +1321,7 @@ export function AppShell() {
           ? {}
           : { gesturePreview: visualUiState.gesturePreview }),
       }),
-    [projectSession.project, selectedTrackIdState, visualUiState],
+    [projectSession.project, projectSession.templateTrialProject, selectedTrackIdState, visualUiState],
   );
 
   const cancelVisualLayerGesture = projectSession.cancelVisualLayerGesture;
@@ -1424,7 +1424,7 @@ export function AppShell() {
 
   return (
     <main
-      className={`app-shell${hasNotice ? " app-shell--has-notice" : ""}`}
+      className={`app-shell${hasNotice ? " app-shell--has-notice" : ""}${projectSession.templateTrialProject !== null ? " app-shell--template-trial" : ""}`}
       data-fixture-version={FIXTURE_VERSION}
       data-project-id={projectSession.project.projectId}
       data-project-name={projectSession.project.name}
@@ -1585,6 +1585,7 @@ export function AppShell() {
         <TemplateBrowser
           session={projectSession}
           selectedTrackId={selectedTrackId}
+          onTrialStart={() => setActiveTab("media")}
           onClose={() => setTemplateBrowserOpen(false)}
         />
       ) : null}
