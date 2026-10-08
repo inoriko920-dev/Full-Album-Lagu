@@ -48,7 +48,7 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     () =>
       app.isPackaged
         ? join(process.resourcesPath, "templates", "catalog.json")
-        : join(app.getAppPath(), "resources", "templates", "catalog.json"),
+        : resolve(__dirname, "../../resources/templates/catalog.json"),
     () => join(app.getPath("userData"), "templates"),
   );
   const pathSession = new ProjectPathSession();
