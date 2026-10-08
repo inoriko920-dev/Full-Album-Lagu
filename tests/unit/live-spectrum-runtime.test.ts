@@ -99,6 +99,36 @@ describe("W11-06 T04 live spectrum graph lifecycle", () => {
     expect(operations).toContain("close");
   });
 
+  it("closes an incomplete WebAudio graph without leaking a context", () => {
+    let closed = false;
+    let disconnected = false;
+    const context = {
+      createMediaElementSource() {
+        return {
+          disconnect() {
+            disconnected = true;
+          },
+        };
+      },
+      createAnalyser() {
+        throw new Error("Unavailable analyser");
+      },
+      async close() {
+        closed = true;
+      },
+    };
+    const runtime = new LiveSpectrumRuntime(
+      () => context as unknown as AudioContext,
+    );
+    expect(runtime.attach({} as HTMLMediaElement)).toBe(false);
+    expect(disconnected).toBe(true);
+    expect(closed).toBe(true);
+    expect(runtime.sample("playing").barLevels.every((value) => value === 0)).toBe(
+      true,
+    );
+    runtime.close();
+  });
+
   it("fails closed rather than simulating signal if no audio context exists", () => {
     const runtime = new LiveSpectrumRuntime(() => {
       throw new Error("AudioContext unavailable");
