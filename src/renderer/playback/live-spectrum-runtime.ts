@@ -69,11 +69,13 @@ export class LiveSpectrumRuntime {
 
   attach(element: HTMLMediaElement): boolean {
     this.detach();
-    let context: AudioContext;
+    let context: AudioContext | null = null;
+    let source: MediaElementAudioSourceNode | null = null;
+    let analyser: AnalyserNode | null = null;
     try {
       context = this.createContext();
-      const source = context.createMediaElementSource(element);
-      const analyser = context.createAnalyser();
+      source = context.createMediaElementSource(element);
+      analyser = context.createAnalyser();
       analyser.fftSize = SPECTRUM_FFT_SIZE;
       analyser.smoothingTimeConstant = 0.72;
       source.connect(analyser);
@@ -85,7 +87,10 @@ export class LiveSpectrumRuntime {
       void context.resume().catch(() => undefined);
       return true;
     } catch {
-      // No bars are displayed if WebAudio cannot be attached.
+      source?.disconnect();
+      analyser?.disconnect();
+      if (context !== null) void context.close().catch(() => undefined);
+      // No bars or orphaned AudioContext if WebAudio cannot be attached.
       // A new media element is required to retry a previously bound source.
       return false;
     }
