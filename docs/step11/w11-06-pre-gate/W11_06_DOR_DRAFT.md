@@ -13,7 +13,7 @@
 | Windows codec support | PENDING | real packaged Electron MP3/WAV playback proof |
 | Audio clock and source of truth | DRAFT | approve projectAlbumTimeline-based mapper + stale generation cancellation |
 | FFT / visual output contract | DRAFT | decide analyzer graph, update FPS, silence and pause policies |
-| Frozen UI transport/scrub states | PARTIAL / CURRENT CODE AUDITED, DESIGN AUTHORITY PENDING | Existing Prev/Putar/Next/Volume disabled; static timecode/playhead/spectrum. See `W11_06_EXISTING_UI_SURFACE_AUDIT.md`; formally map Pause/Stop/Seek states to frozen references, or STOP for UI governance before SOL wiring |
+| Frozen UI transport/scrub states | PARTIAL / FROZEN 002B+002D VISUALLY INSPECTED; FINAL INTERACTION APPROVAL PENDING | Approved reference images already show Play/Pause region, Prev/Next, volume slider, timecode, progress and timeline playhead. Current implementation remains disabled/static. See `W11_06_EXISTING_UI_SURFACE_AUDIT.md`. Confirm exact Stop/seek behavior and canonical STEP 03/04 copy; visible new controls require UI governance |
 | Trust / security | DRAFT | review known pathways and negative tests before runtime code |
 | 20-AC measurable plan | PRE-GATE DRAFT | final approve IDs, tolerances, fixture policy |
 | Tool/provider stage boundaries | PASS (planning) | no FFmpeg/Gemini or W11-07 motion in Wave 06 |
