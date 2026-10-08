@@ -301,27 +301,50 @@ const minimalTemplate: TemplateDocument = {
   templateId: "minimal-biru",
   name: "Minimal Biru",
   category: "Minimal",
-  scene: { sceneVersion: 1, layers: [
-    createStarterLayer("background", "bg"),
-    createStarterLayer("title", "title"),
-  ] },
+  scene: {
+    sceneVersion: 1,
+    layers: [
+      createStarterLayer("background", "bg"),
+      createStarterLayer("title", "title"),
+    ],
+  },
 };
 const neonTemplate: TemplateDocument = {
-  ...minimalTemplate, templateId: "neon-pulse", name: "Neon Pulse", category: "Neon",
+  ...minimalTemplate,
+  templateId: "neon-pulse",
+  name: "Neon Pulse",
+  category: "Neon",
 };
 
 describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
   beforeEach(() => {
     bridge.listTemplates = async () => ({
-      status: "ok", entries: [
-        { templateId: "minimal-biru", name: "Minimal Biru", category: "Minimal", origin: "built-in", readOnly: true },
-        { templateId: "neon-pulse", name: "Neon Pulse", category: "Neon", origin: "built-in", readOnly: true },
+      status: "ok",
+      entries: [
+        {
+          templateId: "minimal-biru",
+          name: "Minimal Biru",
+          category: "Minimal",
+          origin: "built-in",
+          readOnly: true,
+        },
+        {
+          templateId: "neon-pulse",
+          name: "Neon Pulse",
+          category: "Neon",
+          origin: "built-in",
+          readOnly: true,
+        },
       ],
     });
     bridge.loadTemplate = async (id) => ({
-      status: "ok", template: id === "neon-pulse" ? neonTemplate : minimalTemplate,
+      status: "ok",
+      template: id === "neon-pulse" ? neonTemplate : minimalTemplate,
     });
-    bridge.saveTemplate = async (template) => ({ status: "ok", templateId: template.templateId });
+    bridge.saveTemplate = async (template) => ({
+      status: "ok",
+      templateId: template.templateId,
+    });
   });
 
   it("opens the local frozen browser and returns to identical Main Editor/Agent context", async () => {
@@ -330,9 +353,17 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     const beforeRevision = shell().getAttribute("data-project-revision");
     fireEvent.click(screen.getByRole("button", { name: "Template" }));
     expect(screen.getByLabelText("Browser Template")).toBeInTheDocument();
-    await waitFor(() => expect(screen.getByRole("button", { name: /Minimal Biru/ })).toBeInTheDocument());
-    expect(screen.getByText("Urutan track dan durasi tidak berubah.")).toBeInTheDocument();
-    expect(screen.getByRole("complementary", { name: "Gemini Agent" })).toBeInTheDocument();
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: /Minimal Biru/ }),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      screen.getByText("Urutan track dan durasi tidak berubah."),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("complementary", { name: "Gemini Agent" }),
+    ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "Kembali ke Editor" }));
     expect(screen.queryByLabelText("Browser Template")).not.toBeInTheDocument();
     expect(shell().getAttribute("data-project-id")).toBe(initialProjectId);
@@ -344,19 +375,33 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
   it("Try keeps canonical project clean; Revert is exact; Apply publishes one template history node", async () => {
     render(<AppShell />);
     fireEvent.click(screen.getByRole("button", { name: "Template" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Coba Template" })).toBeEnabled());
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Coba Template" }),
+      ).toBeEnabled(),
+    );
     const revision = shell().getAttribute("data-project-revision");
     fireEvent.click(screen.getByRole("button", { name: "Coba Template" }));
-    expect(screen.getByText("Mode Coba — perubahan belum disimpan ke proyek.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Mode Coba — perubahan belum disimpan ke proyek."),
+    ).toBeInTheDocument();
     expect(shell().getAttribute("data-project-revision")).toBe(revision);
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
-    expect(screen.getByRole("button", { name: "Terapkan Template" })).toBeEnabled();
-    fireEvent.click(screen.getByRole("button", { name: "Kembali ke Sebelumnya" }));
-    expect(screen.queryByText("Mode Coba — perubahan belum disimpan ke proyek.")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Terapkan Template" }),
+    ).toBeEnabled();
+    fireEvent.click(
+      screen.getByRole("button", { name: "Kembali ke Sebelumnya" }),
+    );
+    expect(
+      screen.queryByText("Mode Coba — perubahan belum disimpan ke proyek."),
+    ).not.toBeInTheDocument();
     expect(shell().getAttribute("data-project-revision")).toBe(revision);
     fireEvent.click(screen.getByRole("button", { name: "Coba Template" }));
     fireEvent.click(screen.getByRole("button", { name: "Terapkan Template" }));
-    await waitFor(() => expect(shell().getAttribute("data-project-revision")).toBe("1"));
+    await waitFor(() =>
+      expect(shell().getAttribute("data-project-revision")).toBe("1"),
+    );
     expect(screen.queryByLabelText("Browser Template")).not.toBeInTheDocument();
     expect(shell().getAttribute("data-project-dirty")).toBe("true");
     expect(screen.getByLabelText("Preview visual statis")).toBeInTheDocument();
@@ -369,11 +414,23 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
   it("category and search filter local catalog with no network or new project history", async () => {
     render(<AppShell />);
     fireEvent.click(screen.getByRole("button", { name: "Template" }));
-    await waitFor(() => expect(screen.getByRole("button", { name: /Neon Pulse/ })).toBeInTheDocument());
-    fireEvent.change(screen.getByLabelText("Kategori Template"), { target: { value: "Neon" } });
-    expect(screen.queryByRole("button", { name: /Minimal Biru/ })).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Neon Pulse/ })).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Cari Template"), { target: { value: "tidak-ada" } });
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: /Neon Pulse/ }),
+      ).toBeInTheDocument(),
+    );
+    fireEvent.change(screen.getByLabelText("Kategori Template"), {
+      target: { value: "Neon" },
+    });
+    expect(
+      screen.queryByRole("button", { name: /Minimal Biru/ }),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Neon Pulse/ }),
+    ).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Cari Template"), {
+      target: { value: "tidak-ada" },
+    });
     expect(screen.getByText("Template tidak ditemukan.")).toBeInTheDocument();
     expect(shell().getAttribute("data-project-revision")).toBe("0");
   });
@@ -391,19 +448,37 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
         projectId: "template-source",
         name: "Full Album Rahasia",
         revision: 0,
-        tracks: [{ id: "t1", title: "Judul Rahasia", sourcePath: "C:/secret/audio.mp3" }],
+        tracks: [
+          {
+            id: "t1",
+            title: "Judul Rahasia",
+            sourcePath: "C:/secret/audio.mp3",
+          },
+        ],
         visualScene: minimalTemplate.scene,
       },
       location: { kind: "known-path" },
     });
     render(<AppShell />);
-    await waitFor(() => expect(shell().getAttribute("data-project-id")).toBe("template-source"));
+    await waitFor(() =>
+      expect(shell().getAttribute("data-project-id")).toBe("template-source"),
+    );
     fireEvent.click(screen.getByRole("button", { name: "Template" }));
     fireEvent.click(screen.getByRole("button", { name: "Simpan Template" }));
-    expect(screen.getByRole("dialog", { name: "Simpan sebagai Template" })).toBeInTheDocument();
-    fireEvent.change(screen.getByLabelText("Nama Template"), { target: { value: "Gaya Favorit" } });
-    fireEvent.change(screen.getByLabelText("Kategori Simpan"), { target: { value: "Premium" } });
-    fireEvent.click(within(screen.getByRole("dialog", { name: "Simpan sebagai Template" })).getByRole("button", { name: "Simpan" }));
+    expect(
+      screen.getByRole("dialog", { name: "Simpan sebagai Template" }),
+    ).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText("Nama Template"), {
+      target: { value: "Gaya Favorit" },
+    });
+    fireEvent.change(screen.getByLabelText("Kategori Simpan"), {
+      target: { value: "Premium" },
+    });
+    fireEvent.click(
+      within(
+        screen.getByRole("dialog", { name: "Simpan sebagai Template" }),
+      ).getByRole("button", { name: "Simpan" }),
+    );
     await waitFor(() => expect(saveCalls).toHaveLength(1));
     const serialized = JSON.stringify(saveCalls[0]);
     expect(saveCalls[0]?.category).toBe("Premium");
@@ -416,11 +491,19 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
   });
 
   it("rejects corrupt or missing local template safely", async () => {
-    bridge.loadTemplate = async () => ({ status: "error", code: "TEMPLATE_INVALID", message: "Template rusak." });
+    bridge.loadTemplate = async () => ({
+      status: "error",
+      code: "TEMPLATE_INVALID",
+      message: "Template rusak.",
+    });
     render(<AppShell />);
     fireEvent.click(screen.getByRole("button", { name: "Template" }));
-    await waitFor(() => expect(screen.getByRole("alert")).toHaveTextContent("Template rusak."));
-    expect(screen.getByRole("button", { name: "Coba Template" })).toBeDisabled();
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent("Template rusak."),
+    );
+    expect(
+      screen.getByRole("button", { name: "Coba Template" }),
+    ).toBeDisabled();
     expect(shell().getAttribute("data-project-revision")).toBe("0");
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
   });

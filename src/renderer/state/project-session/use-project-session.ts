@@ -21,7 +21,8 @@ import type {
 } from "../../../core/domain/visual-scene-schema";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  createTemplateFromProject, TemplateTrialSession,
+  createTemplateFromProject,
+  TemplateTrialSession,
   type SaveTemplateInput,
 } from "../../../core/application/services/template-workflow-service";
 import type { TemplateDocument } from "../../../core/domain/template-document";
@@ -263,8 +264,11 @@ export function useProjectSession(): ProjectSessionView {
     useState<ArtworkActionState>("idle");
   const [artworkError, setArtworkError] = useState<MediaUiError | null>(null);
 
-  const [templateTrialName, setTemplateTrialName] = useState<string | null>(null);
-  const [templateTrialProject, setTemplateTrialProject] = useState<ProjectDocument | null>(null);
+  const [templateTrialName, setTemplateTrialName] = useState<string | null>(
+    null,
+  );
+  const [templateTrialProject, setTemplateTrialProject] =
+    useState<ProjectDocument | null>(null);
   const [templateError, setTemplateError] = useState<string | null>(null);
   const templateTrialRef = useRef<TemplateTrialSession | null>(null);
   const [layerError, setLayerError] = useState<string | null>(null);
@@ -868,19 +872,24 @@ export function useProjectSession(): ProjectSessionView {
     setTemplateError(null);
   }, []);
 
-  const beginTemplateTrial = useCallback((template: TemplateDocument): boolean => {
-    try {
-      const trial = new TemplateTrialSession(history.snapshot(), template);
-      templateTrialRef.current = trial;
-      setTemplateTrialProject(trial.previewProject());
-      setTemplateTrialName(template.name);
-      setTemplateError(null);
-      return true;
-    } catch {
-      setTemplateError("Template rusak atau tidak kompatibel. Proyek tidak diubah.");
-      return false;
-    }
-  }, [history]);
+  const beginTemplateTrial = useCallback(
+    (template: TemplateDocument): boolean => {
+      try {
+        const trial = new TemplateTrialSession(history.snapshot(), template);
+        templateTrialRef.current = trial;
+        setTemplateTrialProject(trial.previewProject());
+        setTemplateTrialName(template.name);
+        setTemplateError(null);
+        return true;
+      } catch {
+        setTemplateError(
+          "Template rusak atau tidak kompatibel. Proyek tidak diubah.",
+        );
+        return false;
+      }
+    },
+    [history],
+  );
 
   const applyTemplateTrial = useCallback((): boolean => {
     const trial = templateTrialRef.current;
@@ -888,7 +897,9 @@ export function useProjectSession(): ProjectSessionView {
     try {
       const result = trial.apply(history);
       if (result.status === "rejected") {
-        setTemplateError("Proyek berubah sejak Mode Coba. Coba ulang template.");
+        setTemplateError(
+          "Proyek berubah sejak Mode Coba. Coba ulang template.",
+        );
         templateTrialRef.current = null;
         setTemplateTrialProject(null);
         setTemplateTrialName(null);
@@ -906,26 +917,33 @@ export function useProjectSession(): ProjectSessionView {
     }
   }, [history, publishHistorySnapshot]);
 
-  const saveVisualTemplate = useCallback(async (input: SaveTemplateInput): Promise<boolean> => {
-    if (!window.lfa.saveTemplate) {
-      setTemplateError("Penyimpanan template lokal tidak tersedia.");
-      return false;
-    }
-    try {
-      const before = history.snapshot();
-      const template = createTemplateFromProject(before.project, input);
-      const result = await window.lfa.saveTemplate(template);
-      if (result.status === "error") {
-        setTemplateError(result.code === "TEMPLATE_EXISTS" ? "ID template sudah digunakan." : result.message);
+  const saveVisualTemplate = useCallback(
+    async (input: SaveTemplateInput): Promise<boolean> => {
+      if (!window.lfa.saveTemplate) {
+        setTemplateError("Penyimpanan template lokal tidak tersedia.");
         return false;
       }
-      setTemplateError(null);
-      return true;
-    } catch {
-      setTemplateError("Template tidak valid atau gagal disimpan.");
-      return false;
-    }
-  }, [history]);
+      try {
+        const before = history.snapshot();
+        const template = createTemplateFromProject(before.project, input);
+        const result = await window.lfa.saveTemplate(template);
+        if (result.status === "error") {
+          setTemplateError(
+            result.code === "TEMPLATE_EXISTS"
+              ? "ID template sudah digunakan."
+              : result.message,
+          );
+          return false;
+        }
+        setTemplateError(null);
+        return true;
+      } catch {
+        setTemplateError("Template tidak valid atau gagal disimpan.");
+        return false;
+      }
+    },
+    [history],
+  );
 
   const undo = useCallback((): boolean => {
     const result = history.undo();

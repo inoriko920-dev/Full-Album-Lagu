@@ -40,7 +40,11 @@ import type {
 } from "./project-persistence";
 
 import type { TemplateDocument } from "../domain/template-document";
-import type { TemplateListResult, TemplateLoadResult, TemplateSaveResult } from "./template-ipc";
+import type {
+  TemplateListResult,
+  TemplateLoadResult,
+  TemplateSaveResult,
+} from "./template-ipc";
 
 export interface LfaBridge {
   /** Optional for legacy test fixtures; Electron preload always exposes these. */

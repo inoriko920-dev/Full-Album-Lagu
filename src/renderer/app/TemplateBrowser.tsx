@@ -1,7 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { TemplateCatalogEntry } from "../../core/application/ports/template-store";
 import { buildStaticScenePreview } from "../../core/domain/static-scene-preview";
-import { templateCategorySchema, type TemplateCategory, type TemplateDocument } from "../../core/domain/template-document";
+import {
+  templateCategorySchema,
+  type TemplateCategory,
+  type TemplateDocument,
+} from "../../core/domain/template-document";
 import type { ProjectDocument } from "../../core/domain/project-document";
 import type { ProjectSessionView } from "../state/project-session/use-project-session";
 import { StaticScenePreview } from "../visual/StaticScenePreview";
@@ -17,18 +21,29 @@ export interface TemplateBrowserProps {
 }
 
 function makeTemplateId(name: string): string {
-  const prefix = name.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "").slice(0, 40) || "template";
-  const suffix = typeof crypto !== "undefined" && "randomUUID" in crypto
-    ? crypto.randomUUID().replaceAll("-", "").slice(0, 12)
-    : Math.random().toString(36).slice(2, 14);
+  const prefix =
+    name
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 40) || "template";
+  const suffix =
+    typeof crypto !== "undefined" && "randomUUID" in crypto
+      ? crypto.randomUUID().replaceAll("-", "").slice(0, 12)
+      : Math.random().toString(36).slice(2, 14);
   return `${prefix}-${suffix}`;
 }
 
-export function TemplateBrowser({ session, selectedTrackId, onClose }: TemplateBrowserProps) {
+export function TemplateBrowser({
+  session,
+  selectedTrackId,
+  onClose,
+}: TemplateBrowserProps) {
   const [entries, setEntries] = useState<TemplateCatalogEntry[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateDocument | null>(null);
+  const [selectedTemplate, setSelectedTemplate] =
+    useState<TemplateDocument | null>(null);
   const [filter, setFilter] = useState<Filter>("Semua");
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
@@ -52,8 +67,14 @@ export function TemplateBrowser({ session, selectedTrackId, onClose }: TemplateB
     setCatalogError(null);
     setEntries(result.entries);
     setSelectedId((prior) =>
-      prior !== null && result.entries.some((entry) => entry.templateId === prior)
-        ? prior : (result.entries.find((entry) => entry.templateId === "minimal-biru") ?? result.entries[0])?.templateId ?? null,
+      prior !== null &&
+      result.entries.some((entry) => entry.templateId === prior)
+        ? prior
+        : ((
+            result.entries.find(
+              (entry) => entry.templateId === "minimal-biru",
+            ) ?? result.entries[0]
+          )?.templateId ?? null),
     );
   };
 
@@ -63,17 +84,30 @@ export function TemplateBrowser({ session, selectedTrackId, onClose }: TemplateB
       setCatalogError("Layanan template lokal tidak tersedia.");
       return;
     }
-    void window.lfa.listTemplates().then((result) => {
-      if (!mounted) return;
-      if (result.status === "error") {
-        setCatalogError(result.message);
-        return;
-      }
-      setEntries(result.entries);
-      setSelectedId((result.entries.find((entry) => entry.templateId === "minimal-biru") ?? result.entries[0])?.templateId ?? null);
-      setCatalogError(null);
-    }).catch(() => { if (mounted) setCatalogError("Gagal membaca katalog template lokal."); });
-    return () => { mounted = false; };
+    void window.lfa
+      .listTemplates()
+      .then((result) => {
+        if (!mounted) return;
+        if (result.status === "error") {
+          setCatalogError(result.message);
+          return;
+        }
+        setEntries(result.entries);
+        setSelectedId(
+          (
+            result.entries.find(
+              (entry) => entry.templateId === "minimal-biru",
+            ) ?? result.entries[0]
+          )?.templateId ?? null,
+        );
+        setCatalogError(null);
+      })
+      .catch(() => {
+        if (mounted) setCatalogError("Gagal membaca katalog template lokal.");
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -83,28 +117,47 @@ export function TemplateBrowser({ session, selectedTrackId, onClose }: TemplateB
       return;
     }
     setSelectedTemplate(null);
-    void window.lfa.loadTemplate(selectedId).then((result) => {
-      if (requestVersion.current !== version) return;
-      if (result.status === "error") {
-        setCatalogError(result.message);
-      } else {
-        setCatalogError(null);
-        setSelectedTemplate(result.template);
-      }
-    }).catch(() => {
-      if (requestVersion.current === version) setCatalogError("Template tidak dapat dimuat.");
-    });
-    return () => { requestVersion.current += 1; };
+    void window.lfa
+      .loadTemplate(selectedId)
+      .then((result) => {
+        if (requestVersion.current !== version) return;
+        if (result.status === "error") {
+          setCatalogError(result.message);
+        } else {
+          setCatalogError(null);
+          setSelectedTemplate(result.template);
+        }
+      })
+      .catch(() => {
+        if (requestVersion.current === version)
+          setCatalogError("Template tidak dapat dimuat.");
+      });
+    return () => {
+      requestVersion.current += 1;
+    };
   }, [selectedId]);
 
-  const filtered = useMemo(() => entries.filter((entry) =>
-    (filter === "Semua" || entry.category === filter)
-    && entry.name.toLocaleLowerCase("id").includes(search.trim().toLocaleLowerCase("id")),
-  ), [entries, filter, search]);
+  const filtered = useMemo(
+    () =>
+      entries.filter(
+        (entry) =>
+          (filter === "Semua" || entry.category === filter) &&
+          entry.name
+            .toLocaleLowerCase("id")
+            .includes(search.trim().toLocaleLowerCase("id")),
+      ),
+    [entries, filter, search],
+  );
   const inTrial = session.templateTrialProject !== null;
-  const previewSource: ProjectDocument = session.templateTrialProject
-    ?? (selectedTemplate ? { ...session.project, visualScene: selectedTemplate.scene } : session.project);
-  const preview = buildStaticScenePreview(previewSource, selectedTrackId === null ? {} : { selectedTrackId });
+  const previewSource: ProjectDocument =
+    session.templateTrialProject ??
+    (selectedTemplate
+      ? { ...session.project, visualScene: selectedTemplate.scene }
+      : session.project);
+  const preview = buildStaticScenePreview(
+    previewSource,
+    selectedTrackId === null ? {} : { selectedTrackId },
+  );
   const categories: Filter[] = ["Semua", ...templateCategorySchema.options];
 
   function closeBrowser() {
@@ -161,40 +214,85 @@ export function TemplateBrowser({ session, selectedTrackId, onClose }: TemplateB
             <p className="eyebrow">KOLEKSI VISUAL LOKAL</p>
             <h2>Template</h2>
           </div>
-          <ActionButton variant="secondary" label="Kembali ke Editor" onClick={closeBrowser} disabled={busy} />
+          <ActionButton
+            variant="secondary"
+            label="Kembali ke Editor"
+            onClick={closeBrowser}
+            disabled={busy}
+          />
         </header>
         <div className="template-browser__body">
-          <aside className="template-browser__catalog" aria-label="Katalog Template">
+          <aside
+            className="template-browser__catalog"
+            aria-label="Katalog Template"
+          >
             <div className="template-browser__filters">
               <label>
                 <span>Cari Template</span>
-                <input type="search" aria-label="Cari Template" value={search}
-                  onChange={(event) => setSearch(event.currentTarget.value)} placeholder="Cari template lokal..." />
+                <input
+                  type="search"
+                  aria-label="Cari Template"
+                  value={search}
+                  onChange={(event) => setSearch(event.currentTarget.value)}
+                  placeholder="Cari template lokal..."
+                />
               </label>
               <label>
                 <span>Kategori</span>
-                <select aria-label="Kategori Template" value={filter} onChange={(event) => setFilter(event.currentTarget.value as Filter)}>
-                  {categories.map((category) => <option key={category} value={category}>{category}</option>)}
+                <select
+                  aria-label="Kategori Template"
+                  value={filter}
+                  onChange={(event) =>
+                    setFilter(event.currentTarget.value as Filter)
+                  }
+                >
+                  {categories.map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
                 </select>
               </label>
             </div>
-            <div className="template-browser__grid" aria-label="Daftar Template">
+            <div
+              className="template-browser__grid"
+              aria-label="Daftar Template"
+            >
               {filtered.map((entry) => (
-                <button className={`template-browser__item${selectedId === entry.templateId ? " is-selected" : ""}`}
-                  key={entry.templateId} type="button" aria-pressed={selectedId === entry.templateId}
-                  onClick={() => { if (!busy) { session.revertTemplateTrial(); setSavedMessage(null); setSelectedId(entry.templateId); } }}>
-                  <span className="template-browser__thumbnail" aria-hidden="true">
+                <button
+                  className={`template-browser__item${selectedId === entry.templateId ? " is-selected" : ""}`}
+                  key={entry.templateId}
+                  type="button"
+                  aria-pressed={selectedId === entry.templateId}
+                  onClick={() => {
+                    if (!busy) {
+                      session.revertTemplateTrial();
+                      setSavedMessage(null);
+                      setSelectedId(entry.templateId);
+                    }
+                  }}
+                >
+                  <span
+                    className="template-browser__thumbnail"
+                    aria-hidden="true"
+                  >
                     <span className="template-browser__thumbnail-art">♫</span>
                     <span className="template-browser__thumbnail-line" />
                   </span>
                   <strong>{entry.name}</strong>
-                  <small>{entry.category} · {entry.origin === "built-in" ? "Bawaan" : "Milik Saya"}</small>
+                  <small>
+                    {entry.category} ·{" "}
+                    {entry.origin === "built-in" ? "Bawaan" : "Milik Saya"}
+                  </small>
                 </button>
               ))}
               {filtered.length === 0 ? <p>Template tidak ditemukan.</p> : null}
             </div>
           </aside>
-          <div className="template-browser__detail" aria-label="Detail Template">
+          <div
+            className="template-browser__detail"
+            aria-label="Detail Template"
+          >
             <div className="template-browser__preview">
               <StaticScenePreview model={preview} />
             </div>
@@ -204,22 +302,55 @@ export function TemplateBrowser({ session, selectedTrackId, onClose }: TemplateB
                 <p>{selectedTemplate?.category ?? "Kategori template"}</p>
               </div>
               <p>Urutan track dan durasi tidak berubah.</p>
-              <p>Template hanya mengubah lapisan visual. Audio, metadata, dan artwork sumber tetap aman.</p>
-              {inTrial ? <p role="status" className="template-browser__trial-banner">Mode Coba — perubahan belum disimpan ke proyek.</p> : null}
+              <p>
+                Template hanya mengubah lapisan visual. Audio, metadata, dan
+                artwork sumber tetap aman.
+              </p>
+              {inTrial ? (
+                <p role="status" className="template-browser__trial-banner">
+                  Mode Coba — perubahan belum disimpan ke proyek.
+                </p>
+              ) : null}
               {savedMessage ? <p role="status">{savedMessage}</p> : null}
-              {session.templateError || catalogError ? <p role="alert" className="template-browser__error">{session.templateError ?? catalogError}</p> : null}
+              {session.templateError || catalogError ? (
+                <p role="alert" className="template-browser__error">
+                  {session.templateError ?? catalogError}
+                </p>
+              ) : null}
               <div className="template-browser__actions">
                 {inTrial ? (
                   <>
-                    <ActionButton variant="secondary" label="Kembali ke Sebelumnya" onClick={revert} disabled={busy} />
-                    <ActionButton variant="primary" label="Terapkan Template" onClick={apply} disabled={busy} />
+                    <ActionButton
+                      variant="secondary"
+                      label="Kembali ke Sebelumnya"
+                      onClick={revert}
+                      disabled={busy}
+                    />
+                    <ActionButton
+                      variant="primary"
+                      label="Terapkan Template"
+                      onClick={apply}
+                      disabled={busy}
+                    />
                   </>
                 ) : (
-                  <ActionButton variant="primary" label="Coba Template" onClick={tryTemplate} disabled={selectedTemplate === null || busy} />
+                  <ActionButton
+                    variant="primary"
+                    label="Coba Template"
+                    onClick={tryTemplate}
+                    disabled={selectedTemplate === null || busy}
+                  />
                 )}
-                <ActionButton variant="secondary" label="Simpan Template" onClick={() => {
-                  setSaveName(""); setSavedMessage(null); setShowSaveDialog(true);
-                }} disabled={busy} />
+                <ActionButton
+                  variant="secondary"
+                  label="Simpan Template"
+                  onClick={() => {
+                    setSaveName("");
+                    setSavedMessage(null);
+                    setShowSaveDialog(true);
+                  }}
+                  disabled={busy}
+                />
               </div>
             </div>
           </div>
@@ -227,23 +358,63 @@ export function TemplateBrowser({ session, selectedTrackId, onClose }: TemplateB
       </div>
       {showSaveDialog ? (
         <div className="template-browser__dialog-backdrop">
-          <section role="dialog" aria-modal="true" aria-label="Simpan sebagai Template" className="template-browser__save-dialog">
-            <header><h3>Simpan sebagai Template</h3></header>
-            <p>Simpan hanya pengaturan visual saat ini — bukan track, urutan, durasi, atau file audio.</p>
-            <label>Nama Template
-              <input aria-label="Nama Template" value={saveName} maxLength={120} autoFocus
-                onChange={(event) => setSaveName(event.currentTarget.value)} />
+          <section
+            role="dialog"
+            aria-modal="true"
+            aria-label="Simpan sebagai Template"
+            className="template-browser__save-dialog"
+          >
+            <header>
+              <h3>Simpan sebagai Template</h3>
+            </header>
+            <p>
+              Simpan hanya pengaturan visual saat ini — bukan track, urutan,
+              durasi, atau file audio.
+            </p>
+            <label>
+              Nama Template
+              <input
+                aria-label="Nama Template"
+                value={saveName}
+                maxLength={120}
+                autoFocus
+                onChange={(event) => setSaveName(event.currentTarget.value)}
+              />
             </label>
-            <label>Kategori
-              <select aria-label="Kategori Simpan" value={saveCategory}
-                onChange={(event) => setSaveCategory(event.currentTarget.value as TemplateCategory)}>
-                {templateCategorySchema.options.map((category) => <option key={category} value={category}>{category}</option>)}
+            <label>
+              Kategori
+              <select
+                aria-label="Kategori Simpan"
+                value={saveCategory}
+                onChange={(event) =>
+                  setSaveCategory(event.currentTarget.value as TemplateCategory)
+                }
+              >
+                {templateCategorySchema.options.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </select>
             </label>
-            {session.templateError ? <p role="alert" className="template-browser__error">{session.templateError}</p> : null}
+            {session.templateError ? (
+              <p role="alert" className="template-browser__error">
+                {session.templateError}
+              </p>
+            ) : null}
             <div className="template-browser__actions">
-              <ActionButton variant="secondary" label="Batal" disabled={busy} onClick={() => setShowSaveDialog(false)} />
-              <ActionButton variant="primary" label="Simpan" disabled={busy || !saveName.trim()} onClick={() => void saveUserTemplate()} />
+              <ActionButton
+                variant="secondary"
+                label="Batal"
+                disabled={busy}
+                onClick={() => setShowSaveDialog(false)}
+              />
+              <ActionButton
+                variant="primary"
+                label="Simpan"
+                disabled={busy || !saveName.trim()}
+                onClick={() => void saveUserTemplate()}
+              />
             </div>
           </section>
         </div>
