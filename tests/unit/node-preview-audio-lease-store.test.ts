@@ -2,9 +2,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import {
-  NodePreviewAudioLeaseStore,
-} from "../../src/main/infrastructure/media/node-preview-audio-lease-store";
+import { NodePreviewAudioLeaseStore } from "../../src/main/infrastructure/media/node-preview-audio-lease-store";
 
 const directories: string[] = [];
 const services: NodePreviewAudioLeaseStore[] = [];
@@ -34,9 +32,9 @@ async function readBytes(stream: AsyncIterable<Buffer>) {
 afterEach(async () => {
   for (const gateway of services.splice(0)) gateway.close();
   await Promise.all(
-    directories.splice(0).map((directory) =>
-      rm(directory, { recursive: true, force: true }),
-    ),
+    directories
+      .splice(0)
+      .map((directory) => rm(directory, { recursive: true, force: true })),
   );
 });
 
@@ -58,7 +56,9 @@ describe("T11-W06-02 main-owned audio lease gateway", () => {
       "Cache-Control": "no-store",
       "Accept-Ranges": "bytes",
     });
-    expect(await readBytes(result.stream)).toEqual(Buffer.from(bytes.slice(2, 5)));
+    expect(await readBytes(result.stream)).toEqual(
+      Buffer.from(bytes.slice(2, 5)),
+    );
   });
 
   it("serves full media with 200 and no Content-Range", async () => {
@@ -94,7 +94,12 @@ describe("T11-W06-02 main-owned audio lease gateway", () => {
 
   it("denies malformed, multiple and impossible ranges instead of leaking full source", async () => {
     const { gateway, token } = await sample();
-    for (const rangeHeader of ["bytes=0-1,3-4", "bytes=2-1", "bytes=999-", "nope"]) {
+    for (const rangeHeader of [
+      "bytes=0-1,3-4",
+      "bytes=2-1",
+      "bytes=999-",
+      "nope",
+    ]) {
       const result = await gateway.openRange({
         projectId: "project-A",
         ownerWebContentsId: 7,
@@ -209,7 +214,8 @@ describe("T11-W06-02 main-owned audio lease gateway", () => {
         error instanceof Error &&
         "code" in error &&
         ["EPERM", "EACCES"].includes(String(error.code))
-      ) return;
+      )
+        return;
       throw error;
     }
     await expect(
@@ -221,7 +227,6 @@ describe("T11-W06-02 main-owned audio lease gateway", () => {
       }),
     ).rejects.toThrow("symbolic link");
   });
-
 
   it("immediately tears down an active audio stream when its lease is revoked", async () => {
     const { gateway, token } = await sample(new Uint8Array(2_000_000));
@@ -256,7 +261,9 @@ describe("T11-W06-02 main-owned audio lease gateway", () => {
     });
     expect(result.status).toBe(206);
     if (result.status !== 206) throw new Error("expected partial audio");
-    expect(await readBytes(result.stream)).toEqual(Buffer.from(bytes.slice(-2)));
+    expect(await readBytes(result.stream)).toEqual(
+      Buffer.from(bytes.slice(-2)),
+    );
     gateway.revokeWindow(7);
     expect(
       await gateway.openRange({

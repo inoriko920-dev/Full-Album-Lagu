@@ -94,11 +94,7 @@ export class NodePreviewAudioLeaseStore {
     }
 
     const info = await stat(canonicalPath);
-    if (
-      !info.isFile() ||
-      !Number.isSafeInteger(info.size) ||
-      info.size <= 0
-    ) {
+    if (!info.isFile() || !Number.isSafeInteger(info.size) || info.size <= 0) {
       throw new Error("Audio source must be a non-empty regular file.");
     }
 
@@ -118,7 +114,9 @@ export class NodePreviewAudioLeaseStore {
     return token;
   }
 
-  async openRange(request: PreviewAudioRequest): Promise<PreviewAudioStreamResult> {
+  async openRange(
+    request: PreviewAudioRequest,
+  ): Promise<PreviewAudioStreamResult> {
     const grant = this.grants.get(request.token);
     if (
       grant === undefined ||
