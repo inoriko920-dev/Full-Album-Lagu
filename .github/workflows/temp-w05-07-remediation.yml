@@ -14,12 +14,12 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npx prettier --write src/renderer/app/AppShell.tsx src/renderer/app/TemplateBrowser.tsx src/renderer/app/template-browser.css src/renderer/state/project-session/use-project-session.ts src/main/verification/w11-05-ui-capture.ts
+      - run: npx prettier --write src/renderer/app/AppShell.tsx src/renderer/app/TemplateBrowser.tsx src/renderer/app/template-browser.css src/renderer/state/project-session/use-project-session.ts src/main/verification/w11-05-ui-capture.ts src/renderer/app/visual-layer-controls.css tests/component/AppShell.visual-layer-editor.test.tsx
       - name: Commit formatted changes
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src
+          git add src tests
           if ! git diff --cached --quiet; then
             git commit -m "style: normalize W05-07 frozen remediation"
             git push
