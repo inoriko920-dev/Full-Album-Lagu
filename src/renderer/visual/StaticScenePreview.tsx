@@ -14,7 +14,10 @@ export interface StaticScenePreviewProps {
   onSelectLayer?: (layerId: string) => void;
 }
 
-const spectrumBarHeights = [24, 40, 63, 36, 72, 46, 86, 54, 30, 68, 42, 90, 53, 72, 35, 58, 82, 45, 67, 39, 26];
+const spectrumBarHeights = [
+  24, 40, 63, 36, 72, 46, 86, 54, 30, 68, 42, 90, 53, 72, 35, 58, 82, 45, 67,
+  39, 26,
+];
 
 const anchorOffsets: Record<VisualLayerAnchor, readonly [number, number]> = {
   "top-left": [0, 0],
@@ -41,7 +44,9 @@ function frameStyle(transform: VisualLayerTransform): CSSProperties {
   };
 }
 
-function backgroundStyle(layer: Extract<StaticSceneLayer, { kind: "background" }>): CSSProperties {
+function backgroundStyle(
+  layer: Extract<StaticSceneLayer, { kind: "background" }>,
+): CSSProperties {
   const fill = layer.fill;
   if (fill.type === "solid") return { backgroundColor: fill.color };
   return {
@@ -64,8 +69,17 @@ function layerContent(layer: StaticSceneLayer) {
       return null;
     case "artwork":
       return (
-        <span className="static-scene-preview__artwork" role="img" aria-label="Placeholder artwork">
-          <span className="static-scene-preview__artwork-mark" aria-hidden="true">♫</span>
+        <span
+          className="static-scene-preview__artwork"
+          role="img"
+          aria-label="Placeholder artwork"
+        >
+          <span
+            className="static-scene-preview__artwork-mark"
+            aria-hidden="true"
+          >
+            ♫
+          </span>
           <span>Artwork</span>
         </span>
       );
@@ -89,7 +103,10 @@ function layerContent(layer: StaticSceneLayer) {
       );
     case "spectrum":
       return (
-        <span className="static-scene-preview__spectrum" aria-label="Spectrum statis">
+        <span
+          className="static-scene-preview__spectrum"
+          aria-label="Spectrum statis"
+        >
           {spectrumBarHeights.map((height, index) => (
             <span
               key={index}
@@ -101,7 +118,10 @@ function layerContent(layer: StaticSceneLayer) {
       );
     case "progress":
       return (
-        <span className="static-scene-preview__progress" aria-label="Progress statis">
+        <span
+          className="static-scene-preview__progress"
+          aria-label="Progress statis"
+        >
           <span className="static-scene-preview__progress-track" />
         </span>
       );
@@ -148,7 +168,10 @@ export function StaticScenePreview({
           >
             {layerContent(layer)}
             {model.selectionOutline?.layerId === layer.id ? (
-              <span className="static-scene-preview__selection" aria-hidden="true">
+              <span
+                className="static-scene-preview__selection"
+                aria-hidden="true"
+              >
                 <span className="static-scene-preview__handle static-scene-preview__handle--tl" />
                 <span className="static-scene-preview__handle static-scene-preview__handle--tr" />
                 <span className="static-scene-preview__handle static-scene-preview__handle--bl" />

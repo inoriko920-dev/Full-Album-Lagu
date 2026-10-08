@@ -41,9 +41,21 @@ export interface StaticSceneInspector {
   locked: boolean;
   transform: VisualLayerTransform;
   details:
-    | { kind: "background"; fill: Extract<ResolvedVisualLayer, { kind: "background" }>["fill"] }
-    | { kind: "artwork"; binding: "active-track-artwork" | "album-artwork"; available: boolean }
-    | { kind: "text"; role: Extract<ResolvedVisualLayer, { kind: "text" }>["role"]; style: Extract<ResolvedVisualLayer, { kind: "text" }>["style"]; value: string }
+    | {
+        kind: "background";
+        fill: Extract<ResolvedVisualLayer, { kind: "background" }>["fill"];
+      }
+    | {
+        kind: "artwork";
+        binding: "active-track-artwork" | "album-artwork";
+        available: boolean;
+      }
+    | {
+        kind: "text";
+        role: Extract<ResolvedVisualLayer, { kind: "text" }>["role"];
+        style: Extract<ResolvedVisualLayer, { kind: "text" }>["style"];
+        value: string;
+      }
     | { kind: "spectrum" | "progress"; runtimeState: "structural-placeholder" };
 }
 
@@ -71,7 +83,10 @@ function inspect(layer: StaticSceneLayer): StaticSceneInspector {
   };
 
   if (layer.kind === "background") {
-    return { ...common, details: { kind: "background", fill: structuredClone(layer.fill) } };
+    return {
+      ...common,
+      details: { kind: "background", fill: structuredClone(layer.fill) },
+    };
   }
   if (layer.kind === "artwork") {
     return {
@@ -113,7 +128,8 @@ export function buildStaticScenePreview(
   const resolved = resolveVisualScene(project, options.selectedTrackId);
   const selectedId = options.selectedLayerId ?? null;
   const selectedLayerId =
-    selectedId !== null && resolved.layers.some((layer) => layer.id === selectedId)
+    selectedId !== null &&
+    resolved.layers.some((layer) => layer.id === selectedId)
       ? selectedId
       : null;
 
@@ -121,7 +137,9 @@ export function buildStaticScenePreview(
   const previewTransform =
     preview !== undefined &&
     preview.layerId === selectedLayerId &&
-    resolved.layers.some((layer) => layer.id === preview.layerId && !layer.locked)
+    resolved.layers.some(
+      (layer) => layer.id === preview.layerId && !layer.locked,
+    )
       ? visualLayerTransformSchema.parse(structuredClone(preview.transform))
       : null;
 
@@ -154,7 +172,10 @@ export function buildStaticScenePreview(
     selectedLayerId,
     selectionOutline:
       selected !== undefined && selectedVisible
-        ? { layerId: selected.id, transform: structuredClone(selected.transform) }
+        ? {
+            layerId: selected.id,
+            transform: structuredClone(selected.transform),
+          }
         : null,
     inspector: selected === undefined ? null : inspect(selected),
   };

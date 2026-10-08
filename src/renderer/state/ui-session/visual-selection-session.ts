@@ -27,8 +27,14 @@ export class VisualSelectionSession {
     });
   }
 
-  selectFromLayerList(model: StaticScenePreviewModel, layerId: string | null): boolean {
-    if (layerId !== null && !model.layerList.some((item) => item.id === layerId)) {
+  selectFromLayerList(
+    model: StaticScenePreviewModel,
+    layerId: string | null,
+  ): boolean {
+    if (
+      layerId !== null &&
+      !model.layerList.some((item) => item.id === layerId)
+    ) {
       return false;
     }
     this.selectedLayerId = layerId;
@@ -52,8 +58,13 @@ export class VisualSelectionSession {
         : null;
   }
 
-  previewGesture(model: StaticScenePreviewModel, input: VisualLayerTransform): boolean {
-    const selected = model.layers.find((layer) => layer.id === this.selectedLayerId);
+  previewGesture(
+    model: StaticScenePreviewModel,
+    input: VisualLayerTransform,
+  ): boolean {
+    const selected = model.layers.find(
+      (layer) => layer.id === this.selectedLayerId,
+    );
     if (selected === undefined || selected.locked) return false;
     this.gesturePreview = {
       layerId: selected.id,
