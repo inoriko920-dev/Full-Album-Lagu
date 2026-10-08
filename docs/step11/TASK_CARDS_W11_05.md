@@ -79,7 +79,10 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W05-02 PASS / VERIFIED.
 - Goal:
   - create reusable visual-only TemplateDocument and main-owned local catalog/store;
@@ -107,13 +110,15 @@ Serial implementation only.
   - save does not dirty project;
   - second-project dynamic binding;
   - 100-template catalog stress contribution.
-- Exit gate: PASS / VERIFIED before 04.
+- Exit gate: **PASS / VERIFIED**. Nine built-in starters, 100-template stress, strict portable main-only storage, pure Try/Revert, one guarded template-origin Apply and second-project binding tested. Windows CI #352 PASS, packaged catalog follow-up check in final evidence.
+- Evidence: `docs/step11/evidence/T11_W05_03_TEMPLATE_DOCUMENT_LOCAL_STORE_TRIAL_APPLY_EVIDENCE.md`.
+- Dependency unlock: T11-W05-04 READY; W05-05..07 remain BLOCKED.
 
 ## T11-W05-04 — Static Scene Preview + Selection/Inspector Projection
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-03 PASS / VERIFIED.
 - Goal:
   - make manual layer changes visible without pulling W11-06 runtime forward.

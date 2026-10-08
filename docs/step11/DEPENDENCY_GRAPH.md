@@ -16,7 +16,7 @@ Dependency semantics:
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **COMPLETE / PASS**
 4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **COMPLETE / PASS**
-5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013 — **IN PROGRESS; T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY**
+5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013 — **IN PROGRESS; T11-W05-01..03 PASS / VERIFIED; T11-W05-04 READY**
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
 7. **W11-07 — Animation + Boundary Transitions** — FTR-009 + FTR-010
 8. **W11-08 — Render Readiness Contract** — FTR-017 + FTR-018
@@ -169,7 +169,7 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - T11-W04-03 verification: implementation head `f2e33b6ec6a08b3d92acbe4963a1cf73c7086825`; Windows CI `37657078199` / #278 PASS; evidence `evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`.
 - T11-W04-04 verification: implementation head `ea2b6230af036f9eed05232d5ef0cd96609abb7d`; Windows CI `37659863455` / #283 PASS; evidence `evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`.
 - T11-W04-05 verification: implementation head `986e13f186d4dbc6bbb621f77a222fe8d30fa9f4`; Windows CI `37662992589` / #290 PASS; evidence `evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
-- Historical dependency result: W05-01 unlocked W05-02. Current checkpoint: W05-01..02 PASS / VERIFIED; W05-03 READY.
+- Historical dependency result: W05-01 unlocked W05-02. Current checkpoint: W05-01..03 PASS / VERIFIED; W05-04 READY.
 
 
 ## W11-04 completion
@@ -180,7 +180,7 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Verified implementation head: `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`.
 - Windows CI `37672986946` / #304 PASS.
 - **W11-04 COMPLETE / PASS.**
-- Historical dependency result: W05-01 opened W05-02. Current checkpoint: W05-01..02 PASS / VERIFIED; SOL T11-W05-03 is the only next task.
+- Historical dependency result: W05-01 opened W05-02. Current checkpoint: W05-01..02 PASS / VERIFIED; SOL T11-W05-04 is the only next task.
 
 
 ## W11-05 planning checkpoint
@@ -189,7 +189,7 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Features: FTR-007 + FTR-011; FTR-013/FTR-018 cross-cut.
 - Planning/DoR: COMPLETE / PASS.
 - Acceptance: AC-W11-05-01..25.
-- Serial order: T11-W05-01 PASS -> T11-W05-02 PASS -> T11-W05-03 READY -> T11-W05-04 BLOCKED -> T11-W05-05 BLOCKED -> T11-W05-06 BLOCKED -> T11-W05-07 BLOCKED.
+- Serial order: T11-W05-01 PASS -> T11-W05-02 PASS -> T11-W05-03 PASS -> T11-W05-04 READY -> T11-W05-05 BLOCKED -> T11-W05-06 BLOCKED -> T11-W05-07 BLOCKED.
 - Scene/layer state is additive schema-v1, stable-ID, canonical-array-order and CommandEngine-owned.
 - Templates are local visual configuration only; Try is session-only and Apply is one template-origin atomic history unit.
 - Frozen SCR-002C/SCR-003A/SCR-003B/DLG-008 are sufficient; no new UI prompt/image generation.

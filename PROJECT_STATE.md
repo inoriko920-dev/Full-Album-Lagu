@@ -3,16 +3,16 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL T11-W05-02 COMPLETE / PASS; next authorized task is SOL T11-W05-03 only
+- Active role at current checkpoint: SOL T11-W05-03 COMPLETE / PASS; next authorized task is SOL T11-W05-04 only
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01..03 PASS / VERIFIED; T11-W05-04 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-04 Auto Susun + Track Binding`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Current wave: `W11-05 Manual Layer Editor + Templates` — T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY
+- Current wave: `W11-05 Manual Layer Editor + Templates` — T11-W05-01..03 PASS / VERIFIED; T11-W05-04 READY
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
@@ -328,7 +328,7 @@
 - Acceptance matrix: `docs/step11/W11_05_ACCEPTANCE_MATRIX.md`.
 - DoR: `docs/step11/W11_05_DOR.md` — PASS.
 - Acceptance planned: AC-W11-05-01..25.
-- Serial tasks: T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY; T11-W05-04..07 BLOCKED.
+- Serial tasks: T11-W05-01..03 PASS / VERIFIED; T11-W05-04 READY; T11-W05-05..07 BLOCKED.
 - Frozen UI authority is sufficient: SCR-002C, SCR-003A, SCR-003B and DLG-008/UI-IMG-012. No new UI prompt/image generation is required.
 - W11-05 owns static visual scene/layer state + local visual-only template workflow.
 - Audio-reactive/playback remains W11-06; keyframes/transitions remain W11-07; Gemini/FFmpeg remains STEP 12.
@@ -385,4 +385,12 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-03 — Template Document + Local Store + Trial/Apply Core only**. Do not start T11-W05-04, Preview/UI wiring, W11-06, W11-07, or STEP 12 in the same turn.
+After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-04 — Static Scene Preview + Selection/Inspector Projection only**. Do not start T11-W05-05, frozen Layer/Template UI wiring, W11-06, W11-07, or STEP 12 in the same turn.
+
+## T11-W05-03 verified implementation (2026-10-08 WIB)
+- Scope: TemplateDocument schema, built-in nine-category starter catalog, main-owned local JSON store, non-dirty Try/Revert, one template-origin guarded Apply, Save as Template core; no UI or later-wave scope.
+- Branch: `sol/t11-w05-03-template-core-20261008` / PR #47.
+- Windows CI #352 / `37721012581` PASS at `993605ef443015673fb3e0f0baa95e675483d495` (266 Vitest assertions; STEP 10 + W11-01..04 + frozen UI + Windows package/smoke/ZIP PASS).
+- Additional packaged template-resource smoke check added in branch after CI #352; final verification is recorded in the task evidence file.
+- Evidence: `docs/step11/evidence/T11_W05_03_TEMPLATE_DOCUMENT_LOCAL_STORE_TRIAL_APPLY_EVIDENCE.md`.
+- Task outcome: **PASS / VERIFIED** once final Windows resource smoke CI succeeds; dependency unlock is only T11-W05-04. Wave W11-05 remains IN PROGRESS.

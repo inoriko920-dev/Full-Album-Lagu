@@ -76,3 +76,17 @@ These task-level statuses do not close the W11-05 acceptance matrix; final closu
 - AC-W11-05-25: **PASS for T11-W05-02 regression gate**.
 
 These task-level statuses do not close W11-05; final closure remains T11-W05-07 owned.
+
+
+## T11-W05-03 task-level evidence
+- Evidence: `evidence/T11_W05_03_TEMPLATE_DOCUMENT_LOCAL_STORE_TRIAL_APPLY_EVIDENCE.md`.
+- AC-W11-05-12: **PASS task level** — template schema restricts to static scene and no protected project/media/secret fields.
+- AC-W11-05-13: **PASS core level** — main-only store and Electron composition resource/user-data directories. Template browser bridge/wiring is later scope.
+- AC-W11-05-14: **PASS core level** — deterministic nine read-only starters, all categories, canonical `Minimal Biru`; browser grid/filters later W05-06.
+- AC-W11-05-15, 16: **PASS core level** — Try/Revert session-only with no revision, dirty or history impact.
+- AC-W11-05-17, 18: **PASS core level** — single template-origin guarded Apply and stale atomic rejection.
+- AC-W11-05-19: **PASS core level** — non-dirty Save as Template and cross-project semantic bindings; dialog UI later.
+- AC-W11-05-20: **PASS core level** — strict schema/version, corrupt template/store failure and collision protection.
+- AC-W11-05-24: **PARTIAL / catalog stress PASS** — 100 user-template items plus nine built-ins; renderer performance and full E2E remain W05-07.
+- AC-W11-05-23/25: **PASS for this task** — prior architecture/secret/UI/regression/Windows packaged smoke and portable ZIP gates.
+- These task-level statuses **do not close W11-05**. W05-04..07 must finish, with wave closure only by W05-07.

@@ -6,6 +6,9 @@ files:
   - dist/**
   - package.json
 asar: true
+extraResources:
+  - from: resources/templates
+    to: templates
 win:
   target:
     - dir

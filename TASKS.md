@@ -721,12 +721,23 @@
 - Dependency unlock: T11-W05-03 READY; later W11-05 tasks remain serially blocked.
 ## T11-W05-03 — Template Document + Local Store + Trial/Apply Core
 - Owner: SOL
-- Status: READY
+- Priority: P0
+- Risk: HIGH
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W05-02 PASS / VERIFIED.
+- Branch/PR: `sol/t11-w05-03-template-core-20261008` / #47.
+- Windows CI #352 / `37721012581` PASS (266 assertions), with final packaged-template catalog check documented in evidence.
+- Delivered: strict visual-only versioned template schema and dynamic semantic bindings, nine read-only built-ins with `Minimal Biru`, main-owned user JSON catalog/store (atomic no-overwrite), session-only Try/Revert and guarded single-transaction template Apply, non-dirty Save as Template.
+- Proof: 100-template catalog stress, corrupt/invalid/duplicate/built-in protection, second-project binding, atomic stale rejection, preserved track/audio/media metadata, prior gates and portable build.
+- Evidence: `docs/step11/evidence/T11_W05_03_TEMPLATE_DOCUMENT_LOCAL_STORE_TRIAL_APPLY_EVIDENCE.md`.
+- Dependency unlock: **T11-W05-04 READY**; T11-W05-05..07 remain BLOCKED.
 
 ## T11-W05-04 — Static Scene Preview + Selection/Inspector Projection
 - Owner: SOL
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-03 PASS / VERIFIED.
 
 ## T11-W05-05 — Frozen Layer + Inspector UI Wiring
