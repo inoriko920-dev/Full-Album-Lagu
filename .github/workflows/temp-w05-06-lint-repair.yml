@@ -1,0 +1,29 @@
+name: TEMP W05-06 Lint Repair
+on:
+  push:
+    branches: [sol/t11-w05-06-template-browser-20261008]
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx prettier --write src/renderer/app/TemplateBrowser.tsx
+      - name: Commit formatting
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/renderer/app/TemplateBrowser.tsx
+          if ! git diff --cached --quiet; then
+            git commit -m "style: normalize W05-06 template effect lint fix"
+            git push
+          fi
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:component
