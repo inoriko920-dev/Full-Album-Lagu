@@ -177,7 +177,11 @@ describe("W11-06 main-owned preview grant authorization", () => {
       Buffer.from("RIFF"),
     );
     for (const request of [
-      { ownerWebContentsId: 8, projectId: "reopened", assetId: "relinked-only" },
+      {
+        ownerWebContentsId: 8,
+        projectId: "reopened",
+        assetId: "relinked-only",
+      },
       { ownerWebContentsId: 7, projectId: "other", assetId: "relinked-only" },
       { ownerWebContentsId: 7, projectId: "reopened", assetId: "not-relinked" },
     ]) {

@@ -118,7 +118,7 @@ export class PreviewAudioAccessService {
 
     const source =
       trustedImport === undefined
-        ? trustedRelink?.sources.get(request.assetId) ?? null
+        ? (trustedRelink?.sources.get(request.assetId) ?? null)
         : this.sources.getTrustedAudioSource(
             request.batchId,
             request.projectId,
