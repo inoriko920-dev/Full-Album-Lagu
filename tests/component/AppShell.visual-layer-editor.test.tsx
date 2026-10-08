@@ -612,6 +612,9 @@ describe("T11-W05-07 live renderer wave stress and frozen safety", () => {
     expect(
       screen.getByText("Mode Coba — perubahan belum disimpan ke proyek."),
     ).toBeInTheDocument();
+    const trialGallery = screen.getByLabelText("Pilihan Template Mode Coba");
+    expect(within(trialGallery).getByText("Stress Template 099")).toBeInTheDocument();
+    expect(trialGallery.querySelectorAll(".template-trial-overlay__gallery-card")).toHaveLength(6);
     expect(shell().getAttribute("data-project-revision")).toBe("0");
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
     fireEvent.click(
@@ -654,6 +657,63 @@ describe("T11-W05-07 frozen remediation: editor-hosted Trial, scoped Save and ca
       status: "ok",
       templateId: template.templateId,
     });
+  });
+
+  it("keeps filtered category, visible selection and local Preview in sync", async () => {
+    render(<AppShell />);
+    fireEvent.click(screen.getByRole("button", { name: "Template" }));
+    const detail = screen.getByLabelText("Detail Template");
+    await waitFor(() =>
+      expect(
+        within(detail).getByRole("heading", { name: "Minimal Biru" }),
+      ).toBeInTheDocument(),
+    );
+
+    fireEvent.click(
+      within(
+        screen.getByRole("navigation", { name: "Navigasi Kategori Template" }),
+      ).getByRole("button", { name: "Neon" }),
+    );
+    await waitFor(() =>
+      expect(
+        within(detail).getByRole("heading", { name: "Neon Pulse" }),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      screen.queryByRole("button", { name: /Minimal Biru/ }),
+    ).not.toBeInTheDocument();
+
+    fireEvent.change(screen.getByLabelText("Cari Template"), {
+      target: { value: "Tidak ada template cocok" },
+    });
+    expect(
+      within(detail).getByRole("heading", { name: "Pilih template" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Coba Template" }),
+    ).toBeDisabled();
+
+    fireEvent.change(screen.getByLabelText("Cari Template"), {
+      target: { value: "" },
+    });
+    await waitFor(() =>
+      expect(
+        within(detail).getByRole("heading", { name: "Neon Pulse" }),
+      ).toBeInTheDocument(),
+    );
+    fireEvent.change(screen.getByLabelText("Kategori Template"), {
+      target: { value: "Minimal" },
+    });
+    await waitFor(() =>
+      expect(
+        within(detail).getByRole("heading", { name: "Minimal Biru" }),
+      ).toBeInTheDocument(),
+    );
+    expect(
+      screen.getByRole("button", { name: "Coba Template" }),
+    ).toBeEnabled();
+    expect(shell().getAttribute("data-project-revision")).toBe("0");
+    expect(shell().getAttribute("data-project-dirty")).toBe("false");
   });
 
   it("shows trial projected inside real Main Editor without replacing Album Timeline or right Gemini rail", async () => {
