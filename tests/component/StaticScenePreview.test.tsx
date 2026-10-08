@@ -126,7 +126,8 @@ describe("T11-W05-04 static visual renderer", () => {
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Pilih layer Background" }));
-    expect(select).toHaveBeenCalledExactlyOnceWith("background");
+    expect(select).toHaveBeenCalledTimes(1);
+    expect(select).toHaveBeenCalledWith("background");
     rerender(
       <StaticScenePreview
         model={buildStaticScenePreview(project, { selectedLayerId: "background" })}
