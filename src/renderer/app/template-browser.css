@@ -488,7 +488,7 @@
   line-height: 1.5;
   color: #687d96;
 }
-@media (max-width: 1024px) {
+@media (min-width: 901px) and (max-width: 1024px) {
   .template-browser__body {
     grid-template-columns: 140px minmax(300px, 1fr) minmax(300px, 40%);
   }
