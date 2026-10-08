@@ -56,6 +56,8 @@ interface IntakeBatchState {
   probed: Array<ProbedItem | undefined>;
   completedProject?: ProjectDocument;
   completedSummary?: MediaBatchSummary;
+  /** Main-verified ready assets; never reconstructed from renderer ProjectDocument. */
+  trustedAudioSources: Map<string, MediaSourceDescriptor>;
   errorCode?: MediaPublicErrorCode;
   errorMessage?: string;
 }
@@ -270,12 +272,35 @@ export class MediaIntakeService {
         rejected: 0,
       },
       probed: new Array<ProbedItem | undefined>(sources.length),
+      trustedAudioSources: new Map<string, MediaSourceDescriptor>(),
     };
 
     this.batches.set(batchId, state);
     void this.runBatch(state);
 
     return { batchId };
+  }
+
+  /**
+   * Only a completed main-probed intake batch can authorize a source for the
+   * future audio protocol. No renderer-provided sourcePath is consulted.
+   * Caller MUST still bind the batch to its invoking WebContents identity.
+   */
+  getTrustedAudioSource(
+    batchId: string,
+    projectId: string,
+    assetId: string,
+  ): MediaSourceDescriptor | null {
+    const state = this.batches.get(batchId);
+    if (
+      state?.status !== "completed" ||
+      state.completedProject?.projectId !== projectId
+    ) {
+      return null;
+    }
+
+    const source = state.trustedAudioSources.get(assetId);
+    return source === undefined ? null : { ...source };
   }
 
   cancel(batchId: string): MediaIntakeCancelResult {
@@ -441,6 +466,7 @@ export class MediaIntakeService {
           metadata,
         };
         title = metadata.title ?? title;
+        state.trustedAudioSources.set(assetId, { ...item.source });
       } else {
         asset = {
           id: assetId,

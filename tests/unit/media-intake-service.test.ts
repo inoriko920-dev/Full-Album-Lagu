@@ -329,4 +329,77 @@ describe("MediaIntakeService", () => {
     expect(result.summary.cancelled).toBeGreaterThan(0);
     expect("project" in result).toBe(false);
   });
+  it("only grants main-verified, ready audio assets after a completed import", async () => {
+    const good = source(0, "01 Good.mp3");
+    const invalid = source(1, "02 Invalid.mp3");
+    const service = new MediaIntakeService(
+      new FakeDiscovery([good, invalid]),
+      {
+        async probe(item) {
+          if (item.fileName === invalid.fileName) {
+            return {
+              status: "invalid",
+              code: "MEDIA_CORRUPT",
+              message: "not playable",
+            };
+          }
+          return { status: "ready", metadata: { durationMs: 2000 } };
+        },
+      },
+      sequentialIds("lease"),
+    );
+    const batchId = service.start(
+      "discovery-1",
+      createEmptyProject("main-project"),
+    ).batchId;
+
+    expect(
+      service.getTrustedAudioSource(batchId, "main-project", "lease-2"),
+    ).toBeNull();
+
+    const result = await waitForTerminal(service, batchId);
+    expect(result.status).toBe("completed");
+    if (result.status !== "completed") throw new Error("Expected completed.");
+
+    const goodAsset = result.project.mediaAssets?.find(
+      (asset) => asset.fileName === good.fileName,
+    );
+    const badAsset = result.project.mediaAssets?.find(
+      (asset) => asset.fileName === invalid.fileName,
+    );
+    expect(goodAsset).toBeDefined();
+    expect(badAsset).toBeDefined();
+    if (goodAsset === undefined || badAsset === undefined) {
+      throw new Error("Missing asset fixture");
+    }
+
+    expect(
+      service.getTrustedAudioSource(batchId, "main-project", goodAsset.id),
+    ).toEqual(good);
+    expect(
+      service.getTrustedAudioSource(batchId, "wrong-project", goodAsset.id),
+    ).toBeNull();
+    expect(
+      service.getTrustedAudioSource(
+        "unknown-batch",
+        "main-project",
+        goodAsset.id,
+      ),
+    ).toBeNull();
+    expect(
+      service.getTrustedAudioSource(batchId, "main-project", badAsset.id),
+    ).toBeNull();
+
+    const returned = service.getTrustedAudioSource(
+      batchId,
+      "main-project",
+      goodAsset.id,
+    );
+    expect(returned).not.toBeNull();
+    if (returned === null) throw new Error("Expected trusted source");
+    returned.sourcePath = "Z:/forged-source.mp3";
+    expect(
+      service.getTrustedAudioSource(batchId, "main-project", goodAsset.id),
+    ).toEqual(good);
+  });
 });

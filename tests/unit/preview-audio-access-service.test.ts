@@ -1,0 +1,154 @@
+import { afterEach, describe, expect, it } from "vitest";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { NodePreviewAudioLeaseStore } from "../../src/main/infrastructure/media/node-preview-audio-lease-store";
+import {
+  PreviewAudioAccessService,
+  type TrustedIntakeLookup,
+} from "../../src/main/infrastructure/media/preview-audio-access-service";
+import { createPreviewAudioProtocolResponse } from "../../src/main/infrastructure/media/preview-audio-protocol";
+
+const directories: string[] = [];
+const services: PreviewAudioAccessService[] = [];
+
+async function fixture() {
+  const directory = await mkdtemp(join(tmpdir(), "lfa-w06-access-"));
+  directories.push(directory);
+  const sourcePath = join(directory, "real-track.wav");
+  await writeFile(sourcePath, Buffer.from("RIFF1234"));
+  const source = {
+    sourcePath,
+    fileName: "real-track.wav",
+    sizeBytes: 8,
+  };
+  const lookup: TrustedIntakeLookup = {
+    getTrustedAudioSource(batch, project, asset) {
+      return batch === "intake-1" &&
+        project === "project-1" &&
+        asset === "asset-ready"
+        ? source
+        : null;
+    },
+  };
+  const store = new NodePreviewAudioLeaseStore();
+  const service = new PreviewAudioAccessService(store, lookup);
+  services.push(service);
+  return { service, store };
+}
+
+afterEach(async () => {
+  for (const service of services.splice(0)) service.close();
+  for (const directory of directories.splice(0)) {
+    await rm(directory, { recursive: true, force: true });
+  }
+});
+
+describe("W11-06 main-owned preview grant authorization", () => {
+  it("issues only from a main-picked discovery and completed valid intake", async () => {
+    const { service, store } = await fixture();
+    service.trustPickerDiscovery(7, "picked-1");
+    expect(service.bindIntake(7, "picked-1", "intake-1", "project-1")).toBe(
+      true,
+    );
+    const uri = await service.issue({
+      ownerWebContentsId: 7,
+      batchId: "intake-1",
+      projectId: "project-1",
+      assetId: "asset-ready",
+    });
+    expect(uri).toMatch(/^lfa-preview:\/\/media\/[0-9a-f]{64}$/);
+    if (uri === null) throw new Error("Expected authorized token");
+    const response = await createPreviewAudioProtocolResponse(
+      new Request(uri, { headers: { Range: "bytes=0-3" } }),
+      { projectId: "project-1", ownerWebContentsId: 7 },
+      store,
+    );
+    expect(response.status).toBe(206);
+    expect(Buffer.from(await response.arrayBuffer())).toEqual(
+      Buffer.from("RIFF"),
+    );
+  });
+
+  it("rejects forged renderer dropped-file and wrong picker owners", async () => {
+    const { service } = await fixture();
+    expect(service.bindIntake(7, "drop-1", "intake-1", "project-1")).toBe(
+      false,
+    );
+    service.trustPickerDiscovery(7, "picked-1");
+    expect(service.bindIntake(8, "picked-1", "intake-1", "project-1")).toBe(
+      false,
+    );
+    expect(
+      await service.issue({
+        ownerWebContentsId: 7,
+        batchId: "intake-1",
+        projectId: "project-1",
+        assetId: "asset-ready",
+      }),
+    ).toBeNull();
+  });
+
+  it("denies another window, project, asset, and non-current intake", async () => {
+    const { service } = await fixture();
+    service.trustPickerDiscovery(7, "picked-1");
+    service.bindIntake(7, "picked-1", "intake-1", "project-1");
+    for (const altered of [
+      { ownerWebContentsId: 8 },
+      { projectId: "project-2" },
+      { batchId: "fake-batch" },
+      { assetId: "asset-not-ready" },
+    ]) {
+      expect(
+        await service.issue({
+          ownerWebContentsId: 7,
+          batchId: "intake-1",
+          projectId: "project-1",
+          assetId: "asset-ready",
+          ...altered,
+        }),
+      ).toBeNull();
+    }
+  });
+
+  it("revokes issued tokens and their stream on a window/project change", async () => {
+    const { service, store } = await fixture();
+    service.trustPickerDiscovery(7, "picked-1");
+    service.bindIntake(7, "picked-1", "intake-1", "project-1");
+    const uri = await service.issue({
+      ownerWebContentsId: 7,
+      batchId: "intake-1",
+      projectId: "project-1",
+      assetId: "asset-ready",
+    });
+    if (uri === null) throw new Error("Expected authorized token");
+    expect(service.context(7)?.projectId).toBe("project-1");
+    service.revokeWindow(7);
+    expect(service.context(7)).toBeNull();
+    const response = await createPreviewAudioProtocolResponse(
+      new Request(uri),
+      { projectId: "project-1", ownerWebContentsId: 7 },
+      store,
+    );
+    expect(response.status).toBe(403);
+  });
+
+  it("revokes previous project tokens before binding another trusted intake", async () => {
+    const { service } = await fixture();
+    service.trustPickerDiscovery(7, "picked-1");
+    service.bindIntake(7, "picked-1", "intake-1", "project-1");
+    service.trustPickerDiscovery(7, "picked-2");
+    expect(service.bindIntake(7, "picked-2", "intake-2", "project-2")).toBe(
+      true,
+    );
+    expect(service.context(7)?.projectId).toBe("project-2");
+    expect(
+      await service.issue({
+        ownerWebContentsId: 7,
+        batchId: "intake-1",
+        projectId: "project-1",
+        assetId: "asset-ready",
+      }),
+    ).toBeNull();
+  });
+});

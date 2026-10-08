@@ -1,5 +1,10 @@
 import { ipcRenderer, webUtils } from "electron";
 import {
+  PREVIEW_AUDIO_ISSUE_CHANNEL,
+  previewAudioIssueRequestSchema,
+  previewAudioIssueResultSchema,
+} from "../core/contracts/preview-audio-ipc";
+import {
   ARTWORK_PICK_AND_BIND_CHANNEL,
   artworkImportRequestSchema,
   artworkImportResultSchema,
@@ -81,6 +86,14 @@ import {
 } from "../core/contracts/template-ipc";
 
 export const lfaBridge: LfaBridge = {
+  async requestAudioPreview(request) {
+    const validated = previewAudioIssueRequestSchema.parse(request);
+    const response: unknown = await ipcRenderer.invoke(
+      PREVIEW_AUDIO_ISSUE_CHANNEL,
+      validated,
+    );
+    return previewAudioIssueResultSchema.parse(response);
+  },
   async listTemplates() {
     const payload: unknown = await ipcRenderer.invoke(TEMPLATE_LIST_CHANNEL);
     return templateListResultSchema.parse(payload);

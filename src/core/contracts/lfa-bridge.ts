@@ -1,4 +1,8 @@
 import type {
+  PreviewAudioIssueRequest,
+  PreviewAudioIssueResult,
+} from "./preview-audio-ipc";
+import type {
   ArtworkImportRequest,
   ArtworkImportResult,
 } from "./artwork-intake";
@@ -51,6 +55,10 @@ export interface LfaBridge {
   listTemplates?(): Promise<TemplateListResult>;
   loadTemplate?(templateId: string): Promise<TemplateLoadResult>;
   saveTemplate?(template: TemplateDocument): Promise<TemplateSaveResult>;
+  /** Optional for legacy frozen UI fixtures; Electron preload always exposes it. */
+  requestAudioPreview?(
+    request: PreviewAudioIssueRequest,
+  ): Promise<PreviewAudioIssueResult>;
   getFoundationInfo(): Promise<FoundationInfo>;
   importArtwork(request: ArtworkImportRequest): Promise<ArtworkImportResult>;
   pickAudioFiles(): Promise<MediaDiscoveryStartResult>;

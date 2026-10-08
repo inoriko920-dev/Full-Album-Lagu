@@ -242,6 +242,18 @@ jobs:
       - name: Smoke packaged executable
         run: npm run smoke:packaged:windows
 
+      - name: W11-06-02 real packaged MP3/WAV private protocol decoding
+        run: node scripts/run-w06-preview-protocol-smoke.mjs
+
+      - name: Upload W11-06-02 decoder and source-fingerprint evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-T11-W06-02-Audio-Decode-Evidence
+          path: artifacts/step11/T11-W06-02/evidence/**
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Build portable multi-file ZIP
         shell: pwsh
         run: |

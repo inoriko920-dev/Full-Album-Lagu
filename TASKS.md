@@ -816,3 +816,10 @@
 - Windows CI #566 initially failed **Prettier only**, repaired by whitespace-only follow-up; **Windows CI #567 SUCCESS** at code SHA `645df69340053d2c4fef2fffd535007a9f69f3c9`, **316 tests PASS** (160+59+54+43), prior Electron E2E, protected media fingerprints and packaged Windows smoke/ZIP PASS.
 - Evidence: `docs/step11/evidence/T11_W06_01_PLAYBACK_POSITION_WINDOWS_VERIFIED.md`.
 - **Task closure gate:** final documentation commit CI must PASS, then controlled PR merge. Until then W11-06 Task01 closing, Task02 BLOCKED.
+
+## SOL T11-W06-02 — Main-owned preview audio gateway (2026-10-08 WIB)
+
+- Task01 merged to main via PR #54; Task02 implementation on [Draft PR #55](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/55). **Source checkpoint `201df5c`, Windows CI #607 PASS**: 347 tests, original Electron regressions, Windows x64 package+portable ZIP, packaged real WAV 8,078 bytes / MP3 2,655 bytes decode + 206/416 + cross-project deny + unchanged SHA/size/mtime, bounded 256 MiB sparse source ranges.
+- Private per-window `lfa-preview://` with main OS picker/import provenance, typed IPC, scoped expiring token, read-only bounded Range streams; no raw renderer path. Grants revoked on reopen, relink, accepted recovery, navigation and window close.
+- Evidence: `docs/step11/evidence/T11_W06_02_MAIN_AUDIO_GATEWAY_CLOSURE_20261008.md`. This task covers **secure codec gateway, not audible Play/Pause, spectrum or MP4**.
+- **Documentation closure CI and controlled merge remain mandatory**. Do not start T11-W06-03 until PR #55 is merged after final required PASS and main is verified. Future T03 must securely reauthorize reopened/relinked local files, never trust persisted sourcePath alone.

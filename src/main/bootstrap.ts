@@ -1,9 +1,30 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, protocol } from "electron";
+import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { createCompositionRoot } from "./composition-root";
 import { registerIpcHandlers } from "./ipc/register-ipc";
+import { NodePreviewAudioLeaseStore } from "./infrastructure/media/node-preview-audio-lease-store";
+import { PreviewAudioAccessService } from "./infrastructure/media/preview-audio-access-service";
+import {
+  PREVIEW_AUDIO_SCHEME,
+  createPreviewAudioProtocolResponse,
+} from "./infrastructure/media/preview-audio-protocol";
 import { captureW1105State } from "./verification/w11-05-ui-capture";
+
+// Scheme registration must precede app readiness. Never bypass CSP or enable Node.
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: PREVIEW_AUDIO_SCHEME,
+    privileges: {
+      standard: true,
+      secure: true,
+      stream: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+    },
+  },
+]);
 
 const PACKAGED_SMOKE_FLAG = "--smoke-test";
 const UI_TEST_SCREEN = "SCR-002A";
@@ -50,6 +71,17 @@ function createMainWindow(): BrowserWindow {
       "W05 capture is CI-only and requires an authorized screen and destination.",
     );
   }
+  const w06Probe = readArgValue("w06-probe");
+  const w06EvidencePath = readArgValue("w06-evidence");
+  const isW06Probe = w06Probe !== undefined;
+  if (
+    isW06Probe &&
+    (process.env.LFA_W06_TEST !== "1" ||
+      w06Probe !== "decode" ||
+      !w06EvidencePath)
+  ) {
+    throw new Error("W06 codec probe requires CI authorization and evidence.");
+  }
   const w11Probe = readArgValue("w11-probe");
   const w11EvidencePath = readArgValue("w11-evidence");
   const isUiCapture = uiTestScreen !== undefined;
@@ -82,21 +114,110 @@ function createMainWindow(): BrowserWindow {
     paintWhenInitiallyHidden: true,
     backgroundColor: "#F3F5F8",
     webPreferences: {
+      // Per-window ephemeral storage partition; preview tokens never cross windows.
+      partition: `lfa-preview-session-${randomUUID()}`,
       preload: join(__dirname, "../preload/index.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
       webSecurity: true,
       backgroundThrottling:
-        !isUiCapture && !isW05Capture && !isSlcProbe && !isW11Probe,
+        !isUiCapture &&
+        !isW05Capture &&
+        !isSlcProbe &&
+        !isW11Probe &&
+        !isW06Probe,
     },
+  });
+
+  const ownerWebContentsId = window.webContents.id;
+  window.webContents.session.protocol.handle(
+    PREVIEW_AUDIO_SCHEME,
+    async (request) => {
+      const rendererOrigin = new URL(window.webContents.getURL()).origin;
+      // Electron supplies initiatorOrigin from Chromium, not from the
+      // request\x27s forgeable Origin header. Browser-initiated media requests
+      // may legitimately have no initiator origin.
+      const initiatorOrigin =
+        "initiatorOrigin" in request &&
+        typeof request.initiatorOrigin === "string"
+          ? request.initiatorOrigin
+          : undefined;
+      if (initiatorOrigin !== undefined && initiatorOrigin !== rendererOrigin) {
+        return new Response(null, {
+          status: 403,
+          headers: { "Cache-Control": "no-store" },
+        });
+      }
+
+      const context = previewAudioAccess.context(ownerWebContentsId);
+      const response =
+        context === null
+          ? new Response(null, {
+              status: 403,
+              headers: { "Cache-Control": "no-store" },
+            })
+          : await createPreviewAudioProtocolResponse(
+              request,
+              context,
+              previewAudioStore,
+            );
+      // file:// renderer has an opaque ("null") origin. The scheme is
+      // private, per-session and token-protected; only that editor origin may
+      // fetch decoded audio for WebAudio/FFT. Never use a wildcard ACAO.
+      response.headers.set("Access-Control-Allow-Origin", rendererOrigin);
+      response.headers.set("Vary", "Origin");
+      return response;
+    },
+  );
+  if (isW06Probe) {
+    window.webContents.session.webRequest.onErrorOccurred((details) => {
+      if (details.url.startsWith(`${PREVIEW_AUDIO_SCHEME}:`)) {
+        console.error("W06 private protocol request error: " + details.error);
+      }
+    });
+  }
+  window.webContents.on("did-navigate", () => {
+    previewAudioAccess.revokeWindow(ownerWebContentsId);
+  });
+  window.webContents.on("destroyed", () => {
+    previewAudioAccess.revokeWindow(ownerWebContentsId);
   });
 
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   window.webContents.on("will-navigate", (event) => event.preventDefault());
 
-  if (!isUiCapture && !isW05Capture && !isSlcProbe && !isW11Probe) {
+  if (
+    !isUiCapture &&
+    !isW05Capture &&
+    !isSlcProbe &&
+    !isW11Probe &&
+    !isW06Probe
+  ) {
     window.once("ready-to-show", () => window.show());
+  }
+
+  if (isW06Probe && w06EvidencePath) {
+    window.webContents.once("did-finish-load", async () => {
+      try {
+        const report = (await window.webContents.executeJavaScript(
+          '(async () => {\n  const project = {\n    schemaVersion: 1,\n    projectId: "w06-real-decoder-probe",\n    name: "W06 Decode Probe",\n    revision: 0,\n    tracks: [],\n  };\n  const wait = async (getStatus) => {\n    for (let attempt = 0; attempt < 300; attempt += 1) {\n      const result = await getStatus();\n      if (result.status !== "discovering" && result.status !== "probing" &&\n          result.status !== "committing") {\n        return result;\n      }\n      await new Promise((resolve) => setTimeout(resolve, 20));\n    }\n    throw new Error("Timed out waiting for main-owned media import");\n  };\n  const discovered = await window.lfa.pickAudioFiles();\n  if (discovered.status !== "started") throw new Error("Picker did not return batch ID");\n  const discovery = await wait(() =>\n    window.lfa.getMediaDiscoveryStatus(discovered.batchId));\n  if (discovery.status !== "completed") throw new Error("Main discovery failed");\n  const started = await window.lfa.startMediaIntake({\n    discoveryBatchId: discovered.batchId,\n    project,\n  });\n  if (started.status !== "started") throw new Error("Intake did not start");\n  const intake = await wait(() =>\n    window.lfa.getMediaIntakeStatus(started.batchId));\n  if (intake.status !== "completed") throw new Error("Probe intake did not complete");\n  const output = { wav: null, mp3: null };\n  const assets = intake.project.mediaAssets || [];\n  for (const kind of ["wav", "mp3"]) {\n    const asset = assets.find((candidate) =>\n      candidate.availability === "ready" &&\n      candidate.fileName.toLowerCase().endsWith("." + kind));\n    if (!asset) throw new Error("No main-probed ready asset: " + kind);\n    const grant = await window.lfa.requestAudioPreview({\n      batchId: started.batchId,\n      projectId: project.projectId,\n      assetId: asset.id,\n    });\n    if (grant.status !== "granted") throw new Error("Secure audio lease blocked: " + kind);\n    const unauthorized = await window.lfa.requestAudioPreview({\n      batchId: started.batchId,\n      projectId: "forged-project",\n      assetId: asset.id,\n    });\n    if (unauthorized.status !== "blocked") throw new Error("Cross-project IPC leak");\n    const partial = await fetch(grant.url, {\n      headers: { Range: "bytes=0-3" },\n    });\n    if (partial.status !== 206 ||\n        (await partial.arrayBuffer()).byteLength !== 4 ||\n        !partial.headers.get("Content-Range")) {\n      throw new Error("Private audio byte-range 206 failed: " + kind);\n    }\n    const denied = await fetch(grant.url, {\n      headers: { Range: "bytes=999999999-" },\n    });\n    if (denied.status !== 416) throw new Error("Invalid range did not return 416");\n    const response = await fetch(grant.url);\n    if (response.status !== 200) throw new Error("Private audio stream is not HTTP 200");\n    const compressedBytes = await response.arrayBuffer();\n    const streamedBytes = compressedBytes.byteLength;\n    const ctx = new AudioContext();\n    try {\n      const decoded = await ctx.decodeAudioData(compressedBytes);\n      if (decoded.duration <= 0 || decoded.numberOfChannels < 1) {\n        throw new Error("Real " + kind + " decoder returned no audio frames");\n      }\n      output[kind] = {\n        decoded: true,\n        durationSeconds: decoded.duration,\n        channels: decoded.numberOfChannels,\n        sampleRate: decoded.sampleRate,\n        streamedBytes,\n        range206: true,\n        range416: true,\n        crossProjectBlocked: true,\n      };\n    } finally {\n      await ctx.close();\n    }\n  }\n  return { success: true, ...output };\n})()',
+          true,
+        )) as Record<string, unknown>;
+        if (report.success !== true) {
+          throw new Error("Packaged codec probe returned an invalid result");
+        }
+        await writeJsonEvidence(w06EvidencePath, report);
+        console.log("W06 packaged private protocol and decoder PASS");
+        window.destroy();
+        app.exit(0);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("W06 packaged decoder FAIL: " + message);
+        if (!window.isDestroyed()) window.destroy();
+        app.exit(10);
+      }
+    });
   }
 
   if (isUiCapture && screenshotPath) {
@@ -1587,12 +1708,22 @@ function createMainWindow(): BrowserWindow {
 }
 
 // Isolated CI closure fixture only; do not override normal installed-user paths.
+const w06Data = readArgValue("w06-user-data");
+if (w06Data && process.env.LFA_W06_TEST === "1") {
+  app.setPath("userData", resolve(w06Data));
+}
 const w05Data = readArgValue("w05-user-data");
 if (w05Data && process.env.LFA_W05_TEST === "1") {
   app.setPath("userData", resolve(w05Data));
 }
 const compositionRoot = createCompositionRoot(process.argv);
+const previewAudioStore = new NodePreviewAudioLeaseStore();
+const previewAudioAccess = new PreviewAudioAccessService(
+  previewAudioStore,
+  compositionRoot.projectIpc.mediaIntakeService,
+);
 registerIpcHandlers({
+  previewAudioAccess,
   ...compositionRoot.projectIpc,
   templateStore: compositionRoot.templateStore,
 });
@@ -1609,4 +1740,5 @@ app.whenReady().then(() => {
   });
 });
 
+app.on("before-quit", () => previewAudioAccess.close());
 app.on("window-all-closed", () => app.quit());
