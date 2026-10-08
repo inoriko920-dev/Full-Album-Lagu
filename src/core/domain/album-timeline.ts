@@ -144,3 +144,110 @@ export function projectAlbumTimeline(
     unresolvedDurationTrackIds,
   };
 }
+
+export type AlbumPlaybackBlockReason =
+  | "invalid-position"
+  | "no-enabled-track"
+  | "position-out-of-range"
+  | "duration-unavailable"
+  | "audio-unavailable";
+
+export type AlbumPlaybackPosition =
+  | {
+      status: "resolved";
+      albumTimeMs: number;
+      trackId: string;
+      audioAssetId: string;
+      effectiveIndex: number;
+      startMs: number;
+      endMs: number;
+      durationMs: number;
+      localTimeMs: number;
+    }
+  | { status: "finished"; albumTimeMs: number }
+  | {
+      status: "blocked";
+      reason: AlbumPlaybackBlockReason;
+      trackId?: string;
+    };
+
+/**
+ * Pure seek mapping for W11-06. The one canonical album timeline is reused.
+ *
+ * This does not open, decode or play media and does not modify ProjectDocument,
+ * revision, the current selection, or CommandEngine history.
+ * Half-open track intervals assign an exact boundary to the following track.
+ */
+export function resolveAlbumPlaybackPosition(
+  projectInput: ProjectDocument,
+  albumTimeMs: number,
+): AlbumPlaybackPosition {
+  if (!Number.isFinite(albumTimeMs) || albumTimeMs < 0) {
+    return { status: "blocked", reason: "invalid-position" };
+  }
+
+  const project = projectDocumentSchema.parse(projectInput);
+  const timeline = projectAlbumTimeline(project);
+
+  if (timeline.enabledTrackCount === 0) {
+    return { status: "blocked", reason: "no-enabled-track" };
+  }
+
+  if (timeline.complete && albumTimeMs === timeline.totalDurationMs) {
+    return { status: "finished", albumTimeMs };
+  }
+  if (
+    timeline.complete &&
+    timeline.totalDurationMs !== undefined &&
+    albumTimeMs > timeline.totalDurationMs
+  ) {
+    return { status: "blocked", reason: "position-out-of-range" };
+  }
+
+  const item = timeline.items.find(
+    (candidate) =>
+      candidate.status === "resolved" &&
+      candidate.startMs !== undefined &&
+      candidate.endMs !== undefined &&
+      albumTimeMs >= candidate.startMs &&
+      albumTimeMs < candidate.endMs,
+  );
+
+  if (
+    item === undefined ||
+    item.startMs === undefined ||
+    item.endMs === undefined ||
+    item.durationMs === undefined ||
+    item.effectiveIndex === undefined
+  ) {
+    return { status: "blocked", reason: "duration-unavailable" };
+  }
+
+  const track = project.tracks[item.sourceIndex];
+  const asset =
+    track?.audioAssetId === undefined
+      ? undefined
+      : project.mediaAssets?.find(
+          (candidate) =>
+            candidate.id === track.audioAssetId && candidate.kind === "audio",
+        );
+  if (asset?.availability !== "ready" || track?.audioAssetId === undefined) {
+    return {
+      status: "blocked",
+      reason: "audio-unavailable",
+      trackId: item.trackId,
+    };
+  }
+
+  return {
+    status: "resolved",
+    albumTimeMs,
+    trackId: item.trackId,
+    audioAssetId: track.audioAssetId,
+    effectiveIndex: item.effectiveIndex,
+    startMs: item.startMs,
+    endMs: item.endMs,
+    durationMs: item.durationMs,
+    localTimeMs: albumTimeMs - item.startMs,
+  };
+}

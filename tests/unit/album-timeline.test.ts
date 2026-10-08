@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   isProjectTrackEnabled,
   projectAlbumTimeline,
+  resolveAlbumPlaybackPosition,
 } from "../../src/core/domain/album-timeline";
 import type { ProjectDocument } from "../../src/core/domain/project-document";
 
@@ -143,5 +144,111 @@ describe("album timeline projection", () => {
     expect(projection.enabledTrackCount).toBe(0);
     expect(projection.totalDurationMs).toBe(0);
     expect(projection.knownPrefixDurationMs).toBe(0);
+  });
+});
+
+describe("W11-06 playback position — pure canonical album clock", () => {
+  it("maps exact enabled-track boundaries and never selects a disabled track", () => {
+    const project = makeProject([1000, 2000, 3000], [1]);
+
+    expect(resolveAlbumPlaybackPosition(project, 0)).toMatchObject({
+      status: "resolved",
+      trackId: "track-0",
+      audioAssetId: "asset-0",
+      startMs: 0,
+      endMs: 1000,
+      localTimeMs: 0,
+      effectiveIndex: 0,
+    });
+    expect(resolveAlbumPlaybackPosition(project, 999.5)).toMatchObject({
+      status: "resolved",
+      trackId: "track-0",
+      localTimeMs: 999.5,
+    });
+    expect(resolveAlbumPlaybackPosition(project, 1000)).toMatchObject({
+      status: "resolved",
+      trackId: "track-2",
+      startMs: 1000,
+      endMs: 4000,
+      localTimeMs: 0,
+      effectiveIndex: 1,
+    });
+    expect(resolveAlbumPlaybackPosition(project, 3999)).toMatchObject({
+      status: "resolved",
+      trackId: "track-2",
+      localTimeMs: 2999,
+    });
+  });
+
+  it("returns finished at exact album end and rejects out-of-range time", () => {
+    const project = makeProject([1000, 2000]);
+    expect(resolveAlbumPlaybackPosition(project, 3000)).toEqual({
+      status: "finished",
+      albumTimeMs: 3000,
+    });
+    expect(resolveAlbumPlaybackPosition(project, 3000.1)).toEqual({
+      status: "blocked",
+      reason: "position-out-of-range",
+    });
+  });
+
+  it("rejects invalid timestamps and an album with zero enabled tracks", () => {
+    const project = makeProject([1000]);
+    for (const time of [Number.NaN, Infinity, -Infinity, -1]) {
+      expect(resolveAlbumPlaybackPosition(project, time)).toEqual({
+        status: "blocked",
+        reason: "invalid-position",
+      });
+    }
+    expect(resolveAlbumPlaybackPosition(makeProject([1000], [0]), 0)).toEqual({
+      status: "blocked",
+      reason: "no-enabled-track",
+    });
+  });
+
+  it("blocks at the first unknown enabled duration and all later positions", () => {
+    const project = makeProject([1000, undefined, 3000]);
+    expect(resolveAlbumPlaybackPosition(project, 999)).toMatchObject({
+      status: "resolved",
+      trackId: "track-0",
+    });
+    for (const time of [1000, 1001, 4000]) {
+      expect(resolveAlbumPlaybackPosition(project, time)).toEqual({
+        status: "blocked",
+        reason: "duration-unavailable",
+      });
+    }
+  });
+
+  it("refuses non-ready media even if its duration is known", () => {
+    const project = makeProject([1000]);
+    const asset = project.mediaAssets?.[0];
+    expect(asset).toBeDefined();
+    if (asset === undefined) throw new Error("missing fixture asset");
+    asset.availability = "missing";
+    asset.errorCode = "MEDIA_NOT_FOUND";
+
+    expect(resolveAlbumPlaybackPosition(project, 100)).toEqual({
+      status: "blocked",
+      reason: "audio-unavailable",
+      trackId: "track-0",
+    });
+  });
+
+  it("stays deterministic over 128 tracks without modifying project state", () => {
+    const project = makeProject(Array.from({ length: 128 }, () => 1000));
+    const original = structuredClone(project);
+
+    expect(resolveAlbumPlaybackPosition(project, 127500)).toMatchObject({
+      status: "resolved",
+      trackId: "track-127",
+      audioAssetId: "asset-127",
+      effectiveIndex: 127,
+      localTimeMs: 500,
+    });
+    expect(resolveAlbumPlaybackPosition(project, 128000)).toMatchObject({
+      status: "finished",
+    });
+    expect(project).toEqual(original);
   });
 });
