@@ -7,11 +7,14 @@ import type {
   VisualLayerAnchor,
   VisualLayerTransform,
 } from "../../core/domain/visual-scene-schema";
+import { TemplateArtwork } from "./TemplateArtwork";
 import "./static-scene-preview.css";
 
 export interface StaticScenePreviewProps {
   model: StaticScenePreviewModel;
   onSelectLayer?: (layerId: string) => void;
+  /** Local illustrative sample, never a source media asset or encoded in project. */
+  templateArtwork?: { templateId: string; category: string };
 }
 
 const spectrumBarHeights = [
@@ -63,7 +66,7 @@ function fontWeight(weight: string): number {
   return 400;
 }
 
-function layerContent(layer: StaticSceneLayer) {
+function layerContent(layer: StaticSceneLayer, templateArtwork?: { templateId: string; category: string }) {
   switch (layer.kind) {
     case "background":
       return null;
@@ -72,15 +75,22 @@ function layerContent(layer: StaticSceneLayer) {
         <span
           className="static-scene-preview__artwork"
           role="img"
-          aria-label="Placeholder artwork"
+          aria-label={layer.resolvedArtwork.assetId === undefined
+            ? "Ilustrasi contoh, bukan artwork asli"
+            : "Artwork sumber terhubung, thumbnail belum tersedia"}
         >
-          <span
-            className="static-scene-preview__artwork-mark"
-            aria-hidden="true"
-          >
-            ♫
+          {layer.resolvedArtwork.assetId === undefined ? (
+            <TemplateArtwork
+              templateId={templateArtwork?.templateId ?? "minimal-biru"}
+              category={templateArtwork?.category ?? "Minimal"}
+              className="static-scene-preview__artwork-illustration"
+            />
+          ) : (
+            <span className="static-scene-preview__artwork-mark" aria-hidden="true">♫</span>
+          )}
+          <span className="static-scene-preview__artwork-label">
+            {layer.resolvedArtwork.assetId === undefined ? "Artwork contoh" : "Artwork terhubung"}
           </span>
-          <span>Artwork</span>
         </span>
       );
     case "text":
@@ -136,6 +146,7 @@ function layerContent(layer: StaticSceneLayer) {
 export function StaticScenePreview({
   model,
   onSelectLayer,
+  templateArtwork,
 }: StaticScenePreviewProps) {
   return (
     <div
@@ -166,7 +177,7 @@ export function StaticScenePreview({
               ...(layer.kind === "background" ? backgroundStyle(layer) : {}),
             }}
           >
-            {layerContent(layer)}
+            {layerContent(layer, templateArtwork)}
             {model.selectionOutline?.layerId === layer.id ? (
               <span
                 className="static-scene-preview__selection"
