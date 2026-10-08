@@ -103,6 +103,17 @@ export class HtmlMediaPlaybackDriver {
     this.perform(this.transport.switchProject(project));
   }
 
+  /**
+   * The owning main process must revoke prior grants when an audio source is
+   * relinked or invalidated. Clear renderer-side authority immediately too,
+   * even while a grant request or media load is still pending.
+   */
+  revokeMedia(): void {
+    if (this.closed) return;
+    this.trustedBatch = null;
+    this.perform(this.transport.stop());
+  }
+
   close(): void {
     if (this.closed) return;
     this.perform(this.transport.stop());
@@ -149,10 +160,14 @@ export class HtmlMediaPlaybackDriver {
         this.active.element.pause();
       } else {
         const { element } = this.active;
-        void element.play().catch(() => {
-          if (!this.isActive(element, effect.generation)) return;
-          this.perform(this.transport.onMediaError(effect.generation));
-        });
+        try {
+          void element.play().catch(() => {
+            if (!this.isActive(element, effect.generation)) return;
+            this.perform(this.transport.onMediaError(effect.generation));
+          });
+        } catch {
+          this.fail(effect.generation);
+        }
       }
     }
     this.emit();

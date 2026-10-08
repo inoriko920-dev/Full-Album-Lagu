@@ -288,6 +288,99 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(created).toHaveLength(0);
   });
 
+  it("revokeMedia stops a playing source and denies replay until main reauthorizes it", async () => {
+    const media: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      project(),
+      trusted,
+      async () => granted,
+      () => {
+        const audio = new FakeMedia();
+        media.push(audio);
+        return audio;
+      },
+    );
+    driver.play();
+    await flush();
+    media[0]!.emit("loadedmetadata");
+    await flush();
+    expect(driver.snapshot.phase).toBe("playing");
+
+    driver.revokeMedia();
+    expect(driver.snapshot.phase).toBe("ready");
+    expect(media[0]!.src).toBe("");
+    media[0]!.emit("ended");
+    media[0]!.emit("error");
+    expect(driver.snapshot.phase).toBe("ready");
+
+    driver.play();
+    expect(driver.snapshot.phase).toBe("error");
+    expect(media).toHaveLength(1);
+    driver.switchProject(project(), trusted);
+    driver.play();
+    await flush();
+    expect(media).toHaveLength(2);
+    driver.close();
+  });
+
+  it("seeks across tracks and handles Next/Previous without stale-source audio", async () => {
+    const media: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      project(),
+      trusted,
+      async () => granted,
+      () => {
+        const audio = new FakeMedia();
+        media.push(audio);
+        return audio;
+      },
+    );
+
+    driver.play();
+    await flush();
+    const original = media[0]!;
+    original.emit("loadedmetadata");
+    await flush();
+
+    driver.seek(1200);
+    await flush();
+    expect(original.src).toBe("");
+    const second = media[1]!;
+    second.emit("loadedmetadata");
+    await flush();
+    expect(second.currentTime).toBeCloseTo(0.2);
+    expect(driver.snapshot).toMatchObject({
+      activeTrackId: "track-1",
+      albumTimeMs: 1200,
+    });
+
+    driver.previous();
+    await flush();
+    expect(second.src).toBe("");
+    const previous = media[2]!;
+    previous.emit("loadedmetadata");
+    await flush();
+    expect(driver.snapshot.activeTrackId).toBe("track-0");
+
+    driver.next();
+    await flush();
+    const next = media[3]!;
+    previous.emit("ended");
+    second.emit("error");
+    original.emit("timeupdate");
+    expect(driver.snapshot).toMatchObject({
+      activeTrackId: "track-1",
+      phase: "loading",
+    });
+    next.emit("loadedmetadata");
+    await flush();
+    expect(driver.snapshot.phase).toBe("playing");
+    driver.stop();
+    expect(next.src).toBe("");
+    expect(driver.snapshot.phase).toBe("ready");
+    driver.close();
+  });
+
   it("discards late URL response after Stop and does not resurrect sound", async () => {
     let resolve!: (value: PreviewAudioIssueResult) => void;
     const deferred = new Promise<PreviewAudioIssueResult>((finish) => {
