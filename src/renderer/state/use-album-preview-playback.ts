@@ -59,7 +59,8 @@ export function useAlbumPreviewPlayback(
         if (current) setClock(next);
       },
       undefined,
-      undefined,
+      // Deliver Electron main's OS Suspend/Resume event to the active driver.
+      window.lfa.onPlaybackPowerChange,
       runtime,
     );
     driverRef.current = driver;
