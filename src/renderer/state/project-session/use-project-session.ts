@@ -1304,10 +1304,7 @@ export function useProjectSession(): ProjectSessionView {
                           asset.kind === "audio" &&
                           existingReadyIds.has(asset.id),
                       )
-                      .map((asset) => [
-                        asset.id,
-                        previousTrust?.batchId ?? "",
-                      ]),
+                      .map((asset) => [asset.id, previousTrust?.batchId ?? ""]),
                   )),
               };
               for (const asset of intake.project.mediaAssets ?? []) {

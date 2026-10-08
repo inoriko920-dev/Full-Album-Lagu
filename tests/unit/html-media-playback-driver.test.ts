@@ -169,9 +169,7 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
 
     session.play();
     await flush();
-    expect(requests).toEqual([
-      { batchId: "first-batch", assetId: "asset-0" },
-    ]);
+    expect(requests).toEqual([{ batchId: "first-batch", assetId: "asset-0" }]);
     media[0]?.emit("loadedmetadata");
     await flush();
     media[0]?.emit("ended");
