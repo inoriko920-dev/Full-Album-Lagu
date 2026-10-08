@@ -602,11 +602,13 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     };
     bridge.loadTemplate = () => {
       loadCalls += 1;
-      return new Promise((resolve) => {
-        releaseLoad = () => {
-          resolve({ status: "ok" as const, template: minimalTemplate });
-        };
-      });
+      return new Promise<{ status: "ok"; template: TemplateDocument }>(
+        (resolve) => {
+          releaseLoad = () => {
+            resolve({ status: "ok", template: minimalTemplate });
+          };
+        },
+      );
     };
     bridge.saveTemplate = async (template) => {
       saved.push(template);
