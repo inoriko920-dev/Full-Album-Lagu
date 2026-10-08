@@ -57,7 +57,8 @@ async function testAlbum(count) {
     files.push(file);
   }
   const before = await Promise.all(files.map(fingerprint));
-  const evidence = join(evidenceDir, "WINDOWS_PACKAGED_EDITOR_" + count + ".json");
+  const evidenceName = "WINDOWS_PACKAGED_EDITOR_" + count + ".json";
+  const evidence = join(evidenceDir, evidenceName);
   await new Promise((resolveRun, rejectRun) => {
     const child = spawn(
       executable,
@@ -82,7 +83,8 @@ async function testAlbum(count) {
     let output = "";
     const timer = setTimeout(() => {
       child.kill();
-      rejectRun(new Error("T05 packaged editor " + count + " tracks timed out"));
+      const message = "T05 packaged editor " + count + " tracks timed out";
+      rejectRun(new Error(message));
     }, 160_000);
     child.stdout.on("data", (part) => {
       output = (output + String(part)).slice(-9000);
@@ -97,8 +99,9 @@ async function testAlbum(count) {
     child.once("close", (code) => {
       clearTimeout(timer);
       if (code !== 0) {
-        rejectRun(new Error("Packaged editor " + count + " tracks exit " +
-          code + ": " + output));
+        const message = ["Packaged editor", count, "tracks exit", code, output]
+          .join(" ");
+        rejectRun(new Error(message));
       } else {
         resolveRun();
       }
@@ -116,14 +119,17 @@ async function testAlbum(count) {
     report.capture?.height !== 1000 ||
     report.zoom !== "125"
   ) {
-    throw new Error("Incomplete T05 Windows UI evidence for " + count + " tracks");
+    const message = "Incomplete T05 Windows UI evidence for " + count;
+    throw new Error(message);
   }
   if ((await stat(evidence + ".png")).size < 5000) {
     throw new Error("Packaged editor screenshot missing or empty");
   }
   const after = await Promise.all(files.map(fingerprint));
   if (JSON.stringify(before) !== JSON.stringify(after)) {
-    throw new Error("Source WAV SHA/size/mtime changed during packaged playback");
+    throw new Error(
+      "Source WAV SHA/size/mtime changed during packaged playback",
+    );
   }
   return {
     trackCount: count,
