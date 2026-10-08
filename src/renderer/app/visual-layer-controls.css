@@ -1,0 +1,149 @@
+/* W05-05: extends existing frozen left Media/Layer/Inspector rail only. */
+.visual-layer-panel,
+.visual-layer-inspector {
+  padding: 14px;
+}
+.visual-layer-panel .work-panel__header {
+  margin-bottom: 12px;
+}
+.visual-layer-add-menu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  padding: 8px;
+  margin: 0 0 10px;
+  background: var(--subtle-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--control-radius);
+}
+.visual-layer-add-menu button {
+  text-align: left;
+  padding: 7px 6px;
+  font-size: 11.5px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--control-radius);
+  color: var(--text-primary);
+}
+.visual-layer-add-menu button:hover {
+  background: var(--selected);
+}
+.visual-layer-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.visual-layer-row {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  border: 1px solid transparent;
+  border-radius: var(--control-radius);
+  background: var(--subtle-surface);
+}
+.visual-layer-row.is-selected {
+  border-color: #8db5f7;
+  background: var(--selected);
+}
+.visual-layer-row__select {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex: 1;
+  min-width: 0;
+  min-height: 34px;
+  text-align: left;
+  padding: 4px 5px;
+  color: var(--text-primary);
+  font-size: 11.5px;
+}
+.visual-layer-row__kind {
+  color: var(--primary);
+  font-weight: 600;
+}
+.visual-layer-row__name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.visual-layer-row__actions {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+.visual-layer-row__actions button {
+  font-size: 11px;
+  width: 20px;
+  height: 27px;
+  color: var(--text-secondary);
+}
+.visual-layer-row__actions button:disabled {
+  opacity: 0.3;
+}
+.visual-layer-row__actions button:hover:not(:disabled) {
+  background: #dce9fc;
+}
+.visual-layer-toolbar {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+.visual-layer-inspector .inspector-section {
+  margin-top: 12px;
+}
+.visual-layer-inspector .inspector-field select,
+.visual-layer-inspector .inspector-field textarea {
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--control-radius);
+  background: var(--surface);
+  padding: 7px;
+  color: var(--text-primary);
+  font: inherit;
+}
+.visual-layer-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 12px;
+}
+.visual-layer-transform {
+  display: grid;
+  gap: 10px;
+  margin: 12px 0;
+}
+.visual-layer-range {
+  display: grid;
+  grid-template-columns: 68px 1fr 36px;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+.visual-layer-range input {
+  min-width: 0;
+  accent-color: var(--primary);
+}
+.visual-layer-range output {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.visual-layer-hint {
+  margin: 8px 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.preview-frame .static-scene-preview {
+  width: 100%;
+  height: 100%;
+}
+
+/* Frozen placeholder overlay must not intercept live visual canvas selection. */
+.preview-frame--visual::after {
+  display: none;
+  pointer-events: none;
+}

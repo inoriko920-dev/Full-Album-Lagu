@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..04 are PASS / VERIFIED. Only T11-W05-05 Frozen Layer + Inspector UI Wiring is READY for the next SOL turn. STEP 11 is still IN PROGRESS.
+STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..05 are PASS / VERIFIED. Only T11-W05-06 Frozen Template Browser / Try / Save UI Wiring is READY for next SOL turn. STEP 11 is still IN PROGRESS.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -331,7 +331,7 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 - FTR-007 is not wave-VERIFIED yet; FTR-011 has not started.
 
 ## Next exact action
-After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-05 — Frozen Layer + Inspector UI Wiring only**. Read W11-05 planning and W05-01..04 evidence first. Do not start template browser (W05-06), playback W11-06, animations W11-07 or STEP 12 in the same turn.
+After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring only**. Read W11-05 planning, frozen SCR-003A/003B/DLG-008 and W05-01..05 evidence first. Do not start W05-07 final closure, playback W11-06, animations W11-07 or STEP 12 in the same turn.
 
 ## T11-W05-03 handoff (2026-10-08 WIB)
 - Task PASS / VERIFIED after branch Windows CI and packaged resource smoke.
@@ -349,3 +349,12 @@ After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-05 — Fro
 - Isolated, tested visual renderer: `src/renderer/visual/StaticScenePreview.tsx` + scoped CSS, **not yet mounted** in existing `AppShell`.
 - Unit and component tests prove 128-layer and frozen SCR-002A non-drift.
 - Current position: **T11-W05-01..04 PASS / VERIFIED; T11-W05-05 READY**. W05-06..07 BLOCKED. Only W05-05 may be implemented after next user instruction.
+
+## T11-W05-05 handoff (2026-10-08 WIB)
+- Windows CI #378 / `37724632656` PASS at `7bdd0ee79ebf528182d9f2e5ae7da30967988c37`; 283 tests (153 unit, 55 contract, 37 component, 38 integration), architecture/secrets/portable paths, 29 frozen UI reference states, SCR-002A visual baseline, STEP 10/W11-01..04 E2E, Windows packaged smoke + portable multi-file ZIP PASS.
+- PR #49, evidence `docs/step11/evidence/T11_W05_05_FROZEN_LAYER_INSPECTOR_UI_WIRING_EVIDENCE.md`; portable artifact `11526923816` and SCR-002A visual artifact `11527251867`.
+- `VisualLayerControls.tsx` + CSS and six-family defaults in frozen left rail; `AppShell.tsx` mounts static center canvas when project contains layers; legacy empty screen unchanged.
+- ProjectSession wrapped existing guarded layer commands and coalesced `LayerTransformGestureSession`. Canonical static text command added. Selection remains presentation-only through `VisualSelectionSession`.
+- Left Inspector controls, screen layer visibility/lock, canvas/list selection and global Undo/Redo tested. Gemini right rail and Album Timeline unchanged.
+- Remaining visual authority check: automated SCR-002C pixel diff not performed, final full visual drift review remains W05-07.
+- Status: T11-W05-01..05 PASS / VERIFIED; only T11-W05-06 READY; W05-07 BLOCKED. W11-05 remains IN PROGRESS.

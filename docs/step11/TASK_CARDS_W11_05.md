@@ -150,7 +150,10 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W05-04 PASS / VERIFIED.
 - UI authority: frozen SCR-002C / UI-IMG-002C.
 - In scope:
@@ -171,13 +174,15 @@ Serial implementation only.
   - exact SCR-002A regression remains PASS.
 - Stop rule:
   - missing frozen state => STOP / ASTRA UI review.
-- Exit gate: PASS / VERIFIED before 06.
+- Exit gate: **PASS / VERIFIED** (component/hierarchy + SCR-002A verified, full SCR-002C pixel drift proof deferred W05-07).
+- Evidence: `evidence/T11_W05_05_FROZEN_LAYER_INSPECTOR_UI_WIRING_EVIDENCE.md`.
+- Dependency: T11-W05-06 READY; T11-W05-07 BLOCKED.
 
 ## T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-05 PASS / VERIFIED.
 - UI authority:
   - SCR-003A / UI-IMG-003A;

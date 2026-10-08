@@ -62,6 +62,11 @@ export interface SetLayerTextStyleCommandInput extends LayerCommandExpectation {
   style: VisualTextStyle;
 }
 
+export interface SetLayerStaticTextCommandInput extends LayerCommandExpectation {
+  layerId: string;
+  text: string;
+}
+
 function expectationFields(
   input: LayerCommandExpectation,
 ): Pick<ProjectCommand, "expectedBaseRevision" | "expectedStateToken"> {
@@ -372,6 +377,31 @@ export function createLayerSetTextStyleCommand(
       const nextLayers = [...currentLayers(project)];
       nextLayers[index] = nextLayer;
       return withLayers(project, nextLayers);
+    },
+  };
+}
+
+export function createLayerSetStaticTextCommand(
+  input: SetLayerStaticTextCommandInput,
+): ProjectCommand {
+  return {
+    kind: "layer.set-static-text",
+    label: `Ubah teks layer ${input.layerId}`,
+    origin: "manual",
+    ...expectationFields(input),
+    apply: (project) => {
+      const { layer, index } = findLayer(project, input.layerId);
+      requireUnlocked(layer);
+      if (layer.kind !== "text" || layer.role !== "static") {
+        throw new Error("Only a static text layer accepts direct text edits.");
+      }
+      const nextLayer = visualLayerSchema.parse({
+        ...layer,
+        text: input.text,
+      });
+      const layers = [...currentLayers(project)];
+      layers[index] = nextLayer;
+      return withLayers(project, layers);
     },
   };
 }

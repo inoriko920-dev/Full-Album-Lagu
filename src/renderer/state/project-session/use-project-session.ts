@@ -1,3 +1,24 @@
+import {
+  createLayerAddCommand,
+  createLayerDuplicateCommand,
+  createLayerRemoveCommand,
+  createLayerReorderCommand,
+  createLayerSetCommonCommand,
+  createLayerSetTextStyleCommand,
+  createLayerSetStaticTextCommand,
+  createLayerSetTransformCommand,
+  LayerTransformGestureSession,
+  type LayerCommonPatch,
+} from "../../../core/application/services/project-layer-commands";
+import type {
+  ProjectCommand,
+  ProjectStateToken,
+} from "../../../core/application/services/project-command-engine";
+import type {
+  VisualLayer,
+  VisualLayerTransform,
+  VisualTextStyle,
+} from "../../../core/domain/visual-scene-schema";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   createAutoArrangeCommandBatch,
@@ -130,6 +151,21 @@ export interface ProjectSessionView {
   autoArrangeState: AutoArrangeActionState;
   artworkActionState: ArtworkActionState;
   artworkError: MediaUiError | null;
+  layerError: string | null;
+  addVisualLayer(layer: VisualLayer): boolean;
+  duplicateVisualLayer(layerId: string, newLayerId: string): boolean;
+  removeVisualLayer(layerId: string): boolean;
+  reorderVisualLayer(layerId: string, toIndex: number): boolean;
+  setVisualLayerCommon(layerId: string, patch: LayerCommonPatch): boolean;
+  setVisualLayerTransform(
+    layerId: string,
+    transform: VisualLayerTransform,
+  ): boolean;
+  setVisualLayerTextStyle(layerId: string, style: VisualTextStyle): boolean;
+  setVisualLayerStaticText(layerId: string, text: string): boolean;
+  beginVisualLayerGesture(layerId: string): boolean;
+  commitVisualLayerGesture(transform: VisualLayerTransform): boolean;
+  cancelVisualLayerGesture(): void;
   reorderTrack(trackId: string, toIndex: number): boolean;
   setTrackEnabled(trackId: string, enabled: boolean): boolean;
   selectedTrackProjection(trackId: string | null): SelectedTrackProjection;
@@ -215,6 +251,8 @@ export function useProjectSession(): ProjectSessionView {
     useState<ArtworkActionState>("idle");
   const [artworkError, setArtworkError] = useState<MediaUiError | null>(null);
 
+  const [layerError, setLayerError] = useState<string | null>(null);
+  const layerGestureRef = useRef<LayerTransformGestureSession | null>(null);
   const projectRef = useRef(project);
   const mediaBusyRef = useRef(false);
   const activeMediaBatchRef = useRef<
@@ -445,6 +483,138 @@ export function useProjectSession(): ProjectSessionView {
     },
     [history, publishHistorySnapshot, syncMediaProjection],
   );
+
+  const executeVisualLayerCommand = useCallback(
+    (
+      build: (guards: {
+        expectedBaseRevision: number;
+        expectedStateToken: ProjectStateToken;
+      }) => ProjectCommand,
+    ): boolean => {
+      const before = history.snapshot();
+      try {
+        const command = build({
+          expectedBaseRevision: before.project.revision,
+          expectedStateToken: before.stateToken,
+        });
+        const result = history.execute(command);
+        if (result.status === "rejected") {
+          setLayerError(
+            "Perubahan layer ditolak. Periksa pilihan atau kondisi terkunci.",
+          );
+          return false;
+        }
+        setLayerError(null);
+        if (result.status === "applied") publishHistorySnapshot();
+        return result.status === "applied";
+      } catch {
+        setLayerError("Data layer tidak valid; proyek tidak diubah.");
+        return false;
+      }
+    },
+    [history, publishHistorySnapshot],
+  );
+
+  const addVisualLayer = useCallback(
+    (layer: VisualLayer) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerAddCommand({ layer, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const duplicateVisualLayer = useCallback(
+    (layerId: string, newLayerId: string) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerDuplicateCommand({ layerId, newLayerId, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const removeVisualLayer = useCallback(
+    (layerId: string) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerRemoveCommand({ layerId, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const reorderVisualLayer = useCallback(
+    (layerId: string, toIndex: number) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerReorderCommand({ layerId, toIndex, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const setVisualLayerCommon = useCallback(
+    (layerId: string, patch: LayerCommonPatch) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerSetCommonCommand({ layerId, patch, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const setVisualLayerTransform = useCallback(
+    (layerId: string, transform: VisualLayerTransform) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerSetTransformCommand({ layerId, transform, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const setVisualLayerTextStyle = useCallback(
+    (layerId: string, style: VisualTextStyle) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerSetTextStyleCommand({ layerId, style, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const setVisualLayerStaticText = useCallback(
+    (layerId: string, text: string) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerSetStaticTextCommand({ layerId, text, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const beginVisualLayerGesture = useCallback(
+    (layerId: string): boolean => {
+      try {
+        layerGestureRef.current = new LayerTransformGestureSession(
+          history.snapshot(),
+          layerId,
+        );
+        setLayerError(null);
+        return true;
+      } catch {
+        layerGestureRef.current = null;
+        setLayerError("Layer terkunci atau tidak tersedia untuk transform.");
+        return false;
+      }
+    },
+    [history],
+  );
+  const commitVisualLayerGesture = useCallback(
+    (transform: VisualLayerTransform): boolean => {
+      const gesture = layerGestureRef.current;
+      layerGestureRef.current = null;
+      if (gesture === null) return false;
+      try {
+        gesture.preview(transform);
+        const result = history.execute(gesture.createCommitCommand());
+        if (result.status === "rejected") {
+          setLayerError(
+            "Gesture tidak diterapkan karena state proyek berubah.",
+          );
+          return false;
+        }
+        setLayerError(null);
+        if (result.status === "applied") publishHistorySnapshot();
+        return result.status === "applied";
+      } catch {
+        setLayerError("Transform layer tidak valid.");
+        return false;
+      }
+    },
+    [history, publishHistorySnapshot],
+  );
+  const cancelVisualLayerGesture = useCallback(() => {
+    layerGestureRef.current = null;
+  }, []);
 
   const selectedTrackProjection = useCallback(
     (trackId: string | null): SelectedTrackProjection =>
@@ -1171,6 +1341,18 @@ export function useProjectSession(): ProjectSessionView {
     autoArrangeState,
     artworkActionState,
     artworkError,
+    layerError,
+    addVisualLayer,
+    duplicateVisualLayer,
+    removeVisualLayer,
+    reorderVisualLayer,
+    setVisualLayerCommon,
+    setVisualLayerTransform,
+    setVisualLayerTextStyle,
+    setVisualLayerStaticText,
+    beginVisualLayerGesture,
+    commitVisualLayerGesture,
+    cancelVisualLayerGesture,
     reorderTrack,
     setTrackEnabled,
     selectedTrackProjection,

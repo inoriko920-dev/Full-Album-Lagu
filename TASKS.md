@@ -753,12 +753,19 @@
 
 ## T11-W05-05 — Frozen Layer + Inspector UI Wiring
 - Owner: SOL
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W05-04 PASS / VERIFIED.
+- PR: #49; Windows CI #378 / `37724632656` PASS at `7bdd0ee79ebf528182d9f2e5ae7da30967988c37`; 283 tests (153 unit, 55 contract, 37 component, 38 integration), architecture/secrets/portable paths, 29 frozen UI reference states, SCR-002A visual baseline, STEP 10/W11-01..04 E2E, Windows packaged smoke + portable multi-file ZIP PASS.
+- Delivered: six-layer left list, live center StaticScenePreview, left Inspector edit controls, canvas/list synchronized session-only selection, visible transform gesture preview with one CommandEngine commit, unified global Undo/Redo, non-destructive stable-ID command mutations and protected frozen shell.
+- Evidence: `docs/step11/evidence/T11_W05_05_FROZEN_LAYER_INSPECTOR_UI_WIRING_EVIDENCE.md`; no SCR-002C pixel-diff yet (later W05-07 full drift review).
+- Unlock: **T11-W05-06 READY only**; W05-07 BLOCKED.
 
 ## T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring
 - Owner: SOL
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-05 PASS / VERIFIED.
 
 ## T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure
