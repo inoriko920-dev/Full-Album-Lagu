@@ -1304,7 +1304,10 @@ export function AppShell() {
     revision: projectSession.project.revision,
   });
 
-  const syncVisualUi = useCallback(() => setVisualUiState(selectionSession.snapshot()), [selectionSession]);
+  const syncVisualUi = useCallback(
+    () => setVisualUiState(selectionSession.snapshot()),
+    [selectionSession],
+  );
   const visualModel = useMemo(
     () =>
       buildStaticScenePreview(projectSession.project, {
