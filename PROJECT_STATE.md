@@ -465,3 +465,10 @@ After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation 
 - **Windows CI #469 / `37740447189` PASS**: 301 tests (153 unit, 59 contract, 47 component, 42 integration), frozen reference extraction, Windows Electron W05-07 flow and screenshots, Save/Reopen/cross-project, source SHA-256/size/mtime, 128/100 stress, previous waves, packaged smoke and portable multi-file ZIP. Screenshot artifact `11533408457`, test-build artifact `11533567027`.
 - See `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R08.md`. AC-W11-05-21 wording is hierarchy/copy/safety, but frozen UI authority signoff remains **OPEN**; no self-approved design waiver or silent gate PASS.
 - **Gate:** W11-05 IN_PROGRESS, PR #51 DRAFT and `main` untouched. W11-06/W11-07/STEP 12 BLOCKED pending explicit UI acceptance, full AC01..25 closure matrix and final regression.
+
+
+## Latest checkpoint — W05-07 R09 all-25-AC readiness audit (2026-10-08 WIB)
+- Added real Windows Electron `SCR-003A` category/filter/no-match verification, restoration to frozen `Minimal Biru` and canonical revision/dirty invariance; commit `f8f382009ea1ab9c35d0e91b5dac6e08720ff1a2`.
+- **Windows CI #472 / `37741414109` SUCCESS**: 301 tests (153/59/47/42), actual Electron UI/workflow + protected source fingerprints, 128-layer/100-template stress, STEP 10/W11-01..04 regression, screenshot comparisons, Windows portable ZIP and packaged smoke. Captures artifact `11534087251`, portable test build `11534156950`.
+- New detailed evidence `docs/step11/evidence/T11_W05_07_R09_25_AC_CLOSURE_READINESS_AUDIT.md` maps **all 25 ACs** to actual evidence. **23 ACs technically evidenced**; **AC21 FROZEN UI SIGNOFF OPEN**; **AC25 technically green but final acceptance HELD by AC21**. No waiver, design approval or complete-wave PASS.
+- **W11-05 IN_PROGRESS, PR #51 remains DRAFT/NOT MERGED, `main` unchanged**. W11-06, W11-07 and STEP 12 BLOCKED. Next only documented explicit UI/product decision or concrete remaining W11-05 static UI defect; after approval rerun all-25 closure and final Windows CI.
