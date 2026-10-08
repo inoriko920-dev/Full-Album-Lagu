@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { buildStaticScenePreview, type StaticScenePreviewModel } from "../../core/domain/static-scene-preview";
+import {
+  buildStaticScenePreview,
+  type StaticScenePreviewModel,
+} from "../../core/domain/static-scene-preview";
 import type { VisualLayerTransform } from "../../core/domain/visual-scene-schema";
 import { VisualSelectionSession } from "../state/ui-session/visual-selection-session";
 import { StaticScenePreview } from "../visual/StaticScenePreview";
@@ -571,9 +574,16 @@ function InspectorPanel({
   onCancelTransform: () => void;
 }) {
   if (visualModel.selectedLayerId !== null) {
-    return <VisualLayerInspector key={visualModel.selectedLayerId} model={visualModel} session={projectSession}
-      onPreviewTransform={onPreviewTransform} onCommitTransform={onCommitTransform}
-      onCancelTransform={onCancelTransform} />;
+    return (
+      <VisualLayerInspector
+        key={visualModel.selectedLayerId}
+        model={visualModel}
+        session={projectSession}
+        onPreviewTransform={onPreviewTransform}
+        onCommitTransform={onCommitTransform}
+        onCancelTransform={onCancelTransform}
+      />
+    );
   }
 
   if (selectedTrackId !== null) {
@@ -663,7 +673,11 @@ function WorkRail({
           />
         ) : null}
         {activeTab === "layer" ? (
-          <VisualLayerPanel model={visualModel} session={projectSession} onSelectLayer={onSelectLayer} />
+          <VisualLayerPanel
+            model={visualModel}
+            session={projectSession}
+            onSelectLayer={onSelectLayer}
+          />
         ) : null}
         {activeTab === "inspector" ? (
           <InspectorPanel
@@ -680,32 +694,40 @@ function WorkRail({
   );
 }
 
-function PreviewPanel({ visualModel, onSelectLayer }: {
+function PreviewPanel({
+  visualModel,
+  onSelectLayer,
+}: {
   visualModel: StaticScenePreviewModel;
   onSelectLayer: (layerId: string) => void;
 }) {
   return (
     <section className="preview-panel" aria-label="Preview video">
       <div className="preview-stage">
-        <div className={`preview-frame${visualModel.layers.length > 0 ? " preview-frame--visual" : ""}`}>
+        <div
+          className={`preview-frame${visualModel.layers.length > 0 ? " preview-frame--visual" : ""}`}
+        >
           {visualModel.layers.length > 0 ? (
-            <StaticScenePreview model={visualModel} onSelectLayer={onSelectLayer} />
+            <StaticScenePreview
+              model={visualModel}
+              onSelectLayer={onSelectLayer}
+            />
           ) : (
-          <>
-          <div className="preview-scenery" aria-hidden="true">
-            <span className="preview-scenery__sun" />
-            <span className="preview-scenery__mountain preview-scenery__mountain--far" />
-            <span className="preview-scenery__mountain preview-scenery__mountain--near" />
-            <span className="preview-scenery__lake" />
-          </div>
-          <div className="preview-placeholder">
-            <span className="preview-placeholder__icon">
-              <AppIcon name="image" size={27} />
-            </span>
-            <strong>Belum ada visual</strong>
-            <span>Impor audio atau pilih template untuk memulai.</span>
-          </div>
-          </>
+            <>
+              <div className="preview-scenery" aria-hidden="true">
+                <span className="preview-scenery__sun" />
+                <span className="preview-scenery__mountain preview-scenery__mountain--far" />
+                <span className="preview-scenery__mountain preview-scenery__mountain--near" />
+                <span className="preview-scenery__lake" />
+              </div>
+              <div className="preview-placeholder">
+                <span className="preview-placeholder__icon">
+                  <AppIcon name="image" size={27} />
+                </span>
+                <strong>Belum ada visual</strong>
+                <span>Impor audio atau pilih template untuk memulai.</span>
+              </div>
+            </>
           )}
         </div>
       </div>
@@ -1272,7 +1294,9 @@ export function AppShell() {
   const [timelineZoom, setTimelineZoom] = useState(100);
   const projectSession = useProjectSession();
   const [selectionSession] = useState(() => new VisualSelectionSession());
-  const [visualUiState, setVisualUiState] = useState(() => selectionSession.snapshot());
+  const [visualUiState, setVisualUiState] = useState(() =>
+    selectionSession.snapshot(),
+  );
   const gestureStartedRef = useRef(false);
   const pendingLayerSelectRef = useRef<string | null>(null);
   const visualProjectMarker = useRef({
@@ -1282,11 +1306,12 @@ export function AppShell() {
 
   const syncVisualUi = () => setVisualUiState(selectionSession.snapshot());
   const visualModel = useMemo(
-    () => buildStaticScenePreview(projectSession.project, {
-      selectedTrackId: selectedTrackIdState ?? undefined,
-      selectedLayerId: visualUiState.selectedLayerId,
-      gesturePreview: visualUiState.gesturePreview ?? undefined,
-    }),
+    () =>
+      buildStaticScenePreview(projectSession.project, {
+        selectedTrackId: selectedTrackIdState ?? undefined,
+        selectedLayerId: visualUiState.selectedLayerId,
+        gesturePreview: visualUiState.gesturePreview ?? undefined,
+      }),
     [projectSession.project, selectedTrackIdState, visualUiState],
   );
 
@@ -1310,9 +1335,11 @@ export function AppShell() {
       selectionSession.discardGesture();
       projectSession.cancelVisualLayerGesture();
       gestureStartedRef.current = false;
-      selectionSession.reconcile(buildStaticScenePreview(projectSession.project, {
-        selectedLayerId: selectionSession.snapshot().selectedLayerId,
-      }));
+      selectionSession.reconcile(
+        buildStaticScenePreview(projectSession.project, {
+          selectedLayerId: selectionSession.snapshot().selectedLayerId,
+        }),
+      );
       syncVisualUi();
     }
     marker.projectId = projectSession.project.projectId;
@@ -1322,9 +1349,10 @@ export function AppShell() {
   function selectLayer(layerId: string | null, fromCanvas = false) {
     projectSession.cancelVisualLayerGesture();
     gestureStartedRef.current = false;
-    const ok = fromCanvas && layerId !== null
-      ? selectionSession.selectFromCanvas(visualModel, layerId)
-      : selectionSession.selectFromLayerList(visualModel, layerId);
+    const ok =
+      fromCanvas && layerId !== null
+        ? selectionSession.selectFromCanvas(visualModel, layerId)
+        : selectionSession.selectFromLayerList(visualModel, layerId);
     if (ok) {
       syncVisualUi();
       if (fromCanvas) setActiveTab("layer");
@@ -1347,7 +1375,8 @@ export function AppShell() {
   function commitLayerTransform() {
     if (!gestureStartedRef.current) return;
     const transform = selectionSession.snapshot().gesturePreview?.transform;
-    if (transform !== undefined) projectSession.commitVisualLayerGesture(transform);
+    if (transform !== undefined)
+      projectSession.commitVisualLayerGesture(transform);
     else projectSession.cancelVisualLayerGesture();
     gestureStartedRef.current = false;
     selectionSession.discardGesture();
@@ -1509,19 +1538,28 @@ export function AppShell() {
           onTabChange={setActiveTab}
           projectSession={projectSession}
           selectedTrackId={selectedTrackId}
-          onSelectTrack={(id) => { setSelectedTrackId(id); selectLayer(null); }}
+          onSelectTrack={(id) => {
+            setSelectedTrackId(id);
+            selectLayer(null);
+          }}
           visualModel={visualModel}
           onSelectLayer={(id) => selectLayer(id)}
           onPreviewTransform={previewLayerTransform}
           onCommitTransform={commitLayerTransform}
           onCancelTransform={cancelLayerTransform}
         />
-        <PreviewPanel visualModel={visualModel} onSelectLayer={(id) => selectLayer(id, true)} />
+        <PreviewPanel
+          visualModel={visualModel}
+          onSelectLayer={(id) => selectLayer(id, true)}
+        />
         <GeminiRail />
         <TimelinePanel
           projectSession={projectSession}
           selectedTrackId={selectedTrackId}
-          onSelectTrack={(id) => { setSelectedTrackId(id); selectLayer(null); }}
+          onSelectTrack={(id) => {
+            setSelectedTrackId(id);
+            selectLayer(null);
+          }}
           zoom={timelineZoom}
           onZoomChange={setTimelineZoom}
         />

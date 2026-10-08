@@ -159,7 +159,11 @@ function openLayerTab() {
 }
 function addLayer(name: string) {
   fireEvent.click(screen.getByRole("button", { name: "Tambah", exact: true }));
-  fireEvent.click(within(screen.getByLabelText("Tambah jenis layer")).getByRole("button", { name }));
+  fireEvent.click(
+    within(screen.getByLabelText("Tambah jenis layer")).getByRole("button", {
+      name,
+    }),
+  );
 }
 function shell() {
   return document.querySelector("main.app-shell") as HTMLElement;
@@ -170,28 +174,51 @@ describe("T11-W05-05 frozen SCR-002C manual visual editor integration", () => {
     render(<AppShell />);
     await waitFor(() => expect(getStartupProjectMock).toHaveBeenCalled());
     expect(screen.getByText("Belum ada visual")).toBeInTheDocument();
-    expect(screen.getByRole("complementary", { name: "Gemini Agent" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("complementary", { name: "Gemini Agent" }),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Album Timeline")).toBeInTheDocument();
     expect(screen.getByRole("tab", { name: "Inspector" })).toBeInTheDocument();
-    expect(screen.queryByLabelText("Preview visual statis")).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Preview visual statis"),
+    ).not.toBeInTheDocument();
   });
 
   it("adds all six frozen layer families, synchronizes list/canvas by stable ID and protects project history", async () => {
     render(<AppShell />);
     openLayerTab();
-    for (const name of ["Background", "Artwork", "Judul Track", "Artis", "Spectrum", "Progress Bar"]) {
+    for (const name of [
+      "Background",
+      "Artwork",
+      "Judul Track",
+      "Artis",
+      "Spectrum",
+      "Progress Bar",
+    ]) {
       addLayer(name);
     }
-    await waitFor(() => expect(shell().getAttribute("data-project-revision")).toBe("6"));
-    expect(screen.getByLabelText("Daftar layer").querySelectorAll("[data-layer-id]")).toHaveLength(6);
+    await waitFor(() =>
+      expect(shell().getAttribute("data-project-revision")).toBe("6"),
+    );
+    expect(
+      screen.getByLabelText("Daftar layer").querySelectorAll("[data-layer-id]"),
+    ).toHaveLength(6);
     const preview = screen.getByLabelText("Preview visual statis");
     expect(preview.querySelectorAll("[data-scene-layer-id]")).toHaveLength(6);
-    expect(preview.querySelectorAll(".static-scene-preview__bar").length).toBeGreaterThan(0);
-    fireEvent.click(within(preview).getByRole("button", { name: "Pilih layer Judul Track" }));
-    expect(screen.getByRole("button", { name: "Pilih Judul Track" })).toHaveAttribute("aria-pressed", "true");
+    expect(
+      preview.querySelectorAll(".static-scene-preview__bar").length,
+    ).toBeGreaterThan(0);
+    fireEvent.click(
+      within(preview).getByRole("button", { name: "Pilih layer Judul Track" }),
+    );
+    expect(
+      screen.getByRole("button", { name: "Pilih Judul Track" }),
+    ).toHaveAttribute("aria-pressed", "true");
     expect(shell().getAttribute("data-project-revision")).toBe("6");
     expect(shell().getAttribute("data-selected-layer-id")).not.toBe("");
-    expect(screen.getByRole("complementary", { name: "Gemini Agent" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("complementary", { name: "Gemini Agent" }),
+    ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("tab", { name: "Inspector" }));
     expect(screen.getByLabelText("Nama Layer")).toHaveValue("Judul Track");
     expect(screen.getByLabelText("Font")).toBeInTheDocument();
@@ -201,16 +228,30 @@ describe("T11-W05-05 frozen SCR-002C manual visual editor integration", () => {
     render(<AppShell />);
     openLayerTab();
     addLayer("Judul Track");
-    await waitFor(() => expect(shell().getAttribute("data-selected-layer-id")).not.toBe(""));
+    await waitFor(() =>
+      expect(shell().getAttribute("data-selected-layer-id")).not.toBe(""),
+    );
     fireEvent.click(screen.getByRole("tab", { name: "Inspector" }));
     const x = screen.getByLabelText("Posisi X");
     const revision = Number(shell().getAttribute("data-project-revision"));
     fireEvent.change(x, { target: { value: "0.66" } });
     fireEvent.change(x, { target: { value: "0.80" } });
-    expect(shell().getAttribute("data-project-revision")).toBe(String(revision));
-    expect((screen.getByLabelText("Preview visual statis").querySelector("[data-scene-layer-id]") as HTMLElement)?.getAttribute("style")).toContain("80%");
+    expect(shell().getAttribute("data-project-revision")).toBe(
+      String(revision),
+    );
+    expect(
+      (
+        screen
+          .getByLabelText("Preview visual statis")
+          .querySelector("[data-scene-layer-id]") as HTMLElement
+      )?.getAttribute("style"),
+    ).toContain("80%");
     fireEvent.pointerUp(x);
-    await waitFor(() => expect(shell().getAttribute("data-project-revision")).toBe(String(revision + 1)));
+    await waitFor(() =>
+      expect(shell().getAttribute("data-project-revision")).toBe(
+        String(revision + 1),
+      ),
+    );
     expect(screen.getByRole("button", { name: "Undo" })).toBeEnabled();
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
     expect(screen.getByLabelText("Posisi X")).toHaveValue("0.72");
@@ -221,7 +262,9 @@ describe("T11-W05-05 frozen SCR-002C manual visual editor integration", () => {
     render(<AppShell />);
     openLayerTab();
     addLayer("Background");
-    await waitFor(() => expect(shell().getAttribute("data-selected-layer-id")).not.toBe(""));
+    await waitFor(() =>
+      expect(shell().getAttribute("data-selected-layer-id")).not.toBe(""),
+    );
     fireEvent.click(screen.getByRole("tab", { name: "Inspector" }));
     fireEvent.click(screen.getByLabelText("Layer terkunci"));
     expect(screen.getByLabelText("Posisi X")).toBeDisabled();
@@ -236,9 +279,13 @@ describe("T11-W05-05 frozen SCR-002C manual visual editor integration", () => {
     render(<AppShell />);
     openLayerTab();
     addLayer("Judul Track");
-    await waitFor(() => expect(shell().getAttribute("data-selected-layer-id")).not.toBe(""));
+    await waitFor(() =>
+      expect(shell().getAttribute("data-selected-layer-id")).not.toBe(""),
+    );
     fireEvent.click(screen.getByRole("tab", { name: "Inspector" }));
-    fireEvent.change(screen.getByLabelText("Perataan"), { target: { value: "right" } });
+    fireEvent.change(screen.getByLabelText("Perataan"), {
+      target: { value: "right" },
+    });
     expect(screen.getByLabelText("Perataan")).toHaveValue("right");
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
     expect(screen.getByLabelText("Perataan")).toHaveValue("center");

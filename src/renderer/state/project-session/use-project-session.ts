@@ -10,8 +10,15 @@ import {
   LayerTransformGestureSession,
   type LayerCommonPatch,
 } from "../../../core/application/services/project-layer-commands";
-import type { ProjectCommand, ProjectStateToken } from "../../../core/application/services/project-command-engine";
-import type { VisualLayer, VisualLayerTransform, VisualTextStyle } from "../../../core/domain/visual-scene-schema";
+import type {
+  ProjectCommand,
+  ProjectStateToken,
+} from "../../../core/application/services/project-command-engine";
+import type {
+  VisualLayer,
+  VisualLayerTransform,
+  VisualTextStyle,
+} from "../../../core/domain/visual-scene-schema";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   createAutoArrangeCommandBatch,
@@ -150,7 +157,10 @@ export interface ProjectSessionView {
   removeVisualLayer(layerId: string): boolean;
   reorderVisualLayer(layerId: string, toIndex: number): boolean;
   setVisualLayerCommon(layerId: string, patch: LayerCommonPatch): boolean;
-  setVisualLayerTransform(layerId: string, transform: VisualLayerTransform): boolean;
+  setVisualLayerTransform(
+    layerId: string,
+    transform: VisualLayerTransform,
+  ): boolean;
   setVisualLayerTextStyle(layerId: string, style: VisualTextStyle): boolean;
   setVisualLayerStaticText(layerId: string, text: string): boolean;
   beginVisualLayerGesture(layerId: string): boolean;
@@ -475,10 +485,12 @@ export function useProjectSession(): ProjectSessionView {
   );
 
   const executeVisualLayerCommand = useCallback(
-    (build: (guards: {
-      expectedBaseRevision: number;
-      expectedStateToken: ProjectStateToken;
-    }) => ProjectCommand): boolean => {
+    (
+      build: (guards: {
+        expectedBaseRevision: number;
+        expectedStateToken: ProjectStateToken;
+      }) => ProjectCommand,
+    ): boolean => {
       const before = history.snapshot();
       try {
         const command = build({
@@ -487,7 +499,9 @@ export function useProjectSession(): ProjectSessionView {
         });
         const result = history.execute(command);
         if (result.status === "rejected") {
-          setLayerError("Perubahan layer ditolak. Periksa pilihan atau kondisi terkunci.");
+          setLayerError(
+            "Perubahan layer ditolak. Periksa pilihan atau kondisi terkunci.",
+          );
           return false;
         }
         setLayerError(null);
@@ -503,7 +517,9 @@ export function useProjectSession(): ProjectSessionView {
 
   const addVisualLayer = useCallback(
     (layer: VisualLayer) =>
-      executeVisualLayerCommand((guards) => createLayerAddCommand({ layer, ...guards })),
+      executeVisualLayerCommand((guards) =>
+        createLayerAddCommand({ layer, ...guards }),
+      ),
     [executeVisualLayerCommand],
   );
   const duplicateVisualLayer = useCallback(
@@ -515,12 +531,16 @@ export function useProjectSession(): ProjectSessionView {
   );
   const removeVisualLayer = useCallback(
     (layerId: string) =>
-      executeVisualLayerCommand((guards) => createLayerRemoveCommand({ layerId, ...guards })),
+      executeVisualLayerCommand((guards) =>
+        createLayerRemoveCommand({ layerId, ...guards }),
+      ),
     [executeVisualLayerCommand],
   );
   const reorderVisualLayer = useCallback(
     (layerId: string, toIndex: number) =>
-      executeVisualLayerCommand((guards) => createLayerReorderCommand({ layerId, toIndex, ...guards })),
+      executeVisualLayerCommand((guards) =>
+        createLayerReorderCommand({ layerId, toIndex, ...guards }),
+      ),
     [executeVisualLayerCommand],
   );
   const setVisualLayerCommon = useCallback(
@@ -554,7 +574,10 @@ export function useProjectSession(): ProjectSessionView {
   const beginVisualLayerGesture = useCallback(
     (layerId: string): boolean => {
       try {
-        layerGestureRef.current = new LayerTransformGestureSession(history.snapshot(), layerId);
+        layerGestureRef.current = new LayerTransformGestureSession(
+          history.snapshot(),
+          layerId,
+        );
         setLayerError(null);
         return true;
       } catch {
@@ -574,7 +597,9 @@ export function useProjectSession(): ProjectSessionView {
         gesture.preview(transform);
         const result = history.execute(gesture.createCommitCommand());
         if (result.status === "rejected") {
-          setLayerError("Gesture tidak diterapkan karena state proyek berubah.");
+          setLayerError(
+            "Gesture tidak diterapkan karena state proyek berubah.",
+          );
           return false;
         }
         setLayerError(null);
