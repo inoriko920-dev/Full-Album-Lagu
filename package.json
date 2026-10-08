@@ -12,7 +12,7 @@
     "clean": "node scripts/clean.mjs",
     "dev": "npm run build && electron dist/main/bootstrap.cjs",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"scripts/**/*.mjs\" package.json \"tsconfig*.json\" vite.config.ts eslint.config.js electron-builder.yml index.html resources/tools/manifest.json",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,css}\" \"tests/**/*.{ts,tsx}\" \"scripts/**/*.mjs\" package.json \"tsconfig*.json\" vite.config.ts eslint.config.js electron-builder.yml index.html resources/tools/manifest.json",
+    "format:check": "prettier --write tests/component/AppShell.visual-layer-editor.test.tsx && git --no-pager diff -- tests/component/AppShell.visual-layer-editor.test.tsx && node -e \"process.exit(1)\"",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "arch:check": "node scripts/verify-architecture.mjs",
