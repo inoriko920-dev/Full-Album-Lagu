@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   buildStaticScenePreview,
   type StaticScenePreviewModel,
@@ -1304,7 +1304,7 @@ export function AppShell() {
     revision: projectSession.project.revision,
   });
 
-  const syncVisualUi = () => setVisualUiState(selectionSession.snapshot());
+  const syncVisualUi = useCallback(() => setVisualUiState(selectionSession.snapshot()), [selectionSession]);
   const visualModel = useMemo(
     () =>
       buildStaticScenePreview(projectSession.project, {
@@ -1315,36 +1315,38 @@ export function AppShell() {
     [projectSession.project, selectedTrackIdState, visualUiState],
   );
 
+  const cancelVisualLayerGesture = projectSession.cancelVisualLayerGesture;
+  const visualProject = projectSession.project;
   useEffect(() => {
     const marker = visualProjectMarker.current;
-    if (marker.projectId !== projectSession.project.projectId) {
+    if (marker.projectId !== visualProject.projectId) {
       pendingLayerSelectRef.current = null;
       selectionSession.reset();
-      projectSession.cancelVisualLayerGesture();
+      cancelVisualLayerGesture();
       gestureStartedRef.current = false;
       syncVisualUi();
-    } else if (marker.revision !== projectSession.project.revision) {
+    } else if (marker.revision !== visualProject.revision) {
       const pendingId = pendingLayerSelectRef.current;
       pendingLayerSelectRef.current = null;
       if (pendingId !== null) {
         selectionSession.selectFromLayerList(
-          buildStaticScenePreview(projectSession.project),
+          buildStaticScenePreview(visualProject),
           pendingId,
         );
       }
       selectionSession.discardGesture();
-      projectSession.cancelVisualLayerGesture();
+      cancelVisualLayerGesture();
       gestureStartedRef.current = false;
       selectionSession.reconcile(
-        buildStaticScenePreview(projectSession.project, {
+        buildStaticScenePreview(visualProject, {
           selectedLayerId: selectionSession.snapshot().selectedLayerId,
         }),
       );
       syncVisualUi();
     }
-    marker.projectId = projectSession.project.projectId;
-    marker.revision = projectSession.project.revision;
-  }, [projectSession.project, selectionSession]);
+    marker.projectId = visualProject.projectId;
+    marker.revision = visualProject.revision;
+  }, [visualProject, selectionSession, cancelVisualLayerGesture, syncVisualUi]);
 
   function selectLayer(layerId: string | null, fromCanvas = false) {
     projectSession.cancelVisualLayerGesture();
