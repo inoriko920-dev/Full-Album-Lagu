@@ -722,15 +722,16 @@ function PreviewPanel({
 }) {
   const active = playback.available;
   const playing =
-    playback.clock.phase === "playing" ||
-    playback.clock.phase === "loading";
+    playback.clock.phase === "playing" || playback.clock.phase === "loading";
   const clock = (millis: number) => {
     const seconds = Math.max(0, Math.floor(millis / 1000));
     return [
       Math.floor(seconds / 3600),
       Math.floor((seconds % 3600) / 60),
       seconds % 60,
-    ].map((part) => String(part).padStart(2, "0")).join(":");
+    ]
+      .map((part) => String(part).padStart(2, "0"))
+      .join(":");
   };
   return (
     <section className="preview-panel" aria-label="Preview video">
@@ -747,7 +748,10 @@ function PreviewPanel({
                     spectrumLevels: playback.spectrum,
                     progressFraction:
                       playback.total > 0
-                        ? Math.min(1, playback.clock.albumTimeMs / playback.total)
+                        ? Math.min(
+                            1,
+                            playback.clock.albumTimeMs / playback.total,
+                          )
                         : 0,
                   }
                 : {})}

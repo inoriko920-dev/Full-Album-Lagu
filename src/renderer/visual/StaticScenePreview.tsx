@@ -133,15 +133,20 @@ function layerContent(
       return (
         <span
           className="static-scene-preview__spectrum"
-          aria-label={spectrumLevels === undefined ? "Spectrum statis" : "Spectrum audio"}
+          aria-label={
+            spectrumLevels === undefined ? "Spectrum statis" : "Spectrum audio"
+          }
         >
           {(spectrumLevels === undefined
             ? spectrumBarHeights
-            : spectrumLevels).map((height, index) => (
+            : spectrumLevels
+          ).map((height, index) => (
             <span
               key={index}
               className="static-scene-preview__bar"
-              style={{ height: `${spectrumLevels === undefined ? height : Math.max(0, Math.min(1, height)) * 100}%` }}
+              style={{
+                height: `${spectrumLevels === undefined ? height : Math.max(0, Math.min(1, height)) * 100}%`,
+              }}
             />
           ))}
         </span>
@@ -208,7 +213,12 @@ export function StaticScenePreview({
               ...(layer.kind === "background" ? backgroundStyle(layer) : {}),
             }}
           >
-            {layerContent(layer, templateArtwork, spectrumLevels, progressFraction)}
+            {layerContent(
+              layer,
+              templateArtwork,
+              spectrumLevels,
+              progressFraction,
+            )}
             {model.selectionOutline?.layerId === layer.id ? (
               <span
                 className="static-scene-preview__selection"

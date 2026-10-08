@@ -6,7 +6,10 @@ import {
   HtmlMediaPlaybackDriver,
   type TrustedAudioBatch,
 } from "../playback/html-media-playback-driver";
-import { LiveSpectrumRuntime, SPECTRUM_BAR_COUNT } from "../playback/live-spectrum-runtime";
+import {
+  LiveSpectrumRuntime,
+  SPECTRUM_BAR_COUNT,
+} from "../playback/live-spectrum-runtime";
 
 const SILENCE = Object.freeze(
   Array.from({ length: SPECTRUM_BAR_COUNT }, () => 0),
@@ -90,8 +93,10 @@ export function useAlbumPreviewPlayback(
     playPause: () => {
       const driver = driverRef.current;
       if (!driver || !available) return;
-      if (driver.snapshot.phase === "playing" ||
-          driver.snapshot.phase === "loading") {
+      if (
+        driver.snapshot.phase === "playing" ||
+        driver.snapshot.phase === "loading"
+      ) {
         driver.pause();
       } else {
         driver.play();
