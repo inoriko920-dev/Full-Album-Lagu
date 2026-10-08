@@ -67,6 +67,27 @@ export async function captureW1105State(
         );
         title?.querySelector("button")?.click();
         await wait(() => !!shell.getAttribute("data-selected-layer-id"), "selected layer");
+        const combined = document.querySelector(".visual-layer-combined");
+        const layerPane = combined?.querySelector(".visual-layer-panel");
+        const layerList = combined?.querySelector(".visual-layer-list");
+        const inspectorPane = combined?.querySelector(".visual-layer-inspector");
+        const inspectorName = inspectorPane?.querySelector('[aria-label="Nama Layer"]');
+        const rail = document.querySelector(".work-rail__content");
+        if (!layerPane || !layerList || !inspectorPane || !inspectorName || !rail) {
+          throw new Error("Frozen SCR-002C Layer/Inspector shared selection is missing");
+        }
+        const layerBounds = layerPane.getBoundingClientRect();
+        const inspectorBounds = inspectorPane.getBoundingClientRect();
+        const railBounds = rail.getBoundingClientRect();
+        const nameBounds = inspectorName.getBoundingClientRect();
+        if (layerBounds.bottom > inspectorBounds.top + 1 ||
+            inspectorBounds.bottom > railBounds.bottom + 1 ||
+            inspectorBounds.height < 175 ||
+            nameBounds.bottom > inspectorBounds.bottom + 1 ||
+            getComputedStyle(layerList).overflowY !== "auto" ||
+            getComputedStyle(inspectorPane).overflowY !== "auto") {
+          throw new Error("Frozen SCR-002C Layer and Inspector must be independently scrollable without overlap or clipping");
+        }
       } else {
         press("Template");
         await wait(() => document.querySelectorAll(".template-browser__item").length >= 9, "nine local templates");
