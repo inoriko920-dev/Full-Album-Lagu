@@ -5,6 +5,7 @@ import {
   createLayerReorderCommand,
   createLayerSetCommonCommand,
   createLayerSetTextStyleCommand,
+  createLayerSetStaticTextCommand,
   createLayerSetTransformCommand,
   LayerTransformGestureSession,
   type LayerCommonPatch,
@@ -151,6 +152,7 @@ export interface ProjectSessionView {
   setVisualLayerCommon(layerId: string, patch: LayerCommonPatch): boolean;
   setVisualLayerTransform(layerId: string, transform: VisualLayerTransform): boolean;
   setVisualLayerTextStyle(layerId: string, style: VisualTextStyle): boolean;
+  setVisualLayerStaticText(layerId: string, text: string): boolean;
   beginVisualLayerGesture(layerId: string): boolean;
   commitVisualLayerGesture(transform: VisualLayerTransform): boolean;
   cancelVisualLayerGesture(): void;
@@ -539,6 +541,13 @@ export function useProjectSession(): ProjectSessionView {
     (layerId: string, style: VisualTextStyle) =>
       executeVisualLayerCommand((guards) =>
         createLayerSetTextStyleCommand({ layerId, style, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const setVisualLayerStaticText = useCallback(
+    (layerId: string, text: string) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerSetStaticTextCommand({ layerId, text, ...guards }),
       ),
     [executeVisualLayerCommand],
   );
@@ -1315,6 +1324,7 @@ export function useProjectSession(): ProjectSessionView {
     setVisualLayerCommon,
     setVisualLayerTransform,
     setVisualLayerTextStyle,
+    setVisualLayerStaticText,
     beginVisualLayerGesture,
     commitVisualLayerGesture,
     cancelVisualLayerGesture,
