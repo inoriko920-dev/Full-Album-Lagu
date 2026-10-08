@@ -13,6 +13,7 @@ import {
   projectAlbumTimeline,
 } from "../../core/domain/album-timeline";
 import { useProjectSession } from "../state/project-session/use-project-session";
+import { useAlbumPreviewPlayback } from "../state/use-album-preview-playback";
 import { AppIcon } from "../ui/AppIcon";
 import { ActionButton, IconButton } from "../ui/controls";
 import "./app-shell.css";
@@ -713,10 +714,24 @@ function WorkRail({
 function PreviewPanel({
   visualModel,
   onSelectLayer,
+  playback,
 }: {
   visualModel: StaticScenePreviewModel;
   onSelectLayer: (layerId: string) => void;
+  playback: ReturnType<typeof useAlbumPreviewPlayback>;
 }) {
+  const active = playback.available;
+  const playing =
+    playback.clock.phase === "playing" ||
+    playback.clock.phase === "loading";
+  const clock = (millis: number) => {
+    const seconds = Math.max(0, Math.floor(millis / 1000));
+    return [
+      Math.floor(seconds / 3600),
+      Math.floor((seconds % 3600) / 60),
+      seconds % 60,
+    ].map((part) => String(part).padStart(2, "0")).join(":");
+  };
   return (
     <section className="preview-panel" aria-label="Preview video">
       <div className="preview-stage">
@@ -727,6 +742,15 @@ function PreviewPanel({
             <StaticScenePreview
               model={visualModel}
               onSelectLayer={onSelectLayer}
+              {...(active
+                ? {
+                    spectrumLevels: playback.spectrum,
+                    progressFraction:
+                      playback.total > 0
+                        ? Math.min(1, playback.clock.albumTimeMs / playback.total)
+                        : 0,
+                  }
+                : {})}
             />
           ) : (
             <>
@@ -748,25 +772,32 @@ function PreviewPanel({
         </div>
       </div>
       <div className="transport-bar" aria-label="Kontrol playback">
-        <span className="timecode">00:00:00 / 00:00:00</span>
+        <span className="timecode">
+          {active
+            ? `${clock(playback.clock.albumTimeMs)} / ${clock(playback.total)}`
+            : "00:00:00 / 00:00:00"}
+        </span>
         <div className="transport-controls">
           <IconButton
             icon="previous"
             iconSize={17}
-            disabled
+            disabled={!active}
+            onClick={playback.previous}
             aria-label="Track sebelumnya"
           />
           <IconButton
-            icon="play"
+            icon={playing ? "pause" : "play"}
             iconSize={18}
             play
-            disabled
-            aria-label="Putar"
+            disabled={!active}
+            onClick={playback.playPause}
+            aria-label={playing ? "Jeda" : "Putar"}
           />
           <IconButton
             icon="next"
             iconSize={17}
-            disabled
+            disabled={!active}
+            onClick={playback.next}
             aria-label="Track berikutnya"
           />
         </div>
@@ -1310,6 +1341,10 @@ export function AppShell() {
   );
   const [timelineZoom, setTimelineZoom] = useState(100);
   const projectSession = useProjectSession();
+  const playback = useAlbumPreviewPlayback(
+    projectSession.project,
+    projectSession.trustedPreviewBatch,
+  );
   const [selectionSession] = useState(() => new VisualSelectionSession());
   const [visualUiState, setVisualUiState] = useState(() =>
     selectionSession.snapshot(),
@@ -1590,6 +1625,7 @@ export function AppShell() {
         <PreviewPanel
           visualModel={visualModel}
           onSelectLayer={(id) => selectLayer(id, true)}
+          playback={playback}
         />
         <GeminiRail />
         <TimelinePanel

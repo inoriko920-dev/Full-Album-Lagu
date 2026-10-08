@@ -13,6 +13,10 @@ import "./static-scene-preview.css";
 export interface StaticScenePreviewProps {
   model: StaticScenePreviewModel;
   onSelectLayer?: (layerId: string) => void;
+  /** Real decoded-audio FFT when main-authorized playback exists. */
+  spectrumLevels?: readonly number[];
+  /** Album-wide audio clock; omitted for the approved static illustration. */
+  progressFraction?: number;
   /** Local illustrative sample, never a source media asset or encoded in project. */
   templateArtwork?: { templateId: string; category: string } | undefined;
 }
@@ -69,6 +73,8 @@ function fontWeight(weight: string): number {
 function layerContent(
   layer: StaticSceneLayer,
   templateArtwork?: { templateId: string; category: string },
+  spectrumLevels?: readonly number[],
+  progressFraction?: number,
 ) {
   switch (layer.kind) {
     case "background":
@@ -127,13 +133,15 @@ function layerContent(
       return (
         <span
           className="static-scene-preview__spectrum"
-          aria-label="Spectrum statis"
+          aria-label={spectrumLevels === undefined ? "Spectrum statis" : "Spectrum audio"}
         >
-          {spectrumBarHeights.map((height, index) => (
+          {(spectrumLevels === undefined
+            ? spectrumBarHeights
+            : spectrumLevels).map((height, index) => (
             <span
               key={index}
               className="static-scene-preview__bar"
-              style={{ height: `${height}%` }}
+              style={{ height: `${spectrumLevels === undefined ? height : Math.max(0, Math.min(1, height)) * 100}%` }}
             />
           ))}
         </span>
@@ -144,7 +152,16 @@ function layerContent(
           className="static-scene-preview__progress"
           aria-label="Progress statis"
         >
-          <span className="static-scene-preview__progress-track" />
+          <span
+            className="static-scene-preview__progress-track"
+            {...(progressFraction === undefined
+              ? {}
+              : {
+                  style: {
+                    background: `linear-gradient(to right, #60a5fa 0%, #60a5fa ${Math.max(0, Math.min(1, progressFraction)) * 100}%, #a9bcd3 ${Math.max(0, Math.min(1, progressFraction)) * 100}%, #a9bcd3 100%)`,
+                  },
+                })}
+          />
         </span>
       );
   }
@@ -159,6 +176,8 @@ export function StaticScenePreview({
   model,
   onSelectLayer,
   templateArtwork,
+  spectrumLevels,
+  progressFraction,
 }: StaticScenePreviewProps) {
   return (
     <div
@@ -189,7 +208,7 @@ export function StaticScenePreview({
               ...(layer.kind === "background" ? backgroundStyle(layer) : {}),
             }}
           >
-            {layerContent(layer, templateArtwork)}
+            {layerContent(layer, templateArtwork, spectrumLevels, progressFraction)}
             {model.selectionOutline?.layerId === layer.id ? (
               <span
                 className="static-scene-preview__selection"

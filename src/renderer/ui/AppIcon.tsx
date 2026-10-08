@@ -10,6 +10,7 @@ export type IconName =
   | "layers"
   | "sliders"
   | "play"
+  | "pause"
   | "previous"
   | "next"
   | "volume"
@@ -121,6 +122,12 @@ export function AppIcon({
       return (
         <svg {...common}>
           <path d="m9 7 8 5-8 5z" />
+        </svg>
+      );
+    case "pause":
+      return (
+        <svg {...common}>
+          <path d="M9 6v12M15 6v12" />
         </svg>
       );
     case "previous":
