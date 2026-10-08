@@ -344,6 +344,7 @@ describe("MediaIntakeService", () => {
     let firstBatchId = "";
     let firstAssetId = "";
     let untrustedBatchId = "";
+    let untrustedAssetId = "";
     for (let index = 0; index < 25; index += 1) {
       const batchId = service.start("discovery-1", project).batchId;
       if (index === 0) firstBatchId = batchId;
@@ -358,6 +359,9 @@ describe("MediaIntakeService", () => {
       if (result.status !== "completed") throw new Error("Not completed");
       project = result.project;
       if (index === 0) firstAssetId = project.mediaAssets?.[0]?.id ?? "";
+      if (index === 1) {
+        untrustedAssetId = project.mediaAssets?.[1]?.id ?? "";
+      }
     }
     expect(service.getStatus(firstBatchId).status).toBe("error");
     expect(
@@ -367,7 +371,11 @@ describe("MediaIntakeService", () => {
       service.getTrustedAudioSource(firstBatchId, "another-project", firstAssetId),
     ).toBeNull();
     expect(
-      service.getTrustedAudioSource(untrustedBatchId, "project-many", "many-4"),
+      service.getTrustedAudioSource(
+        untrustedBatchId,
+        "project-many",
+        untrustedAssetId,
+      ),
     ).toBeNull();
     service.releaseTrustedAudioBatch(firstBatchId);
     expect(
