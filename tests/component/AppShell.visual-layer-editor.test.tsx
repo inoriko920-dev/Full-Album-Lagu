@@ -477,7 +477,7 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     fireEvent.click(
       within(
         screen.getByRole("dialog", { name: "Simpan sebagai Template" }),
-      ).getByRole("button", { name: "Simpan" }),
+      ).getByRole("button", { name: "Simpan Template" }),
     );
     await waitFor(() => expect(saveCalls).toHaveLength(1));
     const serialized = JSON.stringify(saveCalls[0]);
