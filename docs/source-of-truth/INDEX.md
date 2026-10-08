@@ -100,9 +100,9 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 
 ## W05-05 checkpoint (2026-10-08)
 - Verified implementation evidence `../../step11/evidence/T11_W05_05_FROZEN_LAYER_INSPECTOR_UI_WIRING_EVIDENCE.md`, PR #49, Windows CI #378 / `37724632656` PASS at `7bdd0ee79ebf528182d9f2e5ae7da30967988c37`; 283 tests (153 unit, 55 contract, 37 component, 38 integration), architecture/secrets/portable paths, 29 frozen UI reference states, SCR-002A visual baseline, STEP 10/W11-01..04 E2E, Windows packaged smoke + portable multi-file ZIP PASS.
-- Next implementation authority **SOL T11-W05-07 only**, W05-07 remains BLOCKED.
+- At the W05-05 historical checkpoint: SOL W05-06 READY; W05-07 was BLOCKED until W05-06 passed.
 
 
 ## W05-06 checkpoint (2026-10-08)
-- Verified evidence: `../../step11/evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md` — PR #50, Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
+- Verified evidence: `../step11/evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md` — PR #50, Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
 - Serial implementation authority: **SOL T11-W05-07 only**. W11-05 overall IN PROGRESS until 25 AC + frozen UI/screenshots + protected fingerprint evidence.
