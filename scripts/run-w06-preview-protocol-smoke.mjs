@@ -17,6 +17,31 @@ async function fingerprint(path) {
   };
 }
 
+/** Self-generated deterministic mono PCM tone/silence; no external music. */
+function synthesizePcmWav(hz = 0, seconds = 2) {
+  const rate = 44_100;
+  const samples = rate * seconds;
+  const output = Buffer.allocUnsafe(44 + samples * 2);
+  output.write("RIFF", 0);
+  output.writeUInt32LE(output.length - 8, 4);
+  output.write("WAVEfmt ", 8);
+  output.writeUInt32LE(16, 16);
+  output.writeUInt16LE(1, 20);
+  output.writeUInt16LE(1, 22);
+  output.writeUInt32LE(rate, 24);
+  output.writeUInt32LE(rate * 2, 28);
+  output.writeUInt16LE(2, 32);
+  output.writeUInt16LE(16, 34);
+  output.write("data", 36);
+  output.writeUInt32LE(samples * 2, 40);
+  for (let sample = 0; sample < samples; sample += 1) {
+    const value =
+      hz === 0 ? 0 : Math.round(13_107 * Math.sin((2 * Math.PI * hz * sample) / rate));
+    output.writeInt16LE(value, 44 + sample * 2);
+  }
+  return output;
+}
+
 async function prepareAudioFiles() {
   const contents = await readFile(
     resolve("tests", "fixtures", "synthetic-audio-fixtures.ts"),
@@ -31,6 +56,14 @@ async function prepareAudioFiles() {
     }
     const path = join(fixtures, `${index + 1} Test Silence.${kind}`);
     await writeFile(path, Buffer.from(match[1], "base64"));
+    paths.push(path);
+  }
+  for (const [name, hz] of [
+    ["T04 Tone 440Hz.wav", 440],
+    ["T04 Silence 2s.wav", 0],
+  ]) {
+    const path = join(fixtures, name);
+    await writeFile(path, synthesizePcmWav(hz));
     paths.push(path);
   }
   return paths;
@@ -133,6 +166,17 @@ async function main() {
     report.driver?.createdElements < 4
   ) {
     throw new Error("Real packaged T03 HtmlMediaPlaybackDriver proof failed.");
+  }
+  if (
+    report.spectrum?.tone440HzDetected !== true ||
+    report.spectrum?.silenceNearZero !== true ||
+    report.spectrum?.pauseZero !== true ||
+    report.spectrum?.stopZero !== true ||
+    report.spectrum?.sourceIdentity === false ||
+    report.spectrum?.tonePeak < 0.15 ||
+    report.spectrum?.silencePeak > 0.04
+  ) {
+    throw new Error("Real packaged Windows FFT tone/silence proof failed.");
   }
   const after = await Promise.all(audioPaths.map(fingerprint));
   if (JSON.stringify(before) !== JSON.stringify(after)) {
