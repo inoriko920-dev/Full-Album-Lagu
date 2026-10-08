@@ -450,8 +450,10 @@ export function TemplateBrowser({
                     if (!busy) {
                       session.revertTemplateTrial();
                       setSavedMessage(null);
-                      setSelectedTemplate(null);
-                      setSelectedId(entry.templateId);
+                      if (entry.templateId !== selectedId) {
+                        setSelectedTemplate(null);
+                        setSelectedId(entry.templateId);
+                      }
                     }
                   }}
                 >
