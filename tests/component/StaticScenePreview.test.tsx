@@ -149,7 +149,9 @@ describe("T11-W05-04 static visual renderer", () => {
       />,
     );
     expect(
-      within(container).queryByRole("button", { name: "Pilih layer Progress Bar" }),
+      within(container).queryByRole("button", {
+        name: "Pilih layer Progress Bar",
+      }),
     ).toBeNull();
     expect(
       container.querySelectorAll(".static-scene-preview__selection"),
