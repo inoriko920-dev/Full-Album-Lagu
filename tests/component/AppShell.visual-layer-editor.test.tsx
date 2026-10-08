@@ -744,6 +744,11 @@ describe("T11-W05-07 frozen remediation: editor-hosted Trial, scoped Save and ca
     expect(
       screen.getByLabelText("Pratinjau Template Disimpan"),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /Minimal Biru/ }).querySelector(
+        'svg[aria-label="Ilustrasi contoh template, bukan artwork asli"]',
+      ),
+    ).not.toBeNull();
     expect(dialog.textContent).toContain("kredensial AI");
     fireEvent.click(
       within(dialog).getByRole("checkbox", { name: "Layer visual" }),
