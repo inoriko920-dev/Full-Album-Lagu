@@ -624,3 +624,100 @@ describe("T11-W05-07 live renderer wave stress and frozen safety", () => {
     ).toBeInTheDocument();
   }, 30000);
 });
+
+describe("T11-W05-07 frozen remediation: editor-hosted Trial, scoped Save and categorized gallery", () => {
+  beforeEach(() => {
+    bridge.listTemplates = async () => ({
+      status: "ok",
+      entries: [
+        { templateId: "minimal-biru", name: "Minimal Biru", category: "Minimal", origin: "built-in", readOnly: true },
+        { templateId: "neon-pulse", name: "Neon Pulse", category: "Neon", origin: "built-in", readOnly: true },
+      ],
+    });
+    bridge.loadTemplate = async (id) => ({ status: "ok", template: id === "neon-pulse" ? neonTemplate : minimalTemplate });
+    bridge.saveTemplate = async (template) => ({ status: "ok", templateId: template.templateId });
+  });
+
+  it("shows trial projected inside real Main Editor without replacing Album Timeline or right Gemini rail", async () => {
+    render(<AppShell />);
+    fireEvent.click(screen.getByRole("button", { name: "Template" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: "Coba Template" })).toBeEnabled());
+    fireEvent.click(screen.getByRole("button", { name: "Coba Template" }));
+    expect(screen.getByLabelText("Mode Coba Template")).toBeInTheDocument();
+    expect(screen.queryByLabelText("Browser Template")).not.toBeInTheDocument();
+    expect(shell()).toHaveClass("app-shell--template-trial");
+    expect(screen.getByLabelText("Preview visual statis")).toBeInTheDocument();
+    expect(screen.getByLabelText("Album Timeline")).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "Gemini Agent" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Media" })).toHaveAttribute("aria-selected", "true");
+    expect(shell().getAttribute("data-project-revision")).toBe("0");
+    expect(shell().getAttribute("data-project-dirty")).toBe("false");
+    fireEvent.click(screen.getByRole("button", { name: "Kembali ke Sebelumnya" }));
+    expect(shell()).not.toHaveClass("app-shell--template-trial");
+    expect(screen.getByLabelText("Browser Template")).toBeInTheDocument();
+    expect(screen.getByText("Belum ada visual")).toBeInTheDocument();
+  });
+
+  it("keeps frozen category rail responsive and limits Save as Template to checked visual families", async () => {
+    const saved: TemplateDocument[] = [];
+    bridge.saveTemplate = async (template) => { saved.push(template); return { status: "ok", templateId: template.templateId }; };
+    getStartupProjectMock.mockResolvedValue({
+      status: "loaded",
+      project: {
+        schemaVersion: 1, projectId: "scope-source", name: "Album Uji", revision: 0,
+        tracks: [],
+        visualScene: {
+          sceneVersion: 1,
+          layers: [
+            createStarterLayer("background", "bg"),
+            createStarterLayer("title", "title"),
+            createStarterLayer("spectrum", "spectrum"),
+            createStarterLayer("progress", "progress"),
+          ],
+        },
+      },
+      location: { kind: "known-path" },
+    });
+    render(<AppShell />);
+    await waitFor(() => expect(shell().getAttribute("data-project-id")).toBe("scope-source"));
+    fireEvent.click(screen.getByRole("button", { name: "Template" }));
+    await waitFor(() => expect(screen.getByRole("button", { name: /Minimal Biru/ })).toBeInTheDocument());
+    fireEvent.click(within(screen.getByRole("navigation", { name: "Navigasi Kategori Template" })).getByRole("button", { name: "Neon" }));
+    expect(screen.queryByRole("button", { name: /Minimal Biru/ })).not.toBeInTheDocument();
+    fireEvent.click(within(screen.getByRole("navigation", { name: "Navigasi Kategori Template" })).getByRole("button", { name: "Semua" }));
+    fireEvent.click(screen.getByRole("button", { name: "Simpan Template" }));
+    const dialog = screen.getByRole("dialog", { name: "Simpan sebagai Template" });
+    expect(dialog).toBeInTheDocument();
+    expect(screen.getByLabelText("Pratinjau Template Disimpan")).toBeInTheDocument();
+    expect(dialog.textContent).toContain("kredensial AI");
+    fireEvent.click(within(dialog).getByRole("checkbox", { name: "Layer visual" }));
+    fireEvent.click(within(dialog).getByRole("checkbox", { name: "Spectrum" }));
+    fireEvent.click(within(dialog).getByRole("checkbox", { name: "Progress Bar" }));
+    fireEvent.change(screen.getByLabelText("Nama Template"), { target: { value: "Teks Saja" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Simpan Template" }));
+    await waitFor(() => expect(saved).toHaveLength(1));
+    expect(saved[0]!.scene.layers.map((layer) => layer.kind)).toEqual(["text"]);
+    expect(shell().getAttribute("data-project-revision")).toBe("0");
+    expect(shell().getAttribute("data-project-dirty")).toBe("false");
+  });
+
+  it("renders selected layer and Inspector simultaneously in frozen left Layer tab", async () => {
+    getStartupProjectMock.mockResolvedValue({
+      status: "loaded",
+      project: {
+        schemaVersion: 1, projectId: "layer-combined", name: "Layer Layout", revision: 0,
+        tracks: [],
+        visualScene: { sceneVersion: 1, layers: [createStarterLayer("title", "title-visible")] },
+      },
+      location: { kind: "known-path" },
+    });
+    render(<AppShell />);
+    await waitFor(() => expect(shell().getAttribute("data-project-id")).toBe("layer-combined"));
+    openLayerTab();
+    fireEvent.click(screen.getByRole("button", { name: "Pilih Judul Track" }));
+    expect(screen.getByLabelText("Layer dan Properti")).toBeInTheDocument();
+    expect(screen.getByLabelText("Daftar layer")).toBeInTheDocument();
+    expect(screen.getByLabelText("Nama Layer")).toBeInTheDocument();
+    expect(screen.getByRole("complementary", { name: "Gemini Agent" })).toBeInTheDocument();
+  });
+});
