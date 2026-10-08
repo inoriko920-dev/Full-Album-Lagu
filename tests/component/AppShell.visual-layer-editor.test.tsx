@@ -585,6 +585,70 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
   });
 
+  it("preserves a failed post-save catalog warning when a pending template finishes loading", async () => {
+    const originalListing = bridge.listTemplates!;
+    let listingCalls = 0;
+    let loadCalls = 0;
+    let releaseLoad = () => {};
+    const saved: TemplateDocument[] = [];
+    bridge.listTemplates = async () => {
+      listingCalls += 1;
+      if (listingCalls === 1) return originalListing();
+      return {
+        status: "error" as const,
+        code: "TEMPLATE_READ_FAILED" as const,
+        message: "Catalog refresh failed",
+      };
+    };
+    bridge.loadTemplate = () => {
+      loadCalls += 1;
+      return new Promise((resolve) => {
+        releaseLoad = () => {
+          resolve({ status: "ok" as const, template: minimalTemplate });
+        };
+      });
+    };
+    bridge.saveTemplate = async (template) => {
+      saved.push(template);
+      return { status: "ok", templateId: template.templateId };
+    };
+
+    render(<AppShell />);
+    fireEvent.click(screen.getByRole("button", { name: "Template" }));
+    await waitFor(() => expect(loadCalls).toBe(1));
+    fireEvent.click(screen.getByRole("button", { name: "Simpan Template" }));
+    fireEvent.change(screen.getByLabelText("Nama Template"), {
+      target: { value: "Template Baru" },
+    });
+    fireEvent.click(
+      within(
+        screen.getByRole("dialog", { name: "Simpan sebagai Template" }),
+      ).getByRole("button", { name: "Simpan Template" }),
+    );
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Template berhasil disimpan, tetapi daftar template belum dapat diperbarui.",
+      ),
+    );
+    await act(async () => {
+      releaseLoad();
+      await Promise.resolve();
+    });
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Template berhasil disimpan, tetapi daftar template belum dapat diperbarui.",
+    );
+    expect(
+      screen.getByRole("button", { name: "Coba Template" }),
+    ).toBeEnabled();
+    expect(
+      screen.getByText("Template tersimpan secara lokal."),
+    ).toBeInTheDocument();
+    expect(saved).toHaveLength(1);
+    expect(listingCalls).toBe(2);
+    expect(shell().getAttribute("data-project-revision")).toBe("0");
+    expect(shell().getAttribute("data-project-dirty")).toBe("false");
+  });
+
   it("reports catalog refresh failure without contradicting a successful local template save", async () => {
     const initialListing = bridge.listTemplates!;
     let listings = 0;
