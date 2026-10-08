@@ -350,7 +350,6 @@ export function TemplateBrowser({
                     setSavedMessage(null);
                     setShowSaveDialog(true);
                   }}
-                  disabled={busy}
                 />
               </div>
             </div>
