@@ -182,6 +182,43 @@ describe("W11-06 T03 ephemeral album transport", () => {
     expect(controller.onMediaError(controller.snapshot.generation)).toBeNull();
   });
 
+  it("survives 128-track rapid navigation with disabled tracks and no dirty project", () => {
+    const durations = Array.from({ length: 128 }, () => 1000);
+    const input = project(durations, [12, 68]);
+    const original = structuredClone(input);
+    const controller = new AlbumPlaybackTransport(input);
+
+    const first = controller.play();
+    if (first?.kind !== "load") throw new Error("Missing first track");
+    for (let index = 0; index < 64; index += 1) {
+      const effect = controller.seek(index * 1000);
+      expect(effect.kind).toBe("load");
+    }
+    expect(controller.onLoaded(first.generation)).toBeNull();
+
+    const last = controller.seek(125500);
+    expect(last).toMatchObject({
+      kind: "load",
+      trackId: "track-127",
+      localTimeMs: 500,
+      autoPlay: true,
+    });
+    if (last.kind !== "load") throw new Error("Missing last track");
+    expect(controller.onLoaded(last.generation)).toMatchObject({
+      kind: "resume",
+    });
+    expect(controller.snapshot.activeTrackId).toBe("track-127");
+    expect(controller.reportAudioClock(last.generation, 750)).toBe(true);
+    expect(controller.snapshot.albumTimeMs).toBe(125750);
+
+    expect(controller.onEnded(last.generation)).toMatchObject({
+      kind: "stop",
+    });
+    expect(controller.snapshot.phase).toBe("finished");
+    expect(controller.onEnded(last.generation)).toBeNull();
+    expect(input).toEqual(original);
+  });
+
   it("never mutates the input project or its revision/track order", () => {
     const input = project([3000, 4000]);
     const before = structuredClone(input);
