@@ -1,5 +1,6 @@
 import type { ProjectDocument } from "../../core/domain/project-document";
 import { HtmlMediaPlaybackDriver } from "./html-media-playback-driver";
+import { runW06SpectrumProof } from "./w06-packaged-spectrum-proof";
 
 interface W06Evidence {
   readonly mainIssuedGrant: true;
@@ -182,5 +183,8 @@ async function run(
 }
 
 export function installW06DriverProof(): void {
-  Object.assign(window, { __w06DriverProbe: run });
+  Object.assign(window, {
+    __w06DriverProbe: run,
+    __w06SpectrumProbe: runW06SpectrumProof,
+  });
 }
