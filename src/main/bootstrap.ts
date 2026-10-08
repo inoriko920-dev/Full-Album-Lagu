@@ -12,6 +12,7 @@ import {
   createPreviewAudioProtocolResponse,
 } from "./infrastructure/media/preview-audio-protocol";
 import { captureW1105State } from "./verification/w11-05-ui-capture";
+import { captureW1106EditorInteractions } from "./verification/w11-06-editor-ui-probe";
 
 // Scheme registration must precede app readiness. Never bypass CSP or enable Node.
 protocol.registerSchemesAsPrivileged([
@@ -78,7 +79,7 @@ function createMainWindow(): BrowserWindow {
   if (
     isW06Probe &&
     (process.env.LFA_W06_TEST !== "1" ||
-      w06Probe !== "decode" ||
+      !["decode", "editor"].includes(w06Probe) ||
       !w06EvidencePath)
   ) {
     throw new Error("W06 codec probe requires CI authorization and evidence.");
@@ -106,11 +107,17 @@ function createMainWindow(): BrowserWindow {
   }
 
   const window = new BrowserWindow({
-    width: isUiCapture || isW05Capture ? CANONICAL_VIEWPORT.width : 1440,
-    height: isUiCapture || isW05Capture ? CANONICAL_VIEWPORT.height : 900,
+    width:
+      isUiCapture || isW05Capture || w06Probe === "editor"
+        ? CANONICAL_VIEWPORT.width
+        : 1440,
+    height:
+      isUiCapture || isW05Capture || w06Probe === "editor"
+        ? CANONICAL_VIEWPORT.height
+        : 900,
     minWidth: 1280,
     minHeight: 800,
-    useContentSize: isUiCapture || isW05Capture,
+    useContentSize: isUiCapture || isW05Capture || w06Probe === "editor",
     show: false,
     paintWhenInitiallyHidden: true,
     backgroundColor: "#F3F5F8",
@@ -215,7 +222,7 @@ function createMainWindow(): BrowserWindow {
     window.once("ready-to-show", () => window.show());
   }
 
-  if (isW06Probe && w06EvidencePath) {
+  if (w06Probe === "decode" && w06EvidencePath) {
     window.webContents.once("did-finish-load", async () => {
       try {
         const report = (await window.webContents.executeJavaScript(
@@ -234,6 +241,32 @@ function createMainWindow(): BrowserWindow {
         console.error("W06 packaged decoder FAIL: " + message);
         if (!window.isDestroyed()) window.destroy();
         app.exit(10);
+      }
+    });
+  }
+
+  if (w06Probe === "editor" && w06EvidencePath) {
+    window.webContents.once("did-finish-load", async () => {
+      try {
+        const expectedTracks = Number(readArgValue("w06-expected-tracks"));
+        if (![3, 128].includes(expectedTracks)) {
+          throw new Error("T05 packaged UI probe requires 3 or 128 fixtures");
+        }
+        await captureW1106EditorInteractions(
+          window,
+          w06EvidencePath,
+          expectedTracks,
+        );
+        console.log("W11-06-05 packaged editor interactions PASS");
+        window.destroy();
+        app.exit(0);
+      } catch (error) {
+        console.error(
+          "W11-06-05 packaged editor interactions FAIL: " +
+            (error instanceof Error ? error.message : String(error)),
+        );
+        if (!window.isDestroyed()) window.destroy();
+        app.exit(12);
       }
     });
   }
@@ -1722,7 +1755,7 @@ function createMainWindow(): BrowserWindow {
   if (devUrl) void window.loadURL(devUrl);
   else
     void window.loadFile(join(__dirname, "../renderer/index.html"), {
-      query: isW06Probe ? { "w06-driver": "1" } : {},
+      query: w06Probe === "decode" ? { "w06-driver": "1" } : {},
     });
 
   return window;
