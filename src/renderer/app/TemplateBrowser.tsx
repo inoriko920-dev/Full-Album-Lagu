@@ -300,8 +300,13 @@ export function TemplateBrowser({
                   aria-hidden="true"
                 >
                   {entry.origin === "built-in" ? (
-                    <TemplateArtwork templateId={entry.templateId} category={entry.category} />
-                  ) : "♫"}
+                    <TemplateArtwork
+                      templateId={entry.templateId}
+                      category={entry.category}
+                    />
+                  ) : (
+                    "♫"
+                  )}
                 </div>
                 <small>{entry.name}</small>
               </div>
@@ -412,7 +417,10 @@ export function TemplateBrowser({
                     aria-hidden="true"
                   >
                     {entry.origin === "built-in" ? (
-                      <TemplateArtwork templateId={entry.templateId} category={entry.category} />
+                      <TemplateArtwork
+                        templateId={entry.templateId}
+                        category={entry.category}
+                      />
                     ) : (
                       <span className="template-browser__thumbnail-art">♫</span>
                     )}
@@ -435,10 +443,14 @@ export function TemplateBrowser({
             <div className="template-browser__preview">
               <StaticScenePreview
                 model={preview}
-                templateArtwork={selectedTemplate === null ? undefined : {
-                  templateId: selectedTemplate.templateId,
-                  category: selectedTemplate.category,
-                }}
+                templateArtwork={
+                  selectedTemplate === null
+                    ? undefined
+                    : {
+                        templateId: selectedTemplate.templateId,
+                        category: selectedTemplate.category,
+                      }
+                }
               />
             </div>
             <div className="template-browser__details">

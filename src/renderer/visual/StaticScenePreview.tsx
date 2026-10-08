@@ -66,7 +66,10 @@ function fontWeight(weight: string): number {
   return 400;
 }
 
-function layerContent(layer: StaticSceneLayer, templateArtwork?: { templateId: string; category: string }) {
+function layerContent(
+  layer: StaticSceneLayer,
+  templateArtwork?: { templateId: string; category: string },
+) {
   switch (layer.kind) {
     case "background":
       return null;
@@ -75,9 +78,11 @@ function layerContent(layer: StaticSceneLayer, templateArtwork?: { templateId: s
         <span
           className="static-scene-preview__artwork"
           role="img"
-          aria-label={layer.resolvedArtwork.assetId === undefined
-            ? "Ilustrasi contoh, bukan artwork asli"
-            : "Artwork sumber terhubung, thumbnail belum tersedia"}
+          aria-label={
+            layer.resolvedArtwork.assetId === undefined
+              ? "Ilustrasi contoh, bukan artwork asli"
+              : "Artwork sumber terhubung, thumbnail belum tersedia"
+          }
         >
           {layer.resolvedArtwork.assetId === undefined ? (
             <TemplateArtwork
@@ -86,10 +91,17 @@ function layerContent(layer: StaticSceneLayer, templateArtwork?: { templateId: s
               className="static-scene-preview__artwork-illustration"
             />
           ) : (
-            <span className="static-scene-preview__artwork-mark" aria-hidden="true">♫</span>
+            <span
+              className="static-scene-preview__artwork-mark"
+              aria-hidden="true"
+            >
+              ♫
+            </span>
           )}
           <span className="static-scene-preview__artwork-label">
-            {layer.resolvedArtwork.assetId === undefined ? "Artwork contoh" : "Artwork terhubung"}
+            {layer.resolvedArtwork.assetId === undefined
+              ? "Artwork contoh"
+              : "Artwork terhubung"}
           </span>
         </span>
       );
