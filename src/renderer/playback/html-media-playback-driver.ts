@@ -48,10 +48,13 @@ interface ActiveMedia {
  * saved/relinked project has NO grant and must be reauthorized in main.
  * This service is transport-only; W11-06 T05 will attach frozen UI controls.
  */
+const PAUSED_LEASE_REFRESH_MS = 45_000;
+
 export class HtmlMediaPlaybackDriver {
   private readonly transport: AlbumPlaybackTransport;
   private active: ActiveMedia | null = null;
   private closed = false;
+  private pausedAtMs: number | null = null;
   private trustedBatch: TrustedAudioBatch | null;
 
   constructor(
@@ -61,6 +64,7 @@ export class HtmlMediaPlaybackDriver {
     private readonly createAudio: () => MediaElementPort = () => new Audio(),
     private readonly notify: (snapshot: PlaybackClockSnapshot) => void = () =>
       undefined,
+    private readonly nowMs: () => number = Date.now,
   ) {
     this.transport = new AlbumPlaybackTransport(project);
     this.trustedBatch = trustedBatch;
@@ -71,7 +75,15 @@ export class HtmlMediaPlaybackDriver {
   }
 
   play(): void {
-    if (!this.closed) this.perform(this.transport.play());
+    if (this.closed) return;
+    const paused = this.transport.snapshot.phase === "paused";
+    const elapsed =
+      this.pausedAtMs === null ? 0 : this.nowMs() - this.pausedAtMs;
+    if (paused && elapsed >= PAUSED_LEASE_REFRESH_MS) {
+      this.perform(this.transport.refreshPausedAndPlay());
+      return;
+    }
+    this.perform(this.transport.play());
   }
 
   pause(): void {
@@ -146,6 +158,7 @@ export class HtmlMediaPlaybackDriver {
 
   private perform(effect: PlaybackTransportEffect | null): void {
     if (effect === null) return;
+    this.pausedAtMs = effect.kind === "pause" ? this.nowMs() : null;
     if (effect.kind === "load") {
       this.teardown();
       this.emit();

@@ -381,6 +381,51 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     driver.close();
   });
 
+  it("refreshes a paused expiring lease before resuming after 45 seconds", async () => {
+    let timeMs = 1000;
+    const audio: FakeMedia[] = [];
+    const requests: string[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      project(),
+      trusted,
+      async (request) => {
+        requests.push(request.assetId);
+        return granted;
+      },
+      () => {
+        const item = new FakeMedia();
+        audio.push(item);
+        return item;
+      },
+      () => undefined,
+      () => timeMs,
+    );
+    driver.play();
+    await flush();
+    audio[0]!.emit("loadedmetadata");
+    await flush();
+    audio[0]!.currentTime = 0.35;
+    audio[0]!.emit("timeupdate");
+    driver.pause();
+    expect(driver.snapshot.albumTimeMs).toBe(350);
+    timeMs += 46_000;
+    driver.play();
+    await flush();
+
+    expect(requests).toEqual(["asset-0", "asset-0"]);
+    expect(audio).toHaveLength(2);
+    expect(audio[0]!.src).toBe("");
+    audio[0]!.emit("ended");
+    audio[0]!.emit("error");
+    expect(driver.snapshot.phase).toBe("loading");
+    audio[1]!.emit("loadedmetadata");
+    await flush();
+    expect(audio[1]!.currentTime).toBeCloseTo(0.35);
+    expect(driver.snapshot.phase).toBe("playing");
+    expect(audio[1]!.playCount).toBe(1);
+    driver.close();
+  });
+
   it("discards late URL response after Stop and does not resurrect sound", async () => {
     let resolve!: (value: PreviewAudioIssueResult) => void;
     const deferred = new Promise<PreviewAudioIssueResult>((finish) => {

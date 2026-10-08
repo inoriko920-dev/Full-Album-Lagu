@@ -116,6 +116,15 @@ export class AlbumPlaybackTransport {
     return this.map(position, true);
   }
 
+  /**
+   * A paused HTMLMediaElement may hold an expired private stream token after a
+   * long pause. Refresh from the canonical album position with a new token.
+   */
+  refreshPausedAndPlay(): PlaybackTransportEffect | null {
+    if (this.state.phase !== "paused") return null;
+    return this.map(this.state.albumTimeMs, true);
+  }
+
   pause(): PlaybackTransportEffect | null {
     if (this.state.phase !== "playing" && this.state.phase !== "loading") {
       return null;
