@@ -14,7 +14,7 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npx prettier --write src/renderer/app/TemplateBrowser.tsx src/renderer/app/template-browser.css tests/component/AppShell.visual-layer-editor.test.tsx tests/integration/w11-05-wave-closure.test.ts
+      - run: npx prettier --write src/renderer/app/TemplateBrowser.tsx src/renderer/app/template-browser.css tests/component/AppShell.visual-layer-editor.test.tsx tests/integration/w11-05-wave-closure.test.ts src/main/bootstrap.ts src/main/verification/w11-05-ui-capture.ts scripts/run-w11-visual-template-closure.mjs package.json
       - name: Commit formatting
         run: |
           git config user.name "github-actions[bot]"
