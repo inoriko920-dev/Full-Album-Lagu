@@ -910,7 +910,7 @@ export function useProjectSession(): ProjectSessionView {
       setTemplateTrialName(null);
       setTemplateError(null);
       if (result.status === "applied") publishHistorySnapshot();
-      return result.status === "applied";
+      return result.status === "applied" || result.status === "noop";
     } catch {
       setTemplateError("Template tidak dapat diterapkan. Proyek tidak diubah.");
       return false;
