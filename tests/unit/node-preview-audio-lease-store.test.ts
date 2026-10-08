@@ -95,14 +95,19 @@ describe("T11-W06-02 main-owned audio lease gateway", () => {
   it("denies malformed, multiple and impossible ranges instead of leaking full source", async () => {
     const { gateway, token } = await sample();
     for (const rangeHeader of ["bytes=0-1,3-4", "bytes=2-1", "bytes=999-", "nope"]) {
-      expect(
-        await gateway.openRange({
-          projectId: "project-A",
-          ownerWebContentsId: 7,
-          token,
-          rangeHeader,
-        }),
-      ).toEqual({ status: 416 });
+      const result = await gateway.openRange({
+        projectId: "project-A",
+        ownerWebContentsId: 7,
+        token,
+        rangeHeader,
+      });
+      expect(result.status).toBe(416);
+      if (result.status !== 416) throw new Error("expected range denial");
+      expect(result.headers).toMatchObject({
+        "Content-Range": "bytes */6",
+        "Content-Length": "0",
+        "Accept-Ranges": "bytes",
+      });
     }
   });
 
@@ -215,6 +220,29 @@ describe("T11-W06-02 main-owned audio lease gateway", () => {
         sourcePath: link,
       }),
     ).rejects.toThrow("symbolic link");
+  });
+
+
+  it("immediately tears down an active audio stream when its lease is revoked", async () => {
+    const { gateway, token } = await sample(new Uint8Array(2_000_000));
+    const result = await gateway.openRange({
+      projectId: "project-A",
+      ownerWebContentsId: 7,
+      token,
+      rangeHeader: "bytes=0-1999999",
+    });
+    expect(result.status).toBe(206);
+    if (result.status !== 206) throw new Error("expected partial audio");
+
+    gateway.revokeWindow(7);
+    expect(result.stream.destroyed).toBe(true);
+    expect(
+      await gateway.openRange({
+        projectId: "project-A",
+        ownerWebContentsId: 7,
+        token,
+      }),
+    ).toEqual({ status: 403 });
   });
 
   it("does not mutate source bytes across read and revoked sessions", async () => {

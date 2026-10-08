@@ -37,7 +37,8 @@ export type PreviewAudioStreamResult =
       headers: Readonly<Record<string, string>>;
       stream: Readable;
     }
-  | { status: 403 | 410 | 416 };
+  | { status: 403 | 410 }
+  | { status: 416; headers: Readonly<Record<string, string>> };
 
 export interface PreviewAudioRequest {
   token: string;
@@ -133,7 +134,16 @@ export class NodePreviewAudioLeaseStore {
       request.rangeHeader,
     );
     if (plan.status === "invalid" || plan.status === "unsatisfiable") {
-      return { status: 416 };
+      return {
+        status: 416,
+        headers: {
+          "Content-Range": `bytes */${grant.sizeBytes}`,
+          "Content-Length": "0",
+          "Accept-Ranges": "bytes",
+          "Cache-Control": "no-store",
+          "X-Content-Type-Options": "nosniff",
+        },
+      };
     }
 
     let handle;
