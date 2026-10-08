@@ -133,20 +133,43 @@ function createMainWindow(): BrowserWindow {
   const ownerWebContentsId = window.webContents.id;
   window.webContents.session.protocol.handle(
     PREVIEW_AUDIO_SCHEME,
-    (request) => {
+    async (request) => {
+      const rendererOrigin = new URL(window.webContents.getURL()).origin;
+      const requestOrigin = request.headers.get("origin");
+      if (requestOrigin !== null && requestOrigin !== rendererOrigin) {
+        return new Response(null, {
+          status: 403,
+          headers: { "Cache-Control": "no-store" },
+        });
+      }
+
       const context = previewAudioAccess.context(ownerWebContentsId);
-      return context === null
-        ? new Response(null, {
-            status: 403,
-            headers: { "Cache-Control": "no-store" },
-          })
-        : createPreviewAudioProtocolResponse(
-            request,
-            context,
-            previewAudioStore,
-          );
+      const response =
+        context === null
+          ? new Response(null, {
+              status: 403,
+              headers: { "Cache-Control": "no-store" },
+            })
+          : await createPreviewAudioProtocolResponse(
+              request,
+              context,
+              previewAudioStore,
+            );
+      // file:// renderer has an opaque ("null") origin. The scheme is
+      // private, per-session and token-protected; only that editor origin may
+      // fetch decoded audio for WebAudio/FFT. Never use a wildcard ACAO.
+      response.headers.set("Access-Control-Allow-Origin", rendererOrigin);
+      response.headers.set("Vary", "Origin");
+      return response;
     },
   );
+  if (isW06Probe) {
+    window.webContents.session.webRequest.onErrorOccurred((details) => {
+      if (details.url.startsWith(`${PREVIEW_AUDIO_SCHEME}:`)) {
+        console.error("W06 private protocol request error: " + details.error);
+      }
+    });
+  }
   window.webContents.on("did-navigate", () => {
     previewAudioAccess.revokeWindow(ownerWebContentsId);
   });
