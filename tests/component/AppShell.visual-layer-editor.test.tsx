@@ -526,7 +526,7 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
       attempts += 1;
       if (attempts === 1) {
         await new Promise<void>((resolve) => {
-          releaseFirst = resolve;
+          releaseFirst = () => resolve();
         });
         return {
           status: "error" as const,
