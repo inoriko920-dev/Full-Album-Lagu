@@ -585,11 +585,17 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
   });
 
-  it("preserves a failed post-save catalog warning when a pending template finishes loading", async () => {
+  it("preserves catalog warning after a pending template load", async () => {
     const originalListing = bridge.listTemplates!;
     let listingCalls = 0;
     let loadCalls = 0;
     let releaseLoad = () => {};
+    type LoadedTemplate = { status: "ok"; template: TemplateDocument };
+    const pendingLoad = new Promise<LoadedTemplate>((resolve) => {
+      releaseLoad = () => {
+        resolve({ status: "ok", template: minimalTemplate });
+      };
+    });
     const saved: TemplateDocument[] = [];
     bridge.listTemplates = async () => {
       listingCalls += 1;
@@ -602,13 +608,7 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     };
     bridge.loadTemplate = () => {
       loadCalls += 1;
-      return new Promise<{ status: "ok"; template: TemplateDocument }>(
-        (resolve) => {
-          releaseLoad = () => {
-            resolve({ status: "ok", template: minimalTemplate });
-          };
-        },
-      );
+      return pendingLoad;
     };
     bridge.saveTemplate = async (template) => {
       saved.push(template);
