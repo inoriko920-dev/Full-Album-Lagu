@@ -61,14 +61,17 @@ export async function runW06SpectrumProof(
   batchId: string,
 ): Promise<W06SpectrumEvidence> {
   const names = ["T04 Tone 440Hz.wav", "T04 Silence 2s.wav"];
-  const assets = names.map((name) =>
+  const candidateAssets = names.map((name) =>
     imported.mediaAssets?.find(
       (asset) => asset.availability === "ready" && asset.fileName === name,
     ),
   );
-  if (!assets[0] || !assets[1]) {
+  const toneAsset = candidateAssets[0];
+  const silenceAsset = candidateAssets[1];
+  if (toneAsset === undefined || silenceAsset === undefined) {
     throw new Error("T04 main-probed tone/silence files were not imported");
   }
+  const assets = [toneAsset, silenceAsset];
   const project: ProjectDocument = {
     ...imported,
     tracks: assets.map((asset, index) => ({
