@@ -123,9 +123,9 @@ describe("W11-06 T04 live spectrum graph lifecycle", () => {
     expect(runtime.attach({} as HTMLMediaElement)).toBe(false);
     expect(disconnected).toBe(true);
     expect(closed).toBe(true);
-    expect(runtime.sample("playing").barLevels.every((value) => value === 0)).toBe(
-      true,
-    );
+    expect(
+      runtime.sample("playing").barLevels.every((value) => value === 0),
+    ).toBe(true);
     runtime.close();
   });
 
@@ -135,9 +135,9 @@ describe("W11-06 T04 live spectrum graph lifecycle", () => {
     });
     expect(runtime.attach({} as HTMLMediaElement)).toBe(false);
     expect(runtime.sample("playing").active).toBe(false);
-    expect(runtime.sample("playing").barLevels.every((value) => value === 0)).toBe(
-      true,
-    );
+    expect(
+      runtime.sample("playing").barLevels.every((value) => value === 0),
+    ).toBe(true);
     runtime.close();
   });
 });

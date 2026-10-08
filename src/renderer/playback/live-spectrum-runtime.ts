@@ -57,10 +57,7 @@ export class LiveSpectrumRuntime {
   private analyser: AnalyserNode | null = null;
   private source: MediaElementAudioSourceNode | null = null;
   private frequencyBins = new Uint8Array(0);
-  private readonly empty = Array.from(
-    { length: SPECTRUM_BAR_COUNT },
-    () => 0,
-  );
+  private readonly empty = Array.from({ length: SPECTRUM_BAR_COUNT }, () => 0);
 
   constructor(
     private readonly createContext: () => AudioContext = () =>
