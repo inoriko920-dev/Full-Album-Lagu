@@ -674,11 +674,23 @@ function WorkRail({
           />
         ) : null}
         {activeTab === "layer" ? (
-          <VisualLayerPanel
-            model={visualModel}
-            session={projectSession}
-            onSelectLayer={onSelectLayer}
-          />
+          <div className="visual-layer-combined" aria-label="Layer dan Properti">
+            <VisualLayerPanel
+              model={visualModel}
+              session={projectSession}
+              onSelectLayer={onSelectLayer}
+            />
+            {visualModel.selectedLayerId !== null ? (
+              <VisualLayerInspector
+                key={visualModel.selectedLayerId}
+                model={visualModel}
+                session={projectSession}
+                onPreviewTransform={onPreviewTransform}
+                onCommitTransform={onCommitTransform}
+                onCancelTransform={onCancelTransform}
+              />
+            ) : null}
+          </div>
         ) : null}
         {activeTab === "inspector" ? (
           <InspectorPanel
