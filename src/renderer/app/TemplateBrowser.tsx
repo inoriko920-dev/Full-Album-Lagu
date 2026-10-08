@@ -271,6 +271,15 @@ export function TemplateBrowser({
           />
         </header>
         <div className="template-browser__body">
+          <nav className="template-browser__category-rail" aria-label="Navigasi Kategori Template">
+            <strong>Kategori</strong>
+            {categories.map((category) => (
+              <button key={category} type="button" className={filter === category ? "is-active" : ""}
+                aria-pressed={filter === category} onClick={() => setFilter(category)}>
+                {category}
+              </button>
+            ))}
+          </nav>
           <aside
             className="template-browser__catalog"
             aria-label="Katalog Template"
@@ -311,6 +320,7 @@ export function TemplateBrowser({
                 <button
                   className={`template-browser__item${selectedId === entry.templateId ? " is-selected" : ""}`}
                   key={entry.templateId}
+                  data-category={entry.category}
                   type="button"
                   aria-pressed={selectedId === entry.templateId}
                   onClick={() => {
@@ -397,6 +407,7 @@ export function TemplateBrowser({
                   disabled={busy || inTrial}
                   onClick={() => {
                     setSaveName("");
+                    setSaveScope(["background", "artwork", "text", "spectrum", "progress"]);
                     setSavedMessage(null);
                     setShowSaveDialog(true);
                   }}
