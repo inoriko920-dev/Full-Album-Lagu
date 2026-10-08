@@ -7,8 +7,8 @@
 | W11-01..04 dependency closure | PASS (historical evidence) | preserve source-of-truth |
 | W11-05 complete wave acceptance | **FAIL / AC21 OPEN; AC25 FINAL HELD** | user explicitly accepts frozen SCR-002C, SCR-003A, SCR-003B and DLG-008 or requests bounded change; then full 25 AC final audit and controlled merge |
 | W11-05 final Windows test head | CI #548 SUCCESS at 6e331c0 | reconfirm if W11-05 branch changes |
-| Final W11-06 master DOCX in repo | **FAIL / only local pre-gate DOCX exists** | review, expand if necessary and commit formal detailed DOCX at docs/source-of-truth/planning/current |
-| Wave 06 charter, acceptance, tasks in GitHub | PARTIAL / pre-gate markdown drafts only | finalize after source-of-truth DOCX, owner/dependency decisions |
+| Final W11-06 master DOCX in repo | **PARTIAL / native PRE-GATE DOCX committed, final approval still missing** | review and commit approved formal detailed DOCX in docs/source-of-truth/planning/current after W11-05 closure |
+| Wave 06 charter, acceptance, tasks in GitHub | PARTIAL / pre-gate DOCX and Markdown drafts only | finalize after final source-of-truth DOCX, owner/dependency decisions |
 | Authorized media gateway design | PENDING | decide main-controlled stream, origin, Range, revoke, lifecycle and security |
 | Windows codec support | PENDING | real packaged Electron MP3/WAV playback proof |
 | Audio clock and source of truth | DRAFT | approve projectAlbumTimeline-based mapper + stale generation cancellation |
@@ -22,7 +22,7 @@
 
 ## Source of truth & limitations
 
-The detailed draft DOCX **ASTRA_W11-06_PRE_GATE_PLAYBACK_SPECTRUM_PLAN_2026-10-08.docx** was created as a downloadable artifact in the conversation. It is **not** inside this GitHub branch, nor a substitute for a final planning document. This repository contains Markdown pre-gate handoff drafts only. Do not alter the existing frozen UI reference manifest or create undocumented UI states.
+The original detailed draft DOCX **ASTRA_W11-06_PRE_GATE_PLAYBACK_SPECTRUM_PLAN_2026-10-08.docx** remains a downloadable conversation artifact. A **separately generated native pre-gate Word copy** has been added at `docs/step11/w11-06-pre-gate/ASTRA_W11_06_PLAYBACK_SPECTRUM_PRE_GATE_DRAFT.docx`, derived from this branch's four Markdown drafts. It is **not identical to the conversation DOCX** and **does not satisfy the final approved-planning DOCX gate**. Do not alter the frozen UI manifest or create undocumented UI states.
 
 ## First unlock procedure (not yet authorized)
 

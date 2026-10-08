@@ -7,7 +7,7 @@
 **Owner intent:** prioritize usable full-album playback, real spectrum, then animation, MP4, and Gemini improvements.  
 **Unresolved dependency:** W11-05 AC21 formal visual approval and AC25 final closure. PR #51 remains Draft and must not be silently merged.
 
-This planning document is an **editable technical companion** to the detailed draft DOCX generated for the user, ASTRA_W11-06_PRE_GATE_PLAYBACK_SPECTRUM_PLAN_2026-10-08.docx. The DOCX is not yet in the repository. This planning draft must **not** be promoted to READY or used to start SOL code until the final detailed planning DOCX, validated UI references, charter, DoR, acceptance and task cards are committed. Keep this branch independent from PR #51's live work.
+This planning document is an **editable technical companion** to the conversation's original six-page draft DOCX. A separate **native Word PRE-GATE DOCX**, `docs/step11/w11-06-pre-gate/ASTRA_W11_06_PLAYBACK_SPECTRUM_PRE_GATE_DRAFT.docx`, has now been committed at `f435ab6` by assembling the four checked-in Markdown planning drafts. It is a review copy, **not the same binary as the original conversation DOCX** and **not final planning approval**. Do not mark this wave READY or start SOL code until W11-05 is formally closed and the final detailed planning DOCX, validated UI references, charter, DoR, acceptance and task cards are approved. Keep this branch independent of PR #51's live work.
 
 ## 1. Goal and minimum usable wave result
 
