@@ -527,8 +527,12 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     );
     expect(saved).toHaveLength(1);
     expect(listings).toBe(2);
-    expect(screen.getByText("Template tersimpan secara lokal.")).toBeInTheDocument();
-    expect(screen.queryByText("Gagal menyimpan template lokal.")).not.toBeInTheDocument();
+    expect(
+      screen.getByText("Template tersimpan secara lokal."),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("Gagal menyimpan template lokal."),
+    ).not.toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     expect(shell().getAttribute("data-project-revision")).toBe("0");
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
