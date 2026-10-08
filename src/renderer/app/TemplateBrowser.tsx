@@ -367,9 +367,11 @@ export function TemplateBrowser({
               <h3>Simpan sebagai Template</h3>
             </header>
             <p>
-              Simpan hanya pengaturan visual saat ini — bukan track, urutan,
-              durasi, atau file audio.
+              Simpan hanya pengaturan visual: layer, teks, warna, dan tata letak. Urutan track, durasi album, file audio, artwork sumber, dan kredensial AI tidak ikut disimpan.
             </p>
+            <div className="template-browser__save-thumbnail" aria-label="Pratinjau Template Disimpan">
+              <StaticScenePreview model={buildStaticScenePreview(session.project, selectedTrackId === null ? {} : { selectedTrackId })} />
+            </div>
             <label>
               Nama Template
               <input
@@ -410,7 +412,7 @@ export function TemplateBrowser({
               />
               <ActionButton
                 variant="primary"
-                label="Simpan"
+                label="Simpan Template"
                 disabled={busy || !saveName.trim()}
                 onClick={() => void saveUserTemplate()}
               />
