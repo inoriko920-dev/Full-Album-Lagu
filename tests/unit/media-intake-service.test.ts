@@ -368,7 +368,11 @@ describe("MediaIntakeService", () => {
       service.getTrustedAudioSource(firstBatchId, "project-many", firstAssetId),
     ).toEqual(track);
     expect(
-      service.getTrustedAudioSource(firstBatchId, "another-project", firstAssetId),
+      service.getTrustedAudioSource(
+        firstBatchId,
+        "another-project",
+        firstAssetId,
+      ),
     ).toBeNull();
     expect(
       service.getTrustedAudioSource(
