@@ -20,6 +20,8 @@ import { NodeMediaDiscoveryPort } from "./infrastructure/media/node-media-discov
 import { NodeMediaSourcePort } from "./infrastructure/media/node-media-source-port";
 import { JsonProjectRecoveryStore } from "./infrastructure/persistence/json-project-recovery-store";
 import { JsonProjectStore } from "./infrastructure/persistence/json-project-store";
+import { JsonTemplateStore } from "./infrastructure/persistence/json-template-store";
+import type { TemplateStore } from "../core/application/ports/template-store";
 import type { ProjectIpcDependencies } from "./ipc/register-ipc";
 
 function readArgValue(argv: string[], name: string): string | undefined {
@@ -37,10 +39,18 @@ function readArgValues(argv: string[], name: string): string[] {
 
 export interface CompositionRoot {
   projectIpc: ProjectIpcDependencies;
+  templateStore: TemplateStore;
 }
 
 export function createCompositionRoot(argv: string[]): CompositionRoot {
   const projectStore = new JsonProjectStore();
+  const templateStore = new JsonTemplateStore(
+    () =>
+      app.isPackaged
+        ? join(process.resourcesPath, "templates", "catalog.json")
+        : join(app.getAppPath(), "resources", "templates", "catalog.json"),
+    () => join(app.getPath("userData"), "templates"),
+  );
   const pathSession = new ProjectPathSession();
   const saveProject = new SaveProjectUseCase(projectStore);
   const loadProject = new LoadProjectUseCase(projectStore);
@@ -263,5 +273,5 @@ export function createCompositionRoot(argv: string[]): CompositionRoot {
     projectIpc.startupProjectPath = resolve(startupProjectPath);
   }
 
-  return { projectIpc };
+  return { projectIpc, templateStore };
 }
