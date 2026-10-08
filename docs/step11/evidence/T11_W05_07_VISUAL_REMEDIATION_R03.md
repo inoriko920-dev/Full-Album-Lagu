@@ -16,7 +16,7 @@
 
 ## Latest actual Windows verification
 
-- **Windows CI #445 / run `37732523147`: SUCCESS** at source head `37264b3d998d5c89214ec699b22b35c894ea459d`.
+- **Windows CI #444 / run `37732523147`: SUCCESS** at source head `37264b3d998d5c89214ec699b22b35c894ea459d`.
 - **301 tests PASS**: 153 unit + 59 contract + 47 component + 42 integration. Format, lint, TypeScript, architecture and dependency boundaries, secret/path checks also PASS.
 - Real Windows Electron `SCR-002C`, `SCR-003A`, `SCR-003B`, `DLG-008` capture and frozen compact DOCX reference extraction PASS. UI hierarchy, non-dirty Try/Revert/Apply, Undo/Redo, Save/Reopen and cross-project dynamic data PASS.
 - Real audio/artwork source SHA-256 + size + mtime preservation, 128 layer / 100 local templates stress, all prior wave regressions, strict SCR-002A baseline, Windows packaged executable smoke and multi-file portable ZIP PASS.

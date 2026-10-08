@@ -379,7 +379,7 @@ After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation 
 - **Do not claim UI PASS or merge PR #51.** Continue visual-only W05-07; preserve W11-06/07, STEP 12 boundaries.
 
 ## Latest W05-07 R03 handoff (2026-10-08 WIB)
-- R03 Windows CI #445 / `37732523147` PASS at `37264b3d998d5c89214ec699b22b35c894ea459d`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), physical source fingerprints, 128-layer/100-template stress, four real Electron screenshots, prior regressions and portable smoke/ZIP PASS. Evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`; frozen comparison artifact `11530732266`.
+- R03 Windows CI #444 / `37732523147` PASS at `37264b3d998d5c89214ec699b22b35c894ea459d`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), physical source fingerprints, 128-layer/100-template stress, four real Electron screenshots, prior regressions and portable smoke/ZIP PASS. Evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`; frozen comparison artifact `11530732266`.
 - Read `../step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`, prior R02 and initial FAIL notes. Reference DOCX (UI-IMG-002C, UI-IMG-003A/B, UI-IMG-012) remains authoritative.
 - Implemented reusable source-free sample-only visual asset in `src/renderer/visual/TemplateArtwork.tsx` and plumbed it through built-in Template Browser/thumbnails and absent-artwork `StaticScenePreview` with explicit explanatory labels; source asset identifiers are not replaced with invented art.
 - Four actual/reference screenshots are available from GitHub Actions #445 artifact `11530732266`; main branch unchanged; PR #51 remains draft.
