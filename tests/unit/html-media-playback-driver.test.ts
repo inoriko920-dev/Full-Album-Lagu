@@ -592,7 +592,9 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     media[0]!.currentTime = 0.2;
     media[0]!.emit("timeupdate");
     expect(driver.sampleSpectrum()).toMatchObject({ active: true });
-    expect(Math.max(...driver.sampleSpectrum()!.barLevels)).toBeGreaterThan(0.7);
+    expect(Math.max(...driver.sampleSpectrum()!.barLevels)).toBeGreaterThan(
+      0.7,
+    );
 
     driver.pause();
     expect(driver.sampleSpectrum()).toMatchObject({ active: false });

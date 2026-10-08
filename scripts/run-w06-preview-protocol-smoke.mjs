@@ -36,7 +36,9 @@ function synthesizePcmWav(hz = 0, seconds = 2) {
   output.writeUInt32LE(samples * 2, 40);
   for (let sample = 0; sample < samples; sample += 1) {
     const value =
-      hz === 0 ? 0 : Math.round(13_107 * Math.sin((2 * Math.PI * hz * sample) / rate));
+      hz === 0
+        ? 0
+        : Math.round(13_107 * Math.sin((2 * Math.PI * hz * sample) / rate));
     output.writeInt16LE(value, 44 + sample * 2);
   }
   return output;

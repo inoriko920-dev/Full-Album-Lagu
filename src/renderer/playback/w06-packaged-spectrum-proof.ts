@@ -129,7 +129,11 @@ export async function runW06SpectrumProof(
     }
     driver.pause();
     const paused = driver.sampleSpectrum();
-    if (paused === null || paused.active || paused.barLevels.some((n) => n !== 0)) {
+    if (
+      paused === null ||
+      paused.active ||
+      paused.barLevels.some((n) => n !== 0)
+    ) {
       throw new Error("T04 paused FFT must be all zeros");
     }
     driver.next();
@@ -152,13 +156,19 @@ export async function runW06SpectrumProof(
     }
     driver.stop();
     const stopped = driver.sampleSpectrum();
-    if (stopped === null || stopped.active || stopped.barLevels.some((n) => n !== 0)) {
+    if (
+      stopped === null ||
+      stopped.active ||
+      stopped.barLevels.some((n) => n !== 0)
+    ) {
       throw new Error("T04 stopped FFT must be all zeros");
     }
     const sourceIdentity =
       attachedElements.length === audioElements.length &&
       attachedElements.length === 2 &&
-      attachedElements.every((element, index) => element === audioElements[index]);
+      attachedElements.every(
+        (element, index) => element === audioElements[index],
+      );
     if (!sourceIdentity) {
       throw new Error("T04 analyser source differed from actual playing media");
     }
@@ -176,7 +186,11 @@ export async function runW06SpectrumProof(
   } finally {
     driver.close();
     runtime.close();
-    if (audioElements.some((element) => !element.paused || element.hasAttribute("src"))) {
+    if (
+      audioElements.some(
+        (element) => !element.paused || element.hasAttribute("src"),
+      )
+    ) {
       throw new Error("T04 spectrum left an active audio source after close");
     }
   }
