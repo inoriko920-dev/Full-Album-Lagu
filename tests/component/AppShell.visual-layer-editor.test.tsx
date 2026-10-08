@@ -519,6 +519,53 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
   });
 
+  it("keeps one pending load when the same selected template is clicked repeatedly", async () => {
+    let attempts = 0;
+    let releaseFirst = () => {};
+    bridge.loadTemplate = async () => {
+      attempts += 1;
+      if (attempts === 1) {
+        await new Promise<void>((resolve) => {
+          releaseFirst = resolve;
+        });
+        return {
+          status: "error" as const,
+          code: "TEMPLATE_READ_FAILED" as const,
+          message: "Muat ulang tersedia.",
+        };
+      }
+      return { status: "ok" as const, template: minimalTemplate };
+    };
+    render(<AppShell />);
+    fireEvent.click(screen.getByRole("button", { name: "Template" }));
+    await waitFor(() => expect(attempts).toBe(1));
+    const card = screen.getByRole("button", { name: /Minimal Biru/ });
+    fireEvent.click(card);
+    fireEvent.click(card);
+    fireEvent.click(card);
+    expect(attempts).toBe(1);
+    expect(
+      screen.getByRole("button", { name: "Coba Template" }),
+    ).toBeDisabled();
+
+    releaseFirst();
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Muat ulang tersedia.",
+      ),
+    );
+    fireEvent.click(card);
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Coba Template" }),
+      ).toBeEnabled(),
+    );
+    expect(attempts).toBe(2);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(shell().getAttribute("data-project-revision")).toBe("0");
+    expect(shell().getAttribute("data-project-dirty")).toBe("false");
+  });
+
   it("rejects corrupt or missing local template safely", async () => {
     bridge.loadTemplate = async () => ({
       status: "error",
