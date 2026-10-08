@@ -1,0 +1,25 @@
+name: W06 main-session formatting audit
+on:
+  pull_request:
+    paths:
+      - "src/main/bootstrap.ts"
+      - "src/main/ipc/register-ipc.ts"
+      - "src/main/infrastructure/media/preview-audio-access-service.ts"
+      - "src/core/contracts/lfa-bridge.ts"
+      - ".github/workflows/w06-session-format-audit.yml"
+permissions:
+  contents: read
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Print exact formatting diff without pushing
+        run: |
+          npx prettier --write src/main/bootstrap.ts src/main/ipc/register-ipc.ts src/main/infrastructure/media/preview-audio-access-service.ts src/core/contracts/lfa-bridge.ts
+          git diff -- src/main/bootstrap.ts src/main/ipc/register-ipc.ts src/main/infrastructure/media/preview-audio-access-service.ts src/core/contracts/lfa-bridge.ts
