@@ -223,8 +223,40 @@ export function TemplateBrowser({
     }
   }
 
+  if (inTrial && !showSaveDialog) {
+    return (
+      <section className="template-trial-overlay" aria-label="Mode Coba Template">
+        <div className="template-trial-overlay__banner" role="status">
+          <div>
+            <strong>Mode Coba — perubahan belum disimpan ke proyek.</strong>
+            <small>Hanya visual berubah. Track, durasi album, dan audio tetap.</small>
+          </div>
+          <div className="template-trial-overlay__controls">
+            <ActionButton variant="secondary" label="Kembali ke Sebelumnya" onClick={revert} disabled={busy} />
+            <ActionButton variant="primary" label="Terapkan Template" onClick={apply} disabled={busy} />
+          </div>
+        </div>
+        <aside className="template-trial-overlay__gallery" aria-label="Pilihan Template Mode Coba">
+          <strong>Template Album</strong>
+          <small>{selectedTemplate?.name ?? session.templateTrialName}</small>
+          <div className="template-trial-overlay__gallery-grid">
+            {entries.slice(0, 6).map((entry) => (
+              <div key={entry.templateId} className="template-trial-overlay__gallery-card"
+                data-category={entry.category} aria-current={selectedId === entry.templateId ? "true" : undefined}>
+                <div className="template-trial-overlay__gallery-thumb" aria-hidden="true">♫</div>
+                <small>{entry.name}</small>
+              </div>
+            ))}
+          </div>
+          <p>Pratinjau sementara. Gunakan Terapkan Template untuk menyimpan perubahan visual.</p>
+          {session.templateError ? <p role="alert">{session.templateError}</p> : null}
+        </aside>
+      </section>
+    );
+  }
+
   return (
-    <section className="template-browser" aria-label="Browser Template">
+    <section className={`template-browser${showSaveDialog ? " template-browser--save-dialog" : ""}`} aria-label="Browser Template">
       <div className="template-browser__window">
         <header className="template-browser__header">
           <div>
