@@ -80,13 +80,14 @@ export function TemplateBrowser({
 
   useEffect(() => {
     let mounted = true;
-    if (!window.lfa.listTemplates) {
-      setCatalogError("Layanan template lokal tidak tersedia.");
-      return;
-    }
-    void window.lfa
-      .listTemplates()
-      .then((result) => {
+    const listing = window.lfa.listTemplates
+      ? window.lfa.listTemplates()
+      : Promise.resolve({
+          status: "error" as const,
+          code: "TEMPLATE_READ_FAILED",
+          message: "Layanan template lokal tidak tersedia.",
+        });
+    void listing.then((result) => {
         if (!mounted) return;
         if (result.status === "error") {
           setCatalogError(result.message);
@@ -112,11 +113,7 @@ export function TemplateBrowser({
 
   useEffect(() => {
     const version = ++requestVersion.current;
-    if (selectedId === null || !window.lfa.loadTemplate) {
-      setSelectedTemplate(null);
-      return;
-    }
-    setSelectedTemplate(null);
+    if (selectedId === null || !window.lfa.loadTemplate) return;
     void window.lfa
       .loadTemplate(selectedId)
       .then((result) => {
@@ -268,7 +265,8 @@ export function TemplateBrowser({
                     if (!busy) {
                       session.revertTemplateTrial();
                       setSavedMessage(null);
-                      setSelectedId(entry.templateId);
+                      setSelectedTemplate(null);
+                        setSelectedId(entry.templateId);
                     }
                   }}
                 >
