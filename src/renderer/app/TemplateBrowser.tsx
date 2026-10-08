@@ -101,27 +101,35 @@ export function TemplateBrowser({
   }
 
   const reloadCatalog = async () => {
+    const refreshFailed =
+      "Template berhasil disimpan, tetapi daftar template belum dapat diperbarui. Buka ulang Browser Template untuk menyegarkan daftar.";
     if (!window.lfa.listTemplates) {
-      setCatalogError("Layanan template lokal tidak tersedia.");
+      setCatalogError(refreshFailed);
       return;
     }
-    const result = await window.lfa.listTemplates();
-    if (result.status === "error") {
-      setCatalogError(result.message);
-      return;
+    try {
+      const result = await window.lfa.listTemplates();
+      if (result.status === "error") {
+        setCatalogError(refreshFailed);
+        return;
+      }
+      setCatalogError(null);
+      setEntries(result.entries);
+      setSelectedId((prior) =>
+        prior !== null &&
+        result.entries.some((entry) => entry.templateId === prior)
+          ? prior
+          : ((
+              result.entries.find(
+                (entry) => entry.templateId === "minimal-biru",
+              ) ?? result.entries[0]
+            )?.templateId ?? null),
+      );
+    } catch {
+      // A refresh exception after a successful save must not be reported as
+      // a failed save (which could prompt the user to create duplicates).
+      setCatalogError(refreshFailed);
     }
-    setCatalogError(null);
-    setEntries(result.entries);
-    setSelectedId((prior) =>
-      prior !== null &&
-      result.entries.some((entry) => entry.templateId === prior)
-        ? prior
-        : ((
-            result.entries.find(
-              (entry) => entry.templateId === "minimal-biru",
-            ) ?? result.entries[0]
-          )?.templateId ?? null),
-    );
   };
 
   useEffect(() => {
