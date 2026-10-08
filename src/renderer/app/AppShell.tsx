@@ -1311,9 +1311,9 @@ export function AppShell() {
   const visualModel = useMemo(
     () =>
       buildStaticScenePreview(projectSession.project, {
-        selectedTrackId: selectedTrackIdState ?? undefined,
+        ...(selectedTrackIdState === null ? {} : { selectedTrackId: selectedTrackIdState }),
         selectedLayerId: visualUiState.selectedLayerId,
-        gesturePreview: visualUiState.gesturePreview ?? undefined,
+        ...(visualUiState.gesturePreview === null ? {} : { gesturePreview: visualUiState.gesturePreview }),
       }),
     [projectSession.project, selectedTrackIdState, visualUiState],
   );
