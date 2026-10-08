@@ -93,8 +93,46 @@ export async function captureW1105State(
         await wait(() => document.querySelectorAll(".template-browser__item").length >= 9, "nine local templates");
         const browserPanel = document.querySelector(".template-browser");
         if (mode === "SCR-003A") {
-          await wait(() => !browserPanel.querySelector('button')?.disabled &&
-            !!Array.from(browserPanel.querySelectorAll("button")).find(el => el.textContent?.trim()==="Coba Template" && !el.disabled), "loaded template");
+          const trialButton = () => Array.from(browserPanel.querySelectorAll("button")).find(
+            el => el.textContent?.trim() === "Coba Template"
+          );
+          await wait(() => !!trialButton() && !trialButton().disabled, "loaded template");
+          const category = browserPanel.querySelector('[aria-label="Kategori Template"]');
+          const search = browserPanel.querySelector('[aria-label="Cari Template"]');
+          if (!category || !search) throw new Error("Frozen local template filters missing");
+          const setNativeValue = (element, value, eventType) => {
+            const prototype = element.tagName === "SELECT"
+              ? window.HTMLSelectElement.prototype
+              : window.HTMLInputElement.prototype;
+            const setter = Object.getOwnPropertyDescriptor(prototype, "value")?.set;
+            if (!setter) throw new Error("Native filter setter unavailable");
+            setter.call(element, value);
+            element.dispatchEvent(new Event(eventType, { bubbles: true }));
+          };
+          setNativeValue(category, "Neon", "change");
+          await wait(() => {
+            const selected = browserPanel.querySelector(".template-browser__item.is-selected strong")?.textContent?.trim();
+            return !!selected &&
+              browserPanel.querySelector(".template-browser__detail h3")?.textContent?.trim() === selected &&
+              browserPanel.querySelectorAll(".template-browser__item").length > 0;
+          }, "visible category selection reconciliation");
+          setNativeValue(search, "R09 nonexistent template", "input");
+          await wait(() => browserPanel.querySelectorAll(".template-browser__item").length === 0 &&
+            trialButton()?.disabled === true, "no-match filter safely disables Try");
+          setNativeValue(search, "", "input");
+          setNativeValue(category, "Semua", "change");
+          await wait(() => browserPanel.querySelectorAll(".template-browser__item").length >= 9, "restored local catalog");
+          const minimal = Array.from(browserPanel.querySelectorAll(".template-browser__item")).find(
+            item => item.textContent?.includes("Minimal Biru")
+          );
+          if (!minimal) throw new Error("Frozen Minimal Biru catalog item missing");
+          minimal.click();
+          await wait(() => browserPanel.querySelector(".template-browser__details h3")?.textContent?.trim() === "Minimal Biru" &&
+            trialButton()?.disabled === false, "restored frozen default template");
+          if (Number(shell.getAttribute("data-project-revision")) !== beforeRevision ||
+              shell.getAttribute("data-project-dirty") !== beforeDirty) {
+            throw new Error("Template filter changed canonical project");
+          }
         } else if (mode === "SCR-003B") {
           await wait(() => Array.from(browserPanel.querySelectorAll("button")).some(el => el.textContent?.trim()==="Coba Template" && !el.disabled), "template ready");
           press("Coba Template", browserPanel);
