@@ -114,9 +114,10 @@ describe("T11-W05-04 static visual renderer", () => {
     expect(title.getAttribute("style")).toContain("opacity: 0.7");
     expect(within(title).getByText("Lagu Aktif")).toBeTruthy();
     expect(
-      within(container).getByRole("img", { name: "Placeholder artwork" }),
+      within(container).getByRole("img", { name: "Ilustrasi contoh, bukan artwork asli" }),
     ).toBeTruthy();
     expect(container.querySelectorAll("img")).toHaveLength(0);
+    expect(container.querySelectorAll(".static-scene-preview__artwork-illustration")).toHaveLength(1);
     expect(container.querySelectorAll("video")).toHaveLength(0);
     expect(container.querySelectorAll("audio")).toHaveLength(0);
     expect(
