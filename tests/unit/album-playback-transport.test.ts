@@ -135,6 +135,53 @@ describe("W11-06 T03 ephemeral album transport", () => {
     });
   });
 
+  it("stops a failed decode, ignores stale callbacks and retries with a fresh generation", () => {
+    const controller = new AlbumPlaybackTransport(project([5000]));
+    const first = controller.play();
+    if (first?.kind !== "load") throw new Error("expected load");
+    expect(controller.onMediaError(first.generation - 1)).toBeNull();
+
+    const stop = controller.onMediaError(first.generation);
+    expect(stop).toEqual({ kind: "stop", generation: first.generation + 1 });
+    expect(controller.snapshot.phase).toBe("error");
+    expect(controller.onLoaded(first.generation)).toBeNull();
+    expect(controller.reportAudioClock(first.generation, 1000)).toBe(false);
+    expect(controller.onEnded(first.generation)).toBeNull();
+
+    const retry = controller.play();
+    expect(retry).toMatchObject({
+      kind: "load",
+      trackId: "track-0",
+      autoPlay: true,
+    });
+    if (retry?.kind !== "load") throw new Error("expected retry load");
+    expect(retry.generation).toBe(first.generation + 2);
+    expect(controller.onMediaError(first.generation)).toBeNull();
+    expect(controller.onLoaded(retry.generation)?.kind).toBe("resume");
+    expect(controller.snapshot.phase).toBe("playing");
+  });
+
+  it("handles a current paused decoder error but rejects errors after stop or project switch", () => {
+    const controller = new AlbumPlaybackTransport(project([4000]));
+    const first = controller.play();
+    if (first?.kind !== "load") throw new Error("expected load");
+    controller.onLoaded(first.generation);
+    const pause = controller.pause();
+    if (pause === null) throw new Error("expected pause");
+    expect(controller.onMediaError(first.generation)).toBeNull();
+    expect(controller.onMediaError(pause.generation)?.kind).toBe("stop");
+    expect(controller.snapshot.phase).toBe("error");
+
+    const attempt = controller.play();
+    if (attempt?.kind !== "load") throw new Error("expected recovery load");
+    controller.switchProject(project([4000], [], "next-project"));
+    expect(controller.onMediaError(attempt.generation)).toBeNull();
+    expect(controller.snapshot.phase).toBe("ready");
+    expect(controller.snapshot.projectId).toBe("next-project");
+    controller.stop();
+    expect(controller.onMediaError(controller.snapshot.generation)).toBeNull();
+  });
+
   it("never mutates the input project or its revision/track order", () => {
     const input = project([3000, 4000]);
     const before = structuredClone(input);

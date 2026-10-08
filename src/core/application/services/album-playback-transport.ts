@@ -162,6 +162,27 @@ export class AlbumPlaybackTransport {
       : { kind: "pause", generation };
   }
 
+  /**
+   * A current-generation decoder/load failure invalidates all pending audio
+   * events before asking the adapter to close the failing source. A later
+   * Play issues a fresh load; an old error must never stop a new track.
+   */
+  onMediaError(generation: number): PlaybackTransportEffect | null {
+    if (
+      generation !== this.state.generation ||
+      (this.state.phase !== "loading" &&
+        this.state.phase !== "playing" &&
+        this.state.phase !== "paused")
+    ) {
+      return null;
+    }
+    const next = this.nextGeneration();
+    this.loaded = false;
+    this.pendingAutoPlay = false;
+    this.update("error");
+    return { kind: "stop", generation: next };
+  }
+
   reportAudioClock(generation: number, localTimeMs: number): boolean {
     if (
       generation !== this.state.generation ||
