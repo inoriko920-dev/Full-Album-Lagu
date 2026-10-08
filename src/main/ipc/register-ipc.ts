@@ -1,4 +1,10 @@
 import { ipcMain } from "electron";
+import type { PreviewAudioAccessService } from "../infrastructure/media/preview-audio-access-service";
+import {
+  PREVIEW_AUDIO_ISSUE_CHANNEL,
+  previewAudioIssueRequestSchema,
+  previewAudioIssueResultSchema,
+} from "../../core/contracts/preview-audio-ipc";
 import {
   TemplateStoreError,
   type TemplateStore,
@@ -100,6 +106,7 @@ import {
 
 export interface ProjectIpcDependencies {
   templateStore?: TemplateStore;
+  previewAudioAccess?: PreviewAudioAccessService;
   lifecycle: ProjectLifecycleService;
   loadProject: LoadProjectUseCase;
   pathSession: ProjectPathSession;
@@ -251,6 +258,20 @@ export function registerIpcHandlers(
     }
   });
 
+  ipcMain.handle(PREVIEW_AUDIO_ISSUE_CHANNEL, async (event, payload: unknown) => {
+    const request = previewAudioIssueRequestSchema.safeParse(payload);
+    if (!request.success || !projectDependencies.previewAudioAccess) {
+      return previewAudioIssueResultSchema.parse({ status: "blocked" });
+    }
+    const url = await projectDependencies.previewAudioAccess.issue({
+      ...request.data,
+      ownerWebContentsId: event.sender.id,
+    });
+    return previewAudioIssueResultSchema.parse(
+      url === null ? { status: "blocked" } : { status: "granted", url },
+    );
+  });
+
   ipcMain.handle(FOUNDATION_INFO_CHANNEL, () =>
     foundationInfoSchema.parse({
       platform: process.platform,
@@ -314,7 +335,7 @@ export function registerIpcHandlers(
     },
   );
 
-  ipcMain.handle(MEDIA_PICK_AUDIO_FILES_CHANNEL, async () => {
+  ipcMain.handle(MEDIA_PICK_AUDIO_FILES_CHANNEL, async (event) => {
     try {
       const paths = await projectDependencies.selectAudioFiles();
       if (!paths || paths.length === 0) {
@@ -324,7 +345,14 @@ export function registerIpcHandlers(
         });
       }
 
-      return startMediaDiscovery(paths);
+      const outcome = startMediaDiscovery(paths);
+      if (outcome.status === "started" && !event.sender.isDestroyed()) {
+        projectDependencies.previewAudioAccess?.trustPickerDiscovery(
+          event.sender.id,
+          outcome.batchId,
+        );
+      }
+      return outcome;
     } catch {
       return mediaDiscoveryStartResultSchema.parse({
         status: "error",
@@ -334,7 +362,7 @@ export function registerIpcHandlers(
     }
   });
 
-  ipcMain.handle(MEDIA_PICK_FOLDER_CHANNEL, async () => {
+  ipcMain.handle(MEDIA_PICK_FOLDER_CHANNEL, async (event) => {
     try {
       const paths = await projectDependencies.selectMediaFolders();
       if (!paths || paths.length === 0) {
@@ -344,7 +372,14 @@ export function registerIpcHandlers(
         });
       }
 
-      return startMediaDiscovery(paths);
+      const outcome = startMediaDiscovery(paths);
+      if (outcome.status === "started" && !event.sender.isDestroyed()) {
+        projectDependencies.previewAudioAccess?.trustPickerDiscovery(
+          event.sender.id,
+          outcome.batchId,
+        );
+      }
+      return outcome;
     } catch {
       return mediaDiscoveryStartResultSchema.parse({
         status: "error",
@@ -410,7 +445,7 @@ export function registerIpcHandlers(
 
   ipcMain.handle(
     MEDIA_INTAKE_START_CHANNEL,
-    async (_event, payload: unknown) => {
+    async (event, payload: unknown) => {
       const request = mediaIntakeStartRequestSchema.safeParse(payload);
       if (!request.success) {
         return mediaIntakeStartResultSchema.parse({
@@ -424,6 +459,12 @@ export function registerIpcHandlers(
         const { batchId } = projectDependencies.mediaIntakeService.start(
           request.data.discoveryBatchId,
           request.data.project,
+        );
+        projectDependencies.previewAudioAccess?.bindIntake(
+          event.sender.id,
+          request.data.discoveryBatchId,
+          batchId,
+          request.data.project.projectId,
         );
         return mediaIntakeStartResultSchema.parse({
           status: "started",
@@ -656,7 +697,7 @@ export function registerIpcHandlers(
     }
   });
 
-  ipcMain.handle(PROJECT_OPEN_CHANNEL, async () => {
+  ipcMain.handle(PROJECT_OPEN_CHANNEL, async (event) => {
     try {
       const outcome = await projectDependencies.lifecycle.open();
 
@@ -667,6 +708,7 @@ export function registerIpcHandlers(
       const scannedProject = (
         await projectDependencies.missingMediaService.scan(outcome.project)
       ).project;
+      projectDependencies.previewAudioAccess?.revokeWindow(event.sender.id);
 
       return openProjectResultSchema.parse({
         status: "opened",
