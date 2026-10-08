@@ -61,8 +61,13 @@ export function useAlbumPreviewPlayback(
       runtime,
     );
     driverRef.current = driver;
-    setClock(driver.snapshot);
-    setSpectrum(SILENCE);
+    // Renderer state is an external driver snapshot, not a React-derived
+    // effect cascade. Publish it after the effect has completed.
+    queueMicrotask(() => {
+      if (!current) return;
+      setClock(driver.snapshot);
+      setSpectrum(SILENCE);
+    });
     return () => {
       current = false;
       driver.close();
@@ -72,10 +77,7 @@ export function useAlbumPreviewPlayback(
   }, [project, trustedBatch]);
 
   useEffect(() => {
-    if (clock.phase !== "playing") {
-      setSpectrum(SILENCE);
-      return;
-    }
+    if (clock.phase !== "playing") return;
     const timer = window.setInterval(() => {
       const sampled = driverRef.current?.sampleSpectrum();
       if (sampled !== null && sampled !== undefined) {
@@ -87,7 +89,7 @@ export function useAlbumPreviewPlayback(
 
   return {
     clock,
-    spectrum,
+    spectrum: clock.phase === "playing" ? spectrum : SILENCE,
     total,
     available,
     playPause: () => {
