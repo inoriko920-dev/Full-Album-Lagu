@@ -58,6 +58,7 @@ export function TemplateBrowser({
   const [saveCategory, setSaveCategory] = useState<TemplateCategory>("Minimal");
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const requestVersion = useRef(0);
+  const catalogRequestVersion = useRef(0);
   const templateLoadPending = useRef(false);
   const [saveScope, setSaveScope] = useState<VisualLayer["kind"][]>([
     "background",
@@ -101,6 +102,8 @@ export function TemplateBrowser({
   }
 
   const reloadCatalog = async () => {
+    // A late initial catalog response must not overwrite a newer refresh.
+    const version = ++catalogRequestVersion.current;
     const refreshFailed =
       "Template berhasil disimpan, tetapi daftar template belum dapat diperbarui. Buka ulang Browser Template untuk menyegarkan daftar.";
     if (!window.lfa.listTemplates) {
@@ -109,6 +112,7 @@ export function TemplateBrowser({
     }
     try {
       const result = await window.lfa.listTemplates();
+      if (catalogRequestVersion.current !== version) return;
       if (result.status === "error") {
         setCatalogError(refreshFailed);
         return;
@@ -128,12 +132,15 @@ export function TemplateBrowser({
     } catch {
       // A refresh exception after a successful save must not be reported as
       // a failed save (which could prompt the user to create duplicates).
-      setCatalogError(refreshFailed);
+      if (catalogRequestVersion.current === version) {
+        setCatalogError(refreshFailed);
+      }
     }
   };
 
   useEffect(() => {
     let mounted = true;
+    const version = ++catalogRequestVersion.current;
     // Resolve the IPC call inside the promise chain: the bridge may throw
     // synchronously before returning a Promise (e.g. unavailable preload).
     void Promise.resolve()
@@ -146,7 +153,7 @@ export function TemplateBrowser({
         };
       })
       .then((result) => {
-        if (!mounted) return;
+        if (!mounted || catalogRequestVersion.current !== version) return;
         if (result.status === "error") {
           setCatalogError(result.message);
           return;
@@ -162,7 +169,9 @@ export function TemplateBrowser({
         setCatalogError(null);
       })
       .catch(() => {
-        if (mounted) setCatalogError("Gagal membaca katalog template lokal.");
+        if (mounted && catalogRequestVersion.current === version) {
+          setCatalogError("Gagal membaca katalog template lokal.");
+        }
       });
     return () => {
       mounted = false;
