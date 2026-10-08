@@ -549,10 +549,6 @@
   padding: 12px 20px;
   background: var(--surface);
 }
-.template-browser:not(.template-browser--save-dialog)
-  .template-browser__body {
-  min-height: 0;
-}
 .template-trial-overlay {
   inset: var(--toolbar-height) 0 0;
 }
