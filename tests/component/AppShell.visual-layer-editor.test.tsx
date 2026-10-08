@@ -490,6 +490,50 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
   });
 
+  it("reports catalog refresh failure without contradicting a successful local template save", async () => {
+    const initialListing = bridge.listTemplates!;
+    let listings = 0;
+    const saved: TemplateDocument[] = [];
+    bridge.listTemplates = async () => {
+      listings += 1;
+      if (listings === 1) return initialListing();
+      throw new Error("Temporary catalog read failure");
+    };
+    bridge.saveTemplate = async (template) => {
+      saved.push(template);
+      return { status: "ok", templateId: template.templateId };
+    };
+    render(<AppShell />);
+    fireEvent.click(screen.getByRole("button", { name: "Template" }));
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: /Minimal Biru/ }),
+      ).toBeInTheDocument(),
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Simpan Template" }));
+    const dialog = screen.getByRole("dialog", {
+      name: "Simpan sebagai Template",
+    });
+    fireEvent.change(screen.getByLabelText("Nama Template"), {
+      target: { value: "Template Aman" },
+    });
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Simpan Template" }),
+    );
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Template berhasil disimpan, tetapi daftar template belum dapat diperbarui.",
+      ),
+    );
+    expect(saved).toHaveLength(1);
+    expect(listings).toBe(2);
+    expect(screen.getByText("Template tersimpan secara lokal.")).toBeInTheDocument();
+    expect(screen.queryByText("Gagal menyimpan template lokal.")).not.toBeInTheDocument();
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+    expect(shell().getAttribute("data-project-revision")).toBe("0");
+    expect(shell().getAttribute("data-project-dirty")).toBe("false");
+  });
+
   it("retries a failed selected template load without changing the project", async () => {
     let attempts = 0;
     bridge.loadTemplate = async () => {
