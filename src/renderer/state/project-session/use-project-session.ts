@@ -1323,10 +1323,7 @@ export function useProjectSession(): ProjectSessionView {
   const importDroppedAudio = useCallback(
     async (files: readonly File[]): Promise<void> => {
       if (files.length === 0) return;
-      await runMediaImport(
-        () => window.lfa.discoverDroppedMedia(files),
-        false,
-      );
+      await runMediaImport(() => window.lfa.discoverDroppedMedia(files), false);
     },
     [runMediaImport],
   );
