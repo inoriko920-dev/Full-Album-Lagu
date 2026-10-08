@@ -223,6 +223,7 @@ describe("T11-W05-04 static visual renderer", () => {
       container.querySelector("[data-scene-layer-id='layer-127']"),
     ).not.toBeNull();
   });
+
   it("binds only supplied real FFT levels and real album progress to frozen layers", () => {
     const project = fixture();
     project.visualScene!.layers[4]!.visible = true;
@@ -243,12 +244,18 @@ describe("T11-W05-04 static visual renderer", () => {
     expect(bars[3]?.getAttribute("style")).toContain("height: 100%");
     expect(within(container).getByLabelText("Spectrum audio")).toBeTruthy();
     expect(
-      container.querySelector(".static-scene-preview__progress-track")?.getAttribute("style"),
+      container
+        .querySelector(".static-scene-preview__progress-track")
+        ?.getAttribute("style"),
     ).toContain("50%");
     expect(project).toEqual(original);
 
     rerender(
-      <StaticScenePreview model={model} spectrumLevels={[0, 0, 0, 0]} progressFraction={0} />,
+      <StaticScenePreview
+        model={model}
+        spectrumLevels={[0, 0, 0, 0]}
+        progressFraction={0}
+      />,
     );
     expect(
       [...container.querySelectorAll(".static-scene-preview__bar")].every(
@@ -256,5 +263,4 @@ describe("T11-W05-04 static visual renderer", () => {
       ),
     ).toBe(true);
   });
-
 });
