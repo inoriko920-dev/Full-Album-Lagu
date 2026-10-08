@@ -543,7 +543,7 @@ export function registerIpcHandlers(
 
   ipcMain.handle(
     MEDIA_RELINK_SINGLE_CHANNEL,
-    async (_event, payload: unknown) => {
+    async (event, payload: unknown) => {
       const request = singleRelinkRequestSchema.parse(payload);
       const asset = request.project.mediaAssets?.find(
         (item) => item.id === request.assetId,
@@ -584,6 +584,8 @@ export function registerIpcHandlers(
         outcome.project !== undefined &&
         outcome.result.status === "relinked"
       ) {
+        // The previous preview lease is bound to an old source fingerprint.
+        projectDependencies.previewAudioAccess?.revokeWindow(event.sender.id);
         return singleRelinkOperationResultSchema.parse({
           status: "relinked",
           project: outcome.project,
@@ -600,7 +602,7 @@ export function registerIpcHandlers(
 
   ipcMain.handle(
     MEDIA_RELINK_FOLDER_CHANNEL,
-    async (_event, payload: unknown) => {
+    async (event, payload: unknown) => {
       const request = folderRelinkRequestSchema.parse(payload);
       const folderPath = await projectDependencies.selectRelinkFolder();
       if (folderPath === null) {
@@ -616,6 +618,8 @@ export function registerIpcHandlers(
             request.project,
             folderPath,
           );
+        // Folder relink may replace many ready audio sources in one operation.
+        projectDependencies.previewAudioAccess?.revokeWindow(event.sender.id);
         return folderRelinkOperationResultSchema.parse({
           status: "completed",
           ...outcome,
