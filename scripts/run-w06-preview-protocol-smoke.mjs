@@ -45,6 +45,7 @@ async function launchPackaged(paths) {
         `--w06-evidence=${evidence}`,
         `--w06-user-data=${join(root, "user-data")}`,
         ...paths.map((path) => `--w11-media-file=${path}`),
+        `--w11-relink-file=${paths[0]}`,
       ],
       {
         cwd: process.cwd(),
@@ -109,12 +110,29 @@ async function main() {
       result.streamedBytes !== expectedBytes ||
       result.range206 !== true ||
       result.range416 !== true ||
-      result.crossProjectBlocked !== true
+      result.crossProjectBlocked !== true ||
+      result.nativePlayback !== true ||
+      !Number.isFinite(result.playbackProgressMs) ||
+      result.playbackProgressMs < 25 ||
+      !Number.isFinite(result.seekPositionMs) ||
+      result.seekPositionMs < 0
     ) {
       throw new Error(
         `Invalid real ${kind} stream proof: ${result?.streamedBytes} vs ${expectedBytes}`,
       );
     }
+  }
+  if (
+    report.driver?.mainIssuedGrant !== true ||
+    report.driver?.pauseSeekNextPrevious !== true ||
+    report.driver?.relinkRevoked !== true ||
+    report.driver?.realMainRelinkAuthorized !== true ||
+    report.driver?.unrelatedAssetDenied !== true ||
+    report.driver?.projectSwitchStopped !== true ||
+    report.driver?.closeStopped !== true ||
+    report.driver?.createdElements < 4
+  ) {
+    throw new Error("Real packaged T03 HtmlMediaPlaybackDriver proof failed.");
   }
   const after = await Promise.all(audioPaths.map(fingerprint));
   if (JSON.stringify(before) !== JSON.stringify(after)) {

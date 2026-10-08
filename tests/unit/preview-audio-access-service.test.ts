@@ -34,7 +34,7 @@ async function fixture() {
   const store = new NodePreviewAudioLeaseStore();
   const service = new PreviewAudioAccessService(store, lookup);
   services.push(service);
-  return { service, store };
+  return { service, store, source };
 }
 
 afterEach(async () => {
@@ -148,6 +148,85 @@ describe("W11-06 main-owned preview grant authorization", () => {
         batchId: "intake-1",
         projectId: "project-1",
         assetId: "asset-ready",
+      }),
+    ).toBeNull();
+  });
+
+  it("reauthorizes only a main-picked and probed replacement audio source", async () => {
+    const { service, store, source } = await fixture();
+    const previewBatchId = service.trustRelinkedSources(7, "reopened", [
+      { assetId: "relinked-only", source },
+    ]);
+    expect(previewBatchId).toMatch(/^relink-[0-9a-f]{40}$/);
+    if (previewBatchId === null) throw new Error("Missing relink proof");
+    const token = await service.issue({
+      ownerWebContentsId: 7,
+      batchId: previewBatchId,
+      projectId: "reopened",
+      assetId: "relinked-only",
+    });
+    expect(token).toMatch(/^lfa-preview:\/\/media\/[0-9a-f]{64}$/);
+    if (token === null) throw new Error("Expected relink token");
+    const response = await createPreviewAudioProtocolResponse(
+      new Request(token, { headers: { Range: "bytes=0-3" } }),
+      { projectId: "reopened", ownerWebContentsId: 7 },
+      store,
+    );
+    expect(response.status).toBe(206);
+    expect(Buffer.from(await response.arrayBuffer())).toEqual(
+      Buffer.from("RIFF"),
+    );
+    for (const request of [
+      {
+        ownerWebContentsId: 8,
+        projectId: "reopened",
+        assetId: "relinked-only",
+      },
+      { ownerWebContentsId: 7, projectId: "other", assetId: "relinked-only" },
+      { ownerWebContentsId: 7, projectId: "reopened", assetId: "not-relinked" },
+    ]) {
+      expect(
+        await service.issue({ batchId: previewBatchId, ...request }),
+      ).toBeNull();
+    }
+  });
+
+  it("revokes old import and relink grants on replacement and close", async () => {
+    const { service, store, source } = await fixture();
+    service.trustPickerDiscovery(7, "picked-1");
+    service.bindIntake(7, "picked-1", "intake-1", "project-1");
+    const former = await service.issue({
+      ownerWebContentsId: 7,
+      batchId: "intake-1",
+      projectId: "project-1",
+      assetId: "asset-ready",
+    });
+    const batch = service.trustRelinkedSources(7, "project-1", [
+      { assetId: "asset-replaced", source },
+    ]);
+    expect(batch).not.toBeNull();
+    expect(
+      await service.issue({
+        ownerWebContentsId: 7,
+        batchId: "intake-1",
+        projectId: "project-1",
+        assetId: "asset-ready",
+      }),
+    ).toBeNull();
+    if (former === null || batch === null) throw new Error("Missing tokens");
+    const formerResponse = await createPreviewAudioProtocolResponse(
+      new Request(former),
+      { projectId: "project-1", ownerWebContentsId: 7 },
+      store,
+    );
+    expect(formerResponse.status).toBe(403);
+    service.revokeWindow(7);
+    expect(
+      await service.issue({
+        ownerWebContentsId: 7,
+        batchId: batch,
+        projectId: "project-1",
+        assetId: "asset-replaced",
       }),
     ).toBeNull();
   });

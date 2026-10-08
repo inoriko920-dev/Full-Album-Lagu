@@ -823,3 +823,10 @@
 - Private per-window `lfa-preview://` with main OS picker/import provenance, typed IPC, scoped expiring token, read-only bounded Range streams; no raw renderer path. Grants revoked on reopen, relink, accepted recovery, navigation and window close.
 - Evidence: `docs/step11/evidence/T11_W06_02_MAIN_AUDIO_GATEWAY_CLOSURE_20261008.md`. This task covers **secure codec gateway, not audible Play/Pause, spectrum or MP4**.
 - **Documentation closure CI and controlled merge remain mandatory**. Do not start T11-W06-03 until PR #55 is merged after final required PASS and main is verified. Future T03 must securely reauthorize reopened/relinked local files, never trust persisted sourcePath alone.
+
+## W11-06 T03 SOL closure checkpoint — 2026-10-08 WIB
+
+- W11-06 T02 secure decoder gateway merged through PR #55 (`main@1cfaf7af`). T03 implemented on [PR #56](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/56), source `71be262e7c0c35f4c5acd8155cd79df8a6493137`. [CI #632](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/37799006358): **372 tests PASS**, packaged WAV/MP3 real decoder+native muted playback, real `HtmlMediaPlaybackDriver` Play/Pause/Seek/Next/Previous/relink/project switch/close 7/7 proof fields true; Windows portable and regressions PASS.
+- Pure album transport uses canonical timeline+generation guards. Renderer media driver accepts only main-private preview tokens and cleans up stale media/late IPC; relink authorization only via OS picker and main probe. Missing/unrelinked/reopened sources blocked until main authorizes them.
+- Closure report: `docs/step11/evidence/T11_W06_03_PLAYBACK_DRIVER_WINDOWS_CLOSURE_20261008.md`. **Final doc-commit Windows CI and controlled PR merge still required**; do not start T04 until T03 is merged and `main` verified.
+- **No FFT/spectrum, no actual UI controls wired, no human-listened speaker proof, no MP4**. T04 WebAudio spectrum, T05 approved UI transport, T06 stress, T07 final wave/device listening remain future serial tasks.

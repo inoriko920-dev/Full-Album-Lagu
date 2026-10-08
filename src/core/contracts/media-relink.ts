@@ -64,6 +64,7 @@ export const singleRelinkOperationResultSchema = z.discriminatedUnion(
     z
       .object({
         status: z.literal("relinked"),
+        previewBatchId: z.string().min(1).max(150).optional(),
         project: projectDocumentSchema,
         result: mediaRelinkResultSchema,
       })
@@ -95,6 +96,7 @@ export const folderRelinkOperationResultSchema = z.discriminatedUnion(
     z
       .object({
         status: z.literal("completed"),
+        previewBatchId: z.string().min(1).max(150).optional(),
         project: projectDocumentSchema,
         results: z.array(mediaRelinkResultSchema),
       })

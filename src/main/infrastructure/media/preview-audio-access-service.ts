@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import type { MediaSourceDescriptor } from "../../../core/application/ports/media-source-port";
 import { NodePreviewAudioLeaseStore } from "./node-preview-audio-lease-store";
 import { PREVIEW_AUDIO_SCHEME } from "./preview-audio-protocol";
@@ -33,6 +34,10 @@ export interface PreviewAudioIssueRequest {
 export class PreviewAudioAccessService {
   private readonly selected = new Map<string, number>();
   private readonly intake = new Map<string, BoundIntake>();
+  private readonly relink = new Map<
+    string,
+    { bound: BoundIntake; sources: Map<string, MediaSourceDescriptor> }
+  >();
   private readonly activeProjects = new Map<number, string>();
 
   constructor(
@@ -64,6 +69,32 @@ export class PreviewAudioAccessService {
     return true;
   }
 
+  /**
+   * Called ONLY by Electron main after an OS-picked file/folder was inspected
+   * and probed by MediaRelinkService. It authorizes ONLY the relinked asset IDs,
+   * not any untouched or saved ProjectDocument sourcePath.
+   */
+  trustRelinkedSources(
+    ownerWebContentsId: number,
+    projectId: string,
+    entries: readonly { assetId: string; source: MediaSourceDescriptor }[],
+  ): string | null {
+    this.revokeWindow(ownerWebContentsId);
+    if (!projectId || entries.length === 0) return null;
+    const sources = new Map<string, MediaSourceDescriptor>();
+    for (const entry of entries) {
+      if (entry.assetId && entry.source.sourcePath) {
+        sources.set(entry.assetId, { ...entry.source });
+      }
+    }
+    if (sources.size === 0) return null;
+    const batchId = `relink-${randomBytes(20).toString("hex")}`;
+    const bound = { ownerWebContentsId, projectId, batchId };
+    this.relink.set(batchId, { bound, sources });
+    this.activeProjects.set(ownerWebContentsId, projectId);
+    return batchId;
+  }
+
   context(ownerWebContentsId: number): {
     projectId: string;
     ownerWebContentsId: number;
@@ -73,7 +104,9 @@ export class PreviewAudioAccessService {
   }
 
   async issue(request: PreviewAudioIssueRequest): Promise<string | null> {
-    const bound = this.intake.get(request.batchId);
+    const trustedImport = this.intake.get(request.batchId);
+    const trustedRelink = this.relink.get(request.batchId);
+    const bound = trustedImport ?? trustedRelink?.bound;
     if (
       bound === undefined ||
       bound.ownerWebContentsId !== request.ownerWebContentsId ||
@@ -83,11 +116,14 @@ export class PreviewAudioAccessService {
       return null;
     }
 
-    const source = this.sources.getTrustedAudioSource(
-      request.batchId,
-      request.projectId,
-      request.assetId,
-    );
+    const source =
+      trustedImport === undefined
+        ? (trustedRelink?.sources.get(request.assetId) ?? null)
+        : this.sources.getTrustedAudioSource(
+            request.batchId,
+            request.projectId,
+            request.assetId,
+          );
     if (source === null) return null;
 
     try {
@@ -100,7 +136,9 @@ export class PreviewAudioAccessService {
 
       // A slow filesystem probe must never resurrect a revoked project.
       if (
-        this.intake.get(request.batchId) !== bound ||
+        (trustedImport !== undefined
+          ? this.intake.get(request.batchId) !== bound
+          : this.relink.get(request.batchId) !== trustedRelink) ||
         this.activeProjects.get(request.ownerWebContentsId) !==
           request.projectId
       ) {
@@ -125,12 +163,18 @@ export class PreviewAudioAccessService {
         this.intake.delete(batchId);
       }
     }
+    for (const [batchId, entry] of this.relink) {
+      if (entry.bound.ownerWebContentsId === ownerWebContentsId) {
+        this.relink.delete(batchId);
+      }
+    }
   }
 
   close(): void {
     this.store.close();
     this.selected.clear();
     this.intake.clear();
+    this.relink.clear();
     this.activeProjects.clear();
   }
 }

@@ -1,3 +1,4 @@
+import type { PlaybackPowerState } from "./playback-power";
 import type {
   PreviewAudioIssueRequest,
   PreviewAudioIssueResult,
@@ -51,6 +52,10 @@ import type {
 } from "./template-ipc";
 
 export interface LfaBridge {
+  /** Optional in old UI fixtures; production preload always supplies this. */
+  onPlaybackPowerChange?(
+    listener: (state: PlaybackPowerState) => void,
+  ): () => void;
   /** Optional for legacy test fixtures; Electron preload always exposes these. */
   listTemplates?(): Promise<TemplateListResult>;
   loadTemplate?(templateId: string): Promise<TemplateLoadResult>;
