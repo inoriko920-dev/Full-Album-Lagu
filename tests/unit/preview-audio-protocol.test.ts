@@ -38,9 +38,9 @@ async function fixture() {
 afterEach(async () => {
   for (const store of stores.splice(0)) store.close();
   await Promise.all(
-    tmp.splice(0).map((directory) =>
-      rm(directory, { recursive: true, force: true }),
-    ),
+    tmp
+      .splice(0)
+      .map((directory) => rm(directory, { recursive: true, force: true })),
   );
 });
 
