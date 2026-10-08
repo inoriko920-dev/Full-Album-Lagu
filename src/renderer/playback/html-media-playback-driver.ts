@@ -9,6 +9,10 @@ import type {
 import type { PlaybackClockSnapshot } from "../../core/contracts/playback";
 import type { PlaybackPowerState } from "../../core/contracts/playback-power";
 import type { ProjectDocument } from "../../core/domain/project-document";
+import type {
+  LiveSpectrumRuntime,
+  SpectrumSnapshot,
+} from "./live-spectrum-runtime";
 
 /**
  * Task03: browser playback is driven by a main-issued URL, never by the
@@ -21,6 +25,8 @@ export interface TrustedAudioBatch {
 
 export interface MediaElementPort {
   src: string;
+  /** Set BEFORE src: WebAudio otherwise silences cross-origin protocol media. */
+  crossOrigin?: string | null;
   currentTime: number;
   play(): Promise<void>;
   pause(): void;
@@ -70,6 +76,9 @@ export class HtmlMediaPlaybackDriver {
     subscribePower?: (
       callback: (state: PlaybackPowerState) => void,
     ) => () => void,
+    private readonly spectrum: LiveSpectrumRuntime | null = null,
+    private readonly notifySpectrum: (value: SpectrumSnapshot) => void = () =>
+      undefined,
   ) {
     this.transport = new AlbumPlaybackTransport(project);
     this.trustedBatch = trustedBatch;
@@ -79,6 +88,18 @@ export class HtmlMediaPlaybackDriver {
 
   get snapshot(): PlaybackClockSnapshot {
     return this.transport.snapshot;
+  }
+
+  /** Read-only sample of the same real HTMLMediaElement used for playback. */
+  sampleSpectrum(): SpectrumSnapshot | null {
+    if (this.spectrum === null) return null;
+    const phase = this.transport.snapshot.phase;
+    return this.spectrum.sample(phase === "playing" ? "playing" : "paused");
+  }
+
+  private emitSpectrum(): void {
+    const sample = this.sampleSpectrum();
+    if (sample !== null) this.notifySpectrum(sample);
   }
 
   play(): void {
@@ -161,6 +182,7 @@ export class HtmlMediaPlaybackDriver {
     this.active = null;
     if (active === null) return;
     active.disposeListeners();
+    this.spectrum?.detach();
     active.element.pause();
     active.element.removeAttribute("src");
     active.element.load();
@@ -168,6 +190,7 @@ export class HtmlMediaPlaybackDriver {
 
   private emit(): void {
     this.notify(this.transport.snapshot);
+    this.emitSpectrum();
   }
 
   private perform(effect: PlaybackTransportEffect | null): void {
@@ -311,6 +334,14 @@ export class HtmlMediaPlaybackDriver {
       },
     };
     try {
+      // Attach the analyser to the very same element, never to a second
+      // synthetic/demo audio player. Failure leaves preview sound usable.
+      // WebAudio MediaElementAudioSourceNode is mandated to output silence
+      // for non-CORS media from a different scheme. The private protocol only
+      // allows the current editor origin and a scoped main-issued token.
+      element.crossOrigin = "anonymous";
+      this.spectrum?.attach(element as HTMLMediaElement);
+      this.emitSpectrum();
       element.src = result.url;
       element.load();
     } catch {

@@ -830,3 +830,11 @@
 - Pure album transport uses canonical timeline+generation guards. Renderer media driver accepts only main-private preview tokens and cleans up stale media/late IPC; relink authorization only via OS picker and main probe. Missing/unrelinked/reopened sources blocked until main authorizes them.
 - Closure report: `docs/step11/evidence/T11_W06_03_PLAYBACK_DRIVER_WINDOWS_CLOSURE_20261008.md`. **Final doc-commit Windows CI and controlled PR merge still required**; do not start T04 until T03 is merged and `main` verified.
 - **No FFT/spectrum, no actual UI controls wired, no human-listened speaker proof, no MP4**. T04 WebAudio spectrum, T05 approved UI transport, T06 stress, T07 final wave/device listening remain future serial tasks.
+
+## SOL T11-W06-04 — Real FFT Windows technical closure (2026-10-08 WIB)
+
+- T11-W06-03 finished in [PR #56](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/56), main@`052b18a`. Task04 on [Draft PR #57](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/57) — **source `d7ee738` Windows CI #650 PASS**, 380 tests, packaged MP3/WAV and original waves.
+- Native WebAudio MediaElementAudioSourceNode→AnalyserNode on **same** `HtmlMediaPlaybackDriver` real track, 32 peak bands, no fake spectrum. Packaged 440Hz PCM WAV peak 0.9058823529411765, silence peak 0; Pause/Stop zeros, element identity for 2 tracks PASS, source SHA/size/mtime unchanged.
+- `crossOrigin="anonymous"` before setting private `lfa-preview:` URL was essential: the original packaged FFT returned zero despite native audio clock advancing, due to cross-origin WebAudio silence. Fixed without wildcard CORS.
+- Evidence `docs/step11/evidence/T11_W06_04_REAL_WEB_AUDIO_FFT_WINDOWS_CLOSURE_20261008.md`.
+- **Next:** finish exact-head CI #651 and controlled merge, then T11-W06-05 frozen UI wiring. T05 is NOT STARTED. T06/T07 and MP4 remain blocked/future. No visual control/button changes in T04.
