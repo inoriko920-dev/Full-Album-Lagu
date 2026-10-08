@@ -1,0 +1,29 @@
+name: TEMP W05-06 Format and Quick Tests
+on:
+  push:
+    branches: [sol/t11-w05-06-template-browser-20261008]
+permissions:
+  contents: write
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npx prettier --write src/core/contracts/template-ipc.ts src/core/contracts/lfa-bridge.ts src/preload/api.ts src/main/ipc/register-ipc.ts src/main/bootstrap.ts src/renderer/state/project-session/use-project-session.ts src/renderer/app/AppShell.tsx src/renderer/app/TemplateBrowser.tsx src/renderer/app/template-browser.css tests/component/AppShell.visual-layer-editor.test.tsx
+      - name: Commit formatted source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src tests
+          if ! git diff --cached --quiet; then
+            git commit -m "style: format T11-W05-06 template UI/IPC"
+            git push
+          fi
+      - run: npm run typecheck
+      - run: npm run test:component
+      - run: npm run test:contract
