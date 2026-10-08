@@ -106,7 +106,7 @@ describe("T11-W05-04 static visual renderer", () => {
     expect(canvas.getAttribute("data-track-context")).toBe("first-enabled");
     expect(title.textContent).toContain("Lagu Aktif");
     expect(title.getAttribute("aria-pressed")).toBe("true");
-    expect(title).toHaveAttribute("data-scene-layer-id", "title");
+    expect(title.getAttribute("data-scene-layer-id")).toBe("title");
     expect(title.getAttribute("style")).toContain(
       "translate(0%, 0%) rotate(17deg)",
     );
@@ -179,8 +179,10 @@ describe("T11-W05-04 static visual renderer", () => {
       />,
     );
     expect(
-      within(container).getByRole("button", { name: "Pilih layer Background" }),
-    ).getAttribute("aria-pressed")).toBe("true");
+      within(container)
+        .getByRole("button", { name: "Pilih layer Background" })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
     expect(
       container.querySelectorAll(".static-scene-preview__selection"),
     ).toHaveLength(1);
@@ -206,8 +208,10 @@ describe("T11-W05-04 static visual renderer", () => {
       container.querySelectorAll(".static-scene-preview__selection"),
     ).toHaveLength(1);
     expect(
-      within(container).getByRole("button", { name: "Pilih layer Judul-80" }),
-    ).getAttribute("aria-pressed")).toBe("true");
+      within(container)
+        .getByRole("button", { name: "Pilih layer Judul-80" })
+        .getAttribute("aria-pressed"),
+    ).toBe("true");
     expect(
       container.querySelector("[data-scene-layer-id='layer-127']"),
     ).not.toBeNull();
