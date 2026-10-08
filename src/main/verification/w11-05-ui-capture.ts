@@ -78,6 +78,16 @@ export async function captureW1105State(
           await wait(() => Array.from(browserPanel.querySelectorAll("button")).some(el => el.textContent?.trim()==="Coba Template" && !el.disabled), "template ready");
           press("Coba Template", browserPanel);
           await wait(() => !!document.querySelector(".template-trial-overlay") && document.body.textContent?.includes("Mode Coba — perubahan belum disimpan ke proyek."), "trial banner");
+          const trialScene = document.querySelector(".preview-frame--visual");
+          const trialGallery = document.querySelector(".template-trial-overlay__gallery");
+          if (!trialScene || !trialGallery) {
+            throw new Error("Trial Preview/gallery geometry unavailable");
+          }
+          const sceneEdge = trialScene.getBoundingClientRect().right;
+          const galleryEdge = trialGallery.getBoundingClientRect().left;
+          if (sceneEdge + 8 > galleryEdge) {
+            throw new Error("Trial gallery obscures static Preview scene");
+          }
           if (Number(shell.getAttribute("data-project-revision")) !== beforeRevision ||
               shell.getAttribute("data-project-dirty") !== beforeDirty) {
             throw new Error("Trial changed project revision/dirty");
