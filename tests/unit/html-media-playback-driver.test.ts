@@ -109,7 +109,11 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     if (first === undefined) throw new Error("Audio was not created.");
     expect(first.src).toBe(granted.url);
     expect(calls).toEqual([
-      { batchId: trusted.batchId, projectId: trusted.projectId, assetId: "asset-0" },
+      {
+        batchId: trusted.batchId,
+        projectId: trusted.projectId,
+        assetId: "asset-0",
+      },
     ]);
     first.emit("loadedmetadata");
     await flush();

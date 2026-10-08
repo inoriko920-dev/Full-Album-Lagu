@@ -1,5 +1,11 @@
-import { AlbumPlaybackTransport, type PlaybackTransportEffect } from "../../core/application/services/album-playback-transport";
-import type { PreviewAudioIssueRequest, PreviewAudioIssueResult } from "../../core/contracts/preview-audio-ipc";
+import {
+  AlbumPlaybackTransport,
+  type PlaybackTransportEffect,
+} from "../../core/application/services/album-playback-transport";
+import type {
+  PreviewAudioIssueRequest,
+  PreviewAudioIssueResult,
+} from "../../core/contracts/preview-audio-ipc";
 import type { PlaybackClockSnapshot } from "../../core/contracts/playback";
 import type { ProjectDocument } from "../../core/domain/project-document";
 
@@ -53,7 +59,8 @@ export class HtmlMediaPlaybackDriver {
     trustedBatch: TrustedAudioBatch | null,
     private readonly requestAudio: PreviewAudioRequester,
     private readonly createAudio: () => MediaElementPort = () => new Audio(),
-    private readonly notify: (snapshot: PlaybackClockSnapshot) => void = () => undefined,
+    private readonly notify: (snapshot: PlaybackClockSnapshot) => void = () =>
+      undefined,
   ) {
     this.transport = new AlbumPlaybackTransport(project);
     this.trustedBatch = trustedBatch;
@@ -87,7 +94,10 @@ export class HtmlMediaPlaybackDriver {
     if (!this.closed) this.perform(this.transport.previous());
   }
 
-  switchProject(project: ProjectDocument, trustedBatch: TrustedAudioBatch | null): void {
+  switchProject(
+    project: ProjectDocument,
+    trustedBatch: TrustedAudioBatch | null,
+  ): void {
     if (this.closed) return;
     this.trustedBatch = trustedBatch;
     this.perform(this.transport.switchProject(project));
@@ -101,10 +111,12 @@ export class HtmlMediaPlaybackDriver {
   }
 
   private isActive(element: MediaElementPort, generation: number): boolean {
-    return !this.closed &&
+    return (
+      !this.closed &&
       this.active?.element === element &&
       this.active.generation === generation &&
-      this.transport.snapshot.generation === generation;
+      this.transport.snapshot.generation === generation
+    );
   }
 
   private teardown(): void {
@@ -150,7 +162,9 @@ export class HtmlMediaPlaybackDriver {
     this.perform(this.transport.onMediaError(generation));
   }
 
-  private async load(effect: Extract<PlaybackTransportEffect, { kind: "load" }>): Promise<void> {
+  private async load(
+    effect: Extract<PlaybackTransportEffect, { kind: "load" }>,
+  ): Promise<void> {
     const bound = this.trustedBatch;
     if (
       bound === null ||
@@ -200,33 +214,49 @@ export class HtmlMediaPlaybackDriver {
       return () => element.removeEventListener(type, handler);
     };
     const cleanups: Array<() => void> = [];
-    cleanups.push(listen("loadedmetadata", () => {
-      if (!this.isActive(element, effect.generation)) return;
-      try {
-        element.currentTime = effect.localTimeMs / 1000;
-      } catch {
-        this.fail(effect.generation);
-        return;
-      }
-      this.perform(this.transport.onLoaded(effect.generation));
-    }));
-    cleanups.push(listen("timeupdate", () => {
-      const generation = this.active?.generation;
-      if (generation === undefined || !this.isActive(element, generation)) return;
-      if (this.transport.reportAudioClock(generation, element.currentTime * 1000)) {
-        this.emit();
-      }
-    }));
-    cleanups.push(listen("ended", () => {
-      const generation = this.active?.generation;
-      if (generation === undefined || !this.isActive(element, generation)) return;
-      this.perform(this.transport.onEnded(generation));
-    }));
-    cleanups.push(listen("error", () => {
-      const generation = this.active?.generation;
-      if (generation === undefined || !this.isActive(element, generation)) return;
-      this.fail(generation);
-    }));
+    cleanups.push(
+      listen("loadedmetadata", () => {
+        if (!this.isActive(element, effect.generation)) return;
+        try {
+          element.currentTime = effect.localTimeMs / 1000;
+        } catch {
+          this.fail(effect.generation);
+          return;
+        }
+        this.perform(this.transport.onLoaded(effect.generation));
+      }),
+    );
+    cleanups.push(
+      listen("timeupdate", () => {
+        const generation = this.active?.generation;
+        if (generation === undefined || !this.isActive(element, generation))
+          return;
+        if (
+          this.transport.reportAudioClock(
+            generation,
+            element.currentTime * 1000,
+          )
+        ) {
+          this.emit();
+        }
+      }),
+    );
+    cleanups.push(
+      listen("ended", () => {
+        const generation = this.active?.generation;
+        if (generation === undefined || !this.isActive(element, generation))
+          return;
+        this.perform(this.transport.onEnded(generation));
+      }),
+    );
+    cleanups.push(
+      listen("error", () => {
+        const generation = this.active?.generation;
+        if (generation === undefined || !this.isActive(element, generation))
+          return;
+        this.fail(generation);
+      }),
+    );
     this.active = {
       element,
       generation: effect.generation,
