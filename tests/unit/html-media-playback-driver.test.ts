@@ -35,6 +35,7 @@ function project(projectId = "project-1"): ProjectDocument {
 
 class FakeMedia implements MediaElementPort {
   src = "";
+  crossOrigin: string | null = null;
   currentTime = 0;
   playCount = 0;
   pauseCount = 0;
@@ -587,6 +588,7 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     driver.play();
     await flush();
     expect(graphSources).toEqual([media[0]]);
+    expect(media[0]!.crossOrigin).toBe("anonymous");
     media[0]!.emit("loadedmetadata");
     await flush();
     media[0]!.currentTime = 0.2;
