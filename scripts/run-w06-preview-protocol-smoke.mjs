@@ -25,9 +25,7 @@ async function prepareAudioFiles() {
   await mkdir(fixtures, { recursive: true });
   const paths = [];
   for (const [index, kind] of ["wav", "mp3"].entries()) {
-    const match = contents.match(
-      new RegExp(`\\b${kind}: "([A-Za-z0-9+/=]+)"`),
-    );
+    const match = contents.match(new RegExp(`\\b${kind}: "([A-Za-z0-9+/=]+)"`));
     if (match?.[1] === undefined) {
       throw new Error(`Missing synthetic ${kind} audio fixture`);
     }
@@ -79,7 +77,9 @@ async function launchPackaged(paths) {
       clearTimeout(timeout);
       if (code !== 0) {
         rejectRun(
-          new Error(`Packaged audio probe failed (exit ${code}): ${stderr.slice(-2500)} ${stdout.slice(-1500)}`),
+          new Error(
+            `Packaged audio probe failed (exit ${code}): ${stderr.slice(-2500)} ${stdout.slice(-1500)}`,
+          ),
         );
         return;
       }
