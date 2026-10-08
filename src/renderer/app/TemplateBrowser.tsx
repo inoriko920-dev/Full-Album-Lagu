@@ -58,6 +58,7 @@ export function TemplateBrowser({
   const [saveCategory, setSaveCategory] = useState<TemplateCategory>("Minimal");
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const requestVersion = useRef(0);
+  const templateLoadPending = useRef(false);
   const [saveScope, setSaveScope] = useState<VisualLayer["kind"][]>([
     "background",
     "artwork",
@@ -160,10 +161,12 @@ export function TemplateBrowser({
   useEffect(() => {
     const version = ++requestVersion.current;
     if (selectedId === null || !window.lfa.loadTemplate) return;
+    templateLoadPending.current = true;
     void window.lfa
       .loadTemplate(selectedId)
       .then((result) => {
         if (requestVersion.current !== version) return;
+        templateLoadPending.current = false;
         if (result.status === "error") {
           setCatalogError(result.message);
         } else {
@@ -172,11 +175,14 @@ export function TemplateBrowser({
         }
       })
       .catch(() => {
-        if (requestVersion.current === version)
+        if (requestVersion.current === version) {
+          templateLoadPending.current = false;
           setCatalogError("Template tidak dapat dimuat.");
+        }
       });
     return () => {
       requestVersion.current += 1;
+      templateLoadPending.current = false;
     };
   }, [selectedId, templateLoadRetry]);
 
@@ -454,9 +460,12 @@ export function TemplateBrowser({
                       if (entry.templateId !== selectedId) {
                         setSelectedTemplate(null);
                         setSelectedId(entry.templateId);
-                      } else if (activeTemplate === null) {
-                        // A failed same-ID load must be retryable without
-                        // switching templates or mutating the project.
+                      } else if (
+                        activeTemplate === null &&
+                        !templateLoadPending.current
+                      ) {
+                        // Retry a failed load only after its prior request has
+                        // settled; rapid clicks must not spawn duplicate IPC.
                         setTemplateLoadRetry((prior) => prior + 1);
                       }
                     }
