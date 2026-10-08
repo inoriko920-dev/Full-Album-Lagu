@@ -10,6 +10,7 @@ import type { ProjectDocument } from "../../core/domain/project-document";
 import type { VisualLayer } from "../../core/domain/visual-scene-schema";
 import type { ProjectSessionView } from "../state/project-session/use-project-session";
 import { StaticScenePreview } from "../visual/StaticScenePreview";
+import { TemplateArtwork } from "../visual/TemplateArtwork";
 import { ActionButton } from "../ui/controls";
 import "./template-browser.css";
 
@@ -298,7 +299,9 @@ export function TemplateBrowser({
                   className="template-trial-overlay__gallery-thumb"
                   aria-hidden="true"
                 >
-                  ♫
+                  {entry.origin === "built-in" ? (
+                    <TemplateArtwork templateId={entry.templateId} category={entry.category} />
+                  ) : "♫"}
                 </div>
                 <small>{entry.name}</small>
               </div>
@@ -408,7 +411,11 @@ export function TemplateBrowser({
                     className="template-browser__thumbnail"
                     aria-hidden="true"
                   >
-                    <span className="template-browser__thumbnail-art">♫</span>
+                    {entry.origin === "built-in" ? (
+                      <TemplateArtwork templateId={entry.templateId} category={entry.category} />
+                    ) : (
+                      <span className="template-browser__thumbnail-art">♫</span>
+                    )}
                     <span className="template-browser__thumbnail-line" />
                   </span>
                   <strong>{entry.name}</strong>
@@ -426,7 +433,13 @@ export function TemplateBrowser({
             aria-label="Detail Template"
           >
             <div className="template-browser__preview">
-              <StaticScenePreview model={preview} />
+              <StaticScenePreview
+                model={preview}
+                templateArtwork={selectedTemplate === null ? undefined : {
+                  templateId: selectedTemplate.templateId,
+                  category: selectedTemplate.category,
+                }}
+              />
             </div>
             <div className="template-browser__details">
               <div>
