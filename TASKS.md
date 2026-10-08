@@ -808,3 +808,11 @@
 - W11-06 ASTRA v1.0 full planning: `docs/step11/WAVE_11_06_CHARTER.md`, `TASK_CARDS_W11_06.md`, `W11_06_ACCEPTANCE_MATRIX.md`, `W11_06_DOR.md`, and final native DOCX `docs/source-of-truth/planning/current/15_STEP_11_W11_06_PLAYBACK_SPECTRUM_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
 - Frozen UI-IMG-002B/002D Play/Pause/Prev/Next/volume/timecode/progress/timeline is reused; Stop is **controller lifecycle only** with no new visible button. No new UI prompt/image stage needed in this scope.
 - W11-06 ASTRA planning **READY FOR CI REVIEW**; implementation `T11-W06-01` **BLOCKED until planning-only PR #53 passes latest CI, DOCX verification, and merges to main**. T02..07 blocked sequentially. No playback, FFT, MP4 or provider works yet.
+
+## SOL T11-W06-01 — pure playback position code checkpoint (2026-10-08 WIB)
+
+- W11-06 final ASTRA planning and DOCX are now **merged** via PR #53 at main@`551fc4a2d479ba618f6a7382aa5584a3032afc02`. Previous note saying T01 blocked on planning merge is historical/superseded.
+- Only T11-W06-01 implemented on Draft https://github.com/inoriko920-dev/Full-Album-Lagu/pull/54: canonical pure album-time resolver + typed playback phase snapshot; no filesystem, UI, audio decode, FFT or MP4 runtime.
+- Windows CI #566 initially failed **Prettier only**, repaired by whitespace-only follow-up; **Windows CI #567 SUCCESS** at code SHA `645df69340053d2c4fef2fffd535007a9f69f3c9`, **316 tests PASS** (160+59+54+43), prior Electron E2E, protected media fingerprints and packaged Windows smoke/ZIP PASS.
+- Evidence: `docs/step11/evidence/T11_W06_01_PLAYBACK_POSITION_WINDOWS_VERIFIED.md`.
+- **Task closure gate:** final documentation commit CI must PASS, then controlled PR merge. Until then W11-06 Task01 closing, Task02 BLOCKED.
