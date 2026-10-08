@@ -83,7 +83,8 @@ async function run(
     },
     () => undefined,
     Date.now,
-    (handler) => window.lfa.onPlaybackPowerChange?.(handler) ?? (() => undefined),
+    (handler) =>
+      window.lfa.onPlaybackPowerChange?.(handler) ?? (() => undefined),
   );
   try {
     driver.play();
