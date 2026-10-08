@@ -172,6 +172,14 @@ export async function runW06SpectrumProof(
     if (!sourceIdentity) {
       throw new Error("T04 analyser source differed from actual playing media");
     }
+    driver.close();
+    if (
+      audioElements.some(
+        (element) => !element.paused || element.hasAttribute("src"),
+      )
+    ) {
+      throw new Error("T04 spectrum left an active audio source after close");
+    }
     return {
       tone440HzDetected: true,
       silenceNearZero: true,
@@ -186,12 +194,5 @@ export async function runW06SpectrumProof(
   } finally {
     driver.close();
     runtime.close();
-    if (
-      audioElements.some(
-        (element) => !element.paused || element.hasAttribute("src"),
-      )
-    ) {
-      throw new Error("T04 spectrum left an active audio source after close");
-    }
   }
 }
