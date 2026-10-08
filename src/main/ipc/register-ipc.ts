@@ -824,7 +824,7 @@ export function registerIpcHandlers(
 
   ipcMain.handle(
     PROJECT_RECOVERY_ACCEPT_CHANNEL,
-    async (_event, payload: unknown) => {
+    async (event, payload: unknown) => {
       const request = recoveryAcceptRequestSchema.safeParse(payload);
       if (!request.success) {
         return recoveryAcceptResultSchema.parse({
@@ -835,11 +835,13 @@ export function registerIpcHandlers(
       }
 
       try {
-        return recoveryAcceptResultSchema.parse(
-          await projectDependencies.recoveryService.accept(
-            request.data.primaryProject,
-          ),
+        const result = await projectDependencies.recoveryService.accept(
+          request.data.primaryProject,
         );
+        if (result.status === "recovered") {
+          projectDependencies.previewAudioAccess?.revokeWindow(event.sender.id);
+        }
+        return recoveryAcceptResultSchema.parse(result);
       } catch {
         return recoveryAcceptResultSchema.parse({
           status: "error",
