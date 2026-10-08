@@ -674,7 +674,10 @@ function WorkRail({
           />
         ) : null}
         {activeTab === "layer" ? (
-          <div className="visual-layer-combined" aria-label="Layer dan Properti">
+          <div
+            className="visual-layer-combined"
+            aria-label="Layer dan Properti"
+          >
             <VisualLayerPanel
               model={visualModel}
               session={projectSession}
