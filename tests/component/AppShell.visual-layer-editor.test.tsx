@@ -347,6 +347,30 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     });
   });
 
+  it("keeps the Browser open and the project clean if the catalog IPC throws synchronously", async () => {
+    bridge.listTemplates = () => {
+      throw new Error("Synchronous preload bridge failure");
+    };
+    render(<AppShell />);
+    fireEvent.click(screen.getByRole("button", { name: "Template" }));
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Gagal membaca katalog template lokal.",
+      ),
+    );
+    expect(screen.getByLabelText("Browser Template")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Coba Template" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("complementary", { name: "Gemini Agent" }),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Kembali ke Editor" }));
+    expect(screen.queryByLabelText("Browser Template")).not.toBeInTheDocument();
+    expect(shell().getAttribute("data-project-revision")).toBe("0");
+    expect(shell().getAttribute("data-project-dirty")).toBe("false");
+  });
+
   it("opens the local frozen browser and returns to identical Main Editor/Agent context", async () => {
     render(<AppShell />);
     const initialProjectId = shell().getAttribute("data-project-id");
