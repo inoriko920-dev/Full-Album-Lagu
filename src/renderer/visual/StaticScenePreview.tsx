@@ -14,7 +14,7 @@ export interface StaticScenePreviewProps {
   model: StaticScenePreviewModel;
   onSelectLayer?: (layerId: string) => void;
   /** Local illustrative sample, never a source media asset or encoded in project. */
-  templateArtwork?: { templateId: string; category: string };
+  templateArtwork?: { templateId: string; category: string } | undefined;
 }
 
 const spectrumBarHeights = [
