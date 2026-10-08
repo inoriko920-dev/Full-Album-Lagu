@@ -584,12 +584,36 @@ export function registerIpcHandlers(
         outcome.project !== undefined &&
         outcome.result.status === "relinked"
       ) {
-        // The previous preview lease is bound to an old source fingerprint.
-        projectDependencies.previewAudioAccess?.revokeWindow(event.sender.id);
+        // Only this freshly OS-picked and probed audio asset may receive a
+        // new token. Never reauthorize the rest of the renderer's document.
+        const selected = outcome.project.mediaAssets?.find(
+          (candidate) => candidate.id === request.assetId,
+        );
+        const previewBatchId =
+          selected?.kind === "audio" && selected.availability === "ready"
+            ? projectDependencies.previewAudioAccess?.trustRelinkedSources(
+                event.sender.id,
+                outcome.project.projectId,
+                [
+                  {
+                    assetId: selected.id,
+                    source: {
+                      sourcePath: selected.sourcePath,
+                      fileName: selected.fileName,
+                      sizeBytes: selected.sizeBytes,
+                    },
+                  },
+                ],
+              )
+            : null;
+        if (!previewBatchId) {
+          projectDependencies.previewAudioAccess?.revokeWindow(event.sender.id);
+        }
         return singleRelinkOperationResultSchema.parse({
           status: "relinked",
           project: outcome.project,
           result: outcome.result,
+          ...(previewBatchId ? { previewBatchId } : {}),
         });
       }
 
@@ -618,11 +642,41 @@ export function registerIpcHandlers(
             request.project,
             folderPath,
           );
-        // Folder relink may replace many ready audio sources in one operation.
-        projectDependencies.previewAudioAccess?.revokeWindow(event.sender.id);
+        // Folder selection authorizes only the assets actually relinked
+        // and probed by the main-owned relink service.
+        const relinked = new Set(
+          outcome.results
+            .filter((result) => result.status === "relinked")
+            .map((result) => result.assetId),
+        );
+        const trusted = (outcome.project.mediaAssets ?? [])
+          .filter(
+            (asset) =>
+              relinked.has(asset.id) &&
+              asset.kind === "audio" &&
+              asset.availability === "ready",
+          )
+          .map((asset) => ({
+            assetId: asset.id,
+            source: {
+              sourcePath: asset.sourcePath,
+              fileName: asset.fileName,
+              sizeBytes: asset.sizeBytes,
+            },
+          }));
+        const previewBatchId =
+          projectDependencies.previewAudioAccess?.trustRelinkedSources(
+            event.sender.id,
+            outcome.project.projectId,
+            trusted,
+          ) ?? null;
+        if (!previewBatchId) {
+          projectDependencies.previewAudioAccess?.revokeWindow(event.sender.id);
+        }
         return folderRelinkOperationResultSchema.parse({
           status: "completed",
           ...outcome,
+          ...(previewBatchId ? { previewBatchId } : {}),
         });
       } catch {
         return folderRelinkOperationResultSchema.parse({
