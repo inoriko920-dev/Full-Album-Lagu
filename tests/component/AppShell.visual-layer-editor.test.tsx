@@ -1,5 +1,6 @@
 import "@testing-library/jest-dom/vitest";
 import {
+  act,
   cleanup,
   fireEvent,
   render,
@@ -510,6 +511,76 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     expect(serialized).not.toContain("Judul Rahasia");
     expect(serialized).not.toContain("tracks");
     expect(serialized).not.toContain("Full Album Rahasia");
+    expect(shell().getAttribute("data-project-revision")).toBe("0");
+    expect(shell().getAttribute("data-project-dirty")).toBe("false");
+  });
+
+  it("ignores a late initial listing after a successful post-save catalog refresh", async () => {
+    const initialListing = bridge.listTemplates!;
+    let listings = 0;
+    let releaseInitial = () => {};
+    let saves = 0;
+    bridge.listTemplates = () => {
+      listings += 1;
+      if (listings === 1) {
+        return new Promise<Awaited<ReturnType<typeof initialListing>>>(
+          (resolve) => {
+            releaseInitial = () => {
+              void initialListing().then(resolve);
+            };
+          },
+        );
+      }
+      return initialListing().then((result) => {
+        if (result.status === "error") return result;
+        return {
+          status: "ok" as const,
+          entries: [
+            ...result.entries,
+            {
+              templateId: "fresh-after-save",
+              name: "Template Baru",
+              category: "Minimal" as const,
+              origin: "user" as const,
+              readOnly: false,
+            },
+          ],
+        };
+      });
+    };
+    bridge.saveTemplate = async (template) => {
+      saves += 1;
+      return { status: "ok", templateId: template.templateId };
+    };
+    render(<AppShell />);
+    fireEvent.click(screen.getByRole("button", { name: "Template" }));
+    await waitFor(() => expect(listings).toBe(1));
+    fireEvent.click(screen.getByRole("button", { name: "Simpan Template" }));
+    fireEvent.change(screen.getByLabelText("Nama Template"), {
+      target: { value: "Template Baru" },
+    });
+    fireEvent.click(
+      within(
+        screen.getByRole("dialog", { name: "Simpan sebagai Template" }),
+      ).getByRole("button", { name: "Simpan Template" }),
+    );
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: /Template Baru/ }),
+      ).toBeInTheDocument(),
+    );
+    expect(listings).toBe(2);
+    expect(saves).toBe(1);
+    await act(async () => {
+      releaseInitial();
+      await Promise.resolve();
+    });
+    expect(
+      screen.getByRole("button", { name: /Template Baru/ }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("Template tersimpan secara lokal."),
+    ).toBeInTheDocument();
     expect(shell().getAttribute("data-project-revision")).toBe("0");
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
   });
