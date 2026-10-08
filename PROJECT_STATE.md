@@ -545,3 +545,10 @@ After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation 
 ## W11-05 R23 latest checked code (2026-10-08 WIB)
 - Code `24004a0fc44535499b3b05297efdd5b170032bb9` verified Windows CI #547 / `37764099762` **SUCCESS / 310 tests**, four true Windows screenshot pairs, previous-wave E2E and portable package/smoke PASS. Report `docs/step11/evidence/T11_W05_07_R23_STATIC_UI_POLISH_WINDOWS_VERIFIED.md`.
 - **AC21 still OPEN waiting for explicit frozen UI-owner acceptance; AC25 final HELD; W11-05 IN_PROGRESS, PR #51 DRAFT/unmerged, main unchanged. W11-06/07/STEP 12 BLOCKED.**
+
+## ASTRA W11-06 final planning checkpoint — 2026-10-08 WIB
+
+- W11-05 COMPLETE / PASS; merged PR #51 to main@`9cb78dd9b8dd8ccb1b84705eb3d231ff9c4dc967` after 25/25 AC, explicit UI acceptance and Windows CI #557.
+- W11-06 ASTRA v1.0 full planning: `docs/step11/WAVE_11_06_CHARTER.md`, `TASK_CARDS_W11_06.md`, `W11_06_ACCEPTANCE_MATRIX.md`, `W11_06_DOR.md`, and final native DOCX `docs/source-of-truth/planning/current/15_STEP_11_W11_06_PLAYBACK_SPECTRUM_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Frozen UI-IMG-002B/002D Play/Pause/Prev/Next/volume/timecode/progress/timeline is reused; Stop is **controller lifecycle only** with no new visible button. No new UI prompt/image stage needed in this scope.
+- W11-06 ASTRA planning **READY FOR CI REVIEW**; implementation `T11-W06-01` **BLOCKED until planning-only PR #53 passes latest CI, DOCX verification, and merges to main**. T02..07 blocked sequentially. No playback, FFT, MP4 or provider works yet.

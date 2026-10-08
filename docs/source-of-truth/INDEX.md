@@ -16,6 +16,7 @@
 13. `planning/current/12_STEP_11_W11_03_ALBUM_TIMELINE_COMMAND_HISTORY_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
 14. `planning/current/13_STEP_11_W11_04_AUTO_SUSUN_TRACK_BINDING_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
 15. `planning/current/14_STEP_11_W11_05_MANUAL_LAYER_EDITOR_TEMPLATES_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
+16. `planning/current/15_STEP_11_W11_06_PLAYBACK_SPECTRUM_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`
 16. `factory/SOFTWARE_FACTORY_V2_COMPLETE_GUIDE.txt`
 17. `../../ui/manifests/UI_REFERENCE_MANIFEST.json`
 18. `../../ui/manifests/UI_FREEZE_MANIFEST.json`
@@ -120,3 +121,10 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - R03 Windows CI #444 / `37732523147` PASS at `37264b3d998d5c89214ec699b22b35c894ea459d`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), physical source fingerprints, 128-layer/100-template stress, four real Electron screenshots, prior regressions and portable smoke/ZIP PASS. Evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`; frozen comparison artifact `11530732266`.
 - Next read `../step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md` and prior R02; do not equate automated four-screen capture success with frozen design ACCEPTED.
 - **Next authorization:** continue **SOL T11-W05-07 visual remediation ONLY** on draft PR #51; AC-W11-05-21 remains NOT ACCEPTED, so W11-05 overall IN PROGRESS. Do not begin W11-06/W11-07/STEP 12 or merge PR before frozen UI authority review PASS.
+
+## ASTRA W11-06 final planning checkpoint — 2026-10-08 WIB
+
+- W11-05 COMPLETE / PASS; merged PR #51 to main@`9cb78dd9b8dd8ccb1b84705eb3d231ff9c4dc967` after 25/25 AC, explicit UI acceptance and Windows CI #557.
+- W11-06 ASTRA v1.0 full planning: `docs/step11/WAVE_11_06_CHARTER.md`, `TASK_CARDS_W11_06.md`, `W11_06_ACCEPTANCE_MATRIX.md`, `W11_06_DOR.md`, and final native DOCX `docs/source-of-truth/planning/current/15_STEP_11_W11_06_PLAYBACK_SPECTRUM_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Frozen UI-IMG-002B/002D Play/Pause/Prev/Next/volume/timecode/progress/timeline is reused; Stop is **controller lifecycle only** with no new visible button. No new UI prompt/image stage needed in this scope.
+- W11-06 ASTRA planning **READY FOR CI REVIEW**; implementation `T11-W06-01` **BLOCKED until planning-only PR #53 passes latest CI, DOCX verification, and merges to main**. T02..07 blocked sequentially. No playback, FFT, MP4 or provider works yet.

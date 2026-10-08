@@ -266,3 +266,25 @@ jobs:
             artifacts/SHA256SUMS.txt
           if-no-files-found: error
           retention-days: 14
+      - name: Verify and upload W11-06 ASTRA planning DOCX
+        shell: pwsh
+        run: |
+          $docx = "docs/source-of-truth/planning/current/15_STEP_11_W11_06_PLAYBACK_SPECTRUM_CHARTER_LAGU_FULL_ALBUM_v1_0.docx"
+          if (!(Test-Path $docx)) { throw "Missing mandatory W11-06 planning DOCX" }
+          if ((Get-Item $docx).Length -lt 2000) { throw "W11-06 DOCX is unexpectedly small" }
+          Add-Type -AssemblyName System.IO.Compression.FileSystem
+          $zip = [System.IO.Compression.ZipFile]::OpenRead((Resolve-Path $docx))
+          try {
+            foreach ($name in @("[Content_Types].xml", "word/document.xml", "word/styles.xml")) {
+              if ($null -eq $zip.GetEntry($name)) { throw "Malformed W11-06 DOCX: $name missing" }
+            }
+          } finally { $zip.Dispose() }
+          Get-FileHash $docx -Algorithm SHA256 | Format-List
+
+      - name: Upload W11-06 planning DOCX evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-W11-06-Final-ASTRA-Planning-DOCX
+          path: docs/source-of-truth/planning/current/15_STEP_11_W11_06_PLAYBACK_SPECTRUM_CHARTER_LAGU_FULL_ALBUM_v1_0.docx
+          if-no-files-found: error
+          retention-days: 14
