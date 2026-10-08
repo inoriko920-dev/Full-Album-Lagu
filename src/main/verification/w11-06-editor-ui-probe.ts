@@ -173,14 +173,16 @@ export async function captureW1106EditorInteractions(
   }
   const screenshot = await browser.webContents.capturePage();
   const size = screenshot.getSize();
-  if (screenshot.isEmpty() || size.width !== 1600 || size.height !== 1000) {
-    throw new Error("W11-06-05 screenshot did not match frozen 1600x1000 viewport");
+  const invalidScreenshot =
+    screenshot.isEmpty() || size.width !== 1600 || size.height !== 1000;
+  if (invalidScreenshot) {
+    throw new Error(
+      "W11-06-05 screenshot did not match frozen 1600x1000 viewport",
+    );
   }
   const destination = resolve(evidencePath);
   await mkdir(dirname(destination), { recursive: true });
-  await writeFile(destination, JSON.stringify({
-    ...report,
-    capture: size,
-  }, null, 2), "utf8");
+  const payload = { ...report, capture: size };
+  await writeFile(destination, JSON.stringify(payload, null, 2), "utf8");
   await writeFile(destination + ".png", screenshot.toPNG());
 }
