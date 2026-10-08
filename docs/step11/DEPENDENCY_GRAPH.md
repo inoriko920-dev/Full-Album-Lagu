@@ -241,3 +241,10 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 **25-AC closure review:** 25/25 PASS at tested code baseline `6e331c0646536f1236cbdc8d34bdacaf151771fe`, including AC25 technical PASS; evidence `docs/step11/evidence/W11_05_OWNER_APPROVAL_AND_25_AC_CLOSURE_20261008.md`; drift `docs/step11/evidence/W11_05_ARCHITECTURE_UI_TRUST_DRIFT_REVIEW_20261008.md`.
 **Pre-merge release gate:** HOLD until Windows CI passes at the new final documentation-commit SHA and PR protections are checked; no silent merge before all checks.
 **Downstream:** W11-06 audio playback/spectrum has **draft** DOCX and Markdown on stacked Draft PR #53, not DoR-approved, so coding remains BLOCKED until W11-05 controlled merge + W11-06 final planning/UI and DoR PASS.
+
+## ASTRA W11-06 final planning checkpoint — 2026-10-08 WIB
+
+- W11-05 COMPLETE / PASS; merged PR #51 to main@`9cb78dd9b8dd8ccb1b84705eb3d231ff9c4dc967` after 25/25 AC, explicit UI acceptance and Windows CI #557.
+- W11-06 ASTRA v1.0 full planning: `docs/step11/WAVE_11_06_CHARTER.md`, `TASK_CARDS_W11_06.md`, `W11_06_ACCEPTANCE_MATRIX.md`, `W11_06_DOR.md`, and final native DOCX `docs/source-of-truth/planning/current/15_STEP_11_W11_06_PLAYBACK_SPECTRUM_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
+- Frozen UI-IMG-002B/002D Play/Pause/Prev/Next/volume/timecode/progress/timeline is reused; Stop is **controller lifecycle only** with no new visible button. No new UI prompt/image stage needed in this scope.
+- W11-06 ASTRA planning **READY FOR CI REVIEW**; implementation `T11-W06-01` **BLOCKED until planning-only PR #53 passes latest CI, DOCX verification, and merges to main**. T02..07 blocked sequentially. No playback, FFT, MP4 or provider works yet.
