@@ -200,7 +200,10 @@ export function TemplateBrowser({
   const galleryEntries = useMemo(() => {
     const initial = entries.slice(0, 6);
     const chosen = entries.find((entry) => entry.templateId === selectedId);
-    return chosen && !initial.some((entry) => entry.templateId === chosen.templateId)
+    const chosenAlreadyVisible = initial.some(
+      (entry) => entry.templateId === selectedId,
+    );
+    return chosen && !chosenAlreadyVisible
       ? [...initial.slice(0, 5), chosen]
       : initial;
   }, [entries, selectedId]);
