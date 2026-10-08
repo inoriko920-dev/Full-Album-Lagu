@@ -737,12 +737,23 @@
 
 ## T11-W05-04 — Static Scene Preview + Selection/Inspector Projection
 - Owner: SOL
-- Status: READY
+- Priority: P0
+- Risk: MEDIUM
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W05-03 PASS / VERIFIED.
+- PR: #48.
+- Windows CI #365 / `37722584947` PASS at `c1219e3d9fa6cb12fc2a21a18a9eb945a5da5986` — **278 tests PASS** (153 unit, 55 contract, 32 component, 38 integration), STEP 10 + W11-01..04, frozen SCR-002A, Windows portable package/smoke/ZIP PASS.
+- Evidence: `docs/step11/evidence/T11_W05_04_STATIC_PREVIEW_SELECTION_INSPECTOR_EVIDENCE.md`.
+- Deliverables: normalized 16:9 static canvas geometry/styles; selected-track/first-enabled dynamic binding; 5 static layer families; artwork placeholder; UI-only selection/overlay; mirrored Layer list and left Inspector pure model; transient gesture Preview; 128-layer projection and component stress.
+- Scope preserved: no AppShell wiring before W05-05, no audio-reactive/playback, no Gemini/FFmpeg.
+- Unlock: T11-W05-05 READY; T11-W05-06..07 BLOCKED.
 
 ## T11-W05-05 — Frozen Layer + Inspector UI Wiring
 - Owner: SOL
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-04 PASS / VERIFIED.
 
 ## T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring

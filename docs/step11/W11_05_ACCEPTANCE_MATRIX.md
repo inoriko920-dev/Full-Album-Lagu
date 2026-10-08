@@ -90,3 +90,16 @@ These task-level statuses do not close W11-05; final closure remains T11-W05-07 
 - AC-W11-05-24: **PARTIAL / catalog stress PASS** — 100 user-template items plus nine built-ins; renderer performance and full E2E remain W05-07.
 - AC-W11-05-23/25: **PASS for this task** — prior architecture/secret/UI/regression/Windows packaged smoke and portable ZIP gates.
 - These task-level statuses **do not close W11-05**. W05-04..07 must finish, with wave closure only by W05-07.
+
+
+## T11-W05-04 task-level evidence
+- Evidence: `evidence/T11_W05_04_STATIC_PREVIEW_SELECTION_INSPECTOR_EVIDENCE.md`.
+- AC-W11-05-03: **PASS task level** — selected-track/first-enabled title/artist/artwork binding reused via existing W11-04 resolver.
+- AC-W11-05-04: **PASS core/session level** — shared layer stable-ID between canvas/list in UI-session, never dirties project; mounted AppShell integration remains W05-05.
+- AC-W11-05-06,09: **PARTIAL / Preview projection PASS** — normalized transform/text style render, Inspector model; frozen UI editing wires in W05-05.
+- AC-W11-05-08: **PASS selection component level** — locked layer remains selectable, preview gesture rejects locked transforms.
+- AC-W11-05-10: **PASS static structural rendering** — selectable/reorderable spectrum and progress placeholder, no playback/runtime.
+- AC-W11-05-21: **PARTIAL / no shell drift** — isolated Preview not yet wired to frozen SCR-002C; SCR-002A exact regression PASS.
+- AC-W11-05-24: **PARTIAL / 128-layer projection + component stress PASS**; full live renderer stress/E2E deferred W05-07.
+- AC-W11-05-23/25: **PASS for T11-W05-04** — Windows CI #365 / `37722584947` PASS at `c1219e3d9fa6cb12fc2a21a18a9eb945a5da5986` — **278 tests PASS** (153 unit, 55 contract, 32 component, 38 integration), STEP 10 + W11-01..04, frozen SCR-002A, Windows portable package/smoke/ZIP PASS.
+- W11-05 overall remains IN PROGRESS. W05-05..07 are not wave-VERIFIED.

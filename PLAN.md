@@ -99,7 +99,9 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Proof: Windows CI `37687361672` / #336 PASS; 256 Vitest assertions PASS; 128-layer command/history stress PASS; STEP 10 + W11-01..04 + frozen UI + Windows package/smoke/ZIP PASS; `docs/step11/evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md`.
 - Completed: **T11-W05-03 — Template Document + Local Store + Trial/Apply Core — PASS / VERIFIED**.
 - Proof: Windows CI #352 (266 assertions, earlier gate PASS) plus final packaged-template smoke CI; 9 deterministic starters, 100-user-template stress, strict schema/store and guarded non-dirty Try/Revert/Apply; evidence `docs/step11/evidence/T11_W05_03_TEMPLATE_DOCUMENT_LOCAL_STORE_TRIAL_APPLY_EVIDENCE.md`.
-- Next exact task: **T11-W05-04 — Static Scene Preview + Selection/Inspector Projection — SOL only**.
+- Completed: **T11-W05-04 — Static Scene Preview + Selection/Inspector Projection — PASS / VERIFIED**.
+- Proof: Windows CI #365 / `37722584947` PASS at `c1219e3d9fa6cb12fc2a21a18a9eb945a5da5986` — **278 tests PASS** (153 unit, 55 contract, 32 component, 38 integration), STEP 10 + W11-01..04, frozen SCR-002A, Windows portable package/smoke/ZIP PASS; docs/step11/evidence/T11_W05_04_STATIC_PREVIEW_SELECTION_INSPECTOR_EVIDENCE.md.
+- Next exact task: **T11-W05-05 — Frozen Layer + Inspector UI Wiring — SOL only**.
 - W11-06 audio-reactive/playback, W11-07 animation/transitions, and STEP 12 Gemini/FFmpeg remain blocked.
 - Existing frozen Auto Susun/Inspector/Media/Timeline surfaces are authoritative; no new UI prompt/image generation is required now.
 - If a required W11-04 visual state cannot be represented by the frozen pack, implementation must STOP and return to ASTRA/UI governance.

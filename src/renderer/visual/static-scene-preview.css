@@ -1,0 +1,129 @@
+/* W11-05 static Preview only; unmounted until frozen SCR-002C UI wiring. */
+.static-scene-preview {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #101827;
+  container-type: inline-size;
+  isolation: isolate;
+}
+
+.static-scene-preview__layer {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.static-scene-preview__layer:focus-visible {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+.static-scene-preview__layer--artwork {
+  border: 1px solid #ffffff50;
+  background: #26374d;
+}
+
+.static-scene-preview__artwork {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2%;
+  color: #f8fafc;
+  font-size: 1.4cqw;
+  font-weight: 600;
+}
+
+.static-scene-preview__artwork-mark {
+  font-size: 5cqw;
+  opacity: 0.8;
+}
+
+.static-scene-preview__text {
+  display: block;
+  width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.static-scene-preview__spectrum {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.6%;
+}
+
+.static-scene-preview__bar {
+  flex: 1;
+  background: #60a5fa;
+  border-radius: 2px 2px 0 0;
+}
+
+.static-scene-preview__progress {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.static-scene-preview__progress-track {
+  display: block;
+  width: 100%;
+  height: 22%;
+  min-height: 2px;
+  border-radius: 999px;
+  background: #a9bcd3;
+  opacity: 0.9;
+}
+
+.static-scene-preview__selection {
+  position: absolute;
+  pointer-events: none;
+  inset: 0;
+  border: 2px solid #60a5fa;
+  box-sizing: border-box;
+}
+
+.static-scene-preview__handle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border: 1px solid #2563eb;
+  background: #fff;
+}
+
+.static-scene-preview__handle--tl {
+  top: -4px;
+  left: -4px;
+}
+.static-scene-preview__handle--tr {
+  top: -4px;
+  right: -4px;
+}
+.static-scene-preview__handle--bl {
+  bottom: -4px;
+  left: -4px;
+}
+.static-scene-preview__handle--br {
+  bottom: -4px;
+  right: -4px;
+}

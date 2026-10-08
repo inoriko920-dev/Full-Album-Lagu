@@ -118,7 +118,10 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W05-03 PASS / VERIFIED.
 - Goal:
   - make manual layer changes visible without pulling W11-06 runtime forward.
@@ -139,13 +142,15 @@ Serial implementation only.
   - transforms/styles visibly project;
   - renderer stays fs/process/provider-free;
   - responsive projection under large layer set.
-- Exit gate: PASS / VERIFIED before 05.
+- Exit gate: **PASS / VERIFIED** — pure static scene model, UI-only selection/Inspector, 128-layer core and React canvas stress, frozen UI/past waves/Windows portable PASS.
+- Evidence: `evidence/T11_W05_04_STATIC_PREVIEW_SELECTION_INSPECTOR_EVIDENCE.md`.
+- Dependency unlock: **T11-W05-05 READY**. T11-W05-06..07 remain BLOCKED.
 
 ## T11-W05-05 — Frozen Layer + Inspector UI Wiring
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-04 PASS / VERIFIED.
 - UI authority: frozen SCR-002C / UI-IMG-002C.
 - In scope:

@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..03 are PASS / VERIFIED. Only T11-W05-04 Static Scene Preview + Selection/Inspector Projection is READY for the next SOL turn. STEP 11 is still IN PROGRESS.
+STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..04 are PASS / VERIFIED. Only T11-W05-05 Frozen Layer + Inspector UI Wiring is READY for the next SOL turn. STEP 11 is still IN PROGRESS.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -331,7 +331,7 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 - FTR-007 is not wave-VERIFIED yet; FTR-011 has not started.
 
 ## Next exact action
-After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-04 — Static Scene Preview + Selection/Inspector Projection only**. Read W11-05 planning authority plus W05-01/W05-02/W05-03 evidence first. Do not start T11-W05-05, frozen UI wiring, W11-06, W11-07 or STEP 12 in that turn.
+After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-05 — Frozen Layer + Inspector UI Wiring only**. Read W11-05 planning and W05-01..04 evidence first. Do not start template browser (W05-06), playback W11-06, animations W11-07 or STEP 12 in the same turn.
 
 ## T11-W05-03 handoff (2026-10-08 WIB)
 - Task PASS / VERIFIED after branch Windows CI and packaged resource smoke.
@@ -340,3 +340,12 @@ After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-04 — Sta
 - Verification evidence: `docs/step11/evidence/T11_W05_03_TEMPLATE_DOCUMENT_LOCAL_STORE_TRIAL_APPLY_EVIDENCE.md`.
 - Nine built-ins (including Minimal Biru), 100 user-template catalog trial stress, second-project binding, corrupt/incompatible and collision safety, and prior waves regressions. No UI rendering/template IPC yet: reserved for future authorized tasks, not a bug.
 - Next exact task: **T11-W05-04 only**. W11-05 remains IN PROGRESS; W05-05..07 BLOCKED.
+
+## T11-W05-04 verified handoff (2026-10-08 WIB)
+- Windows CI #365 / `37722584947` PASS at `c1219e3d9fa6cb12fc2a21a18a9eb945a5da5986` — **278 tests PASS** (153 unit, 55 contract, 32 component, 38 integration), STEP 10 + W11-01..04, frozen SCR-002A, Windows portable package/smoke/ZIP PASS.
+- Evidence: `docs/step11/evidence/T11_W05_04_STATIC_PREVIEW_SELECTION_INSPECTOR_EVIDENCE.md`.
+- New pure owner: `src/core/domain/static-scene-preview.ts` (reuses `resolveVisualScene` and W11-04 track bindings).
+- New UI-only controller: `src/renderer/state/ui-session/visual-selection-session.ts` (canvas/list selection, hover and ephemeral gesture).
+- Isolated, tested visual renderer: `src/renderer/visual/StaticScenePreview.tsx` + scoped CSS, **not yet mounted** in existing `AppShell`.
+- Unit and component tests prove 128-layer and frozen SCR-002A non-drift.
+- Current position: **T11-W05-01..04 PASS / VERIFIED; T11-W05-05 READY**. W05-06..07 BLOCKED. Only W05-05 may be implemented after next user instruction.
