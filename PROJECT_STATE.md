@@ -582,3 +582,9 @@ After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation 
 - `crossOrigin="anonymous"` before setting private `lfa-preview:` URL was essential: the original packaged FFT returned zero despite native audio clock advancing, due to cross-origin WebAudio silence. Fixed without wildcard CORS.
 - Evidence `docs/step11/evidence/T11_W06_04_REAL_WEB_AUDIO_FFT_WINDOWS_CLOSURE_20261008.md`.
 - **Next:** finish exact-head CI #651 and controlled merge, then T11-W06-05 frozen UI wiring. T05 is NOT STARTED. T06/T07 and MP4 remain blocked/future. No visual control/button changes in T04.
+
+## 2026-10-09 WIB — Current W11-06 Task05 packaged editor code gate
+- Task01..04 already merged to main (historical checkpoints above). Current Task05 work remains only on Draft PR [#58](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/58); `main` unchanged by this checkpoint.
+- Verified code SHA: `e5392cafd210d518d10dff614b56b4611a58370a`, [Windows CI #685](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/37826288115) **SUCCESS**: 387/387 unit/contract/component/integration tests, frozen UI/SLC and W11-01..05 regressions, Windows real MP3/WAV gateway+FFT, package/ZIP smoke, and **new real packaged Main Editor controls on 3/128 WAV tracks**.
+- New CI-only Electron UI probe ensures transport/mute/zoom/track selection behavior and unchanged WAV fingerprint; does not introduce any new visible control or trust `ProjectDocument.sourcePath`. 3/128 captured 1600x1000 evidence artifact `11571691622`.
+- Technical source gate VERIFIED; **T11-W06-05 formal closure IN_PROGRESS** until final documentation SHA CI, evidence review, and controlled merge decision. T06 blocked; no final MP4, no human-audible device certification. Current report `docs/step11/evidence/T11_W06_05_PACKAGED_EDITOR_CONTROLS_WINDOWS_VERIFIED_20261009.md`.
