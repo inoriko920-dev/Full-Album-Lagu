@@ -5,6 +5,8 @@ interface W06Evidence {
   readonly mainIssuedGrant: true;
   readonly pauseSeekNextPrevious: true;
   readonly relinkRevoked: true;
+  readonly realMainRelinkAuthorized: true;
+  readonly unrelatedAssetDenied: true;
   readonly projectSwitchStopped: true;
   readonly closeStopped: true;
   readonly createdElements: number;
@@ -98,12 +100,55 @@ async function run(
 
     driver.play();
     await waitFor(driver, "playing", "probe-track-0");
+
+    // A real OS-picker-backed relink in Electron main must reauthorize ONLY
+    // the replacement WAV. Persisted project paths never mint a token.
+    const oldGrant = await requestPreview({
+      projectId: project.projectId,
+      batchId,
+      assetId: wav.id,
+    });
+    if (oldGrant.status !== "granted") {
+      throw new Error("Original trusted WAV grant unavailable");
+    }
+    const relink = await window.lfa.relinkMediaAsset({
+      project,
+      assetId: wav.id,
+    });
+    if (relink.status !== "relinked" || !relink.previewBatchId) {
+      throw new Error("Main-validated relink did not return preview authority");
+    }
+    const newBatch = relink.previewBatchId;
+    const newlyAuthorized = await requestPreview({
+      projectId: project.projectId,
+      batchId: newBatch,
+      assetId: wav.id,
+    });
+    if (newlyAuthorized.status !== "granted") {
+      throw new Error("Relinked WAV was not authorized by main");
+    }
+    const staleResponse = await fetch(oldGrant.url);
+    if (staleResponse.status !== 403) {
+      throw new Error("Old main-owned preview token survived relink");
+    }
+    const forbidden = await requestPreview({
+      projectId: project.projectId,
+      batchId: newBatch,
+      assetId: mp3.id,
+    });
+    if (forbidden.status !== "blocked") {
+      throw new Error("Relink unexpectedly authorized another audio asset");
+    }
+
     driver.revokeMedia();
     requirePhase(driver, "ready");
     driver.play();
     requirePhase(driver, "error");
 
-    driver.switchProject(project, trusted);
+    driver.switchProject(relink.project, {
+      projectId: project.projectId,
+      batchId: newBatch,
+    });
     driver.play();
     await waitFor(driver, "playing", "probe-track-0");
     driver.switchProject({ ...project, projectId: "w06-other-project" }, null);
@@ -121,6 +166,8 @@ async function run(
       mainIssuedGrant: true,
       pauseSeekNextPrevious: true,
       relinkRevoked: true,
+      realMainRelinkAuthorized: true,
+      unrelatedAssetDenied: true,
       projectSwitchStopped: true,
       closeStopped: true,
       createdElements: audioElements.length,

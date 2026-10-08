@@ -45,6 +45,7 @@ async function launchPackaged(paths) {
         `--w06-evidence=${evidence}`,
         `--w06-user-data=${join(root, "user-data")}`,
         ...paths.map((path) => `--w11-media-file=${path}`),
+        `--w11-relink-file=${paths[0]}`,
       ],
       {
         cwd: process.cwd(),
@@ -125,6 +126,8 @@ async function main() {
     report.driver?.mainIssuedGrant !== true ||
     report.driver?.pauseSeekNextPrevious !== true ||
     report.driver?.relinkRevoked !== true ||
+    report.driver?.realMainRelinkAuthorized !== true ||
+    report.driver?.unrelatedAssetDenied !== true ||
     report.driver?.projectSwitchStopped !== true ||
     report.driver?.closeStopped !== true ||
     report.driver?.createdElements < 4
