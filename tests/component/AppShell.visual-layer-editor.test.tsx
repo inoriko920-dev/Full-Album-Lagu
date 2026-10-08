@@ -639,9 +639,7 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     expect(screen.getByRole("alert")).toHaveTextContent(
       "Template berhasil disimpan, tetapi daftar template belum dapat diperbarui.",
     );
-    expect(
-      screen.getByRole("button", { name: "Coba Template" }),
-    ).toBeEnabled();
+    expect(screen.getByRole("button", { name: "Coba Template" })).toBeEnabled();
     expect(
       screen.getByText("Template tersimpan secara lokal."),
     ).toBeInTheDocument();
