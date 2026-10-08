@@ -144,3 +144,10 @@ These task-level statuses do not close W11-05; final closure remains T11-W05-07 
 - AC-W11-05-21: **PARTIAL / DESIGN REVIEW STILL FAIL** — key workflow topology repaired, but visual fidelity and thumbnail/reference composition differences remain; no whole-wave PASS.
 - AC-W11-05-22/23/24/25: **PASS task-level Windows CI #427** — immutable source SHA-256/size/mtime, 128/100 stress, protected paths, 29 references, frozen SCR-002A baseline, portable executable smoke and ZIP, old waves regression.
 - W11-05 still **IN_PROGRESS**, W05-07 only authorized next.
+
+## T11-W05-07 R03 evidence and remaining UI gate
+- R03 Windows CI #445 / `37732523147` PASS at `37264b3d998d5c89214ec699b22b35c894ea459d`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), physical source fingerprints, 128-layer/100-template stress, four real Electron screenshots, prior regressions and portable smoke/ZIP PASS. Evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`; frozen comparison artifact `11530732266`.
+- AC-W11-05-14: **PASS task level** — existing local catalog, 3-column category gallery and distinct bundled thumbnails for built-ins; user templates remain clearly samples/no remote imagery.
+- AC-W11-05-21: **NOT YET ACCEPTED** — current true Electron gallery/artwork is visually closer to frozen references, but full approved scenic canvas and populated timeline composition remain absent (current two-track fixture and future audio runtime boundary). No fictitious waveform/playhead and no pixel-exact claim.
+- AC-W11-05-22/23/25: **PASS technical task-level** — real source byte/size/mtime fingerprint, prior regression and Windows portable executable E2E.
+- **Next authorization:** continue **SOL T11-W05-07 visual remediation ONLY** on draft PR #51; AC-W11-05-21 remains NOT ACCEPTED, so W11-05 overall IN PROGRESS. Do not begin W11-06/W11-07/STEP 12 or merge PR before frozen UI authority review PASS.
