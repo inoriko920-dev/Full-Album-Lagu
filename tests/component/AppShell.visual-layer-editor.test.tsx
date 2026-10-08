@@ -158,7 +158,7 @@ function openLayerTab() {
   fireEvent.click(screen.getByRole("tab", { name: "Layer" }));
 }
 function addLayer(name: string) {
-  fireEvent.click(screen.getByRole("button", { name: "Tambah", exact: true }));
+  fireEvent.click(screen.getByRole("button", { name: "Tambah" }));
   fireEvent.click(
     within(screen.getByLabelText("Tambah jenis layer")).getByRole("button", {
       name,
