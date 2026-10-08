@@ -67,3 +67,26 @@ The frozen DOCX's 29 state **titles do not separately name** a Play, Pause, Stop
 | Blocked / missing audio | `UI-IMG-002F` missing media warning | W11-02/05 non-destructive missing-media notices | REUSE LIKELY, decode-failure status requires mapping |
 
 **Gate:** Inspect the **actual embedded images** for `002B` and `002D` and read canonical STEP 03/04 copy/interaction contract before deciding whether new prompt images are needed. A named-state inventory alone is insufficient to certify full UI coverage. If a genuinely new Stop/Pause/scrub display is necessary, trigger the project's STOP-at-UI-prompt governance. W11-05 AC21/AC25 must close first; do not start SOL coding or merge either PR from this note.
+
+
+## Authentic frozen-image inspection — UI-IMG-002B and UI-IMG-002D
+
+**Proof source:** same approved compact Final UI Reference v1.1 DOCX at Git blob `39ba5ef29d92cfe4d8759ad317a0cdaa911de981`; the OOXML embedded JPEGs were directly decompressed and visually inspected: `word/media/image4.jpg` for `UI-IMG-002B` and `word/media/image6.jpg` for `UI-IMG-002D`. Both archive entries matched their declared uncompressed byte counts and JPEG signatures. These images are **small, compressed 520×325 design references**, so inspect geometry, not invented microtext.
+
+Observed in **002B — album ready**:
+- transport visually contains the centered **Play/Pause toggle region**, previous/next buttons, playback timecode and **volume slider**;
+- Preview includes spectrum bars plus a progress/position strip;
+- bottom Album Timeline depicts a populated sequence with a vertical current-position playhead;
+- the right Gemini rail remains permanently present.
+
+Observed in **002D — track boundary selected**:
+- same transport positioning and timecode;
+- Preview shows a visual boundary between neighboring tracks, with progress/position displays;
+- bottom Timeline includes a prominent selected track boundary, positioned vertical playhead and boundary interaction strip;
+- no new top-level playback page or separate shell is shown.
+
+**Revised design implication:** The original frozen image pack already supplies structural authority to keep Play/Pause, previous/next, volume slider, timecode, progress bar, timeline playhead and visual spectrum **in the existing shell**. Do **not** propose recreating a whole UI. W11-06 can focus on real audio clock, decoder and FFT under these approved placements after its formal gates. These static design images **do not prove** that Play/Seek/Volume worked at runtime or settle exact scrubbing, keyboard and buffering semantics.
+
+**Still unresolved:** Neither inspected image visibly establishes a distinct **Stop button**. A controller's Stop/revoke method may be implemented as internal lifecycle behavior without a new visible button; if the product requires a **visible** Stop button, ASTRA must confirm its approved UI location or follow the UI prompt/STOP process. Also read the canonical textual UI/interaction contract before final DoR; avoid asserting exact tooltip/copy from compressed JPEG microtext.
+
+**Gate remains unchanged:** W11-05 AC21 explicit owner acceptance and AC25 final closure are pending; W11-06 documents remain PRE-GATE; no W11-06 source implementation or PR merge is authorized by this visual inspection.
