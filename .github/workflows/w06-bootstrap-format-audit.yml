@@ -1,0 +1,20 @@
+name: W06 Bootstrap Prettier Diff (Temporary)
+on:
+  pull_request:
+    paths:
+      - 'src/main/bootstrap.ts'
+      - '.github/workflows/w06-bootstrap-format-audit.yml'
+jobs:
+  bootstrap-prettier-diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Print exact bootstrap Prettier edits (no commit)
+        run: |
+          npx prettier --write src/main/bootstrap.ts
+          git diff -- src/main/bootstrap.ts
