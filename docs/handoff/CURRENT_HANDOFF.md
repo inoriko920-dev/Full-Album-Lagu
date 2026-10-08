@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 is complete. W11-01, W11-02 and **W11-03 are COMPLETE / PASS**. **W11-04 is in implementation: T11-W04-01..05 are PASS / VERIFIED and T11-W04-06 is the only READY SOL task.** STEP 11 remains in progress overall.
+STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..03 are PASS / VERIFIED. Only T11-W05-04 Static Scene Preview + Selection/Inspector Projection is READY for the next SOL turn. STEP 11 is still IN PROGRESS.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -331,4 +331,12 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 - FTR-007 is not wave-VERIFIED yet; FTR-011 has not started.
 
 ## Next exact action
-After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-03 — Template Document + Local Store + Trial/Apply Core only**. Read W11-05 planning authority plus W05-01/W05-02 evidence first. Do not start T11-W05-04, Preview/UI wiring, W11-06, W11-07 or STEP 12 in the same turn.
+After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-04 — Static Scene Preview + Selection/Inspector Projection only**. Read W11-05 planning authority plus W05-01/W05-02/W05-03 evidence first. Do not start T11-W05-05, frozen UI wiring, W11-06, W11-07 or STEP 12 in that turn.
+
+## T11-W05-03 handoff (2026-10-08 WIB)
+- Task PASS / VERIFIED after branch Windows CI and packaged resource smoke.
+- Draft development PR #47: `sol/t11-w05-03-template-core-20261008`.
+- Source: versioned strict visual-only `template-document.ts`; `template-workflow-service.ts` with non-dirty Try/Revert and one guarded CommandEngine `template` Apply; `JsonTemplateStore` in main infrastructure; nine starter JSON resources; packaging resource check.
+- Verification evidence: `docs/step11/evidence/T11_W05_03_TEMPLATE_DOCUMENT_LOCAL_STORE_TRIAL_APPLY_EVIDENCE.md`.
+- Nine built-ins (including Minimal Biru), 100 user-template catalog trial stress, second-project binding, corrupt/incompatible and collision safety, and prior waves regressions. No UI rendering/template IPC yet: reserved for future authorized tasks, not a bug.
+- Next exact task: **T11-W05-04 only**. W11-05 remains IN PROGRESS; W05-05..07 BLOCKED.
