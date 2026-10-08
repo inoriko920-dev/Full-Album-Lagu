@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { ProjectSessionHistory } from "../../src/core/application/services/project-session-history";
-import { createLayerAddCommand, createLayerReorderCommand, createLayerSetTransformCommand } from "../../src/core/application/services/project-layer-commands";
+import { createLayerAddCommand, createLayerSetTransformCommand } from "../../src/core/application/services/project-layer-commands";
 import { createTemplateFromProject, TemplateTrialSession, saveTemplateFromProject } from "../../src/core/application/services/template-workflow-service";
 import { createEmptyProject } from "../../src/core/domain/project-document";
 import type { ProjectDocument } from "../../src/core/domain/project-document";
@@ -103,7 +103,7 @@ describe("T11-W05-07 closure: actual filesystem + one canonical ProjectSessionHi
     const two = album("project-two", "Track TWO Selected", join(root, "Source-Two.wav"));
     const history = new ProjectSessionHistory(two);
     expect(new TemplateTrialSession(history.snapshot(), saved).apply(history).status).toBe("applied");
-    const resolved = resolveVisualScene(history.snapshot().project, { selectedTrackId: "song-1" });
+    const resolved = resolveVisualScene(history.snapshot().project, "song-1");
     expect(resolved.layers.filter((x) => x.kind === "text").some((x) => x.kind === "text" && x.resolvedText.value === "Track TWO Selected")).toBe(true);
     expect(JSON.stringify(history.snapshot().project.visualScene)).not.toContain("Rahasia Track ONE");
     expect(history.snapshot().project.tracks).toEqual(two.tracks);
