@@ -7,8 +7,10 @@ import {
   type TemplateDocument,
 } from "../../core/domain/template-document";
 import type { ProjectDocument } from "../../core/domain/project-document";
+import type { VisualLayer } from "../../core/domain/visual-scene-schema";
 import type { ProjectSessionView } from "../state/project-session/use-project-session";
 import { StaticScenePreview } from "../visual/StaticScenePreview";
+import { TemplateArtwork } from "../visual/TemplateArtwork";
 import { ActionButton } from "../ui/controls";
 import "./template-browser.css";
 
@@ -18,6 +20,7 @@ export interface TemplateBrowserProps {
   session: ProjectSessionView;
   selectedTrackId: string | null;
   onClose: () => void;
+  onTrialStart: () => void;
 }
 
 function makeTemplateId(name: string): string {
@@ -39,57 +42,121 @@ export function TemplateBrowser({
   session,
   selectedTrackId,
   onClose,
+  onTrialStart,
 }: TemplateBrowserProps) {
   const [entries, setEntries] = useState<TemplateCatalogEntry[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedTemplate, setSelectedTemplate] =
     useState<TemplateDocument | null>(null);
+  const [templateLoadRetry, setTemplateLoadRetry] = useState(0);
   const [filter, setFilter] = useState<Filter>("Semua");
   const [search, setSearch] = useState("");
   const [busy, setBusy] = useState(false);
   const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [templateLoadError, setTemplateLoadError] = useState<string | null>(
+    null,
+  );
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [saveName, setSaveName] = useState("");
   const [saveCategory, setSaveCategory] = useState<TemplateCategory>("Minimal");
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const requestVersion = useRef(0);
+  const catalogRequestVersion = useRef(0);
+  const templateLoadPending = useRef(false);
+  const [saveScope, setSaveScope] = useState<VisualLayer["kind"][]>([
+    "background",
+    "artwork",
+    "text",
+    "spectrum",
+    "progress",
+  ]);
+  const scopeGroups: {
+    label: string;
+    kinds: VisualLayer["kind"][];
+    detail: string;
+  }[] = [
+    {
+      label: "Layer visual",
+      kinds: ["background", "artwork"],
+      detail: "Latar dan artwork",
+    },
+    {
+      label: "Teks dan judul",
+      kinds: ["text"],
+      detail: "Gaya teks dan posisi",
+    },
+    {
+      label: "Spectrum",
+      kinds: ["spectrum"],
+      detail: "Konfigurasi visual statis",
+    },
+    {
+      label: "Progress Bar",
+      kinds: ["progress"],
+      detail: "Konfigurasi bar statis",
+    },
+  ];
+  function toggleScope(kinds: VisualLayer["kind"][], enabled: boolean) {
+    setSaveScope((prior) =>
+      enabled
+        ? Array.from(new Set([...prior, ...kinds]))
+        : prior.filter((kind) => !kinds.includes(kind)),
+    );
+  }
 
   const reloadCatalog = async () => {
+    // A late initial catalog response must not overwrite a newer refresh.
+    const version = ++catalogRequestVersion.current;
+    const refreshFailed =
+      "Template berhasil disimpan, tetapi daftar template belum dapat diperbarui. Buka ulang Browser Template untuk menyegarkan daftar.";
     if (!window.lfa.listTemplates) {
-      setCatalogError("Layanan template lokal tidak tersedia.");
+      setCatalogError(refreshFailed);
       return;
     }
-    const result = await window.lfa.listTemplates();
-    if (result.status === "error") {
-      setCatalogError(result.message);
-      return;
+    try {
+      const result = await window.lfa.listTemplates();
+      if (catalogRequestVersion.current !== version) return;
+      if (result.status === "error") {
+        setCatalogError(refreshFailed);
+        return;
+      }
+      setCatalogError(null);
+      setEntries(result.entries);
+      setSelectedId((prior) =>
+        prior !== null &&
+        result.entries.some((entry) => entry.templateId === prior)
+          ? prior
+          : ((
+              result.entries.find(
+                (entry) => entry.templateId === "minimal-biru",
+              ) ?? result.entries[0]
+            )?.templateId ?? null),
+      );
+    } catch {
+      // A refresh exception after a successful save must not be reported as
+      // a failed save (which could prompt the user to create duplicates).
+      if (catalogRequestVersion.current === version) {
+        setCatalogError(refreshFailed);
+      }
     }
-    setCatalogError(null);
-    setEntries(result.entries);
-    setSelectedId((prior) =>
-      prior !== null &&
-      result.entries.some((entry) => entry.templateId === prior)
-        ? prior
-        : ((
-            result.entries.find(
-              (entry) => entry.templateId === "minimal-biru",
-            ) ?? result.entries[0]
-          )?.templateId ?? null),
-    );
   };
 
   useEffect(() => {
     let mounted = true;
-    const listing = window.lfa.listTemplates
-      ? window.lfa.listTemplates()
-      : Promise.resolve({
+    const version = ++catalogRequestVersion.current;
+    // Resolve the IPC call inside the promise chain: the bridge may throw
+    // synchronously before returning a Promise (e.g. unavailable preload).
+    void Promise.resolve()
+      .then(() => {
+        if (window.lfa.listTemplates) return window.lfa.listTemplates();
+        return {
           status: "error" as const,
           code: "TEMPLATE_READ_FAILED",
           message: "Layanan template lokal tidak tersedia.",
-        });
-    void listing
+        };
+      })
       .then((result) => {
-        if (!mounted) return;
+        if (!mounted || catalogRequestVersion.current !== version) return;
         if (result.status === "error") {
           setCatalogError(result.message);
           return;
@@ -105,7 +172,9 @@ export function TemplateBrowser({
         setCatalogError(null);
       })
       .catch(() => {
-        if (mounted) setCatalogError("Gagal membaca katalog template lokal.");
+        if (mounted && catalogRequestVersion.current === version) {
+          setCatalogError("Gagal membaca katalog template lokal.");
+        }
       });
     return () => {
       mounted = false;
@@ -114,26 +183,36 @@ export function TemplateBrowser({
 
   useEffect(() => {
     const version = ++requestVersion.current;
-    if (selectedId === null || !window.lfa.loadTemplate) return;
-    void window.lfa
-      .loadTemplate(selectedId)
+    const loadTemplate = window.lfa.loadTemplate;
+    if (selectedId === null || !loadTemplate) return;
+    templateLoadPending.current = true;
+    // Defer bridge invocation so even a synchronous preload/IPC throw is
+    // handled as a failed load, preserving the explicit same-card retry.
+    void Promise.resolve()
+      .then(() => loadTemplate(selectedId))
       .then((result) => {
         if (requestVersion.current !== version) return;
+        templateLoadPending.current = false;
         if (result.status === "error") {
-          setCatalogError(result.message);
+          setTemplateLoadError(result.message);
         } else {
-          setCatalogError(null);
+          // A successful document load must not erase a catalog refresh
+          // warning from a separate, already-successful template save.
+          setTemplateLoadError(null);
           setSelectedTemplate(result.template);
         }
       })
       .catch(() => {
-        if (requestVersion.current === version)
-          setCatalogError("Template tidak dapat dimuat.");
+        if (requestVersion.current === version) {
+          templateLoadPending.current = false;
+          setTemplateLoadError("Template tidak dapat dimuat.");
+        }
       });
     return () => {
       requestVersion.current += 1;
+      templateLoadPending.current = false;
     };
-  }, [selectedId]);
+  }, [selectedId, templateLoadRetry]);
 
   const filtered = useMemo(
     () =>
@@ -146,17 +225,52 @@ export function TemplateBrowser({
       ),
     [entries, filter, search],
   );
+  // Only a template currently visible in the local catalog may be previewed
+  // or tried. Filtering cannot leave a hidden/stale selection actionable.
+  const activeTemplate =
+    selectedTemplate?.templateId === selectedId &&
+    filtered.some((entry) => entry.templateId === selectedId)
+      ? selectedTemplate
+      : null;
+  const galleryEntries = useMemo(() => {
+    const initial = entries.slice(0, 6);
+    const chosen = entries.find((entry) => entry.templateId === selectedId);
+    const chosenAlreadyVisible = initial.some(
+      (entry) => entry.templateId === selectedId,
+    );
+    return chosen && !chosenAlreadyVisible
+      ? [...initial.slice(0, 5), chosen]
+      : initial;
+  }, [entries, selectedId]);
   const inTrial = session.templateTrialProject !== null;
   const previewSource: ProjectDocument =
     session.templateTrialProject ??
-    (selectedTemplate
-      ? { ...session.project, visualScene: selectedTemplate.scene }
+    (activeTemplate
+      ? { ...session.project, visualScene: activeTemplate.scene }
       : session.project);
   const preview = buildStaticScenePreview(
     previewSource,
     selectedTrackId === null ? {} : { selectedTrackId },
   );
   const categories: Filter[] = ["Semua", ...templateCategorySchema.options];
+
+  function updateVisibleSelection(nextFilter: Filter, nextSearch: string) {
+    const nextVisible = entries.filter(
+      (entry) =>
+        (nextFilter === "Semua" || entry.category === nextFilter) &&
+        entry.name
+          .toLocaleLowerCase("id")
+          .includes(nextSearch.trim().toLocaleLowerCase("id")),
+    );
+    const nextId = nextVisible.some((entry) => entry.templateId === selectedId)
+      ? selectedId
+      : (nextVisible[0]?.templateId ?? null);
+    if (nextId !== selectedId) {
+      setSelectedTemplate(null);
+      setTemplateLoadError(null);
+      setSelectedId(nextId);
+    }
+  }
 
   function closeBrowser() {
     if (busy) return;
@@ -165,8 +279,8 @@ export function TemplateBrowser({
   }
 
   function tryTemplate() {
-    if (selectedTemplate === null || busy) return;
-    session.beginTemplateTrial(selectedTemplate);
+    if (activeTemplate === null || busy) return;
+    if (session.beginTemplateTrial(activeTemplate)) onTrialStart();
   }
 
   function revert() {
@@ -186,11 +300,14 @@ export function TemplateBrowser({
     if (!name || busy) return;
     setBusy(true);
     try {
-      const ok = await session.saveVisualTemplate({
-        templateId: makeTemplateId(name),
-        name,
-        category: saveCategory,
-      });
+      const ok = await session.saveVisualTemplate(
+        {
+          templateId: makeTemplateId(name),
+          name,
+          category: saveCategory,
+        },
+        saveScope,
+      );
       if (ok) {
         setShowSaveDialog(false);
         setSaveName("");
@@ -204,8 +321,84 @@ export function TemplateBrowser({
     }
   }
 
+  if (inTrial && !showSaveDialog) {
+    return (
+      <section
+        className="template-trial-overlay"
+        aria-label="Mode Coba Template"
+      >
+        <div className="template-trial-overlay__banner" role="status">
+          <div>
+            <strong>Mode Coba — perubahan belum disimpan ke proyek.</strong>
+            <small>
+              Hanya visual berubah. Track, durasi album, dan audio tetap.
+            </small>
+          </div>
+          <div className="template-trial-overlay__controls">
+            <ActionButton
+              variant="secondary"
+              label="Kembali ke Sebelumnya"
+              onClick={revert}
+              disabled={busy}
+            />
+            <ActionButton
+              variant="primary"
+              label="Terapkan Template"
+              onClick={apply}
+              disabled={busy}
+            />
+          </div>
+        </div>
+        <aside
+          className="template-trial-overlay__gallery"
+          aria-label="Pilihan Template Mode Coba"
+        >
+          <strong>Template Album</strong>
+          <small>{selectedTemplate?.name ?? session.templateTrialName}</small>
+          <div className="template-trial-overlay__gallery-grid">
+            {galleryEntries.map((entry) => (
+              <div
+                key={entry.templateId}
+                className="template-trial-overlay__gallery-card"
+                data-category={entry.category}
+                aria-current={
+                  selectedId === entry.templateId ? "true" : undefined
+                }
+              >
+                <div
+                  className="template-trial-overlay__gallery-thumb"
+                  aria-hidden="true"
+                >
+                  {entry.origin === "built-in" ? (
+                    <TemplateArtwork
+                      templateId={entry.templateId}
+                      category={entry.category}
+                    />
+                  ) : (
+                    "♫"
+                  )}
+                </div>
+                <small>{entry.name}</small>
+              </div>
+            ))}
+          </div>
+          <p>
+            Pratinjau sementara. Gunakan Terapkan Template untuk menyimpan
+            perubahan visual.
+          </p>
+          {session.templateError ? (
+            <p role="alert">{session.templateError}</p>
+          ) : null}
+        </aside>
+      </section>
+    );
+  }
+
   return (
-    <section className="template-browser" aria-label="Browser Template">
+    <section
+      className={`template-browser${showSaveDialog ? " template-browser--save-dialog" : ""}`}
+      aria-label="Browser Template"
+    >
       <div className="template-browser__window">
         <header className="template-browser__header">
           <div>
@@ -220,6 +413,26 @@ export function TemplateBrowser({
           />
         </header>
         <div className="template-browser__body">
+          <nav
+            className="template-browser__category-rail"
+            aria-label="Navigasi Kategori Template"
+          >
+            <strong>Kategori</strong>
+            {categories.map((category) => (
+              <button
+                key={category}
+                type="button"
+                className={filter === category ? "is-active" : ""}
+                aria-pressed={filter === category}
+                onClick={() => {
+                  setFilter(category);
+                  updateVisibleSelection(category, search);
+                }}
+              >
+                {category}
+              </button>
+            ))}
+          </nav>
           <aside
             className="template-browser__catalog"
             aria-label="Katalog Template"
@@ -231,7 +444,11 @@ export function TemplateBrowser({
                   type="search"
                   aria-label="Cari Template"
                   value={search}
-                  onChange={(event) => setSearch(event.currentTarget.value)}
+                  onChange={(event) => {
+                    const nextSearch = event.currentTarget.value;
+                    setSearch(nextSearch);
+                    updateVisibleSelection(filter, nextSearch);
+                  }}
                   placeholder="Cari template lokal..."
                 />
               </label>
@@ -240,9 +457,11 @@ export function TemplateBrowser({
                 <select
                   aria-label="Kategori Template"
                   value={filter}
-                  onChange={(event) =>
-                    setFilter(event.currentTarget.value as Filter)
-                  }
+                  onChange={(event) => {
+                    const nextFilter = event.currentTarget.value as Filter;
+                    setFilter(nextFilter);
+                    updateVisibleSelection(nextFilter, search);
+                  }}
                 >
                   {categories.map((category) => (
                     <option key={category} value={category}>
@@ -260,14 +479,25 @@ export function TemplateBrowser({
                 <button
                   className={`template-browser__item${selectedId === entry.templateId ? " is-selected" : ""}`}
                   key={entry.templateId}
+                  data-category={entry.category}
                   type="button"
                   aria-pressed={selectedId === entry.templateId}
                   onClick={() => {
                     if (!busy) {
                       session.revertTemplateTrial();
                       setSavedMessage(null);
-                      setSelectedTemplate(null);
-                      setSelectedId(entry.templateId);
+                      if (entry.templateId !== selectedId) {
+                        setSelectedTemplate(null);
+                        setTemplateLoadError(null);
+                        setSelectedId(entry.templateId);
+                      } else if (
+                        activeTemplate === null &&
+                        !templateLoadPending.current
+                      ) {
+                        // Retry a failed load only after its prior request has
+                        // settled; rapid clicks must not spawn duplicate IPC.
+                        setTemplateLoadRetry((prior) => prior + 1);
+                      }
                     }
                   }}
                 >
@@ -275,7 +505,14 @@ export function TemplateBrowser({
                     className="template-browser__thumbnail"
                     aria-hidden="true"
                   >
-                    <span className="template-browser__thumbnail-art">♫</span>
+                    {entry.origin === "built-in" ? (
+                      <TemplateArtwork
+                        templateId={entry.templateId}
+                        category={entry.category}
+                      />
+                    ) : (
+                      <span className="template-browser__thumbnail-art">♫</span>
+                    )}
                     <span className="template-browser__thumbnail-line" />
                   </span>
                   <strong>{entry.name}</strong>
@@ -293,12 +530,22 @@ export function TemplateBrowser({
             aria-label="Detail Template"
           >
             <div className="template-browser__preview">
-              <StaticScenePreview model={preview} />
+              <StaticScenePreview
+                model={preview}
+                templateArtwork={
+                  activeTemplate === null
+                    ? undefined
+                    : {
+                        templateId: activeTemplate.templateId,
+                        category: activeTemplate.category,
+                      }
+                }
+              />
             </div>
             <div className="template-browser__details">
               <div>
-                <h3>{selectedTemplate?.name ?? "Pilih template"}</h3>
-                <p>{selectedTemplate?.category ?? "Kategori template"}</p>
+                <h3>{activeTemplate?.name ?? "Pilih template"}</h3>
+                <p>{activeTemplate?.category ?? "Kategori template"}</p>
               </div>
               <p>Urutan track dan durasi tidak berubah.</p>
               <p>
@@ -311,9 +558,9 @@ export function TemplateBrowser({
                 </p>
               ) : null}
               {savedMessage ? <p role="status">{savedMessage}</p> : null}
-              {session.templateError || catalogError ? (
+              {session.templateError || catalogError || templateLoadError ? (
                 <p role="alert" className="template-browser__error">
-                  {session.templateError ?? catalogError}
+                  {session.templateError ?? catalogError ?? templateLoadError}
                 </p>
               ) : null}
               <div className="template-browser__actions">
@@ -337,7 +584,7 @@ export function TemplateBrowser({
                     variant="primary"
                     label="Coba Template"
                     onClick={tryTemplate}
-                    disabled={selectedTemplate === null || busy}
+                    disabled={activeTemplate === null || busy}
                   />
                 )}
                 <ActionButton
@@ -346,6 +593,13 @@ export function TemplateBrowser({
                   disabled={busy || inTrial}
                   onClick={() => {
                     setSaveName("");
+                    setSaveScope([
+                      "background",
+                      "artwork",
+                      "text",
+                      "spectrum",
+                      "progress",
+                    ]);
                     setSavedMessage(null);
                     setShowSaveDialog(true);
                   }}
@@ -367,9 +621,47 @@ export function TemplateBrowser({
               <h3>Simpan sebagai Template</h3>
             </header>
             <p>
-              Simpan hanya pengaturan visual saat ini — bukan track, urutan,
-              durasi, atau file audio.
+              Simpan hanya pengaturan visual: layer, teks, warna, dan tata
+              letak. Urutan track, durasi album, file audio, artwork sumber, dan
+              kredensial AI tidak ikut disimpan.
             </p>
+            <div
+              className="template-browser__save-thumbnail"
+              aria-label="Pratinjau Template Disimpan"
+            >
+              <StaticScenePreview
+                model={buildStaticScenePreview(
+                  session.project,
+                  selectedTrackId === null ? {} : { selectedTrackId },
+                )}
+              />
+            </div>
+            <fieldset className="template-browser__save-scope">
+              <legend>Komponen visual yang disimpan</legend>
+              {scopeGroups.map(({ label, kinds, detail }) => (
+                <label
+                  key={label}
+                  className="template-browser__save-scope-item"
+                >
+                  <input
+                    type="checkbox"
+                    aria-label={label}
+                    checked={kinds.every((kind) => saveScope.includes(kind))}
+                    onChange={(event) =>
+                      toggleScope(kinds, event.currentTarget.checked)
+                    }
+                  />
+                  <span>
+                    <strong>{label}</strong>
+                    <small>{detail}</small>
+                  </span>
+                </label>
+              ))}
+              <small>
+                Audio, urutan, durasi, dan kredensial tidak pernah ikut
+                disimpan.
+              </small>
+            </fieldset>
             <label>
               Nama Template
               <input
@@ -410,8 +702,8 @@ export function TemplateBrowser({
               />
               <ActionButton
                 variant="primary"
-                label="Simpan"
-                disabled={busy || !saveName.trim()}
+                label="Simpan Template"
+                disabled={busy || !saveName.trim() || saveScope.length === 0}
                 onClick={() => void saveUserTemplate()}
               />
             </div>

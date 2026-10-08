@@ -99,6 +99,50 @@ describe("T11-W05-03 main-owned local template store", () => {
     ).rejects.toMatchObject({ code: "TEMPLATE_EXISTS" });
   });
 
+  it("round-trips a valid Unicode visual template larger than the old 2 MiB read limit", async () => {
+    const { store, userRoot } = await createStore();
+    const builtIn = await store.load("minimal-biru");
+    const starterText = builtIn.scene.layers.find(
+      (layer) => layer.kind === "text",
+    );
+    if (starterText?.kind !== "text") {
+      throw new Error("Expected a built-in text layer fixture.");
+    }
+    const largeTemplate = {
+      ...builtIn,
+      templateId: "large-unicode-scene",
+      name: "Unicode Besar",
+      scene: {
+        sceneVersion: 1 as const,
+        layers: Array.from({ length: 440 }, (_, index) => ({
+          ...starterText,
+          id: `unicode-layer-${index}`,
+          role: "static" as const,
+          text: "界".repeat(2000),
+        })),
+      },
+    };
+    const expectedBytes = Buffer.byteLength(
+      `${JSON.stringify(largeTemplate, null, 2)}\n`,
+      "utf8",
+    );
+    expect(expectedBytes).toBeGreaterThan(2 * 1024 * 1024);
+    expect(expectedBytes).toBeLessThan(8 * 1024 * 1024);
+
+    await store.saveUserTemplate(largeTemplate);
+    const persisted = await readFile(
+      join(userRoot, "large-unicode-scene.template.json"),
+      "utf8",
+    );
+    expect(Buffer.byteLength(persisted, "utf8")).toBe(expectedBytes);
+    expect(
+      (await store.list()).some(
+        (entry) => entry.templateId === "large-unicode-scene",
+      ),
+    ).toBe(true);
+    expect(await store.load("large-unicode-scene")).toEqual(largeTemplate);
+  });
+
   it("rejects corrupt and incompatible user templates without damaging project", async () => {
     const { store, userRoot } = await createStore();
     await saveTemplateFromProject(store, createEmptyProject("source"), {

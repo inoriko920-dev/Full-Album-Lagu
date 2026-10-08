@@ -125,6 +125,27 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: Run STEP 11 T11-W05-07 visual/template closure E2E
+        run: npm run e2e:w11:visual-template-closure
+
+      - name: Generate W11-05 frozen four-screen comparison evidence
+        shell: pwsh
+        run: |
+          ./scripts/build-w05-frozen-visual-evidence.ps1
+
+      - name: Upload STEP 11 T11-W05-07 wave closure evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-T11-W05-07-Visual-Template-Closure-Evidence
+          path: |
+            artifacts/step11/T11-W05-07/evidence/**
+            artifacts/step11/T11-W05-07/screenshots/**
+            artifacts/step11/T11-W05-07/references/**
+            artifacts/step11/T11-W05-07/comparison/**
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Capture SCR-002A real-app screenshot
         run: npm run ui:screenshot:scr002a
 

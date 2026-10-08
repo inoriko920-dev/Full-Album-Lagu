@@ -674,11 +674,26 @@ function WorkRail({
           />
         ) : null}
         {activeTab === "layer" ? (
-          <VisualLayerPanel
-            model={visualModel}
-            session={projectSession}
-            onSelectLayer={onSelectLayer}
-          />
+          <div
+            className="visual-layer-combined"
+            aria-label="Layer dan Properti"
+          >
+            <VisualLayerPanel
+              model={visualModel}
+              session={projectSession}
+              onSelectLayer={onSelectLayer}
+            />
+            {visualModel.selectedLayerId !== null ? (
+              <VisualLayerInspector
+                key={visualModel.selectedLayerId}
+                model={visualModel}
+                session={projectSession}
+                onPreviewTransform={onPreviewTransform}
+                onCommitTransform={onCommitTransform}
+                onCancelTransform={onCancelTransform}
+              />
+            ) : null}
+          </div>
         ) : null}
         {activeTab === "inspector" ? (
           <InspectorPanel
@@ -1312,16 +1327,24 @@ export function AppShell() {
   );
   const visualModel = useMemo(
     () =>
-      buildStaticScenePreview(projectSession.project, {
-        ...(selectedTrackIdState === null
-          ? {}
-          : { selectedTrackId: selectedTrackIdState }),
-        selectedLayerId: visualUiState.selectedLayerId,
-        ...(visualUiState.gesturePreview === null
-          ? {}
-          : { gesturePreview: visualUiState.gesturePreview }),
-      }),
-    [projectSession.project, selectedTrackIdState, visualUiState],
+      buildStaticScenePreview(
+        projectSession.templateTrialProject ?? projectSession.project,
+        {
+          ...(selectedTrackIdState === null
+            ? {}
+            : { selectedTrackId: selectedTrackIdState }),
+          selectedLayerId: visualUiState.selectedLayerId,
+          ...(visualUiState.gesturePreview === null
+            ? {}
+            : { gesturePreview: visualUiState.gesturePreview }),
+        },
+      ),
+    [
+      projectSession.project,
+      projectSession.templateTrialProject,
+      selectedTrackIdState,
+      visualUiState,
+    ],
   );
 
   const cancelVisualLayerGesture = projectSession.cancelVisualLayerGesture;
@@ -1424,7 +1447,7 @@ export function AppShell() {
 
   return (
     <main
-      className={`app-shell${hasNotice ? " app-shell--has-notice" : ""}`}
+      className={`app-shell${hasNotice ? " app-shell--has-notice" : ""}${projectSession.templateTrialProject !== null ? " app-shell--template-trial" : ""}`}
       data-fixture-version={FIXTURE_VERSION}
       data-project-id={projectSession.project.projectId}
       data-project-name={projectSession.project.name}
@@ -1585,6 +1608,7 @@ export function AppShell() {
         <TemplateBrowser
           session={projectSession}
           selectedTrackId={selectedTrackId}
+          onTrialStart={() => setActiveTab("media")}
           onClose={() => setTemplateBrowserOpen(false)}
         />
       ) : null}

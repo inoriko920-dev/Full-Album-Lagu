@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { createCompositionRoot } from "./composition-root";
 import { registerIpcHandlers } from "./ipc/register-ipc";
+import { captureW1105State } from "./verification/w11-05-ui-capture";
 
 const PACKAGED_SMOKE_FLAG = "--smoke-test";
 const UI_TEST_SCREEN = "SCR-002A";
@@ -29,6 +30,26 @@ function createMainWindow(): BrowserWindow {
   const slcProbe = readArgValue("slc-probe");
   const slcEvidencePath = readArgValue("slc-evidence");
   const slcScreenshotPath = readArgValue("slc-screenshot");
+  const w05Capture = readArgValue("w05-capture");
+  const w05Screenshot = readArgValue("w05-screenshot");
+  const isW05Capture = w05Capture !== undefined;
+  if (
+    isW05Capture &&
+    (process.env.LFA_W05_TEST !== "1" ||
+      !w05Screenshot ||
+      ![
+        "SCR-002C",
+        "SCR-003A",
+        "SCR-003B",
+        "DLG-008",
+        "FLOW",
+        "FLOW_SECOND",
+      ].includes(w05Capture))
+  ) {
+    throw new Error(
+      "W05 capture is CI-only and requires an authorized screen and destination.",
+    );
+  }
   const w11Probe = readArgValue("w11-probe");
   const w11EvidencePath = readArgValue("w11-evidence");
   const isUiCapture = uiTestScreen !== undefined;
@@ -52,11 +73,11 @@ function createMainWindow(): BrowserWindow {
   }
 
   const window = new BrowserWindow({
-    width: isUiCapture ? CANONICAL_VIEWPORT.width : 1440,
-    height: isUiCapture ? CANONICAL_VIEWPORT.height : 900,
+    width: isUiCapture || isW05Capture ? CANONICAL_VIEWPORT.width : 1440,
+    height: isUiCapture || isW05Capture ? CANONICAL_VIEWPORT.height : 900,
     minWidth: 1280,
     minHeight: 800,
-    useContentSize: isUiCapture,
+    useContentSize: isUiCapture || isW05Capture,
     show: false,
     paintWhenInitiallyHidden: true,
     backgroundColor: "#F3F5F8",
@@ -66,14 +87,15 @@ function createMainWindow(): BrowserWindow {
       nodeIntegration: false,
       sandbox: true,
       webSecurity: true,
-      backgroundThrottling: !isUiCapture && !isSlcProbe && !isW11Probe,
+      backgroundThrottling:
+        !isUiCapture && !isW05Capture && !isSlcProbe && !isW11Probe,
     },
   });
 
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
   window.webContents.on("will-navigate", (event) => event.preventDefault());
 
-  if (!isUiCapture && !isSlcProbe && !isW11Probe) {
+  if (!isUiCapture && !isW05Capture && !isSlcProbe && !isW11Probe) {
     window.once("ready-to-show", () => window.show());
   }
 
@@ -194,6 +216,29 @@ function createMainWindow(): BrowserWindow {
         console.error(`UI screenshot FAIL: ${message}`);
         if (!window.isDestroyed()) window.destroy();
         app.exit(7);
+      }
+    });
+  }
+
+  if (isW05Capture && w05Capture && w05Screenshot) {
+    window.webContents.once("did-finish-load", async () => {
+      try {
+        window.setContentSize(
+          CANONICAL_VIEWPORT.width,
+          CANONICAL_VIEWPORT.height,
+          false,
+        );
+        window.webContents.setZoomFactor(1);
+        await captureW1105State(window, w05Capture, w05Screenshot);
+        console.log(`W05 frozen UI probe PASS: ${w05Capture}`);
+        window.destroy();
+        app.exit(0);
+      } catch (error) {
+        console.error(
+          `W05 frozen UI probe FAIL: ${error instanceof Error ? error.message : String(error)}`,
+        );
+        if (!window.isDestroyed()) window.destroy();
+        app.exit(11);
       }
     });
   }
@@ -1541,6 +1586,11 @@ function createMainWindow(): BrowserWindow {
   return window;
 }
 
+// Isolated CI closure fixture only; do not override normal installed-user paths.
+const w05Data = readArgValue("w05-user-data");
+if (w05Data && process.env.LFA_W05_TEST === "1") {
+  app.setPath("userData", resolve(w05Data));
+}
 const compositionRoot = createCompositionRoot(process.argv);
 registerIpcHandlers({
   ...compositionRoot.projectIpc,

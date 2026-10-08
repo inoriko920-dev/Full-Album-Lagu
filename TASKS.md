@@ -778,5 +778,26 @@
 
 ## T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure
 - Owner: SOL
-- Status: READY
+- Status: IN_PROGRESS
+- Gate: FAIL — AC-W11-05-21 MATERIAL UI DRIFT
+- Technical scope CI #407 and 298 tests PASS, physical source fingerprint and true Windows Electron flow PASS.
+- Four reference-vs-actual screenshots reviewed: SCR-002C, SCR-003A, SCR-003B and DLG-008 display material differences.
+- PR #51 DRAFT; not merged. Fix frozen UI deviations and retest without pulling forward audio-reactive runtime.
+- Evidence: `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` and GitHub Actions artifact `11529287105`.
 - Dependency: T11-W05-06 PASS / VERIFIED.
+
+## W05-07 R02 remediation checkpoint
+- **W05-07 R02 (2026-10-08 WIB):** editor-hosted Try/Preview, simultaneous left Layer+Inspector, frozen category rail, real visual-only scope Save dialog over editor implemented. Windows CI #427 / `37730737210` **PASS 301 tests** (153 unit, 59 contract, 47 component, 42 integration), Windows Electron/screenshots/source fingerprints/portable/previous waves PASS. **UI imagery/layout visual acceptance still pending**; do not merge draft PR #51 or start W11-06. Evidence: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R02.md` (relative from docs files: `step11/evidence/...`).
+- Task remains **IN_PROGRESS / frozen design gate FAIL**; no merge, no new wave until visual comparison is accepted. Read the four-screen R02 evidence and prior initial gate fail report.
+
+## W05-07 R03 checkpoint (2026-10-08 WIB)
+- R03 Windows CI #444 / `37732523147` PASS at `37264b3d998d5c89214ec699b22b35c894ea459d`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), physical source fingerprints, 128-layer/100-template stress, four real Electron screenshots, prior regressions and portable smoke/ZIP PASS. Evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`; frozen comparison artifact `11530732266`.
+- Visual gate **FAIL / IN PROGRESS** after side-by-side review despite improved gallery/thumb artwork; do not merge PR #51.
+- **Next authorization:** continue **SOL T11-W05-07 visual remediation ONLY** on draft PR #51; AC-W11-05-21 remains NOT ACCEPTED, so W11-05 overall IN PROGRESS. Do not begin W11-06/W11-07/STEP 12 or merge PR before frozen UI authority review PASS.
+
+## 2026-10-08 — R26 UI-owner approval and W11-05 25-AC acceptance review
+
+**Latest decision authority:** https://github.com/inoriko920-dev/Full-Album-Lagu/pull/51#issuecomment-6059027382; explicit approval for static SCR-002C / SCR-003A / SCR-003B / DLG-008, accepting illustrative/dummy-data differences. Supersedes older AC21 OPEN / visual gate FAIL checkpoint notes for **current R26 review**, not historical evidence. AC21 **PASS — OWNER SIGNOFF**.
+**25-AC closure review:** 25/25 PASS at tested code baseline `6e331c0646536f1236cbdc8d34bdacaf151771fe`, including AC25 technical PASS; evidence `docs/step11/evidence/W11_05_OWNER_APPROVAL_AND_25_AC_CLOSURE_20261008.md`; drift `docs/step11/evidence/W11_05_ARCHITECTURE_UI_TRUST_DRIFT_REVIEW_20261008.md`.
+**Pre-merge release gate:** HOLD until Windows CI passes at the new final documentation-commit SHA and PR protections are checked; no silent merge before all checks.
+**Downstream:** W11-06 audio playback/spectrum has **draft** DOCX and Markdown on stacked Draft PR #53, not DoR-approved, so coding remains BLOCKED until W11-05 controlled merge + W11-06 final planning/UI and DoR PASS.

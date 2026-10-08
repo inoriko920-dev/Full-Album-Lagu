@@ -128,3 +128,113 @@ These task-level statuses do not close W11-05; final closure remains T11-W05-07 
 - AC-W11-05-22: **PARTIAL** — no source media mutations in code/UI and protected data rejected by strict template IPC; physical SHA-256/size/mtime proof belongs to W05-07.
 - AC-W11-05-23/25: **PASS task-level** — Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
 - W11-05 wave **not closed**; final 25-AC drift/E2E closure awaits T11-W05-07.
+
+
+## T11-W05-07 initial full-wave review (2026-10-08 WIB)
+- All 25 acceptance conditions were reviewed against prior task evidence plus real Windows CI #407, run `37729207171` (298 Vitest tests and all real Electron, Save/Reopen, second-project binding, fingerprint, 128-layer and 100-template tests PASS).
+- **AC-W11-05-21: FAIL / BLOCKER** after direct human visual review of frozen-vs-Electron SCR-002C, SCR-003A, SCR-003B and DLG-008 screenshots. See `evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md`. Main Editor's visual composition, local gallery, Try mode and Save dialog differ materially from frozen references. Pixel-exact comparison was neither used nor claimed due differing image resolutions.
+- **Other conditions:** functional, schema, template, protection, stress, trust boundary and prior-wave regression evidence PASS at test level; final whole-wave PASS is withheld until AC21 is remediated and all 25 ACs are rechecked.
+- **Wave gate: FAIL; W11-05 remains IN PROGRESS; T11-W05-07 corrective work is the only authorized next step.**
+
+## W05-07 R02 new evidence — unchanged wave gate
+- **W05-07 R02 (2026-10-08 WIB):** editor-hosted Try/Preview, simultaneous left Layer+Inspector, frozen category rail, real visual-only scope Save dialog over editor implemented. Windows CI #427 / `37730737210` **PASS 301 tests** (153 unit, 59 contract, 47 component, 42 integration), Windows Electron/screenshots/source fingerprints/portable/previous waves PASS. **UI imagery/layout visual acceptance still pending**; do not merge draft PR #51 or start W11-06. Evidence: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R02.md` (relative from docs files: `step11/evidence/...`).
+- AC-W11-05-04/06: **PASS / R02 UI wiring evidence** — selected layer + editable Inspector simultaneously in left rail, non-dirty session selection.
+- AC-W11-05-15/16/17: **PASS / R02 renderer evidence** — actual trial-mode scene projected in Main Editor without history; Revert/Apply behavior and Undo/Redo pass Windows Electron.
+- AC-W11-05-19: **PASS / R02 scoped Save evidence** — visual layer-group options actually filter persisted reusable template; second-project dynamic binding, no dirty and protected source metadata preserved.
+- AC-W11-05-21: **PARTIAL / DESIGN REVIEW STILL FAIL** — key workflow topology repaired, but visual fidelity and thumbnail/reference composition differences remain; no whole-wave PASS.
+- AC-W11-05-22/23/24/25: **PASS task-level Windows CI #427** — immutable source SHA-256/size/mtime, 128/100 stress, protected paths, 29 references, frozen SCR-002A baseline, portable executable smoke and ZIP, old waves regression.
+- W11-05 still **IN_PROGRESS**, W05-07 only authorized next.
+
+## T11-W05-07 R03 evidence and remaining UI gate
+- R03 Windows CI #444 / `37732523147` PASS at `37264b3d998d5c89214ec699b22b35c894ea459d`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), physical source fingerprints, 128-layer/100-template stress, four real Electron screenshots, prior regressions and portable smoke/ZIP PASS. Evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`; frozen comparison artifact `11530732266`.
+- AC-W11-05-14: **PASS task level** — existing local catalog, 3-column category gallery and distinct bundled thumbnails for built-ins; user templates remain clearly samples/no remote imagery.
+- AC-W11-05-21: **NOT YET ACCEPTED** — current true Electron gallery/artwork is visually closer to frozen references, but full approved scenic canvas and populated timeline composition remain absent (current two-track fixture and future audio runtime boundary). No fictitious waveform/playhead and no pixel-exact claim.
+- AC-W11-05-22/23/25: **PASS technical task-level** — real source byte/size/mtime fingerprint, prior regression and Windows portable executable E2E.
+- **Next authorization:** continue **SOL T11-W05-07 visual remediation ONLY** on draft PR #51; AC-W11-05-21 remains NOT ACCEPTED, so W11-05 overall IN PROGRESS. Do not begin W11-06/W11-07/STEP 12 or merge PR before frozen UI authority review PASS.
+
+
+## T11-W05-07 R09 — full 25-AC readiness audit (2026-10-08 WIB)
+- New authoritative handoff evidence: `evidence/T11_W05_07_R09_25_AC_CLOSURE_READINESS_AUDIT.md`. Contains every AC01..25, actual supporting task evidence/Windows CI, a signoff matrix and protected runtime boundaries.
+- R09 added **real Windows Electron SCR-003A category/search/no-match safety regression** and verifies no project revision or dirty mutation. Windows CI **#472 / `37741414109` PASS**, commit `f8f382009ea1ab9c35d0e91b5dac6e08720ff1a2`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), full W05-07 E2E/screenshots, project Save/Reopen/cross-project, SHA-256/size/mtime media protections, 128-layer and 100-template stress, prior waves, Windows packaged smoke and portable multi-file ZIP. Visual artifact `11534087251`; portable test build `11534156950`.
+- **Readiness audit: AC01..20, AC22..24** have technical evidence **PASS (23 ACs)**; **AC21** frozen UI authority signoff **OPEN**; **AC25** has green technical regressions but final PASS is **HELD by AC21**. No all-25 PASS claim or reinterpretation of frozen mockup into working audio playback.
+- **Wave status stays W11-05 IN_PROGRESS / T11-W05-07 OPEN; PR #51 DRAFT/NOT MERGED; W11-06/07/STEP 12 BLOCKED.** Independent affirmative UI/product authority decision or actionable W11-05 visual defect list required.
+
+
+## T11-W05-07 R10 — UI-authority decision packet, no acceptance inferred (2026-10-08 WIB)
+- Independent comparison of **all four latest genuine CI #475** frozen-vs-Electron images was completed; see `evidence/T11_W05_07_R10_UI_AUTHORITY_REVIEW_PACKET.md` and original Windows action evidence `11534043628` (run `37741904387`, PASS).
+- R10 identifies *per-screen* differences between truthful current W11-05 structures and reference visuals. Spectrum motion/playback and media-filled timeline are not implicitly implemented or required by the W11-05 runtime, but current-stage template-thumbnail richness, gallery proportions and dialog styling require an **explicit** reviewer decision.
+- **Formal result:** `AC-W11-05-21 = OPEN / WAITING FOR USER OR DESIGN AUTHORITY DECISION`; `AC-W11-05-25 = TECHNICAL REGRESSION PASS / FINAL GATE HELD`. 23 other acceptance criteria have existing technical evidence from R09, not freshly re-awarded final signoff. No user approval/waiver is claimed.
+- Reviewer chooses either (A) explicit approval of the current **static** four-screen presentation with truthful sample media boundaries, or (B) precise per-screen W11-05-only UI fixes. Then SOL must recheck all 25 ACs and final Windows CI/DoD; until then **W11-05 IN PROGRESS, PR #51 DRAFT/NOT MERGED and W11-06/07/STEP 12 BLOCKED**.
+
+
+## T11-W05-07 R11 — active template reselect regression, still awaiting UI signoff (2026-10-08 WIB)
+- Fixed genuine Template Browser issue: clicking the already-selected catalog card previously cleared `selectedTemplate` without changing `selectedId`, so the loader effect never reran and `Coba Template` became disabled. Now clear/load only when the entry ID actually changes.
+- Added component and **real Electron Windows SCR-003A** reselect regression requiring Try remains enabled and matching detail heading. Windows **CI #482 / `37744819940` SUCCESS** on `e658752df7a3eee0ff1555ba419d41186ccc979f`: 301 tests, genuine W05-07 Electron E2E/four screenshots, 128-layer/100-template stress, source SHA-256/size/mtime, previous waves, packaged Windows smoke and portable ZIP PASS. Artifact `11535790571`.
+- Evidence: `evidence/T11_W05_07_R11_ACTIVE_TEMPLATE_RESELECTION_FIX.md`; improved AC14 catalog usability and AC21 picker interaction **at technical level only**. **AC21 remains OPEN pending explicit UI-owner decision** and **AC25 final held by AC21**. Do not claim 25/25 PASS, merge draft PR #51, or start W11-06/W11-07/STEP 12.
+
+
+## T11-W05-07 R12 — recover transient selected-template load, UI signoff unchanged (2026-10-08 WIB)
+- `TemplateBrowser.tsx`: same card click **retains loaded state when successful**, or **retries once on user action when no template is loaded**. Existing async response-version guard still prevents stale selection.
+- `tests/component/AppShell.visual-layer-editor.test.tsx`: first load fails, second same-ID click succeeds, Try enables, alert clears, revision/dirty remain unchanged. **Windows CI #488 / `37745862253` SUCCESS** at `c0a6fd7995dc3b631aa620b8955dfa5dc3bb7b10`, **302 tests** (153 unit, 59 contract, 48 component, 42 integration), real Electron four-state capture, previous-wave E2E, source fingerprints, 128/100 stress, Windows packaged smoke, portable ZIP PASS. Artifact `11535972213`.
+- Evidence `evidence/T11_W05_07_R12_TEMPLATE_LOAD_RETRY.md`.
+- **AC21 remains OPEN pending explicit UI acceptance; AC25 technical green but final closure held. W11-05 IN_PROGRESS, PR #51 DRAFT/NOT MERGED, W11-06/07 and STEP12 BLOCKED.**
+
+
+## T11-W05-07 R13 — single in-flight local template loader (2026-10-08 WIB)
+- Confirmed renderer UI duplicate-load issue: repeated clicks on the already selected catalog card during an **in-flight** `loadTemplate` could restart parallel IPC requests even though requestVersion ignored stale responses. Added `templateLoadPending` guard; only a settled failure allows explicit same-card retry, and already loaded selections stay usable.
+- Deterministic component regression holds the first load open, clicks selected card three times (still one request), finishes with an error, then clicks again (exactly one recovery request), verifying unchanged project revision/dirty. **Windows CI #495 / `37747261951` SUCCESS**, code/test head `3e31be00a32ff16dc14a4461e4cbd3bd752b444b`: **303 tests** (153 unit, 59 contract, 49 component, 42 integration), real Electron W05-07, source fingerprints, 128/100 stress, prior waves, portable packaged smoke/ZIP PASS. Visual artifact `11536631133`.
+- Evidence `evidence/T11_W05_07_R13_PENDING_TEMPLATE_LOAD_GUARD.md`. **AC21 frozen UI signoff OPEN; AC25 technical portion PASS, final held. W11-05 IN_PROGRESS, PR #51 DRAFT/NOT MERGED; W11-06/W11-07/STEP12 BLOCKED.**
+
+
+## T11-W05-07 R14 — truthful Save/Refresh status (2026-10-08 WIB)
+- **Real Template Browser bug:** after `saveVisualTemplate` returned success, a thrown `listTemplates` catalog refresh could be caught as `Gagal menyimpan template lokal.`, falsely implying the saved file did not exist and risking duplicate retries. `reloadCatalog` now safely handles unavailability, error results and throws separately, preserving success confirmation and clearly describing catalog refresh failure.
+- Added deterministic component regression: successful save, thrown *second* catalog listing, one save only, correct success + refresh warning, no false save error, no dirty/revision change. **Windows CI #502 / `37748595805` SUCCESS** at SHA `e3a6625c3894d40d03a938a0b392aeec17742079`: **304 tests** (153 unit, 59 contract, 50 component, 42 integration), real Windows Electron W11-05, Save/Reopen/cross-project, source SHA-256/size/mtime, 128/100 stress, previous waves, screenshots, portable ZIP/smoke. Evidence `11537208151`.
+- Full R14 evidence `evidence/T11_W05_07_R14_SAVE_CATALOG_REFRESH_TRUTHFUL_STATUS.md`. **AC21 frozen UI design signoff remains OPEN**; AC25 technical PASS but final acceptance HELD. **W11-05 IN_PROGRESS, PR #51 DRAFT/not merged, next waves BLOCKED.**
+
+
+## T11-W05-07 R15 — initial catalog sync-throw safety (2026-10-08 WIB)
+- Browser Template mount used to invoke `listTemplates()` outside its Promise handler. A preload/IPC bridge throwing **synchronously** could break rendering instead of showing a safe error. It now resolves the invocation inside the existing async error chain, preserving unmounted guard and read-only project state.
+- React regression directly throws from `listTemplates`: Browser remains mounted, Coba disabled, Gemini stays, error message appears and Kembali ke Editor remains usable without project revision/dirty mutation.
+- **Windows CI #508 / `37750086819` SUCCESS** at code/test SHA `17a532d898d718933dc30b98d0a0b72f62d33368`: **305 tests** (153 unit, 59 contract, 51 component, 42 integration), actual Electron W05-07, four screenshot comparisons, Save/Reopen/cross-project, source SHA-256/size/mtime, 128-layer/100-template stress, earlier waves, packaged Windows smoke and portable ZIP. Evidence artifact `11537557161`.
+- See `evidence/T11_W05_07_R15_INITIAL_CATALOG_SYNC_THROW_GUARD.md`. **AC21 formal frozen UI signoff remains OPEN, AC25 final held; W11-05 IN_PROGRESS, PR #51 DRAFT/NOT MERGED and W11-06/07/STEP12 BLOCKED.**
+
+
+## T11-W05-07 R16 — synchronous selected template load failure recovery (2026-10-08 WIB)
+- **Real remaining loader bug:** `window.lfa.loadTemplate(selectedId)` was invoked outside its `.catch()`; a synchronous preload/IPC throw could escape the effect, leave the pending flag set, and interrupt Browser state. R16 invokes it in `Promise.resolve().then(...)`, reusing the guarded catch and R12 manual same-card retry without duplicate requests.
+- New React regression directly throws on first `loadTemplate` call; Browser shows error/Try disabled, a single deliberate re-click reloads, clears error and enables Try, while canonical revision/dirty stay unchanged.
+- **Windows CI #514 / `37752797495` SUCCESS** on SHA `f10c3e869a834970061054cdfdf736e8c96d63ef`: **306 tests** (153 unit, 59 contract, 52 component, 42 integration), true Electron W11-05, frozen screenshot captures, Save/Reopen/cross-project, source SHA-256/size/mtime, 128/100 stress, prior-wave E2Es and Windows portable packaged smoke/ZIP. Evidence artifact `11538698518`.
+- Full evidence `evidence/T11_W05_07_R16_TEMPLATE_LOAD_SYNC_THROW_RECOVERY.md`. **AC21 frozen UI explicit approval remains OPEN; AC25 technical checks PASS, final acceptance HELD. W11-05 IN_PROGRESS / PR #51 DRAFT/NOT MERGED; next waves BLOCKED.**
+
+
+## T11-W05-07 R17 — stale initial catalog vs post-save refresh guard (2026-10-08 WIB)
+- Found a real result-ordering race: the initial `listTemplates` request could resolve **after** a successful post-save `reloadCatalog` request and overwrite fresh entries, hiding a just-saved user template. New catalog generation ref rejects old success/error responses so only the newest request can update entries, selection and refresh error state.
+- Deterministic React component regression holds first catalog result while one successful local save and second refresh complete, then releases the old result: new user entry stays visible, one save, two catalog reads, no project revision/dirty mutation.
+- **Windows CI #520 / `37754360119` SUCCESS** on code/test SHA `0d40ef3a7a484c14d93bbc1c88ca2b4bcce97f0f`: **307 tests** (153 unit, 59 contract, 53 component, 42 integration), actual Electron W11-05/four frozen screenshots, Save/Reopen/cross-project, physical source SHA-256/size+mtime, 128 layers/100 templates, earlier-wave regression and packaged Windows portable smoke/ZIP. Screenshot/E2E artifact `11540106386`.
+- Evidence: `evidence/T11_W05_07_R17_STALE_CATALOG_RESPONSE_GUARD.md`. **AC21 formal frozen UI signoff remains OPEN, AC25 technical green but final acceptance HELD; W11-05 IN_PROGRESS, PR #51 DRAFT/not merged, later waves BLOCKED.**
+
+
+## T11-W05-07 R18 — isolate post-save catalog warning from pending template-load result (2026-10-08 WIB)
+- **Actual safety/UX bug:** pending `loadTemplate` could finish after a **successful visual template save + failed catalog refresh**, unconditionally clear the shared `catalogError`, and erase the truthful "saved but list not updated" warning. R18 introduces distinct `templateLoadError` and keeps catalog/save warning independent of selected-template success/failure; stale load errors clear when selection changes.
+- Deterministic React regression delays template load, saves exactly once, makes the second catalog listing return an error, checks warning, then releases successful load. Warning remains, Try enables, save confirmation persists, revision/dirty unchanged.
+- **Windows CI #531 / `37757002704` SUCCESS** at code/test+restored-strict-format SHA `43e70882bfcdaafc8e2532d8a6c405a1bd40e7f0`: **308 tests** (153 unit, 59 contract, 54 component, 42 integration), original Prettier/TypeScript/lint, genuine Electron W11-05 and four frozen screenshots, Save/Reopen/cross-project, source SHA-256/size/mtime, 128-layer/100-template stress, prior wave E2Es, Windows packaged smoke and portable ZIP PASS. Evidence artifact `11540248008`.
+- Earlier Prettier-only failures were diagnosed via a **temporary branch-only format script**, whose exact Prettier output was applied. Original `package.json` script was **restored** before #531, with no weakened CI.
+- R18 full report: `evidence/T11_W05_07_R18_CATALOG_WARNING_ISOLATION.md`. **AC21 explicit UI authority signoff still OPEN; AC25 technical PASS but final held. W11-05 IN_PROGRESS, PR #51 DRAFT/NOT MERGED; W11-06/07/STEP12 BLOCKED.**
+
+
+## T11-W05-07 R19 — valid large Unicode template save/read invariant (2026-10-08 WIB)
+- Genuine persisted data-integrity defect: `JsonTemplateStore.saveUserTemplate()` previously wrote any schema-valid template without a byte-size check, while the reader rejected user template JSON greater than **2 MiB**. A successful save with many Unicode static text layers could therefore be unreadable and omitted from the catalog.
+- R19 retains the **2 MiB built-in catalog** guard, defines an **8 MiB user-template** guard applied **symmetrically** on read and serialized UTF-8 pre-save, and writes the exact byte-checked payload. Strict schemas, built-in no-overwrite, source safeguards and atomic no-overwrite hard-link behavior unchanged.
+- Added real-store integration regression: 440 schema-valid CJK text layers, payload >2 MiB; filesystem saved size matches, `list()` discovers user template, `load()` returns exact document. **Windows CI #538 / `37758688373` SUCCESS** on SHA `be5dd822db6bb94fd8b80b54b984343aab432593`: **309 tests** (153 unit, 59 contract, 54 component, 43 integration), genuine Electron W11-05, four frozen screenshot comparisons, prior-wave E2Es, protected physical source fingerprints, 128-layer/100-template stress, Windows portable smoke/ZIP PASS. Artifact `11541217865`.
+- Evidence `evidence/T11_W05_07_R19_LARGE_TEMPLATE_ROUNDTRIP_GUARD.md`. **AC21 frozen UI authority signoff remains OPEN; AC25 technical green but final acceptance HELD. W11-05 IN_PROGRESS, PR #51 DRAFT/unmerged, W11-06/W11-07/STEP12 BLOCKED.**
+
+## T11-W05-07 R23 — scoped static presentation and genuine Windows #547
+- **R23 UI code + responsive fixes verified** at `24004a0fc44535499b3b05297efdd5b170032bb9`: Windows CI #547 / `37764099762` **SUCCESS; 310 tests** (154 unit/59 contract/54 component/43 integration). Four authentic frozen/Electron screenshot pairs artifact `11544106158`; packaged executable smoke, portable test ZIP, earlier-wave Windows regression, protected source hash/size/mtime, 128/100 stress all PASS.
+- SCR-003A catalog layout/illustration, SCR-003B gallery no-overlap, DLG-008 modal clarity improved; no model/media/protocol/frozen-reference/runtime changes. Full evidence `evidence/T11_W05_07_R23_STATIC_UI_POLISH_WINDOWS_VERIFIED.md`.
+- **AC21 remains OPEN for affirmative UI owner signoff on actual R23 four-screen captures. AC25 technical portion PASS but FINAL HELD; W11-05 not closed, PR #51 Draft, next waves blocked.**
+
+## 2026-10-08 — R26 UI-owner approval and W11-05 25-AC acceptance review
+
+**Latest decision authority:** https://github.com/inoriko920-dev/Full-Album-Lagu/pull/51#issuecomment-6059027382; explicit approval for static SCR-002C / SCR-003A / SCR-003B / DLG-008, accepting illustrative/dummy-data differences. Supersedes older AC21 OPEN / visual gate FAIL checkpoint notes for **current R26 review**, not historical evidence. AC21 **PASS — OWNER SIGNOFF**.
+**25-AC closure review:** 25/25 PASS at tested code baseline `6e331c0646536f1236cbdc8d34bdacaf151771fe`, including AC25 technical PASS; evidence `docs/step11/evidence/W11_05_OWNER_APPROVAL_AND_25_AC_CLOSURE_20261008.md`; drift `docs/step11/evidence/W11_05_ARCHITECTURE_UI_TRUST_DRIFT_REVIEW_20261008.md`.
+**Pre-merge release gate:** HOLD until Windows CI passes at the new final documentation-commit SHA and PR protections are checked; no silent merge before all checks.
+**Downstream:** W11-06 audio playback/spectrum has **draft** DOCX and Markdown on stacked Draft PR #53, not DoR-approved, so coding remains BLOCKED until W11-05 controlled merge + W11-06 final planning/UI and DoR PASS.

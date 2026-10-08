@@ -15,7 +15,7 @@ Lagu Full Album is a Windows 11 x64 desktop application for producing full-album
 - W11-05 Manual Layer Editor + Templates: **T11-W05-01 Visual Scene foundation PASS / VERIFIED; T11-W05-02 Manual Layer Commands + Gesture/History PASS / VERIFIED; T11-W05-03 Template Document/Local Store/Try-Apply PASS / VERIFIED; T11-W05-04 Static Preview + Selection/Inspector projection PASS / VERIFIED; T11-W05-05 Frozen Layer + Inspector UI PASS / VERIFIED; T11-W05-06 Local Template Browser/Try/Save UI PASS / VERIFIED; T11-W05-07 READY**.
 - Frozen UI pack: 29 approved visual states; W11-05 reuses SCR-002C, SCR-003A, SCR-003B and DLG-008 without a new UI prompt/image stage.
 - Gemini/provider, FFmpeg integration and final render runtime remain later gated work.
-- Next: **SOL T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure only**. Local template browsing, non-destructive Try/Revert, one-history Apply and visual-only Save UI are now implemented and task-verified.
+- Active: **SOL T11-W05-07 — IN PROGRESS / frozen UI material drift FAIL**. Real Windows functionality, 298 tests, source fingerprints and package PASS, but four approved UI screens have visual differences. See `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md`. No W11-06 before acceptance PASS. Local template browsing, non-destructive Try/Revert, one-history Apply and visual-only Save UI are now implemented and task-verified.
 
 ## UI authority
 - `docs/ui/manifests/UI_REFERENCE_MANIFEST.json`

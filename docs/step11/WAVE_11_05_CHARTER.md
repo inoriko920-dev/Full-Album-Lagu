@@ -5,7 +5,7 @@ Planning baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`
 Features: **FTR-007 Manual Layer Editor + FTR-011 Template Workflow**  
 Cross-cut: **FTR-013 Unified Command History + FTR-018 Error/Offline**  
 Planning status: **COMPLETE / PASS**  
-Implementation status: **IN PROGRESS — T11-W05-01..06 PASS / VERIFIED; T11-W05-07 READY**  
+Implementation status: **IN PROGRESS — T11-W05-01..06 PASS / VERIFIED; T11-W05-07 VISUAL GATE FAIL**  
 UI decision: **reuse frozen SCR-002C, SCR-003A, SCR-003B and DLG-008; no new UI prompt/image stage required**
 
 ## Source authority
@@ -351,3 +351,8 @@ Every implementation task preserves:
 - Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
 - Evidence: `evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md`.
 - Next W05-07 READY; W11-05 remains IN PROGRESS. Dedicated SCR-003A/B/DLG-008 pixel drift and full 25-AC closure belong to W05-07.
+
+
+## T11-W05-07 initial closure gate
+- W11-05 is **IN PROGRESS / NOT CLOSED**: W05-07 technical Windows CI #407 / `37729207171` succeeded with 298 tests, but **AC-W11-05-21 frozen UI material drift FAIL**. Four real/reference side-by-side screenshots were reviewed. PR #51 remains DRAFT; do NOT merge or start W11-06. See `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` and CI artifact `11529287105`.
+- After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation only**. Align SCR-002C, SCR-003A, SCR-003B and DLG-008 with approved frozen images, preserve W11-06 audio runtime boundary, rerun full Windows regression plus 4-screen visual review, then re-evaluate AC-W11-05-01..25. Do not advance wave until AC21 PASS and PR #51 verified.

@@ -1,10 +1,18 @@
 # CURRENT HANDOFF
 
+## 2026-10-08 — R26 UI-owner approval and W11-05 25-AC acceptance review
+
+**Latest decision authority:** https://github.com/inoriko920-dev/Full-Album-Lagu/pull/51#issuecomment-6059027382; explicit approval for static SCR-002C / SCR-003A / SCR-003B / DLG-008, accepting illustrative/dummy-data differences. Supersedes older AC21 OPEN / visual gate FAIL checkpoint notes for **current R26 review**, not historical evidence. AC21 **PASS — OWNER SIGNOFF**.
+**25-AC closure review:** 25/25 PASS at tested code baseline `6e331c0646536f1236cbdc8d34bdacaf151771fe`, including AC25 technical PASS; evidence `docs/step11/evidence/W11_05_OWNER_APPROVAL_AND_25_AC_CLOSURE_20261008.md`; drift `docs/step11/evidence/W11_05_ARCHITECTURE_UI_TRUST_DRIFT_REVIEW_20261008.md`.
+**Pre-merge release gate:** HOLD until Windows CI passes at the new final documentation-commit SHA and PR protections are checked; no silent merge before all checks.
+**Downstream:** W11-06 audio playback/spectrum has **draft** DOCX and Markdown on stacked Draft PR #53, not DoR-approved, so coding remains BLOCKED until W11-05 controlled merge + W11-06 final planning/UI and DoR PASS.
+
+
 ## Project
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..06 are PASS / VERIFIED. Only T11-W05-07 Wave E2E, Stress, Drift Review & Evidence Closure is READY for next SOL turn. STEP 11 is still IN PROGRESS.
+STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..06 are PASS / VERIFIED. T11-W05-07 Wave E2E, Stress, Drift Review & Evidence Closure is IN_PROGRESS / UI GATE FAIL. Resume correction of frozen screens in this SAME task; do not go to another wave. STEP 11 is still IN PROGRESS.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -331,7 +339,7 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 - FTR-007 is not wave-VERIFIED yet; FTR-011 has not started.
 
 ## Next exact action
-After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure only**. Read W11-05 planning, 29 UI frozen reference states, W05-01..06 evidence and AC-W11-05-01..25 first. Do not start W11-06 playback, W11-07 animation or STEP 12 in the same turn.
+After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation only**. Align SCR-002C, SCR-003A, SCR-003B and DLG-008 with approved frozen images, preserve W11-06 audio runtime boundary, rerun full Windows regression plus 4-screen visual review, then re-evaluate AC-W11-05-01..25. Do not advance wave until AC21 PASS and PR #51 verified.
 
 ## T11-W05-03 handoff (2026-10-08 WIB)
 - Task PASS / VERIFIED after branch Windows CI and packaged resource smoke.
@@ -367,3 +375,128 @@ After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-07 — Wav
 - Tests: local filter, safe error/corrupt rejection, source data exclusions, Apply Undo/Redo and return context. 59 contract tests and 42 component tests PASS.
 - **Outstanding W05-07**: full Windows Try/Revert/Apply/Save/Reopen/second-project E2E, 128-layer and 100-template stress, protected SHA-256/size/mtime, complete 25 AC mapping, SCR-002C/003A/003B/DLG-008 screenshot drift review; do not claim W11-05 wave complete yet.
 - Only SOL **T11-W05-07 READY**. W11-06/07/STEP 12 remain blocked.
+
+
+## Latest W05-07 QA and mandatory remediation (2026-10-08 WIB)
+- W11-05 is **IN PROGRESS / NOT CLOSED**: W05-07 technical Windows CI #407 / `37729207171` succeeded with 298 tests, but **AC-W11-05-21 frozen UI material drift FAIL**. Four real/reference side-by-side screenshots were reviewed. PR #51 remains DRAFT; do NOT merge or start W11-06. See `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` and CI artifact `11529287105`.
+- After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation only**. Align SCR-002C, SCR-003A, SCR-003B and DLG-008 with approved frozen images, preserve W11-06 audio runtime boundary, rerun full Windows regression plus 4-screen visual review, then re-evaluate AC-W11-05-01..25. Do not advance wave until AC21 PASS and PR #51 verified.
+
+## Latest W05-07 R02 handoff
+- **W05-07 R02 (2026-10-08 WIB):** editor-hosted Try/Preview, simultaneous left Layer+Inspector, frozen category rail, real visual-only scope Save dialog over editor implemented. Windows CI #427 / `37730737210` **PASS 301 tests** (153 unit, 59 contract, 47 component, 42 integration), Windows Electron/screenshots/source fingerprints/portable/previous waves PASS. **UI imagery/layout visual acceptance still pending**; do not merge draft PR #51 or start W11-06. Evidence: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R02.md` (relative from docs files: `step11/evidence/...`).
+- Four source-of-truth frozen DOCX reference images and four actual 1600x1000 Electron PNGs exist in Windows CI #427 artifact `11529128573`. Visual R02 montage reviewed. Major Mode Coba browser-overlay drift fixed; Save dialog hosted over main editor and category navigation corrected. Remaining rich scene/gallery imagery/layout differences not accepted. Canonical trial stays session-only; Save layer scope filters before canonical template service.
+- **Do not claim UI PASS or merge PR #51.** Continue visual-only W05-07; preserve W11-06/07, STEP 12 boundaries.
+
+## Latest W05-07 R03 handoff (2026-10-08 WIB)
+- R03 Windows CI #444 / `37732523147` PASS at `37264b3d998d5c89214ec699b22b35c894ea459d`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), physical source fingerprints, 128-layer/100-template stress, four real Electron screenshots, prior regressions and portable smoke/ZIP PASS. Evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`; frozen comparison artifact `11530732266`.
+- Read `../step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`, prior R02 and initial FAIL notes. Reference DOCX (UI-IMG-002C, UI-IMG-003A/B, UI-IMG-012) remains authoritative.
+- Implemented reusable source-free sample-only visual asset in `src/renderer/visual/TemplateArtwork.tsx` and plumbed it through built-in Template Browser/thumbnails and absent-artwork `StaticScenePreview` with explicit explanatory labels; source asset identifiers are not replaced with invented art.
+- Four actual/reference screenshots are available from GitHub Actions #445 artifact `11530732266`; main branch unchanged; PR #51 remains draft.
+- **Next authorization:** continue **SOL T11-W05-07 visual remediation ONLY** on draft PR #51; AC-W11-05-21 remains NOT ACCEPTED, so W11-05 overall IN PROGRESS. Do not begin W11-06/W11-07/STEP 12 or merge PR before frozen UI authority review PASS.
+
+
+## Latest W05-07 R04 handoff (2026-10-08 WIB)
+- CSS workspace integration for frozen `SCR-003A`: the local Template Browser now fills the real editor workspace **under the existing 56 px toolbar** instead of occupying an isolated center-window overlay. Main-shell, project-state, template semantics and screenshots for other frozen states remain protected. Implementation commit `58c0eb5a58f4a81939fe468ee43b8b0b53daef53` (after two style-only formatting corrections).
+- **Windows CI #450 / `37735732790` PASS**: 301 tests (153/59/47/42), all previous waves, source SHA-256/size/mtime, 128-layer/100-template stress, reference/screenshot evidence, Windows packaged smoke and portable multi-file ZIP. Exact screenshot artifact `11531483141`, test portable artifact `11531542915`.
+- R04 source-of-truth evidence: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R04.md`. Visually rechecked actual/reference SCR-003A: toolbar and workspace are now integrated, but painterly scene, sample content density and remaining 4-screen fidelity **are not accepted**. Do not misrepresent static scene illustrations as working audio/source rendering.
+- **Status remains T11-W05-07 IN_PROGRESS, AC-W11-05-21 OPEN, PR #51 DRAFT/NOT MERGED.** No W11-06/W11-07/STEP 12 work. Next authorized action: assess remaining reference-based UI fidelity issues on this same task and rerun Windows screenshots/CI before any gate change.
+
+
+## Latest W05-07 R05 handoff (2026-10-08 WIB)
+- **R05 DLG-008**: corrected frozen Save as Template modal's preview-left/form-right/scope-below/footer structure using CSS only. Actual project static Preview is source-grounded, with visual-only Save preserved. Source/layout test implementation commit `e0fc48c6345002c285fc050819d1351943775783`.
+- **Windows CI #453 / `37736562867` PASS, 301 tests**, four Electron/reference screenshot pairs, prior waves, 128-layer and 100-template stress, source SHA-256+size+mtime, packaged executable smoke and portable ZIP PASS. Evidence artifact `11532321026`, test build `11531847298`. Full report: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R05.md`.
+- Screenshot reviewed: R05 dialog hierarchy more faithful than R04, but approved full scenic composite and track density exceed honest static W11-05 test fixture. **No claim of pixel-perfect match; AC-W11-05-21 remains OPEN.**
+- **Continue only SOL T11-W05-07** visual fidelity correction and independent review. PR #51 DRAFT; do not merge to `main`, start W11-06/07 or STEP 12, or invent audio playback/waveform/source art.
+
+
+## Latest W05-07 R06 handoff (2026-10-08 WIB)
+- On actual R05 `SCR-003B` screenshot, the temporary template gallery overlapped/clipped the project title in the true Preview. R06 reserves horizontal stage space in trial mode only; no schema, project state, source media, audio analyzer or frozen authority changes. CSS `8ffddaca`; Windows geometry regression `3faff3af`.
+- **CI #458 / `37737587670` SUCCESS with 301 tests.** New real Electron `SCR-003B` guard rejects overlapping gallery; visually reviewed its generated PNG, showing full `Original Audio A` title beside the gallery. Prior wave tests, source fingerprints, 128/100 stress, Windows packaged smoke/portable ZIP PASS. R06 screenshots and comparison artifact `11532238637`; test-build portable artifact `11532089969`.
+- Read `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R06.md` and actual R06 four-screen comparison before further code. Remaining differences in frozen reference include artwork/scenic composite and populated timeline that the true static/two-track fixture cannot claim as playback.
+- **T11-W05-07 remains IN_PROGRESS / AC-W11-05-21 FULL VISUAL GATE OPEN.** Keep PR #51 DRAFT, `main` unmodified, W11-06/07/STEP 12 BLOCKED. On next `lanjutkan`, refine only source-grounded W05-07 UI fidelity then rerun Windows CI; do not manufacture working waveform or source artwork.
+
+## Latest W05-07 R07 handoff (2026-10-08 WIB)
+- **Real defect:** SCR-002C Inspector sat below a long full Layer pane under one shared left-rail scroller, reducing available visible controls. R07 splits `.visual-layer-combined` into two independently scrollable bounded areas, with actual Windows geometry assertion requiring no overlap, Inspector height ≥175 CSS px and the selected Name control visible.
+- CSS `8fb4abed7868f90dbe80c0eac080180891531df4`; CI regression `bcf71fba85b4bcdec206e740973a5c8afd293438`. **Windows CI #462 / `37738776119` PASS with 301 tests**, four real Electron/frozen screenshots, source fingerprints, 128/100 stress, cross-project flows, prior-wave E2E, portable ZIP and packaged smoke.
+- Actual screenshot `SCR-002C.png` visually reviewed; pane separation and independent scrollbars visibly work. Artifact `11532932400`. Evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R07.md`.
+- **Gate still OPEN:** no claimed scenic mockup equality, animated waveform, playback or source artwork substitution. W11-05 remains IN_PROGRESS and AC-W11-05-21 NOT ACCEPTED. PR #51 stays DRAFT; do not merge, advance W11-06/W11-07/STEP 12, or alter frozen 29-image authority.
+- Next `lanjutkan`: continue SOL T11-W05-07, verify remaining static visual fidelity against final UI DOCX and discuss any mockup content requiring later-wave behavior before attempting to close AC21.
+
+
+## Latest W05-07 R08 handoff (2026-10-08 WIB)
+- Reviewed actual/reference evidence of all four frozen screens from CI #465. Differentiated W11-05-owned selector/galley defects from scenic mockup/static two-track content and future W11-06 audio spectrum/playback plus W11-07 animation.
+- Corrected **hidden active template bug**: category/search auto-reconciles selected visible entry; preview and Coba require a loaded matching visible ID. Corrected **trial-gallery omission** for selected template outside first six, including catalog of 100. No schema/history/source/agent/playback code modified. React regression checks added.
+- **Windows CI #469 / `37740447189` PASS**, 301 tests, four frozen screenshots, actual project Try/Revert/Apply/Save/Reopen, 128/100 stress, protected source SHA-256/size/mtime, previous wave E2E and portable ZIP/smoke. Code/test head `b26c8c748236895317334717ed7044ebd84baf19`; four-screen artifact `11533408457`; portable test artifact `11533567027`.
+- Source-of-truth R08 evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R08.md` has a state-by-state matrix; read it before modifying frozen UI. AC-W11-05-21 specifically checks hierarchy/copy/safety, not working audio-waveform or arbitrary screenshot pixel identity. Nevertheless **formal frozen UI acceptance remains OPEN**. Do not presume design waiver/approval.
+- **Gate:** W11-05/T11-W05-07 IN_PROGRESS, PR #51 DRAFT/NOT MERGED and `main` unchanged. W11-06/07 and STEP 12 BLOCKED. Next authorized continuation: obtain explicit UI-authority decision on semantic/static fidelity vs future runtime mockup content, or fix precise remaining static W11-05-owned defects; then complete all AC01..25 gate evidence and Windows CI before merger.
+
+
+## Latest W05-07 R09 handoff (2026-10-08 WIB)
+- **R09 is closure-readiness verification, not approval.** Added true Windows Electron filter regression in SCR-003A: change Neon category, confirm visible selected card matches details, no-match search disables Try, clear filters/restore Minimal Biru, canonical project revision/dirty never changes. Commit `f8f382009ea1ab9c35d0e91b5dac6e08720ff1a2`.
+- **CI #472 / `37741414109` PASS with 301 tests** (153 unit, 59 contract, 47 component, 42 integration), real Windows screenshot/Save/Reopen/second-project flow, SHA-256+size+mtime fingerprints, 128/100 stress, previous waves, packaged smoke and portable multi-file ZIP. Four-screen artifact `11534087251`, test portable artifact `11534156950`.
+- **Read new 25-AC audit FIRST:** `docs/step11/evidence/T11_W05_07_R09_25_AC_CLOSURE_READINESS_AUDIT.md`. It marks **23 ACs technical evidence PASS; AC21 UI-authority approval OPEN; AC25 technical PASS conditionally held by AC21**. The frozen 29-state authority has not been changed. Do not equate approved painterly static mockup with real audio-reactive spectrum, populated source timeline, exported video, or user-uploaded artwork.
+- **W11-05 gate OPEN / PR #51 DRAFT / `main` unchanged.** Do not merge or advance W11-06, W11-07 or STEP 12. Next `lanjutkan` may prepare precise UI acceptance decision or fix remaining verified static W11-05 defect, but cannot self-authorize design PASS; after explicit approval re-evaluate all 25 and rerun CI.
+
+
+## Latest W05-07 R10 handoff — explicit UI decision pending (2026-10-08 WIB)
+- R10 reopened and visually inspected latest real Windows action #475 four-side-by-side comparisons: `SCR-002C`, `SCR-003A`, `SCR-003B`, `DLG-008`, source artifact `11534043628`. The 29-state frozen `LFA-UI-REFERENCE-v1.1` is unchanged; actual screenshot pixel-matching is not the gate.
+- **Read `docs/step11/evidence/T11_W05_07_R10_UI_AUTHORITY_REVIEW_PACKET.md` first**: each screen has existing topology, unresolved screenshot differences, classification as later-wave media vs W11-05-owned styling, and **two mutually exclusive review decisions**. Do not invent/record the user's signoff. R09 25-AC inventory remains authoritative for technical evidence.
+- 23 ACs have task+Windows technical evidence; **AC-W11-05-21 still OPEN pending real user/design authority Decision A (static UI approval) or Decision B (specific current-wave layout corrections)**; AC25 final is HELD even though Windows tests/package passed. The command “lanjutkan” is not acceptance and a local Markdown document is not approval.
+- **Keep PR #51 DRAFT/unmerged and `main` untouched**, do not change frozen 29-state UI authority, or begin W11-06 audio-reactive analyzer, W11-07 animation, STEP 12/export. After explicit UI decision, rerun full 25-AC gate, source/hash/trust/no-drift and Windows packaged E2E before closing.
+
+
+## Latest W05-07 R11 handoff (2026-10-08 WIB)
+- **Active template re-click bug FIXED** in `src/renderer/app/TemplateBrowser.tsx`: only clear `selectedTemplate` if selected ID changes, otherwise preserve loaded template/usable Try action. New regression in React component and actual Windows Electron SCR-003A verifier. Code `f0cf95c`, final test head `e658752df7a3eee0ff1555ba419d41186ccc979f`.
+- **CI #482 / `37744819940` SUCCESS: 301 tests**, Windows real E2E, screenshots, source SHA-256/size/mtime, Save/Reopen, previous waves, 128/100 stress, portable packaged smoke and ZIP. Evidence artifact `11535790571`, portable Windows test build `11534773823`. Read `docs/step11/evidence/T11_W05_07_R11_ACTIVE_TEMPLATE_RESELECTION_FIX.md`.
+- **Still blocked on explicit user/design approval:** R10 UI decision packet `docs/step11/evidence/T11_W05_07_R10_UI_AUTHORITY_REVIEW_PACKET.md`; 25-AC R09 matrix. **23 ACs technically evidenced, AC21 formal UI signoff OPEN, AC25 final held**. Never interpret generic "lanjutkan" as design acceptance. Do not alter 29 frozen UI authority, fake audio/visual media, advance W11-06/07/STEP12 or merge draft PR #51 before gate closure.
+
+
+## Latest W05-07 R12 handoff (2026-10-08 WIB)
+- A selected template that *failed* to load became stuck with Try disabled because re-clicking the same ID did not retrigger `useEffect([selectedId])`. R12 adds a UI-only retry counter, invoked only on same-card user click if no loaded document exists. Previously successful same-card clicks still preserve loaded state (R11). Request version guards remain.
+- **Windows CI #488 / `37745862253` SUCCESS, 302 tests** (153 unit, 59 contract, 48 component, 42 integration), actual Electron/four frozen screenshots, Save/Reopen/second project, 128/100 stress, source SHA-256/size/mtime, prior-wave E2E and Windows portable smoke/ZIP PASS. Code/test head `c0a6fd7995dc3b631aa620b8955dfa5dc3bb7b10`, artifact `11535972213`, test portable build `11535408100`.
+- Read `docs/step11/evidence/T11_W05_07_R12_TEMPLATE_LOAD_RETRY.md` for exact repro/fix/test. **R09 audit** maps 25 AC; **R10 review packet** is still the UI acceptance decision source. AC21 formal approval not received, AC25 final held. W11-05 IN_PROGRESS, PR #51 DRAFT, `main` untouched; do not merge or start W11-06/07/STEP12 on generic continuation.
+
+
+## Latest W05-07 R13 handoff (2026-10-08 WIB)
+- **Fix:** Renderer-side `templateLoadPending` prevents duplicate same-ID `loadTemplate` IPC from rapid catalog-card clicks while a request is unresolved. It is cleared only on current completion/error or effect cleanup. After a failure completes, a single explicit re-click still retries; successful loaded cards preserve Try usability. No history/project/audio/visual-authority changes.
+- **Windows CI #495 / `37747261951` PASS — 303 tests** (153 unit, 59 contract, 49 component, 42 integration), actual Electron W05-07 capture/flow and physical source fingerprints, 128/100 stress, Save/Reopen/cross-project, prior waves, portable executable smoke and ZIP. Code/test SHA `3e31be00a32ff16dc14a4461e4cbd3bd752b444b`. Evidence artifact `11536631133`; portable test-build artifact `11536142672`.
+- Read `docs/step11/evidence/T11_W05_07_R13_PENDING_TEMPLATE_LOAD_GUARD.md` for R13 repro/test; read R09 25-AC audit and R10 frozen four-screen UI acceptance packet before future work. **Formal AC21 approval not given; AC25 final held. W11-05 IN_PROGRESS, PR #51 DRAFT/NOT MERGED, `main` unchanged.** Do not interpret generic `lanjutkan` as design approval, merge, alter frozen reference, or enter W11-06/07/STEP12.
+
+
+## Latest W05-07 R14 handoff (2026-10-08 WIB)
+- **True save-status bug fixed:** post-save `reloadCatalog()` previously allowed thrown `listTemplates()` to propagate into the *save* catch, wrongly showing `Gagal menyimpan template lokal.` although `saveVisualTemplate` had succeeded. New catch handles unavailable/error/throw refresh with truthful "saved but catalog not refreshed" alert, preserving one successful save, canonical revision and clean project.
+- **Windows CI #502 / `37748595805` PASS, 304 tests** (153 unit/59 contract/50 component/42 integration), actual Electron W05-07/evidence screenshots, Save/Reopen/cross-project, source protection, 128/100 stress, previous wave regressions, packaged Windows smoke/ZIP. Implementation/test SHA `e3a6625c3894d40d03a938a0b392aeec17742079`; screenshot artifact `11537208151`; portable CI test artifact `11536718570`. See `docs/step11/evidence/T11_W05_07_R14_SAVE_CATALOG_REFRESH_TRUTHFUL_STATUS.md`.
+- **Gate unchanged:** R09 complete 25-AC readiness audit and R10 UI decision packet remain controlling. 23 AC technical evidence, **AC21 still OPEN for explicit frozen UI acceptance and AC25 final HELD**. W11-05 IN_PROGRESS, PR #51 DRAFT/not merged, `main` unchanged; do not infer consent from `lanjutkan`, edit 29 frozen UI references, or implement W11-06/07/STEP12 before full gate acceptance.
+
+
+## Latest W05-07 R15 handoff (2026-10-08 WIB)
+- **Safety fix:** The initial Browser Template `listTemplates` call could throw synchronously outside the rejection handler and interrupt the Browser. Moved its invocation into `Promise.resolve().then(...)`, allowing direct throws and rejected Promises to display existing safe error; preserved mounted check, Editor navigation and non-dirty canonical state.
+- **Windows CI #508 / `37750086819` PASS: 305 tests** (153 unit, 59 contract, 51 component, 42 integration), actual Windows Electron W05-07/four screenshots, Save/Reopen/cross-project, 128 layers/100 templates, source SHA-256/size/mtime, prior-wave E2E, Windows executable smoke and portable ZIP. Tested SHA `17a532d898d718933dc30b98d0a0b72f62d33368`; E2E artifact `11537557161`, portable CI test artifact `11537214850`. Report `docs/step11/evidence/T11_W05_07_R15_INITIAL_CATALOG_SYNC_THROW_GUARD.md`.
+- R09 all-25 AC readiness and R10 four-screen UI-owner decision packet remain authoritative. **AC21 frozen UI acceptance OPEN; AC25 technical green but final held. W11-05 IN_PROGRESS, PR #51 DRAFT/NOT MERGED and `main` untouched.** User's generic continuation is not UI approval; do not change frozen UI references or begin W11-06 audio, W11-07 animation or STEP12.
+
+
+## Latest W05-07 R16 handoff (2026-10-08 WIB)
+- Template Browser selected-template loader still invoked `window.lfa.loadTemplate()` outside Promise catch; direct preload/IPC throws could escape and strand loading. R16 wraps invocation in `Promise.resolve().then(...)` so sync and async failures use existing safe error/pending reset; no visual, source, project/history or IPC contract changes. User retry on same card still works. Implementation `db15834a4fde3ee0003cf1c2b303e3b5c9293fc7`, test `f10c3e869a834970061054cdfdf736e8c96d63ef`.
+- **Windows CI #514 / `37752797495` PASS: 306 tests** (153 unit, 59 contract, 52 component, 42 integration), true Electron W11-05 capture and flow, source SHA-256/size/mtime, Save/Reopen/other-project, 128/100 stress, prior-wave E2Es, Windows executable smoke and portable ZIP. Artifact `11538698518`, portable CI test artifact `11538424902`. Report `docs/step11/evidence/T11_W05_07_R16_TEMPLATE_LOAD_SYNC_THROW_RECOVERY.md`.
+- **Mandatory stage stop remains:** R09 audit maps 25 AC, R10 four frozen-screen review packet requires user/design authority explicit approval. **AC21 OPEN / AC25 final HELD / W11-05 IN_PROGRESS / PR #51 DRAFT UNMERGED / `main` unchanged.** Do not infer consent from generic continuation, alter frozen UI source of truth, merge PR or implement W11-06 audio/W11-07 animation/STEP12.
+
+
+## Latest W05-07 R17 handoff (2026-10-08 WIB)
+- **Catalog generation race FIXED:** an unresolved initial `listTemplates` could resolve after a post-save refresh and overwrite newer catalog entries, hiding a just-saved template. New `catalogRequestVersion` permits only the most recent initial/refresh request to alter catalog/selection/error. React regression forces delayed initial response after a successful save+fresh read; user template stays visible, canonical revision/dirty unchanged.
+- **Windows CI #520 / `37754360119` PASS: 307 tests** (153 unit, 59 contract, 53 component, 42 integration), actual Windows Electron W11-05 and frozen four-screen screenshots, Save/Reopen/cross-project, 128-layer/100-template stress, media SHA-256/size/mtime, previous wave E2E and packaged Windows smoke/portable ZIP. Code/test SHA `0d40ef3a7a484c14d93bbc1c88ca2b4bcce97f0f`; screenshot artifact `11540106386`, Windows CI test build `11539262999`.
+- Read `docs/step11/evidence/T11_W05_07_R17_STALE_CATALOG_RESPONSE_GUARD.md`; R09 25-AC technical inventory and R10 four-screen UI-authority Decision A/B packet remain controlling. **AC21 formal acceptance OPEN, AC25 final HELD, W11-05 IN_PROGRESS; PR #51 DRAFT/NOT MERGED, `main` untouched.** Generic continuation is not frozen design acceptance. Do not alter UI source-of-truth, merge PR or start W11-06 audio, W11-07 animation or STEP12.
+
+
+## Latest W05-07 R18 handoff (2026-10-08 WIB)
+- **R18 genuine UI-state race fixed:** successful `loadTemplate` from a previously pending read could erase a catalog refresh error after successful visual template save because the two error domains shared `catalogError`. Added independent `templateLoadError` and ensured that load result cannot erase catalog warning; selected-template changes clear stale load errors. Regression explicitly holds template load during save+failed catalog refresh and checks warning remains after release with correct saved message and clean project.
+- **Windows CI #531 / `37757002704` SUCCESS: 308 tests** (153 unit, 59 contract, 54 component, 42 integration), original strict Prettier check restored in `package.json` (temporary diagnostic deleted), actual Windows Electron W11-05 and four frozen captures, Save/Reopen/cross-project, source SHA-256/size/mtime, 128 layers/100 templates, earlier-wave E2Es, packaged executable smoke and portable multi-file ZIP. Verified source SHA `43e70882bfcdaafc8e2532d8a6c405a1bd40e7f0`; screenshot artifact `11540248008`; CI portable test build `11541385136`.
+- Read `docs/step11/evidence/T11_W05_07_R18_CATALOG_WARNING_ISOLATION.md`; R09 25-AC readiness audit and R10 frozen four-screen review still govern final acceptance. **AC21 formal UI signoff OPEN, AC25 final HELD, W11-05 IN PROGRESS, PR #51 DRAFT/NOT MERGED, `main` untouched.** Generic `lanjutkan` does not grant authority to approve UI, merge, or start W11-06 spectrum/audio, W11-07 animation or STEP12.
+
+
+## Latest W05-07 R19 handoff (2026-10-08 WIB)
+- **Main-owned JsonTemplateStore safety:** a valid 512-layer-capable scene with Unicode text can serialize beyond the former **2 MiB user reader limit**, even though save originally accepted it. Corrected read/save invariant: separate 2 MiB built-in catalog cap; 8 MiB user template cap checked in `Buffer.byteLength` **before filesystem write** and rechecked by `readTemplateFile`. Atomic/no-overwrite semantics, strict schema, source/privacy checks intact.
+- **Real Windows CI #538 / `37758688373` SUCCESS: 309 tests** (153 unit, 59 contract, 54 component, 43 integration). New integration test round-trips actual **>2 MiB** Unicode scene (440 valid static text layers) through disk save/list/load; W11-05 Electron/four frozen screenshot captures, source SHA-256/size/mtime, Save/Reopen/cross-project, 128/100 stress, STEP10/W11-01..04 regressions, Windows packaged executable smoke and portable ZIP all PASS. Tested SHA `be5dd822db6bb94fd8b80b54b984343aab432593`, E2E/screenshot artifact `11541217865`, portable CI test build `11541855297`.
+- See `docs/step11/evidence/T11_W05_07_R19_LARGE_TEMPLATE_ROUNDTRIP_GUARD.md`. R09 all-25 acceptance map and R10 frozen UI authority Decision A/B packet still govern final gate. **AC21 design signoff OPEN, AC25 final acceptance HELD, W11-05 IN PROGRESS, PR #51 DRAFT/unmerged, `main` untouched.** Generic `lanjutkan` is not design approval. Do not edit frozen UI reference, merge PR, or implement W11-06 spectrum/audio, W11-07 animation or STEP12.
+
+## R23 — current W11-05 technical checkpoint, UI authority still OPEN (2026-10-08 WIB)
+- Scope-limited static improvements: Template Browser cards/Premium local illustration, SCR-003B larger but non-overlapping Mode Coba gallery, DLG-008 dialog/proportions, plus responsive breakpoint regression from concurrent follow-up commits. Latest verified code head `24004a0fc44535499b3b05297efdd5b170032bb9` with [Windows CI #547](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/37764099762) **SUCCESS / 310 tests**, Windows genuine four-screen artifact `11544106158` and CI portable test build `11544395345` PASS.
+- Read `docs/step11/evidence/T11_W05_07_R23_STATIC_UI_POLISH_WINDOWS_VERIFIED.md` before work. Original strict Prettier restored and passing; frozen UI 29 reference states unchanged. **AC21 explicit user/design approval OPEN, AC25 formal HELD, W11-05 IN_PROGRESS, PR #51 DRAFT/unmerged, main unchanged.** Do NOT start W11-06/07/STEP12 or merge. User "lanjutkan" authorized these particular edits, not final UI acceptance. Next gate: reviewer approval of actual four R23 screenshots or precise bounded fixes; then complete all-25 DoD and CI closure.

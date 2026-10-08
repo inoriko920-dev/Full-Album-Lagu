@@ -147,3 +147,50 @@
   display: none;
   pointer-events: none;
 }
+
+/* W05-07 SCR-002C: selected layer properties visible beneath the layer list. */
+.visual-layer-combined .visual-layer-panel,
+.visual-layer-combined .visual-layer-inspector {
+  min-height: 0;
+}
+.visual-layer-combined .visual-layer-panel {
+  padding-bottom: 10px;
+}
+.visual-layer-combined .visual-layer-list {
+  max-height: 234px;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.visual-layer-combined .visual-layer-inspector {
+  border-top: 1px solid var(--border);
+  padding-top: 13px;
+}
+
+/*
+ * W05-07 R07 / SCR-002C: independent, bounded Layer and Inspector panes.
+ * The frozen editor keeps selection and editable properties visible together.
+ * Neither pane may push the other below the available left-rail viewport,
+ * including when a project has 128 layers. No scene data is altered.
+ */
+.visual-layer-combined {
+  display: grid;
+  grid-template-rows: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  height: 100%;
+  min-height: 0;
+}
+.visual-layer-combined .visual-layer-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.visual-layer-combined .visual-layer-list {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow-y: auto;
+}
+.visual-layer-combined .visual-layer-inspector {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}

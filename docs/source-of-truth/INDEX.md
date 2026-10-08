@@ -66,8 +66,8 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - W11-04 planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`.
 - W11-04 operational companions: `../../step11/WAVE_11_04_CHARTER.md`, `../../step11/TASK_CARDS_W11_04.md`, `../../step11/W11_04_ACCEPTANCE_MATRIX.md`, `../../step11/W11_04_DOR.md`.
 - W11-04 implementation evidence: `../../step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`, `../../step11/evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`, `../../step11/evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`, `../../step11/evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`, and `../../step11/evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
-- Status: W11-01..04 COMPLETE / PASS; **W11-05 IN PROGRESS — T11-W05-01..06 PASS / VERIFIED; T11-W05-07 READY**.
-- Next authority: **SOL T11-W05-07 only**.
+- Status: W11-01..04 COMPLETE / PASS; **W11-05 IN PROGRESS — T11-W05-01..06 PASS / VERIFIED; T11-W05-07 UI GATE FAIL**.
+- Active authority: **SOL T11-W05-07 visual remediation only**; PR #51 not mergeable until AC21 fixed.
 - Frozen SCR-002C/SCR-003A/SCR-003B/DLG-008 references are sufficient for W11-05; no new UI prompt/image generation is required.
 
 
@@ -106,3 +106,17 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 ## W05-06 checkpoint (2026-10-08)
 - Verified evidence: `../step11/evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md` — PR #50, Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
 - Serial implementation authority: **SOL T11-W05-07 only**. W11-05 overall IN PROGRESS until 25 AC + frozen UI/screenshots + protected fingerprint evidence.
+
+
+## Latest W11-05 gate — material UI drift
+- W11-05 is **IN PROGRESS / NOT CLOSED**: W05-07 technical Windows CI #407 / `37729207171` succeeded with 298 tests, but **AC-W11-05-21 frozen UI material drift FAIL**. Four real/reference side-by-side screenshots were reviewed. PR #51 remains DRAFT; do NOT merge or start W11-06. See `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` and CI artifact `11529287105`.
+- After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation only**. Align SCR-002C, SCR-003A, SCR-003B and DLG-008 with approved frozen images, preserve W11-06 audio runtime boundary, rerun full Windows regression plus 4-screen visual review, then re-evaluate AC-W11-05-01..25. Do not advance wave until AC21 PASS and PR #51 verified.
+
+## W05-07 R02 visual checkpoint — no authority advancement
+- **W05-07 R02 (2026-10-08 WIB):** editor-hosted Try/Preview, simultaneous left Layer+Inspector, frozen category rail, real visual-only scope Save dialog over editor implemented. Windows CI #427 / `37730737210` **PASS 301 tests** (153 unit, 59 contract, 47 component, 42 integration), Windows Electron/screenshots/source fingerprints/portable/previous waves PASS. **UI imagery/layout visual acceptance still pending**; do not merge draft PR #51 or start W11-06. Evidence: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R02.md` (relative from docs files: `step11/evidence/...`).
+- Read `../step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R02.md` and `../step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` before next code. Frozen UI reference DOCX remains final authority; do not substitute test snapshots for UX approval.
+
+## Latest W05-07 R03 reference review
+- R03 Windows CI #444 / `37732523147` PASS at `37264b3d998d5c89214ec699b22b35c894ea459d`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), physical source fingerprints, 128-layer/100-template stress, four real Electron screenshots, prior regressions and portable smoke/ZIP PASS. Evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md`; frozen comparison artifact `11530732266`.
+- Next read `../step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R03.md` and prior R02; do not equate automated four-screen capture success with frozen design ACCEPTED.
+- **Next authorization:** continue **SOL T11-W05-07 visual remediation ONLY** on draft PR #51; AC-W11-05-21 remains NOT ACCEPTED, so W11-05 overall IN PROGRESS. Do not begin W11-06/W11-07/STEP 12 or merge PR before frozen UI authority review PASS.
