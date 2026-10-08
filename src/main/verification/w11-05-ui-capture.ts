@@ -96,8 +96,13 @@ export async function captureW1105State(
             ? localItems().find(item => !item.textContent?.includes("Minimal Biru"))
             : localItems().find(item => item.textContent?.includes("Closure Saved Template"));
           if (!choose) throw new Error("Expected alternate/local saved template unavailable");
+          const chosenName = choose.querySelector("strong")?.textContent?.trim();
+          if (!chosenName) throw new Error("Chosen template has no name");
           choose.click();
-          await wait(() => Array.from(browserPanel.querySelectorAll("button")).some(el => el.textContent?.trim()==="Coba Template" && !el.disabled), "selected template loaded");
+          await wait(() =>
+            browserPanel.querySelector(".template-browser__details h3")?.textContent?.trim() === chosenName &&
+            Array.from(browserPanel.querySelectorAll("button")).some(el => el.textContent?.trim()==="Coba Template" && !el.disabled),
+            "selected template loaded");
           press("Coba Template", browserPanel);
           await wait(() => browserPanel.textContent?.includes("Mode Coba — perubahan belum disimpan ke proyek."), "trial started");
           if (Number(shell.getAttribute("data-project-revision")) !== beforeRevision ||
@@ -109,6 +114,7 @@ export async function captureW1105State(
           if (Number(shell.getAttribute("data-project-revision")) !== beforeRevision) {
             throw new Error("Revert mutated project revision");
           }
+          await wait(() => Array.from(browserPanel.querySelectorAll("button")).some(el => el.textContent?.trim()==="Coba Template" && !el.disabled), "ready for second trial");
           press("Coba Template", browserPanel);
           await wait(() => browserPanel.textContent?.includes("Mode Coba — perubahan belum disimpan ke proyek."), "trial restarted");
           press("Terapkan Template", browserPanel);
