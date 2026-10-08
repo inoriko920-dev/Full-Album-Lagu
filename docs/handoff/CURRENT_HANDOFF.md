@@ -391,3 +391,10 @@ After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation 
 - **Windows CI #450 / `37735732790` PASS**: 301 tests (153/59/47/42), all previous waves, source SHA-256/size/mtime, 128-layer/100-template stress, reference/screenshot evidence, Windows packaged smoke and portable multi-file ZIP. Exact screenshot artifact `11531483141`, test portable artifact `11531542915`.
 - R04 source-of-truth evidence: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R04.md`. Visually rechecked actual/reference SCR-003A: toolbar and workspace are now integrated, but painterly scene, sample content density and remaining 4-screen fidelity **are not accepted**. Do not misrepresent static scene illustrations as working audio/source rendering.
 - **Status remains T11-W05-07 IN_PROGRESS, AC-W11-05-21 OPEN, PR #51 DRAFT/NOT MERGED.** No W11-06/W11-07/STEP 12 work. Next authorized action: assess remaining reference-based UI fidelity issues on this same task and rerun Windows screenshots/CI before any gate change.
+
+
+## Latest W05-07 R05 handoff (2026-10-08 WIB)
+- **R05 DLG-008**: corrected frozen Save as Template modal's preview-left/form-right/scope-below/footer structure using CSS only. Actual project static Preview is source-grounded, with visual-only Save preserved. Source/layout test implementation commit `e0fc48c6345002c285fc050819d1351943775783`.
+- **Windows CI #453 / `37736562867` PASS, 301 tests**, four Electron/reference screenshot pairs, prior waves, 128-layer and 100-template stress, source SHA-256+size+mtime, packaged executable smoke and portable ZIP PASS. Evidence artifact `11532321026`, test build `11531847298`. Full report: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R05.md`.
+- Screenshot reviewed: R05 dialog hierarchy more faithful than R04, but approved full scenic composite and track density exceed honest static W11-05 test fixture. **No claim of pixel-perfect match; AC-W11-05-21 remains OPEN.**
+- **Continue only SOL T11-W05-07** visual fidelity correction and independent review. PR #51 DRAFT; do not merge to `main`, start W11-06/07 or STEP 12, or invent audio playback/waveform/source art.
