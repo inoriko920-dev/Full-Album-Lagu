@@ -66,8 +66,8 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - W11-04 planning baseline: `main@b89326e99e03ec7a7cd596f3b2c4c7a5338c4442`.
 - W11-04 operational companions: `../../step11/WAVE_11_04_CHARTER.md`, `../../step11/TASK_CARDS_W11_04.md`, `../../step11/W11_04_ACCEPTANCE_MATRIX.md`, `../../step11/W11_04_DOR.md`.
 - W11-04 implementation evidence: `../../step11/evidence/T11_W04_01_BINDING_SCHEMA_RESOLVER_EVIDENCE.md`, `../../step11/evidence/T11_W04_02_AUTO_SUSUN_PLANNER_EVIDENCE.md`, `../../step11/evidence/T11_W04_03_ARTWORK_INTAKE_BINDING_EVIDENCE.md`, `../../step11/evidence/T11_W04_04_METADATA_DYNAMIC_BINDING_EVIDENCE.md`, and `../../step11/evidence/T11_W04_05_FROZEN_AUTO_SUSUN_INSPECTOR_UI_EVIDENCE.md`.
-- Status: W11-01..04 COMPLETE / PASS; **W11-05 IN PROGRESS — T11-W05-01..02 PASS / VERIFIED; T11-W05-03 READY**.
-- Next authority: **SOL T11-W05-03 only**.
+- Status: W11-01..04 COMPLETE / PASS; **W11-05 IN PROGRESS — T11-W05-01..03 PASS / VERIFIED; T11-W05-04 READY**.
+- Next authority: **SOL T11-W05-04 only**.
 - Frozen SCR-002C/SCR-003A/SCR-003B/DLG-008 references are sufficient for W11-05; no new UI prompt/image generation is required.
 
 
@@ -76,7 +76,7 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - `docs/step11/evidence/W11_04_ARCHITECTURE_DRIFT_REVIEW.md` — architecture/UI/trust-boundary review; PASS — NO MATERIAL DRIFT.
 - Windows CI `37672986946` / #304; verified head `fa45534bbad250f5fb0a91f8d636d29fe138a2ae`.
 - AC-W11-04-01..22 ALL PASS; **W11-04 COMPLETE / PASS**.
-- W11-05 source-of-truth planning/DoR PASS; T11-W05-01 is now PASS / VERIFIED and T11-W05-02 is now PASS / VERIFIED and the next implementation authority is **SOL T11-W05-03 only**.
+- W11-05 source-of-truth planning/DoR PASS; T11-W05-01 is now PASS / VERIFIED and T11-W05-02 is now PASS / VERIFIED and the next implementation authority is **SOL T11-W05-04 only**.
 
 
 ## W11-05 planning authority
@@ -88,7 +88,7 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - Frozen W11-05 visual authority: SCR-002C, SCR-003A, SCR-003B, DLG-008/UI-IMG-012 from the existing UI reference pack; no new prompt/image generation is required.
 - T11-W05-01 implementation evidence: `../../step11/evidence/T11_W05_01_VISUAL_SCENE_SCHEMA_PROJECTION_EVIDENCE.md` — PASS / VERIFIED.
 - T11-W05-02 implementation evidence: `../../step11/evidence/T11_W05_02_LAYER_COMMANDS_GESTURE_HISTORY_EVIDENCE.md` — PASS / VERIFIED.
-- Next implementation authority: SOL T11-W05-03 only.
+- Next implementation authority: SOL T11-W05-04 only.
 
 ## STEP 11 registry DOCX integrity repair
 - `planning/current/10_STEP_11_FEATURE_REGISTRY_DEPENDENCY_GRAPH_WAVE_01_CHARTER_LAGU_FULL_ALBUM_v1_0.docx` is now present at the mandatory read path.
