@@ -152,3 +152,10 @@ The complete planning authority is the companion DOCX:
 - FTR-007 remains **not wave-VERIFIED** until remaining editor tasks + W11-05 closure pass.
 - FTR-011 Template Workflow has not started.
 - Dependency unlock: T11-W05-03 READY; T11-W05-04..07 remain blocked.
+
+## 2026-10-08 — R26 UI-owner approval and W11-05 25-AC acceptance review
+
+**Latest decision authority:** https://github.com/inoriko920-dev/Full-Album-Lagu/pull/51#issuecomment-6059027382; explicit approval for static SCR-002C / SCR-003A / SCR-003B / DLG-008, accepting illustrative/dummy-data differences. Supersedes older AC21 OPEN / visual gate FAIL checkpoint notes for **current R26 review**, not historical evidence. AC21 **PASS — OWNER SIGNOFF**.
+**25-AC closure review:** 25/25 PASS at tested code baseline `6e331c0646536f1236cbdc8d34bdacaf151771fe`, including AC25 technical PASS; evidence `docs/step11/evidence/W11_05_OWNER_APPROVAL_AND_25_AC_CLOSURE_20261008.md`; drift `docs/step11/evidence/W11_05_ARCHITECTURE_UI_TRUST_DRIFT_REVIEW_20261008.md`.
+**Pre-merge release gate:** HOLD until Windows CI passes at the new final documentation-commit SHA and PR protections are checked; no silent merge before all checks.
+**Downstream:** W11-06 audio playback/spectrum has **draft** DOCX and Markdown on stacked Draft PR #53, not DoR-approved, so coding remains BLOCKED until W11-05 controlled merge + W11-06 final planning/UI and DoR PASS.

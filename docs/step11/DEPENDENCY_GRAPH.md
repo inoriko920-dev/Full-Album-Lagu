@@ -234,3 +234,10 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - W05-01..06 PASS / VERIFIED, W05-07 READY. No W11-06/07 or STEP 12 work before W11-05 wave closes.
 - Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
 - Evidence `evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md`.
+
+## 2026-10-08 — R26 UI-owner approval and W11-05 25-AC acceptance review
+
+**Latest decision authority:** https://github.com/inoriko920-dev/Full-Album-Lagu/pull/51#issuecomment-6059027382; explicit approval for static SCR-002C / SCR-003A / SCR-003B / DLG-008, accepting illustrative/dummy-data differences. Supersedes older AC21 OPEN / visual gate FAIL checkpoint notes for **current R26 review**, not historical evidence. AC21 **PASS — OWNER SIGNOFF**.
+**25-AC closure review:** 25/25 PASS at tested code baseline `6e331c0646536f1236cbdc8d34bdacaf151771fe`, including AC25 technical PASS; evidence `docs/step11/evidence/W11_05_OWNER_APPROVAL_AND_25_AC_CLOSURE_20261008.md`; drift `docs/step11/evidence/W11_05_ARCHITECTURE_UI_TRUST_DRIFT_REVIEW_20261008.md`.
+**Pre-merge release gate:** HOLD until Windows CI passes at the new final documentation-commit SHA and PR protections are checked; no silent merge before all checks.
+**Downstream:** W11-06 audio playback/spectrum has **draft** DOCX and Markdown on stacked Draft PR #53, not DoR-approved, so coding remains BLOCKED until W11-05 controlled merge + W11-06 final planning/UI and DoR PASS.
