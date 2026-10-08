@@ -1,9 +1,30 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, protocol } from "electron";
+import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { createCompositionRoot } from "./composition-root";
 import { registerIpcHandlers } from "./ipc/register-ipc";
+import { NodePreviewAudioLeaseStore } from "./infrastructure/media/node-preview-audio-lease-store";
+import { PreviewAudioAccessService } from "./infrastructure/media/preview-audio-access-service";
+import {
+  PREVIEW_AUDIO_SCHEME,
+  createPreviewAudioProtocolResponse,
+} from "./infrastructure/media/preview-audio-protocol";
 import { captureW1105State } from "./verification/w11-05-ui-capture";
+
+// Scheme registration must precede app readiness. Never bypass CSP or enable Node.
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: PREVIEW_AUDIO_SCHEME,
+    privileges: {
+      standard: true,
+      secure: true,
+      stream: true,
+      supportFetchAPI: true,
+      corsEnabled: true,
+    },
+  },
+]);
 
 const PACKAGED_SMOKE_FLAG = "--smoke-test";
 const UI_TEST_SCREEN = "SCR-002A";
@@ -82,6 +103,8 @@ function createMainWindow(): BrowserWindow {
     paintWhenInitiallyHidden: true,
     backgroundColor: "#F3F5F8",
     webPreferences: {
+      // Per-window ephemeral storage partition; preview tokens never cross windows.
+      partition: `lfa-preview-session-${randomUUID()}`,
       preload: join(__dirname, "../preload/index.cjs"),
       contextIsolation: true,
       nodeIntegration: false,
@@ -90,6 +113,23 @@ function createMainWindow(): BrowserWindow {
       backgroundThrottling:
         !isUiCapture && !isW05Capture && !isSlcProbe && !isW11Probe,
     },
+  });
+
+  const ownerWebContentsId = window.webContents.id;
+  window.webContents.session.protocol.handle(PREVIEW_AUDIO_SCHEME, (request) => {
+    const context = previewAudioAccess.context(ownerWebContentsId);
+    return context === null
+      ? new Response(null, {
+          status: 403,
+          headers: { "Cache-Control": "no-store" },
+        })
+      : createPreviewAudioProtocolResponse(request, context, previewAudioStore);
+  });
+  window.webContents.on("did-navigate", () => {
+    previewAudioAccess.revokeWindow(ownerWebContentsId);
+  });
+  window.webContents.on("destroyed", () => {
+    previewAudioAccess.revokeWindow(ownerWebContentsId);
   });
 
   window.webContents.setWindowOpenHandler(() => ({ action: "deny" }));
@@ -1592,7 +1632,13 @@ if (w05Data && process.env.LFA_W05_TEST === "1") {
   app.setPath("userData", resolve(w05Data));
 }
 const compositionRoot = createCompositionRoot(process.argv);
+const previewAudioStore = new NodePreviewAudioLeaseStore();
+const previewAudioAccess = new PreviewAudioAccessService(
+  previewAudioStore,
+  compositionRoot.projectIpc.mediaIntakeService,
+);
 registerIpcHandlers({
+  previewAudioAccess,
   ...compositionRoot.projectIpc,
   templateStore: compositionRoot.templateStore,
 });
@@ -1609,4 +1655,5 @@ app.whenReady().then(() => {
   });
 });
 
+app.on("before-quit", () => previewAudioAccess.close());
 app.on("window-all-closed", () => app.quit());
