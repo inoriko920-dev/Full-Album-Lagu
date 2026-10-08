@@ -171,10 +171,13 @@ export function TemplateBrowser({
 
   useEffect(() => {
     const version = ++requestVersion.current;
-    if (selectedId === null || !window.lfa.loadTemplate) return;
+    const loadTemplate = window.lfa.loadTemplate;
+    if (selectedId === null || !loadTemplate) return;
     templateLoadPending.current = true;
-    void window.lfa
-      .loadTemplate(selectedId)
+    // Defer bridge invocation so even a synchronous preload/IPC throw is
+    // handled as a failed load, preserving the explicit same-card retry.
+    void Promise.resolve()
+      .then(() => loadTemplate(selectedId))
       .then((result) => {
         if (requestVersion.current !== version) return;
         templateLoadPending.current = false;
