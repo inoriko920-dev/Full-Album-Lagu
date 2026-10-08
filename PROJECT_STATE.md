@@ -442,3 +442,11 @@ After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation 
 - **Windows CI #453 / `37736562867` PASS: 301 tests** (153 unit, 59 contract, 47 component, 42 integration); prior-wave E2E, source hash/size/mtime, cross-project Save/Reopen, 128-layer/100-template stress, packaged Windows smoke, portable ZIP and all four real Electron/frozen capture pairs PASS.
 - Screenshot comparison artifact `11532321026`; evidence `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R05.md`. DLG-008 structure is closer but the approved mockup still contains richer composition and audio-related imagery not delivered at W11-05. **AC-W11-05-21 is still OPEN.**
 - **Gate:** W11-05 IN PROGRESS / PR #51 DRAFT, `main` unchanged. Continue **SOL T11-W05-07 only**; W11-06/07 and STEP 12 remain blocked.
+
+
+## Latest checkpoint — W05-07 R06 Mode Coba non-overlap (2026-10-08 WIB)
+- Confirmed on R05 actual Windows `SCR-003B`: the floating template trial gallery obscured part of the dynamic title in Preview. Resolved in R06 by reserving responsive right-side stage space only during Mode Coba, preserving 16:9 aspect ratio; commit `8ffddaca137678c8af0d186ead7542eb5bf1823e`.
+- Added real Windows Electron regression that rejects any `SCR-003B` gallery-to-Preview overlap (minimum 8 CSS px), commit `3faff3afefef58841fedb6c8ab085e327e4081cb`.
+- **Windows CI #458 / `37737587670` PASS:** 301 tests (153 unit/59 contract/47 component/42 integration); source SHA-256/size/mtime, 128 layers/100 templates, STEP 10 + W11-01..04, Save/Reopen/cross-project binding, four frozen screenshot evidence, Windows packaged smoke and portable ZIP PASS. Screenshot artifact `11532238637`.
+- Real R06 screenshot confirms entire selected dynamic title remains visible beside the template gallery. Report: `docs/step11/evidence/T11_W05_07_VISUAL_REMEDIATION_R06.md`.
+- **Gate:** W11-05 / T11-W05-07 IN_PROGRESS; AC-W11-05-21 still NOT ACCEPTED for full rich frozen visual fidelity. PR #51 remains DRAFT/NOT MERGED; `main` untouched. Continue W05-07 only. W11-06, W11-07, STEP 12 BLOCKED.
