@@ -86,3 +86,6 @@
   color: var(--text-secondary);
 }
 .preview-frame .static-scene-preview { width: 100%; height: 100%; }
+
+/* Frozen placeholder overlay must not intercept live visual canvas selection. */
+.preview-frame--visual::after { display: none; pointer-events: none; }
