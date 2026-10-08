@@ -838,3 +838,10 @@
 - `crossOrigin="anonymous"` before setting private `lfa-preview:` URL was essential: the original packaged FFT returned zero despite native audio clock advancing, due to cross-origin WebAudio silence. Fixed without wildcard CORS.
 - Evidence `docs/step11/evidence/T11_W06_04_REAL_WEB_AUDIO_FFT_WINDOWS_CLOSURE_20261008.md`.
 - **Next:** finish exact-head CI #651 and controlled merge, then T11-W06-05 frozen UI wiring. T05 is NOT STARTED. T06/T07 and MP4 remain blocked/future. No visual control/button changes in T04.
+
+## T11-W06-05 — Real packaged Windows editor buttons and 128-track verification (2026-10-09 WIB)
+- Owner: SOL. PR [#58](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/58) remains **DRAFT / UNMERGED**; Task05 formal status **IN PROGRESS**, T11-W06-06 **BLOCKED**.
+- Exact implementation SHA `e5392cafd210d518d10dff614b56b4611a58370a` verified Windows CI [#685](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/37826288115) **SUCCESS**: 387 tests (229 unit, 59 contract, 56 component, 43 integration), packaged Windows smoke/MP3-WAV/FFT, STEP10-W11-05 and four frozen UI comparisons all PASS.
+- New actual packaged Windows editor test PASS: main-owned picker intake of 3 + 128 synthetic WAV tracks, Play/Pause/Previous/Next with disabled skip, Mute/Unmute, 125% zoom/playhead, last track, no revision/dirty changes during transport, file SHA-256/size/mtime unchanged, 1600x1000 captures; evidence artifact `11571691622`.
+- Separate pure-driver seek and 25 sequential picker intake tests remain green; no new visible Seek button, no unapproved UI design alteration, no user-speaker listening claim, no MP4 export claim.
+- Evidence: `docs/step11/evidence/T11_W06_05_PACKAGED_EDITOR_CONTROLS_WINDOWS_VERIFIED_20261009.md`. **Pending:** exact final documentation-commit Windows CI PASS, screenshot/evidence audit and controlled PR closure/merge authority. Do not infer final task PASS from earlier source CI alone.
