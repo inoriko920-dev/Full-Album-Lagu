@@ -490,6 +490,35 @@ describe("T11-W05-06 frozen SCR-003A/B and DLG-008 template workflow", () => {
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
   });
 
+  it("retries a failed selected template load without changing the project", async () => {
+    let attempts = 0;
+    bridge.loadTemplate = async () => {
+      attempts += 1;
+      return attempts === 1
+        ? {
+            status: "error" as const,
+            code: "TEMPLATE_READ_FAILED" as const,
+            message: "Gagal memuat sementara.",
+          }
+        : { status: "ok" as const, template: minimalTemplate };
+    };
+    render(<AppShell />);
+    fireEvent.click(screen.getByRole("button", { name: "Template" }));
+    await waitFor(() =>
+      expect(screen.getByRole("alert")).toHaveTextContent(
+        "Gagal memuat sementara.",
+      ),
+    );
+    const tryButton = screen.getByRole("button", { name: "Coba Template" });
+    expect(tryButton).toBeDisabled();
+    fireEvent.click(screen.getByRole("button", { name: /Minimal Biru/ }));
+    await waitFor(() => expect(tryButton).toBeEnabled());
+    expect(attempts).toBe(2);
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(shell().getAttribute("data-project-revision")).toBe("0");
+    expect(shell().getAttribute("data-project-dirty")).toBe("false");
+  });
+
   it("rejects corrupt or missing local template safely", async () => {
     bridge.loadTemplate = async () => ({
       status: "error",
