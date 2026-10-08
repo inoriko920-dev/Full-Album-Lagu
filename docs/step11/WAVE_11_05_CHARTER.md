@@ -5,7 +5,7 @@ Planning baseline: `main@8f145a6684177286f8bae3bb9c50515d6f5703b7`
 Features: **FTR-007 Manual Layer Editor + FTR-011 Template Workflow**  
 Cross-cut: **FTR-013 Unified Command History + FTR-018 Error/Offline**  
 Planning status: **COMPLETE / PASS**  
-Implementation status: **IN PROGRESS — T11-W05-01..04 PASS / VERIFIED; T11-W05-05 READY**  
+Implementation status: **IN PROGRESS — T11-W05-01..05 PASS / VERIFIED; T11-W05-06 READY**  
 UI decision: **reuse frozen SCR-002C, SCR-003A, SCR-003B and DLG-008; no new UI prompt/image stage required**
 
 ## Source authority
@@ -276,7 +276,7 @@ A stale trial/apply rejects atomically and must be restarted.
 6. **T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring**
 7. **T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure**
 
-Execution is strictly serial. T11-W05-01..04 are PASS / VERIFIED; only T11-W05-05 is READY.
+Execution is strictly serial. T11-W05-01..05 are PASS / VERIFIED; only T11-W05-06 is READY.
 
 ## Stress targets
 
@@ -302,7 +302,7 @@ Every implementation task preserves:
 
 ## Planning verdict
 
-**PASS.** W11-05 planning remains authoritative. T11-W05-01..04 are PASS / VERIFIED; **only T11-W05-05** is authorized next for SOL. No new UI prompt/image stage is required.
+**PASS.** W11-05 planning remains authoritative. T11-W05-01..05 are PASS / VERIFIED; **only T11-W05-06** is authorized next for SOL. No new UI prompt/image stage is required.
 
 
 ## T11-W05-01 verified implementation
@@ -339,3 +339,9 @@ Every implementation task preserves:
 - Windows CI #365 / `37722584947` PASS at `c1219e3d9fa6cb12fc2a21a18a9eb945a5da5986` — **278 tests PASS** (153 unit, 55 contract, 32 component, 38 integration), STEP 10 + W11-01..04, frozen SCR-002A, Windows portable package/smoke/ZIP PASS.
 - Evidence: `evidence/T11_W05_04_STATIC_PREVIEW_SELECTION_INSPECTOR_EVIDENCE.md`.
 - W05-05 READY; W05-06..07 remain BLOCKED; no frozen AppShell wiring yet.
+
+## T11-W05-05 verified implementation
+- Frozen Main Editor now wires left Layer/Inspector and center StaticScenePreview with session-only selection, guarded commands, coalesced manual gesture and Undo/Redo; no new UI states or provider/runtime work.
+- Windows CI #378 / `37724632656` PASS at `7bdd0ee79ebf528182d9f2e5ae7da30967988c37`; 283 tests (153 unit, 55 contract, 37 component, 38 integration), architecture/secrets/portable paths, 29 frozen UI reference states, SCR-002A visual baseline, STEP 10/W11-01..04 E2E, Windows packaged smoke + portable multi-file ZIP PASS.
+- Evidence: `evidence/T11_W05_05_FROZEN_LAYER_INSPECTOR_UI_WIRING_EVIDENCE.md`.
+- W05-06 READY, W05-07 BLOCKED; exact SCR-002C pixel screenshot proof remains later full W05-07 drift review. Wave IN PROGRESS.

@@ -103,3 +103,15 @@ These task-level statuses do not close W11-05; final closure remains T11-W05-07 
 - AC-W11-05-24: **PARTIAL / 128-layer projection + component stress PASS**; full live renderer stress/E2E deferred W05-07.
 - AC-W11-05-23/25: **PASS for T11-W05-04** — Windows CI #365 / `37722584947` PASS at `c1219e3d9fa6cb12fc2a21a18a9eb945a5da5986` — **278 tests PASS** (153 unit, 55 contract, 32 component, 38 integration), STEP 10 + W11-01..04, frozen SCR-002A, Windows portable package/smoke/ZIP PASS.
 - W11-05 overall remains IN PROGRESS. W05-05..07 are not wave-VERIFIED.
+
+
+## T11-W05-05 task-level evidence
+- Evidence `evidence/T11_W05_05_FROZEN_LAYER_INSPECTOR_UI_WIRING_EVIDENCE.md`.
+- AC-W11-05-04: **PASS at AppShell component level** — synchronized UI-session canvas/list stable-ID selection, non-dirty.
+- AC-W11-05-05: **PASS at UI command level** — add/duplicate/remove/reorder, global Undo/Redo via one CommandEngine owner.
+- AC-W11-05-06/07: **PASS at UI/session level** — frozen left Inspector transforms, ephemeral pointer gesture preview vs single committed history entry, anchor/visibility/lock.
+- AC-W11-05-08: **PASS UI level** — locked layer selectable but mutating controls disabled, explicit unlock.
+- AC-W11-05-09/10: **PASS task-level** — text style and Spectrum/Progress static structural selection without early runtime.
+- AC-W11-05-21: **PARTIAL / hierarchy PASS** — frozen left rail / permanent Gemini right / Timeline unchanged, SCR-002A pixel baseline PASS; **dedicated SCR-002C pixel comparison not yet evidenced**; final UI authority closure W05-07.
+- AC-W11-05-23/25: **PASS at task level** — Windows CI #378 / `37724632656` PASS at `7bdd0ee79ebf528182d9f2e5ae7da30967988c37`; 283 tests (153 unit, 55 contract, 37 component, 38 integration), architecture/secrets/portable paths, 29 frozen UI reference states, SCR-002A visual baseline, STEP 10/W11-01..04 E2E, Windows packaged smoke + portable multi-file ZIP PASS.
+- W11-05 overall remains IN PROGRESS; W05-06 and W05-07 must finish before any wave-level PASS.

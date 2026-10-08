@@ -3,10 +3,10 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL T11-W05-04 COMPLETE / PASS; next authorized task is SOL T11-W05-05 only
+- Active role at current checkpoint: SOL T11-W05-05 COMPLETE / PASS; next authorized task is SOL T11-W05-06 only
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01..04 PASS / VERIFIED; T11-W05-05 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01..05 PASS / VERIFIED; T11-W05-06 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-04 Auto Susun + Track Binding`
@@ -328,7 +328,7 @@
 - Acceptance matrix: `docs/step11/W11_05_ACCEPTANCE_MATRIX.md`.
 - DoR: `docs/step11/W11_05_DOR.md` — PASS.
 - Acceptance planned: AC-W11-05-01..25.
-- Serial tasks: T11-W05-01..04 PASS / VERIFIED; T11-W05-05 READY; T11-W05-06..07 BLOCKED.
+- Serial tasks: T11-W05-01..05 PASS / VERIFIED; T11-W05-06 READY; T11-W05-07 BLOCKED.
 - Frozen UI authority is sufficient: SCR-002C, SCR-003A, SCR-003B and DLG-008/UI-IMG-012. No new UI prompt/image generation is required.
 - W11-05 owns static visual scene/layer state + local visual-only template workflow.
 - Audio-reactive/playback remains W11-06; keyframes/transitions remain W11-07; Gemini/FFmpeg remains STEP 12.
@@ -385,7 +385,7 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-05 — Frozen Layer + Inspector UI Wiring only**. Reuse SCR-002C frozen UI and do not start W05-06 template browser, W11-06 audio-reactive runtime, W11-07 animation, or STEP 12 in the same turn.
+After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring only**. Reuse frozen SCR-003A/003B/DLG-008 without redesign, do not start W05-07 wave closure, W11-06/07 or STEP 12.
 
 ## T11-W05-03 verified implementation (2026-10-08 WIB)
 - Scope: TemplateDocument schema, built-in nine-category starter catalog, main-owned local JSON store, non-dirty Try/Revert, one template-origin guarded Apply, Save as Template core; no UI or later-wave scope.
@@ -406,3 +406,10 @@ After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-05 — Fro
 - UI wiring is deliberately **not mounted in AppShell** until W05-05, preserving frozen SCR-002A.
 - Evidence: `docs/step11/evidence/T11_W05_04_STATIC_PREVIEW_SELECTION_INSPECTOR_EVIDENCE.md`.
 - Dependency unlock: **T11-W05-05 READY only**. W05-06..07 remain BLOCKED.
+
+## T11-W05-05 verified implementation (2026-10-08 WIB)
+- Task gate: **PASS / VERIFIED**. Windows CI #378 / `37724632656` PASS at `7bdd0ee79ebf528182d9f2e5ae7da30967988c37`; 283 tests (153 unit, 55 contract, 37 component, 38 integration), architecture/secrets/portable paths, 29 frozen UI reference states, SCR-002A visual baseline, STEP 10/W11-01..04 E2E, Windows packaged smoke + portable multi-file ZIP PASS.
+- PR: #49; evidence `docs/step11/evidence/T11_W05_05_FROZEN_LAYER_INSPECTOR_UI_WIRING_EVIDENCE.md`; portable `11526923816`, frozen visual `11527251867`.
+- Frozen left Layer/Inspector integrated with canonical ProjectSession and the center static Preview; right Gemini rail and Album Timeline unchanged; six layer families, guarded edits/Undo/Redo and session-only slider gestures verified.
+- No actual SCR-002C pixel-diff artifact yet; UI hierarchy/component tests PASS and SCR-002A screenshot baseline PASS; full frozen UI drift closure W05-07.
+- Dependency: **T11-W05-06 READY only**, W05-07 remains BLOCKED. W11-05 overall IN PROGRESS.

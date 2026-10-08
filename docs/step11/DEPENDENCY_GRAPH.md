@@ -16,7 +16,7 @@ Dependency semantics:
 2. **W11-02 — Media Intake Foundation** — FTR-003 + FTR-016 + FTR-018 — **COMPLETE / PASS**
 3. **W11-03 — Album Timeline + Command History** — FTR-004 + FTR-013 + FTR-018 — **COMPLETE / PASS**
 4. **W11-04 — Auto Susun + Track Binding** — FTR-005 + FTR-006 — **COMPLETE / PASS**
-5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013 — **IN PROGRESS; T11-W05-01..04 PASS / VERIFIED; T11-W05-05 READY**
+5. **W11-05 — Manual Layer Editor + Templates** — FTR-007 + FTR-011 + FTR-013 — **IN PROGRESS; T11-W05-01..05 PASS / VERIFIED; T11-W05-06 READY**
 6. **W11-06 — Preview + Audio-Reactive Visuals** — FTR-012 + FTR-008
 7. **W11-07 — Animation + Boundary Transitions** — FTR-009 + FTR-010
 8. **W11-08 — Render Readiness Contract** — FTR-017 + FTR-018
@@ -189,7 +189,7 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 - Features: FTR-007 + FTR-011; FTR-013/FTR-018 cross-cut.
 - Planning/DoR: COMPLETE / PASS.
 - Acceptance: AC-W11-05-01..25.
-- Serial order: T11-W05-01 PASS -> T11-W05-02 PASS -> T11-W05-03 PASS -> T11-W05-04 PASS -> T11-W05-05 READY -> T11-W05-06 BLOCKED -> T11-W05-07 BLOCKED.
+- Serial order: T11-W05-01 PASS -> T11-W05-02 PASS -> T11-W05-03 PASS -> T11-W05-04 PASS -> T11-W05-05 PASS -> T11-W05-06 READY -> T11-W05-07 BLOCKED.
 - Scene/layer state is additive schema-v1, stable-ID, canonical-array-order and CommandEngine-owned.
 - Templates are local visual configuration only; Try is session-only and Apply is one template-origin atomic history unit.
 - Frozen SCR-002C/SCR-003A/SCR-003B/DLG-008 are sufficient; no new UI prompt/image generation.
@@ -218,7 +218,13 @@ W11-02 and W11-03 implementation are complete. W11-03 AC-W11-03-01..20 are ALL P
 
 
 ## T11-W05-04 completion (latest checkpoint)
-- T11-W05-01..04 PASS / VERIFIED; T11-W05-05 READY; T11-W05-06..07 BLOCKED.
+- T11-W05-01..05 PASS / VERIFIED; T11-W05-06 READY; T11-W05-06..07 BLOCKED.
 - Windows CI #365 / `37722584947` PASS at `c1219e3d9fa6cb12fc2a21a18a9eb945a5da5986` — **278 tests PASS** (153 unit, 55 contract, 32 component, 38 integration), STEP 10 + W11-01..04, frozen SCR-002A, Windows portable package/smoke/ZIP PASS.
 - Evidence: `evidence/T11_W05_04_STATIC_PREVIEW_SELECTION_INSPECTOR_EVIDENCE.md`.
-- W11-05 stays IN PROGRESS; only SOL T11-W05-05 is authorized next.
+- W11-05 stays IN PROGRESS; only SOL T11-W05-06 is authorized next.
+
+
+## T11-W05-05 verified (latest checkpoint)
+- T11-W05-01..05 PASS / VERIFIED, T11-W05-06 READY, T11-W05-07 BLOCKED.
+- Windows CI #378 / `37724632656` PASS at `7bdd0ee79ebf528182d9f2e5ae7da30967988c37`; 283 tests (153 unit, 55 contract, 37 component, 38 integration), architecture/secrets/portable paths, 29 frozen UI reference states, SCR-002A visual baseline, STEP 10/W11-01..04 E2E, Windows packaged smoke + portable multi-file ZIP PASS.
+- Evidence `evidence/T11_W05_05_FROZEN_LAYER_INSPECTOR_UI_WIRING_EVIDENCE.md`.
