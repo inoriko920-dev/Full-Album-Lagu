@@ -1,0 +1,22 @@
+name: W06-05 ephemeral hook formatting audit
+on:
+  pull_request:
+    paths:
+      - "src/renderer/state/project-session/use-project-session.ts"
+      - ".github/workflows/w06-05-format-audit.yml"
+permissions:
+  contents: read
+jobs:
+  diff:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - name: Exact Prettier diff (read only)
+        run: |
+          npx prettier --write src/renderer/state/project-session/use-project-session.ts
+          git diff -- src/renderer/state/project-session/use-project-session.ts
