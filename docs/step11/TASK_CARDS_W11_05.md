@@ -182,7 +182,10 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: HIGH
-- Status: READY
+- Status: DONE
+- Work status: IMPLEMENTED
+- Evidence status: VERIFIED
+- Gate: PASS
 - Dependency: T11-W05-05 PASS / VERIFIED.
 - UI authority:
   - SCR-003A / UI-IMG-003A;
@@ -203,13 +206,15 @@ Serial implementation only.
   - Apply uses template-origin history;
   - Save excludes protected project data;
   - return to editor preserves project/Agent context.
-- Exit gate: PASS / VERIFIED before 07.
+- Exit gate: **PASS / VERIFIED** for W05-06 via contract/component, Windows CI and prior-wave regression. Full pixel-level frozen Template UI drift proof remains W05-07.
+- Evidence: `evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md`.
+- Dependency: **T11-W05-07 READY**.
 
 ## T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: BLOCKED
+- Status: READY
 - Dependency: T11-W05-06 PASS / VERIFIED.
 - Scope:
   - canonical Windows full-flow;

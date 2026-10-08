@@ -21,6 +21,12 @@ import type {
 } from "../../../core/domain/visual-scene-schema";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  createTemplateFromProject,
+  TemplateTrialSession,
+  type SaveTemplateInput,
+} from "../../../core/application/services/template-workflow-service";
+import type { TemplateDocument } from "../../../core/domain/template-document";
+import {
   createAutoArrangeCommandBatch,
   createAutoArrangePlan,
 } from "../../../core/application/services/auto-arrange-service";
@@ -151,6 +157,13 @@ export interface ProjectSessionView {
   autoArrangeState: AutoArrangeActionState;
   artworkActionState: ArtworkActionState;
   artworkError: MediaUiError | null;
+  templateTrialName: string | null;
+  templateTrialProject: ProjectDocument | null;
+  templateError: string | null;
+  beginTemplateTrial(template: TemplateDocument): boolean;
+  revertTemplateTrial(): void;
+  applyTemplateTrial(): boolean;
+  saveVisualTemplate(input: SaveTemplateInput): Promise<boolean>;
   layerError: string | null;
   addVisualLayer(layer: VisualLayer): boolean;
   duplicateVisualLayer(layerId: string, newLayerId: string): boolean;
@@ -251,6 +264,13 @@ export function useProjectSession(): ProjectSessionView {
     useState<ArtworkActionState>("idle");
   const [artworkError, setArtworkError] = useState<MediaUiError | null>(null);
 
+  const [templateTrialName, setTemplateTrialName] = useState<string | null>(
+    null,
+  );
+  const [templateTrialProject, setTemplateTrialProject] =
+    useState<ProjectDocument | null>(null);
+  const [templateError, setTemplateError] = useState<string | null>(null);
+  const templateTrialRef = useRef<TemplateTrialSession | null>(null);
   const [layerError, setLayerError] = useState<string | null>(null);
   const layerGestureRef = useRef<LayerTransformGestureSession | null>(null);
   const projectRef = useRef(project);
@@ -845,6 +865,86 @@ export function useProjectSession(): ProjectSessionView {
     return result.status === "applied";
   }, [history, publishHistorySnapshot]);
 
+  const revertTemplateTrial = useCallback(() => {
+    templateTrialRef.current = null;
+    setTemplateTrialProject(null);
+    setTemplateTrialName(null);
+    setTemplateError(null);
+  }, []);
+
+  const beginTemplateTrial = useCallback(
+    (template: TemplateDocument): boolean => {
+      try {
+        const trial = new TemplateTrialSession(history.snapshot(), template);
+        templateTrialRef.current = trial;
+        setTemplateTrialProject(trial.previewProject());
+        setTemplateTrialName(template.name);
+        setTemplateError(null);
+        return true;
+      } catch {
+        setTemplateError(
+          "Template rusak atau tidak kompatibel. Proyek tidak diubah.",
+        );
+        return false;
+      }
+    },
+    [history],
+  );
+
+  const applyTemplateTrial = useCallback((): boolean => {
+    const trial = templateTrialRef.current;
+    if (trial === null) return false;
+    try {
+      const result = trial.apply(history);
+      if (result.status === "rejected") {
+        setTemplateError(
+          "Proyek berubah sejak Mode Coba. Coba ulang template.",
+        );
+        templateTrialRef.current = null;
+        setTemplateTrialProject(null);
+        setTemplateTrialName(null);
+        return false;
+      }
+      templateTrialRef.current = null;
+      setTemplateTrialProject(null);
+      setTemplateTrialName(null);
+      setTemplateError(null);
+      if (result.status === "applied") publishHistorySnapshot();
+      return result.status === "applied" || result.status === "noop";
+    } catch {
+      setTemplateError("Template tidak dapat diterapkan. Proyek tidak diubah.");
+      return false;
+    }
+  }, [history, publishHistorySnapshot]);
+
+  const saveVisualTemplate = useCallback(
+    async (input: SaveTemplateInput): Promise<boolean> => {
+      if (!window.lfa.saveTemplate) {
+        setTemplateError("Penyimpanan template lokal tidak tersedia.");
+        return false;
+      }
+      try {
+        const before = history.snapshot();
+        const template = createTemplateFromProject(before.project, input);
+        const result = await window.lfa.saveTemplate(template);
+        if (result.status === "error") {
+          setTemplateError(
+            result.code === "TEMPLATE_EXISTS"
+              ? "ID template sudah digunakan."
+              : result.message,
+          );
+          return false;
+        }
+        setTemplateError(null);
+        return true;
+      } catch {
+        setTemplateError("Template tidak valid atau gagal disimpan.");
+        return false;
+      }
+    },
+    [history],
+  );
+
   const undo = useCallback((): boolean => {
     const result = history.undo();
     if (result.status === "unavailable") return false;
@@ -1341,6 +1441,13 @@ export function useProjectSession(): ProjectSessionView {
     autoArrangeState,
     artworkActionState,
     artworkError,
+    templateTrialName,
+    templateTrialProject,
+    templateError,
+    beginTemplateTrial,
+    revertTemplateTrial,
+    applyTemplateTrial,
+    saveVisualTemplate,
     layerError,
     addVisualLayer,
     duplicateVisualLayer,

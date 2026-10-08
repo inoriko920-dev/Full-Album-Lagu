@@ -39,7 +39,18 @@ import type {
   StartupProjectResult,
 } from "./project-persistence";
 
+import type { TemplateDocument } from "../domain/template-document";
+import type {
+  TemplateListResult,
+  TemplateLoadResult,
+  TemplateSaveResult,
+} from "./template-ipc";
+
 export interface LfaBridge {
+  /** Optional for legacy test fixtures; Electron preload always exposes these. */
+  listTemplates?(): Promise<TemplateListResult>;
+  loadTemplate?(templateId: string): Promise<TemplateLoadResult>;
+  saveTemplate?(template: TemplateDocument): Promise<TemplateSaveResult>;
   getFoundationInfo(): Promise<FoundationInfo>;
   importArtwork(request: ArtworkImportRequest): Promise<ArtworkImportResult>;
   pickAudioFiles(): Promise<MediaDiscoveryStartResult>;
