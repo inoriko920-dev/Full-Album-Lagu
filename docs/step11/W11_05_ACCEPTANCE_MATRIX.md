@@ -128,3 +128,10 @@ These task-level statuses do not close W11-05; final closure remains T11-W05-07 
 - AC-W11-05-22: **PARTIAL** — no source media mutations in code/UI and protected data rejected by strict template IPC; physical SHA-256/size/mtime proof belongs to W05-07.
 - AC-W11-05-23/25: **PASS task-level** — Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
 - W11-05 wave **not closed**; final 25-AC drift/E2E closure awaits T11-W05-07.
+
+
+## T11-W05-07 initial full-wave review (2026-10-08 WIB)
+- All 25 acceptance conditions were reviewed against prior task evidence plus real Windows CI #407, run `37729207171` (298 Vitest tests and all real Electron, Save/Reopen, second-project binding, fingerprint, 128-layer and 100-template tests PASS).
+- **AC-W11-05-21: FAIL / BLOCKER** after direct human visual review of frozen-vs-Electron SCR-002C, SCR-003A, SCR-003B and DLG-008 screenshots. See `evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md`. Main Editor's visual composition, local gallery, Try mode and Save dialog differ materially from frozen references. Pixel-exact comparison was neither used nor claimed due differing image resolutions.
+- **Other conditions:** functional, schema, template, protection, stress, trust boundary and prior-wave regression evidence PASS at test level; final whole-wave PASS is withheld until AC21 is remediated and all 25 ACs are rechecked.
+- **Wave gate: FAIL; W11-05 remains IN PROGRESS; T11-W05-07 corrective work is the only authorized next step.**

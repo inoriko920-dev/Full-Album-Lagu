@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..06 are PASS / VERIFIED. Only T11-W05-07 Wave E2E, Stress, Drift Review & Evidence Closure is READY for next SOL turn. STEP 11 is still IN PROGRESS.
+STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..06 are PASS / VERIFIED. T11-W05-07 Wave E2E, Stress, Drift Review & Evidence Closure is IN_PROGRESS / UI GATE FAIL. Resume correction of frozen screens in this SAME task; do not go to another wave. STEP 11 is still IN PROGRESS.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -331,7 +331,7 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 - FTR-007 is not wave-VERIFIED yet; FTR-011 has not started.
 
 ## Next exact action
-After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure only**. Read W11-05 planning, 29 UI frozen reference states, W05-01..06 evidence and AC-W11-05-01..25 first. Do not start W11-06 playback, W11-07 animation or STEP 12 in the same turn.
+After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation only**. Align SCR-002C, SCR-003A, SCR-003B and DLG-008 with approved frozen images, preserve W11-06 audio runtime boundary, rerun full Windows regression plus 4-screen visual review, then re-evaluate AC-W11-05-01..25. Do not advance wave until AC21 PASS and PR #51 verified.
 
 ## T11-W05-03 handoff (2026-10-08 WIB)
 - Task PASS / VERIFIED after branch Windows CI and packaged resource smoke.
@@ -367,3 +367,8 @@ After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-07 — Wav
 - Tests: local filter, safe error/corrupt rejection, source data exclusions, Apply Undo/Redo and return context. 59 contract tests and 42 component tests PASS.
 - **Outstanding W05-07**: full Windows Try/Revert/Apply/Save/Reopen/second-project E2E, 128-layer and 100-template stress, protected SHA-256/size/mtime, complete 25 AC mapping, SCR-002C/003A/003B/DLG-008 screenshot drift review; do not claim W11-05 wave complete yet.
 - Only SOL **T11-W05-07 READY**. W11-06/07/STEP 12 remain blocked.
+
+
+## Latest W05-07 QA and mandatory remediation (2026-10-08 WIB)
+- W11-05 is **IN PROGRESS / NOT CLOSED**: W05-07 technical Windows CI #407 / `37729207171` succeeded with 298 tests, but **AC-W11-05-21 frozen UI material drift FAIL**. Four real/reference side-by-side screenshots were reviewed. PR #51 remains DRAFT; do NOT merge or start W11-06. See `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` and CI artifact `11529287105`.
+- After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation only**. Align SCR-002C, SCR-003A, SCR-003B and DLG-008 with approved frozen images, preserve W11-06 audio runtime boundary, rerun full Windows regression plus 4-screen visual review, then re-evaluate AC-W11-05-01..25. Do not advance wave until AC21 PASS and PR #51 verified.

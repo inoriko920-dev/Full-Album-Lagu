@@ -214,7 +214,8 @@ Serial implementation only.
 - Owner: SOL
 - Priority: P0
 - Risk: MEDIUM
-- Status: READY
+- Status: IN_PROGRESS
+- Gate: FAIL — frozen UI AC-W11-05-21 material drift. See `evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md`.
 - Dependency: T11-W05-06 PASS / VERIFIED.
 - Scope:
   - canonical Windows full-flow;
@@ -233,3 +234,8 @@ Serial implementation only.
   - prior-wave + package/smoke/ZIP regressions.
 - Closure rule:
   - W11-05 closes only if every AC is PASS and no material drift exists.
+
+
+## T11-W05-07 observed gate
+- W11-05 is **IN PROGRESS / NOT CLOSED**: W05-07 technical Windows CI #407 / `37729207171` succeeded with 298 tests, but **AC-W11-05-21 frozen UI material drift FAIL**. Four real/reference side-by-side screenshots were reviewed. PR #51 remains DRAFT; do NOT merge or start W11-06. See `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` and CI artifact `11529287105`.
+- After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation only**. Align SCR-002C, SCR-003A, SCR-003B and DLG-008 with approved frozen images, preserve W11-06 audio runtime boundary, rerun full Windows regression plus 4-screen visual review, then re-evaluate AC-W11-05-01..25. Do not advance wave until AC21 PASS and PR #51 verified.

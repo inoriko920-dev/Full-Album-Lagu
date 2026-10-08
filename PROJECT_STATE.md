@@ -3,10 +3,10 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL T11-W05-06 COMPLETE / PASS; next authorized task is SOL T11-W05-07 only
+- Active role at current checkpoint: SOL T11-W05-07 IN_PROGRESS / UI GATE FAIL — remain W05-07 until material frozen UI drift resolved
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01..06 PASS / VERIFIED; T11-W05-07 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01..06 PASS / VERIFIED; T11-W05-07 IN_PROGRESS / UI GATE FAIL
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-04 Auto Susun + Track Binding`
@@ -385,7 +385,7 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure only**. Do not start W11-06/07 or STEP 12 without W11-05 wave closure PASS.
+After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation only**. Align SCR-002C, SCR-003A, SCR-003B and DLG-008 with approved frozen images, preserve W11-06 audio runtime boundary, rerun full Windows regression plus 4-screen visual review, then re-evaluate AC-W11-05-01..25. Do not advance wave until AC21 PASS and PR #51 verified.
 
 ## T11-W05-03 verified implementation (2026-10-08 WIB)
 - Scope: TemplateDocument schema, built-in nine-category starter catalog, main-owned local JSON store, non-dirty Try/Revert, one template-origin guarded Apply, Save as Template core; no UI or later-wave scope.
@@ -420,3 +420,8 @@ After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-07 — Wav
 - Local frozen template browser/filter/details, session-only Try/Revert, one guarded template-origin Apply, visual-only Save dialog, protected track/metadata/source state and context-preserving return PASS.
 - Verified IPC trust boundary and no renderer filesystem/network/provider leakage. 100-template renderer stress / protected source fingerprint / exact SCR-003A/B/DLG-008 visual drift review remain W05-07.
 - Dependency unlock: **T11-W05-07 READY only**. W11-05 overall **IN PROGRESS**, not complete.
+
+
+## Latest W11-05 gate failure (2026-10-08 WIB)
+- W11-05 is **IN PROGRESS / NOT CLOSED**: W05-07 technical Windows CI #407 / `37729207171` succeeded with 298 tests, but **AC-W11-05-21 frozen UI material drift FAIL**. Four real/reference side-by-side screenshots were reviewed. PR #51 remains DRAFT; do NOT merge or start W11-06. See `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` and CI artifact `11529287105`.
+- After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation only**. Align SCR-002C, SCR-003A, SCR-003B and DLG-008 with approved frozen images, preserve W11-06 audio runtime boundary, rerun full Windows regression plus 4-screen visual review, then re-evaluate AC-W11-05-01..25. Do not advance wave until AC21 PASS and PR #51 verified.

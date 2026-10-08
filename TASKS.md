@@ -778,5 +778,10 @@
 
 ## T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure
 - Owner: SOL
-- Status: READY
+- Status: IN_PROGRESS
+- Gate: FAIL — AC-W11-05-21 MATERIAL UI DRIFT
+- Technical scope CI #407 and 298 tests PASS, physical source fingerprint and true Windows Electron flow PASS.
+- Four reference-vs-actual screenshots reviewed: SCR-002C, SCR-003A, SCR-003B and DLG-008 display material differences.
+- PR #51 DRAFT; not merged. Fix frozen UI deviations and retest without pulling forward audio-reactive runtime.
+- Evidence: `docs/step11/evidence/T11_W05_07_UI_DRIFT_GATE_FAIL.md` and GitHub Actions artifact `11529287105`.
 - Dependency: T11-W05-06 PASS / VERIFIED.
