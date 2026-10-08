@@ -344,6 +344,7 @@ export function TemplateBrowser({
                 <ActionButton
                   variant="secondary"
                   label="Simpan Template"
+                  disabled={busy || inTrial}
                   onClick={() => {
                     setSaveName("");
                     setSavedMessage(null);
