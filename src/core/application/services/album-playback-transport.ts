@@ -7,7 +7,10 @@ import {
   projectDocumentSchema,
   type ProjectDocument,
 } from "../../domain/project-document";
-import type { PlaybackClockSnapshot, PlaybackPhase } from "../../contracts/playback";
+import type {
+  PlaybackClockSnapshot,
+  PlaybackPhase,
+} from "../../contracts/playback";
 
 export type PlaybackTransportEffect =
   | {
@@ -64,10 +67,7 @@ export class AlbumPlaybackTransport {
     return next;
   }
 
-  private map(
-    albumTimeMs: number,
-    autoPlay: boolean,
-  ): PlaybackTransportEffect {
+  private map(albumTimeMs: number, autoPlay: boolean): PlaybackTransportEffect {
     const generation = this.nextGeneration();
     this.loaded = false;
     this.pendingAutoPlay = autoPlay;
@@ -111,7 +111,8 @@ export class AlbumPlaybackTransport {
       this.update("playing");
       return { kind: "resume", generation };
     }
-    const position = this.state.phase === "finished" ? 0 : this.state.albumTimeMs;
+    const position =
+      this.state.phase === "finished" ? 0 : this.state.albumTimeMs;
     return this.map(position, true);
   }
 

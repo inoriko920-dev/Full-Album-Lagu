@@ -59,7 +59,9 @@ describe("W11-06 T03 ephemeral album transport", () => {
   });
 
   it("skips disabled track on ended and ignores duplicate stale ended", () => {
-    const controller = new AlbumPlaybackTransport(project([1000, 2000, 3000], [1]));
+    const controller = new AlbumPlaybackTransport(
+      project([1000, 2000, 3000], [1]),
+    );
     const first = controller.play();
     if (first?.kind !== "load") throw new Error("expected first load");
     controller.onLoaded(first.generation);
