@@ -1,4 +1,10 @@
 import { ipcMain } from "electron";
+import { TemplateStoreError, type TemplateStore } from "../../core/application/ports/template-store";
+import {
+  TEMPLATE_LIST_CHANNEL, TEMPLATE_LOAD_CHANNEL, TEMPLATE_SAVE_CHANNEL,
+  templateListResultSchema, templateLoadRequestSchema, templateLoadResultSchema,
+  templateSaveRequestSchema, templateSaveResultSchema,
+} from "../../core/contracts/template-ipc";
 import { ProjectRecoveryStoreError } from "../../core/application/ports/project-recovery-store";
 import { ProjectStoreError } from "../../core/application/ports/project-store";
 import type { ArtworkIntakeService } from "../../core/application/services/artwork-intake-service";
@@ -85,6 +91,7 @@ import {
 } from "../../core/contracts/project-persistence";
 
 export interface ProjectIpcDependencies {
+  templateStore?: TemplateStore;
   lifecycle: ProjectLifecycleService;
   loadProject: LoadProjectUseCase;
   pathSession: ProjectPathSession;
@@ -153,6 +160,45 @@ function mapRecoveryError(
 export function registerIpcHandlers(
   projectDependencies: ProjectIpcDependencies,
 ): void {
+  const templateError = (error: unknown) => ({
+    status: "error" as const,
+    code: error instanceof TemplateStoreError ? error.code : "TEMPLATE_READ_FAILED",
+    message: "Template tidak dapat diproses secara aman.",
+  });
+
+  ipcMain.handle(TEMPLATE_LIST_CHANNEL, async () => {
+    if (!projectDependencies.templateStore) {
+      return templateListResultSchema.parse({ status: "error", code: "TEMPLATE_READ_FAILED", message: "Katalog template tidak tersedia." });
+    }
+    try {
+      return templateListResultSchema.parse({ status: "ok", entries: await projectDependencies.templateStore.list() });
+    } catch (error) {
+      return templateListResultSchema.parse(templateError(error));
+    }
+  });
+  ipcMain.handle(TEMPLATE_LOAD_CHANNEL, async (_event, payload: unknown) => {
+    const request = templateLoadRequestSchema.safeParse(payload);
+    if (!request.success) return templateLoadResultSchema.parse({ status: "error", code: "TEMPLATE_INVALID", message: "Pilihan template tidak valid." });
+    if (!projectDependencies.templateStore) return templateLoadResultSchema.parse({ status: "error", code: "TEMPLATE_READ_FAILED", message: "Katalog template tidak tersedia." });
+    try {
+      return templateLoadResultSchema.parse({ status: "ok", template: await projectDependencies.templateStore.load(request.data.templateId) });
+    } catch (error) {
+      return templateLoadResultSchema.parse(templateError(error));
+    }
+  });
+  ipcMain.handle(TEMPLATE_SAVE_CHANNEL, async (_event, payload: unknown) => {
+    const request = templateSaveRequestSchema.safeParse(payload);
+    if (!request.success) return templateSaveResultSchema.parse({ status: "error", code: "TEMPLATE_INVALID", message: "Data template tidak valid." });
+    if (!projectDependencies.templateStore) return templateSaveResultSchema.parse({ status: "error", code: "TEMPLATE_WRITE_FAILED", message: "Penyimpanan template tidak tersedia." });
+    try {
+      await projectDependencies.templateStore.saveUserTemplate(request.data.template);
+      return templateSaveResultSchema.parse({ status: "ok", templateId: request.data.template.templateId });
+    } catch (error) {
+      const mapped = templateError(error);
+      return templateSaveResultSchema.parse({ ...mapped, code: mapped.code === "TEMPLATE_READ_FAILED" ? "TEMPLATE_WRITE_FAILED" : mapped.code });
+    }
+  });
+
   ipcMain.handle(FOUNDATION_INFO_CHANNEL, () =>
     foundationInfoSchema.parse({
       platform: process.platform,
