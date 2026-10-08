@@ -63,7 +63,14 @@ export class PreviewAudioAccessService {
     }
 
     this.selected.delete(discoveryBatchId);
-    this.revokeWindow(ownerWebContentsId);
+    if (this.activeProjects.get(ownerWebContentsId) === projectId) {
+      // A later picker import of the SAME album must not orphan already
+      // imported track IDs. Tear down active streams, not batch provenance.
+      this.store.revokeWindow(ownerWebContentsId);
+    } else {
+      // Different project or a stale window loses ALL prior authority.
+      this.revokeWindow(ownerWebContentsId);
+    }
     this.intake.set(batchId, { ownerWebContentsId, projectId, batchId });
     this.activeProjects.set(ownerWebContentsId, projectId);
     return true;
