@@ -7,6 +7,7 @@ import {
   type TemplateDocument,
 } from "../../core/domain/template-document";
 import type { ProjectDocument } from "../../core/domain/project-document";
+import type { VisualLayer } from "../../core/domain/visual-scene-schema";
 import type { ProjectSessionView } from "../state/project-session/use-project-session";
 import { StaticScenePreview } from "../visual/StaticScenePreview";
 import { ActionButton } from "../ui/controls";
@@ -18,6 +19,7 @@ export interface TemplateBrowserProps {
   session: ProjectSessionView;
   selectedTrackId: string | null;
   onClose: () => void;
+  onTrialStart: () => void;
 }
 
 function makeTemplateId(name: string): string {
@@ -39,6 +41,7 @@ export function TemplateBrowser({
   session,
   selectedTrackId,
   onClose,
+  onTrialStart,
 }: TemplateBrowserProps) {
   const [entries, setEntries] = useState<TemplateCatalogEntry[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -53,6 +56,22 @@ export function TemplateBrowser({
   const [saveCategory, setSaveCategory] = useState<TemplateCategory>("Minimal");
   const [savedMessage, setSavedMessage] = useState<string | null>(null);
   const requestVersion = useRef(0);
+  const [saveScope, setSaveScope] = useState<VisualLayer["kind"][]>([
+    "background", "artwork", "text", "spectrum", "progress",
+  ]);
+  const scopeGroups: { label: string; kinds: VisualLayer["kind"][]; detail: string }[] = [
+    { label: "Layer visual", kinds: ["background", "artwork"], detail: "Latar dan artwork" },
+    { label: "Teks dan judul", kinds: ["text"], detail: "Gaya teks dan posisi" },
+    { label: "Spectrum", kinds: ["spectrum"], detail: "Konfigurasi visual statis" },
+    { label: "Progress Bar", kinds: ["progress"], detail: "Konfigurasi bar statis" },
+  ];
+  function toggleScope(kinds: VisualLayer["kind"][], enabled: boolean) {
+    setSaveScope((prior) =>
+      enabled
+        ? Array.from(new Set([...prior, ...kinds]))
+        : prior.filter((kind) => !kinds.includes(kind)),
+    );
+  }
 
   const reloadCatalog = async () => {
     if (!window.lfa.listTemplates) {
@@ -166,7 +185,7 @@ export function TemplateBrowser({
 
   function tryTemplate() {
     if (selectedTemplate === null || busy) return;
-    session.beginTemplateTrial(selectedTemplate);
+    if (session.beginTemplateTrial(selectedTemplate)) onTrialStart();
   }
 
   function revert() {
@@ -190,7 +209,7 @@ export function TemplateBrowser({
         templateId: makeTemplateId(name),
         name,
         category: saveCategory,
-      });
+      }, saveScope);
       if (ok) {
         setShowSaveDialog(false);
         setSaveName("");
