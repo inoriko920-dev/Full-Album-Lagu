@@ -613,8 +613,12 @@ describe("T11-W05-07 live renderer wave stress and frozen safety", () => {
       screen.getByText("Mode Coba — perubahan belum disimpan ke proyek."),
     ).toBeInTheDocument();
     const trialGallery = screen.getByLabelText("Pilihan Template Mode Coba");
-    expect(within(trialGallery).getByText("Stress Template 099")).toBeInTheDocument();
-    expect(trialGallery.querySelectorAll(".template-trial-overlay__gallery-card")).toHaveLength(6);
+    expect(
+      within(trialGallery).getByText("Stress Template 099"),
+    ).toBeInTheDocument();
+    expect(
+      trialGallery.querySelectorAll(".template-trial-overlay__gallery-card"),
+    ).toHaveLength(6);
     expect(shell().getAttribute("data-project-revision")).toBe("0");
     expect(shell().getAttribute("data-project-dirty")).toBe("false");
     fireEvent.click(
