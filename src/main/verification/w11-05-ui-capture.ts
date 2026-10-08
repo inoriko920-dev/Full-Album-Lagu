@@ -77,7 +77,7 @@ export async function captureW1105State(
         } else if (mode === "SCR-003B") {
           await wait(() => Array.from(browserPanel.querySelectorAll("button")).some(el => el.textContent?.trim()==="Coba Template" && !el.disabled), "template ready");
           press("Coba Template", browserPanel);
-          await wait(() => browserPanel.textContent?.includes("Mode Coba — perubahan belum disimpan ke proyek."), "trial banner");
+          await wait(() => !!document.querySelector(".template-trial-overlay") && document.body.textContent?.includes("Mode Coba — perubahan belum disimpan ke proyek."), "trial banner");
           if (Number(shell.getAttribute("data-project-revision")) !== beforeRevision ||
               shell.getAttribute("data-project-dirty") !== beforeDirty) {
             throw new Error("Trial changed project revision/dirty");
@@ -104,20 +104,20 @@ export async function captureW1105State(
             Array.from(browserPanel.querySelectorAll("button")).some(el => el.textContent?.trim()==="Coba Template" && !el.disabled),
             "selected template loaded");
           press("Coba Template", browserPanel);
-          await wait(() => browserPanel.textContent?.includes("Mode Coba — perubahan belum disimpan ke proyek."), "trial started");
+          await wait(() => !!document.querySelector(".template-trial-overlay") && document.body.textContent?.includes("Mode Coba — perubahan belum disimpan ke proyek."), "trial started");
           if (Number(shell.getAttribute("data-project-revision")) !== beforeRevision ||
               shell.getAttribute("data-project-dirty") !== beforeDirty) {
             throw new Error("Trial mutated canonical project");
           }
-          press("Kembali ke Sebelumnya", browserPanel);
-          await wait(() => !browserPanel.textContent?.includes("Mode Coba — perubahan belum disimpan ke proyek."), "reverted");
+          press("Kembali ke Sebelumnya");
+          await wait(() => !document.querySelector(".template-trial-overlay") && !!document.querySelector(".template-browser"), "reverted");
           if (Number(shell.getAttribute("data-project-revision")) !== beforeRevision) {
             throw new Error("Revert mutated project revision");
           }
           await wait(() => Array.from(browserPanel.querySelectorAll("button")).some(el => el.textContent?.trim()==="Coba Template" && !el.disabled), "ready for second trial");
           press("Coba Template", browserPanel);
-          await wait(() => browserPanel.textContent?.includes("Mode Coba — perubahan belum disimpan ke proyek."), "trial restarted");
-          press("Terapkan Template", browserPanel);
+          await wait(() => !!document.querySelector(".template-trial-overlay"), "trial restarted");
+          press("Terapkan Template");
           await wait(() => !document.querySelector(".template-browser"), "template applied and returned");
           await wait(() => Number(shell.getAttribute("data-project-revision")) > beforeRevision, "template revision");
           const appliedRevision = Number(shell.getAttribute("data-project-revision"));
@@ -162,7 +162,7 @@ export async function captureW1105State(
         beforeDirty, afterDirty: shell.getAttribute("data-project-dirty"),
         frozen: mainEditor, layerCount: document.querySelectorAll(".visual-layer-row").length,
         catalogCount: document.querySelectorAll(".template-browser__item").length,
-        hasTrialBanner: !!document.querySelector(".template-browser__trial-banner"),
+        hasTrialBanner: !!document.querySelector(".template-trial-overlay__banner"),
         hasSaveDialog: !!document.querySelector('[role="dialog"][aria-label="Simpan sebagai Template"]'),
         viewport: { width: window.innerWidth, height: window.innerHeight },
         shell: { width: Math.round(rect.width), height: Math.round(rect.height) },
