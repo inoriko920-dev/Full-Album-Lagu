@@ -1,5 +1,5 @@
-import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import { buildStaticScenePreview } from "../../src/core/domain/static-scene-preview";
 import type { ProjectDocument } from "../../src/core/domain/project-document";
 import { StaticScenePreview } from "../../src/renderer/visual/StaticScenePreview";
@@ -90,30 +90,32 @@ function fixture(): ProjectDocument {
   };
 }
 
+afterEach(cleanup);
+
 describe("T11-W05-04 static visual renderer", () => {
   it("renders title binding, artwork placeholder and geometry, with no direct filesystem URL", () => {
     const model = buildStaticScenePreview(fixture(), {
       selectedLayerId: "title",
     });
     const { container } = render(<StaticScenePreview model={model} />);
-    const canvas = screen.getByLabelText("Preview visual statis");
-    const title = screen.getByRole("button", {
+    const canvas = within(container).getByLabelText("Preview visual statis");
+    const title = within(container).getByRole("button", {
       name: "Pilih layer Judul Track",
     });
 
     expect(canvas.getAttribute("data-track-context")).toBe("first-enabled");
-    expect(title).toHaveTextContent("Lagu Aktif");
-    expect(title).toHaveAttribute("aria-pressed", "true");
+    expect(title.textContent).toContain("Lagu Aktif");
+    expect(title.getAttribute("aria-pressed")).toBe("true");
     expect(title).toHaveAttribute("data-scene-layer-id", "title");
     expect(title.getAttribute("style")).toContain(
       "translate(0%, 0%) rotate(17deg)",
     );
     expect(title.getAttribute("style")).toContain("left: 25%");
     expect(title.getAttribute("style")).toContain("opacity: 0.7");
-    expect(within(title).getByText("Lagu Aktif")).toBeInTheDocument();
+    expect(within(title).getByText("Lagu Aktif")).toBeTruthy();
     expect(
-      screen.getByRole("img", { name: "Placeholder artwork" }),
-    ).toBeInTheDocument();
+      within(container).getByRole("img", { name: "Placeholder artwork" }),
+    ).toBeTruthy();
     expect(container.querySelectorAll("img")).toHaveLength(0);
     expect(container.querySelectorAll("video")).toHaveLength(0);
     expect(container.querySelectorAll("audio")).toHaveLength(0);
@@ -134,7 +136,7 @@ describe("T11-W05-04 static visual renderer", () => {
     expect(
       container.querySelectorAll(".static-scene-preview__bar"),
     ).toHaveLength(21);
-    expect(screen.getByLabelText("Progress statis")).toBeInTheDocument();
+    expect(within(container).getByLabelText("Progress statis")).toBeTruthy();
     expect(
       container.querySelectorAll(".static-scene-preview__selection"),
     ).toHaveLength(0);
@@ -147,8 +149,8 @@ describe("T11-W05-04 static visual renderer", () => {
       />,
     );
     expect(
-      screen.queryByRole("button", { name: "Pilih layer Progress Bar" }),
-    ).not.toBeInTheDocument();
+      within(container).queryByRole("button", { name: "Pilih layer Progress Bar" }),
+    ).toBeNull();
     expect(
       container.querySelectorAll(".static-scene-preview__selection"),
     ).toHaveLength(0);
@@ -164,7 +166,7 @@ describe("T11-W05-04 static visual renderer", () => {
     );
 
     fireEvent.click(
-      screen.getByRole("button", { name: "Pilih layer Background" }),
+      within(container).getByRole("button", { name: "Pilih layer Background" }),
     );
     expect(select).toHaveBeenCalledTimes(1);
     expect(select).toHaveBeenCalledWith("background");
@@ -177,8 +179,8 @@ describe("T11-W05-04 static visual renderer", () => {
       />,
     );
     expect(
-      screen.getByRole("button", { name: "Pilih layer Background" }),
-    ).toHaveAttribute("aria-pressed", "true");
+      within(container).getByRole("button", { name: "Pilih layer Background" }),
+    ).getAttribute("aria-pressed")).toBe("true");
     expect(
       container.querySelectorAll(".static-scene-preview__selection"),
     ).toHaveLength(1);
@@ -204,8 +206,8 @@ describe("T11-W05-04 static visual renderer", () => {
       container.querySelectorAll(".static-scene-preview__selection"),
     ).toHaveLength(1);
     expect(
-      screen.getByRole("button", { name: "Pilih layer Judul-80" }),
-    ).toHaveAttribute("aria-pressed", "true");
+      within(container).getByRole("button", { name: "Pilih layer Judul-80" }),
+    ).getAttribute("aria-pressed")).toBe("true");
     expect(
       container.querySelector("[data-scene-layer-id='layer-127']"),
     ).not.toBeNull();
