@@ -254,6 +254,19 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: W11-06-05 real packaged editor Play Pause Next Previous Mute and 128 tracks
+        run: node scripts/run-w06-packaged-editor-controls.mjs
+
+      - name: Upload W11-06-05 packaged editor UI and source-integrity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-T11-W06-05-Packaged-Editor-Evidence
+          path: |
+            artifacts/step11/T11-W06-05/evidence/**
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Build portable multi-file ZIP
         shell: pwsh
         run: |
