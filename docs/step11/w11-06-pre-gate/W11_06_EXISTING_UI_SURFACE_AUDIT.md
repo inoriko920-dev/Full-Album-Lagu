@@ -37,3 +37,33 @@
 This is a code-reading audit, **not** an Electron interaction or screenshot acceptance test. It intentionally does not declare whether the *approved UI reference DOCX* contains suitable Pause/Stop/Scrub states; that document must be reviewed in the formal W11-06 UI mapping gate.
 
 **Final verdict:** current shell has reusable *placeholders*, not an operational player. W11-06 UI mapping = **PARTIAL / reviewer decision pending**. W11-05 AC21 remains OPEN; W11-06 DoR remains FAIL/BLOCKED.
+
+
+## Direct review of 29-state frozen source-of-truth DOCX (2026-10-08 WIB)
+
+**Authoritative binary read:** `docs/source-of-truth/ui/06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx`, Git blob `39ba5ef29d92cfe4d8759ad317a0cdaa911de981`. Its real OOXML `word/document.xml` was read, rather than relying on a secondary PR screenshot or guessed labels. The document explicitly inventories **29 approved image states**.
+
+Relevant Album Editor entries exactly recorded in the source:
+
+- `UI-IMG-002A` — Album Editor — empty project.
+- `UI-IMG-002B` — Album Editor — album ready.
+- `UI-IMG-002C` — Album Editor — visual layer selected.
+- `UI-IMG-002D` — Album Editor — track boundary selected.
+- `UI-IMG-002E` — Album Editor — Gemini low-risk result.
+- `UI-IMG-002F` — Album Editor — missing media warning.
+
+The frozen DOCX's 29 state **titles do not separately name** a Play, Pause, Stop, seek/scrub or audio-reactive playback state. **This does not prove** that the album-ready/boundary screenshots lack transport controls or that the supporting STEP 03/04 text does not define their interactions. The compact reference identifies image authority; canonical behavior and labels still belong to Product Definition, STEP 03/04 and STEP 05 UI Freeze. Do not infer a right to redesign merely from missing titles.
+
+### Narrowed mapping / exact next design review
+
+| W11-06 feature | First approved baseline to visually inspect | Current source-code affordance | Classification |
+| --- | --- | --- | --- |
+| Play / Pause and true timecode | `UI-IMG-002B` album ready, then `002D` boundary selected | Existing disabled Play/timecode in PreviewPanel | REUSE LIKELY; Pause state/copy not formally mapped |
+| Previous/Next and active-track shift | `UI-IMG-002B` + `002D` | Existing disabled Prev/Next and selectable timeline tracks | REUSE LIKELY; interaction semantics require review |
+| Seek/playhead position | `UI-IMG-002D` boundary selected | Static ruler and `playhead--zero` | VISUAL AUTHORITY UNRESOLVED; do not invent handle |
+| Stop | `UI-IMG-002B` + `002D` | No Stop button in current PreviewPanel | UI DECISION REQUIRED if visible Stop is needed |
+| Volume/mute | `UI-IMG-002B` | Existing disabled volume icon | REUSE LIKELY; slider and accessibility state unresolved |
+| Live Spectrum/Progress | `UI-IMG-002C` visual layer selected + `002B` | Structural static layers only | RUNTIME W11-06; placement reuse, no fake FFT |
+| Blocked / missing audio | `UI-IMG-002F` missing media warning | W11-02/05 non-destructive missing-media notices | REUSE LIKELY, decode-failure status requires mapping |
+
+**Gate:** Inspect the **actual embedded images** for `002B` and `002D` and read canonical STEP 03/04 copy/interaction contract before deciding whether new prompt images are needed. A named-state inventory alone is insufficient to certify full UI coverage. If a genuinely new Stop/Pause/scrub display is necessary, trigger the project's STOP-at-UI-prompt governance. W11-05 AC21/AC25 must close first; do not start SOL coding or merge either PR from this note.
