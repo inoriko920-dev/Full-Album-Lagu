@@ -30,6 +30,15 @@ async function waitFor(
   throw new Error("Packaged driver timed out: " + phase + " " + trackId);
 }
 
+function requirePhase(
+  driver: HtmlMediaPlaybackDriver,
+  expected: "ready" | "paused" | "error",
+): void {
+  if (driver.snapshot.phase !== expected) {
+    throw new Error("Expected playback phase " + expected);
+  }
+}
+
 async function run(
   imported: ProjectDocument,
   batchId: string,
@@ -55,11 +64,15 @@ async function run(
     })),
   };
   const trusted = { projectId: project.projectId, batchId };
+  const requestPreview = window.lfa.requestAudioPreview;
+  if (typeof requestPreview !== "function") {
+    throw new Error("Main-owned audio preview bridge is unavailable");
+  }
   const audioElements: HTMLAudioElement[] = [];
   const driver = new HtmlMediaPlaybackDriver(
     project,
     trusted,
-    (request) => window.lfa.requestAudioPreview(request),
+    (request) => requestPreview(request),
     () => {
       const audio = new Audio();
       audio.muted = true;
@@ -71,8 +84,7 @@ async function run(
     driver.play();
     await waitFor(driver, "playing", "probe-track-0");
     driver.pause();
-    if (driver.snapshot.phase !== "paused")
-      throw new Error("Driver Pause failed");
+    requirePhase(driver, "paused");
 
     driver.seek(100);
     await waitFor(driver, "paused", "probe-track-0");
@@ -87,18 +99,15 @@ async function run(
     driver.play();
     await waitFor(driver, "playing", "probe-track-0");
     driver.revokeMedia();
-    if (driver.snapshot.phase !== "ready")
-      throw new Error("Relink revoke failed");
+    requirePhase(driver, "ready");
     driver.play();
-    if (driver.snapshot.phase !== "error")
-      throw new Error("Revoke allowed replay");
+    requirePhase(driver, "error");
 
     driver.switchProject(project, trusted);
     driver.play();
     await waitFor(driver, "playing", "probe-track-0");
     driver.switchProject({ ...project, projectId: "w06-other-project" }, null);
-    if (driver.snapshot.phase !== "ready")
-      throw new Error("Switch did not stop");
+    requirePhase(driver, "ready");
     await delay(60);
     const stopped = () =>
       audioElements.every(
