@@ -151,3 +151,10 @@ These task-level statuses do not close W11-05; final closure remains T11-W05-07 
 - AC-W11-05-21: **NOT YET ACCEPTED** — current true Electron gallery/artwork is visually closer to frozen references, but full approved scenic canvas and populated timeline composition remain absent (current two-track fixture and future audio runtime boundary). No fictitious waveform/playhead and no pixel-exact claim.
 - AC-W11-05-22/23/25: **PASS technical task-level** — real source byte/size/mtime fingerprint, prior regression and Windows portable executable E2E.
 - **Next authorization:** continue **SOL T11-W05-07 visual remediation ONLY** on draft PR #51; AC-W11-05-21 remains NOT ACCEPTED, so W11-05 overall IN PROGRESS. Do not begin W11-06/W11-07/STEP 12 or merge PR before frozen UI authority review PASS.
+
+
+## T11-W05-07 R09 — full 25-AC readiness audit (2026-10-08 WIB)
+- New authoritative handoff evidence: `evidence/T11_W05_07_R09_25_AC_CLOSURE_READINESS_AUDIT.md`. Contains every AC01..25, actual supporting task evidence/Windows CI, a signoff matrix and protected runtime boundaries.
+- R09 added **real Windows Electron SCR-003A category/search/no-match safety regression** and verifies no project revision or dirty mutation. Windows CI **#472 / `37741414109` PASS**, commit `f8f382009ea1ab9c35d0e91b5dac6e08720ff1a2`: 301 tests (153 unit, 59 contract, 47 component, 42 integration), full W05-07 E2E/screenshots, project Save/Reopen/cross-project, SHA-256/size/mtime media protections, 128-layer and 100-template stress, prior waves, Windows packaged smoke and portable multi-file ZIP. Visual artifact `11534087251`; portable test build `11534156950`.
+- **Readiness audit: AC01..20, AC22..24** have technical evidence **PASS (23 ACs)**; **AC21** frozen UI authority signoff **OPEN**; **AC25** has green technical regressions but final PASS is **HELD by AC21**. No all-25 PASS claim or reinterpretation of frozen mockup into working audio playback.
+- **Wave status stays W11-05 IN_PROGRESS / T11-W05-07 OPEN; PR #51 DRAFT/NOT MERGED; W11-06/07/STEP 12 BLOCKED.** Independent affirmative UI/product authority decision or actionable W11-05 visual defect list required.
