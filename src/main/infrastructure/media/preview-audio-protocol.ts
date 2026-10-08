@@ -70,14 +70,14 @@ export async function createPreviewAudioProtocolResponse(
     ...(rangeHeader === null ? {} : { rangeHeader }),
   });
 
-  if (result.status === 403 || result.status === 410) {
-    return noStoreResponse(result.status);
-  }
   if (result.status === 416) {
     return new Response(null, {
       status: 416,
       headers: result.headers,
     });
+  }
+  if (!("stream" in result)) {
+    return noStoreResponse(result.status);
   }
 
   // Pipe the original read-only FileHandle stream; never concatenate an
