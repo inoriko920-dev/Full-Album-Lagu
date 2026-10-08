@@ -134,14 +134,18 @@ export function TemplateBrowser({
 
   useEffect(() => {
     let mounted = true;
-    const listing = window.lfa.listTemplates
-      ? window.lfa.listTemplates()
-      : Promise.resolve({
-          status: "error" as const,
-          code: "TEMPLATE_READ_FAILED",
-          message: "Layanan template lokal tidak tersedia.",
-        });
-    void listing
+    // Resolve the IPC call inside the promise chain: the bridge may throw
+    // synchronously before returning a Promise (e.g. unavailable preload).
+    void Promise.resolve()
+      .then(() =>
+        window.lfa.listTemplates
+          ? window.lfa.listTemplates()
+          : ({
+              status: "error" as const,
+              code: "TEMPLATE_READ_FAILED",
+              message: "Layanan template lokal tidak tersedia.",
+            }),
+      )
       .then((result) => {
         if (!mounted) return;
         if (result.status === "error") {
