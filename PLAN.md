@@ -103,7 +103,9 @@ Provisional: native save-dialog clicking is not automated in CI; CI injects the 
 - Proof: Windows CI #365 / `37722584947` PASS at `c1219e3d9fa6cb12fc2a21a18a9eb945a5da5986` — **278 tests PASS** (153 unit, 55 contract, 32 component, 38 integration), STEP 10 + W11-01..04, frozen SCR-002A, Windows portable package/smoke/ZIP PASS; docs/step11/evidence/T11_W05_04_STATIC_PREVIEW_SELECTION_INSPECTOR_EVIDENCE.md.
 - Completed: **T11-W05-05 — Frozen Layer + Inspector UI Wiring — PASS / VERIFIED**.
 - Proof: Windows CI #378 / `37724632656` PASS at `7bdd0ee79ebf528182d9f2e5ae7da30967988c37`; 283 tests (153 unit, 55 contract, 37 component, 38 integration), architecture/secrets/portable paths, 29 frozen UI reference states, SCR-002A visual baseline, STEP 10/W11-01..04 E2E, Windows packaged smoke + portable multi-file ZIP PASS; `docs/step11/evidence/T11_W05_05_FROZEN_LAYER_INSPECTOR_UI_WIRING_EVIDENCE.md`.
-- Next exact task: **T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring — SOL only**.
+- Completed: **T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring — PASS / VERIFIED**.
+- Evidence: `docs/step11/evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md`; Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
+- Next exact task: **T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure — SOL only**.
 - W11-06 audio-reactive/playback, W11-07 animation/transitions, and STEP 12 Gemini/FFmpeg remain blocked.
 - Existing frozen Auto Susun/Inspector/Media/Timeline surfaces are authoritative; no new UI prompt/image generation is required now.
 - If a required W11-04 visual state cannot be represented by the frozen pack, implementation must STOP and return to ASTRA/UI governance.

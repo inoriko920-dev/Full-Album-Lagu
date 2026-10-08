@@ -115,3 +115,16 @@ These task-level statuses do not close W11-05; final closure remains T11-W05-07 
 - AC-W11-05-21: **PARTIAL / hierarchy PASS** — frozen left rail / permanent Gemini right / Timeline unchanged, SCR-002A pixel baseline PASS; **dedicated SCR-002C pixel comparison not yet evidenced**; final UI authority closure W05-07.
 - AC-W11-05-23/25: **PASS at task level** — Windows CI #378 / `37724632656` PASS at `7bdd0ee79ebf528182d9f2e5ae7da30967988c37`; 283 tests (153 unit, 55 contract, 37 component, 38 integration), architecture/secrets/portable paths, 29 frozen UI reference states, SCR-002A visual baseline, STEP 10/W11-01..04 E2E, Windows packaged smoke + portable multi-file ZIP PASS.
 - W11-05 overall remains IN PROGRESS; W05-06 and W05-07 must finish before any wave-level PASS.
+
+
+## T11-W05-06 task-level evidence (2026-10-08)
+- Evidence: `evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md`; Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
+- AC-W11-05-12/13: **PASS task level** — strict template schema visual-only plus main-owned local catalog/store with validated IPC and zero renderer filesystem access.
+- AC-W11-05-14: **PASS UI level** — local category/search grid and starter `Minimal Biru`; deterministic 100-template live stress pending W05-07.
+- AC-W11-05-15/16: **PASS UI/core level** — exact Mode Coba safety copy; Try non-dirty/revision/history; Kembali ke Sebelumnya exact revert.
+- AC-W11-05-17/18: **PASS UI/core level** — one guarded template-origin Apply with global Undo/Redo; stale trial rejected safely.
+- AC-W11-05-19/20: **PASS local UI/contract level** — Save name/category and visual-only data, rejects corrupt/incompatible template; second-project full E2E remains W05-07.
+- AC-W11-05-21: **PARTIAL / semantics and frozen shell PASS** — SCR-003A/B/DLG-008 copy and structure covered by component tests, old SCR-002A exact baseline PASS; dedicated screenshot pixel comparison remains W05-07.
+- AC-W11-05-22: **PARTIAL** — no source media mutations in code/UI and protected data rejected by strict template IPC; physical SHA-256/size/mtime proof belongs to W05-07.
+- AC-W11-05-23/25: **PASS task-level** — Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
+- W11-05 wave **not closed**; final 25-AC drift/E2E closure awaits T11-W05-07.

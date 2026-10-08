@@ -4,7 +4,7 @@
 Lagu Full Album — `inoriko920-dev/Full-Album-Lagu`
 
 ## Current position
-STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..05 are PASS / VERIFIED. Only T11-W05-06 Frozen Template Browser / Try / Save UI Wiring is READY for next SOL turn. STEP 11 is still IN PROGRESS.
+STEP 10 and W11-01..04 are COMPLETE. W11-05 ASTRA planning is PASS; T11-W05-01..06 are PASS / VERIFIED. Only T11-W05-07 Wave E2E, Stress, Drift Review & Evidence Closure is READY for next SOL turn. STEP 11 is still IN PROGRESS.
 
 ## Mandatory read order
 AGENTS -> PROJECT_STATE -> source-of-truth INDEX -> current planning DOCX -> Final UI Reference/UI Freeze -> STEP 06 Architecture -> STEP 07 Code Constitution -> STEP 10 SLC report -> STEP 11 Feature Registry/Dependency Graph/Wave Charter -> TASKS.
@@ -331,7 +331,7 @@ Renderer cannot receive direct filesystem/dialog/provider/subprocess access. Med
 - FTR-007 is not wave-VERIFIED yet; FTR-011 has not started.
 
 ## Next exact action
-After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring only**. Read W11-05 planning, frozen SCR-003A/003B/DLG-008 and W05-01..05 evidence first. Do not start W05-07 final closure, playback W11-06, animations W11-07 or STEP 12 in the same turn.
+After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure only**. Read W11-05 planning, 29 UI frozen reference states, W05-01..06 evidence and AC-W11-05-01..25 first. Do not start W11-06 playback, W11-07 animation or STEP 12 in the same turn.
 
 ## T11-W05-03 handoff (2026-10-08 WIB)
 - Task PASS / VERIFIED after branch Windows CI and packaged resource smoke.
@@ -358,3 +358,12 @@ After the user says `lanjutkan`, remain **SOL** and execute **T11-W05-06 — Fro
 - Left Inspector controls, screen layer visibility/lock, canvas/list selection and global Undo/Redo tested. Gemini right rail and Album Timeline unchanged.
 - Remaining visual authority check: automated SCR-002C pixel diff not performed, final full visual drift review remains W05-07.
 - Status: T11-W05-01..05 PASS / VERIFIED; only T11-W05-06 READY; W05-07 BLOCKED. W11-05 remains IN PROGRESS.
+
+## T11-W05-06 verified handoff (2026-10-08 WIB)
+- Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
+- PR #50, evidence `docs/step11/evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md`, portable ZIP `11527449093`, SCR-002A baseline artifact `11527764688`.
+- Owner boundaries: main `JsonTemplateStore` via `template-ipc.ts`, `register-ipc.ts`, preload typed/validated bridge; renderer `TemplateBrowser.tsx` + CSS; existing `ProjectSessionHistory` and `TemplateTrialSession` as the only mutation/history owners.
+- Coba/Revert no project dirty/revision/history, guarded Apply one template-origin Undo node; Save restricted to scene/schema v1 and main-owned local path. No marketplace/network/provider/media source read, and existing Main Editor/Agent retained under browser.
+- Tests: local filter, safe error/corrupt rejection, source data exclusions, Apply Undo/Redo and return context. 59 contract tests and 42 component tests PASS.
+- **Outstanding W05-07**: full Windows Try/Revert/Apply/Save/Reopen/second-project E2E, 128-layer and 100-template stress, protected SHA-256/size/mtime, complete 25 AC mapping, SCR-002C/003A/003B/DLG-008 screenshot drift review; do not claim W11-05 wave complete yet.
+- Only SOL **T11-W05-07 READY**. W11-06/07/STEP 12 remain blocked.

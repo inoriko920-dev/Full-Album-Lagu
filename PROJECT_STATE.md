@@ -3,10 +3,10 @@
 - Project: Lagu Full Album
 - Repository: `inoriko920-dev/Full-Album-Lagu`
 - Current Software Factory STEP: STEP 11 - Feature Waves
-- Active role at current checkpoint: SOL T11-W05-05 COMPLETE / PASS; next authorized task is SOL T11-W05-06 only
+- Active role at current checkpoint: SOL T11-W05-06 COMPLETE / PASS; next authorized task is SOL T11-W05-07 only
 - STEP 10: COMPLETED / PASS_WITH_PROVISIONAL
 - STEP 11 planning checkpoint: W11-01 COMPLETE; W11-02 COMPLETE; W11-03 COMPLETE / PASS; W11-04 COMPLETE / PASS; W11-05 ASTRA planning COMPLETE / PASS
-- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01..05 PASS / VERIFIED; T11-W05-06 READY
+- STEP 11 implementation: IN_PROGRESS — W11-01..04 COMPLETE / PASS; W11-05 T11-W05-01..06 PASS / VERIFIED; T11-W05-07 READY
 - Planning baseline analyzed: `da5b6786d0daa472c474a33ffd83a5834af24f82`
 - Feature Registry: FTR-001..FTR-023 normalized
 - Last completed wave: `W11-04 Auto Susun + Track Binding`
@@ -328,7 +328,7 @@
 - Acceptance matrix: `docs/step11/W11_05_ACCEPTANCE_MATRIX.md`.
 - DoR: `docs/step11/W11_05_DOR.md` — PASS.
 - Acceptance planned: AC-W11-05-01..25.
-- Serial tasks: T11-W05-01..05 PASS / VERIFIED; T11-W05-06 READY; T11-W05-07 BLOCKED.
+- Serial tasks: T11-W05-01..06 PASS / VERIFIED; T11-W05-07 READY.
 - Frozen UI authority is sufficient: SCR-002C, SCR-003A, SCR-003B and DLG-008/UI-IMG-012. No new UI prompt/image generation is required.
 - W11-05 owns static visual scene/layer state + local visual-only template workflow.
 - Audio-reactive/playback remains W11-06; keyframes/transitions remain W11-07; Gemini/FFmpeg remains STEP 12.
@@ -385,7 +385,7 @@ Permanent Gemini right rail; Gemini-only max 100 keys; manual editor works witho
 - FFmpeg/FFprobe packaging/license/encoder and Gemini SDK/model stay deferred to their integration owner.
 
 ## Next exact action
-After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-06 — Frozen Template Browser / Try / Save UI Wiring only**. Reuse frozen SCR-003A/003B/DLG-008 without redesign, do not start W05-07 wave closure, W11-06/07 or STEP 12.
+After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-07 — Wave E2E, Stress, Drift Review & Evidence Closure only**. Do not start W11-06/07 or STEP 12 without W11-05 wave closure PASS.
 
 ## T11-W05-03 verified implementation (2026-10-08 WIB)
 - Scope: TemplateDocument schema, built-in nine-category starter catalog, main-owned local JSON store, non-dirty Try/Revert, one template-origin guarded Apply, Save as Template core; no UI or later-wave scope.
@@ -413,3 +413,10 @@ After the user says `lanjutkan`: remain **SOL** and execute **T11-W05-06 — Fro
 - Frozen left Layer/Inspector integrated with canonical ProjectSession and the center static Preview; right Gemini rail and Album Timeline unchanged; six layer families, guarded edits/Undo/Redo and session-only slider gestures verified.
 - No actual SCR-002C pixel-diff artifact yet; UI hierarchy/component tests PASS and SCR-002A screenshot baseline PASS; full frozen UI drift closure W05-07.
 - Dependency: **T11-W05-06 READY only**, W05-07 remains BLOCKED. W11-05 overall IN PROGRESS.
+
+## T11-W05-06 completed / verified (2026-10-08 WIB)
+- **PASS / VERIFIED**, PR #50, Windows CI #394 / `37726555465` PASS at `0961b284d0d4152bfa47c6d634906125659bb904`; **292 tests PASS** (153 unit, 59 contract, 42 component, 38 integration), architecture/secrets/portable-path checks, 29 frozen UI reference states, exact SCR-002A baseline, STEP 10 and W11-01..04 E2E, packaged Windows executable smoke and portable multi-file ZIP PASS.
+- Full evidence: `docs/step11/evidence/T11_W05_06_FROZEN_TEMPLATE_BROWSER_TRY_SAVE_UI_EVIDENCE.md`. Windows portable artifact `11527449093`, frozen SCR-002A visual artifact `11527764688`.
+- Local frozen template browser/filter/details, session-only Try/Revert, one guarded template-origin Apply, visual-only Save dialog, protected track/metadata/source state and context-preserving return PASS.
+- Verified IPC trust boundary and no renderer filesystem/network/provider leakage. 100-template renderer stress / protected source fingerprint / exact SCR-003A/B/DLG-008 visual drift review remain W05-07.
+- Dependency unlock: **T11-W05-07 READY only**. W11-05 overall **IN PROGRESS**, not complete.
