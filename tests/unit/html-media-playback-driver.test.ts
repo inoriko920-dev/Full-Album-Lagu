@@ -642,6 +642,7 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(Math.max(...driver.sampleSpectrum()!.barLevels)).toBe(0);
     driver.close();
   });
+
   it("keeps volume ephemeral across track handoffs and rejects invalid levels", async () => {
     const original = project();
     const before = structuredClone(original);
@@ -673,5 +674,4 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     driver.close();
     expect(driver.setVolume(0)).toBe(false);
   });
-
 });
