@@ -1,5 +1,13 @@
 import { randomUUID } from "node:crypto";
-import { link, lstat, mkdir, readFile, readdir, unlink, writeFile } from "node:fs/promises";
+import {
+  link,
+  lstat,
+  mkdir,
+  readFile,
+  readdir,
+  unlink,
+  writeFile,
+} from "node:fs/promises";
 import { basename, join } from "node:path";
 import {
   TemplateStoreError,
@@ -36,7 +44,10 @@ async function readTemplateFile(path: string): Promise<TemplateDocument> {
   try {
     const metadata = await lstat(path);
     if (!metadata.isFile() || metadata.size > MAX_TEMPLATE_BYTES) {
-      throw new TemplateStoreError("TEMPLATE_INVALID", "Template file is invalid.");
+      throw new TemplateStoreError(
+        "TEMPLATE_INVALID",
+        "Template file is invalid.",
+      );
     }
     raw = await readFile(path, "utf8");
   } catch (error) {
@@ -44,14 +55,20 @@ async function readTemplateFile(path: string): Promise<TemplateDocument> {
     if (nodeCode(error) === "ENOENT") {
       throw new TemplateStoreError("TEMPLATE_NOT_FOUND", "Template not found.");
     }
-    throw new TemplateStoreError("TEMPLATE_READ_FAILED", "Template could not be read.");
+    throw new TemplateStoreError(
+      "TEMPLATE_READ_FAILED",
+      "Template could not be read.",
+    );
   }
 
   try {
     return validateTemplate(JSON.parse(raw));
   } catch (error) {
     if (error instanceof TemplateStoreError) throw error;
-    throw new TemplateStoreError("TEMPLATE_INVALID", "Template JSON is invalid.");
+    throw new TemplateStoreError(
+      "TEMPLATE_INVALID",
+      "Template JSON is invalid.",
+    );
   }
 }
 
@@ -80,7 +97,10 @@ export class JsonTemplateStore implements TemplateStore {
     try {
       const metadata = await lstat(path);
       if (!metadata.isFile() || metadata.size > MAX_TEMPLATE_BYTES) {
-        throw new TemplateStoreError("TEMPLATE_INVALID", "Built-in template catalog is invalid.");
+        throw new TemplateStoreError(
+          "TEMPLATE_INVALID",
+          "Built-in template catalog is invalid.",
+        );
       }
       raw = await readFile(path, "utf8");
     } catch (error) {
@@ -102,12 +122,18 @@ export class JsonTemplateStore implements TemplateStore {
     }
 
     if (!Array.isArray(parsed) || parsed.length === 0 || parsed.length > 100) {
-      throw new TemplateStoreError("TEMPLATE_INVALID", "Built-in catalog is invalid.");
+      throw new TemplateStoreError(
+        "TEMPLATE_INVALID",
+        "Built-in catalog is invalid.",
+      );
     }
     const templates = parsed.map(validateTemplate);
     const ids = templates.map((entry) => entry.templateId);
     if (new Set(ids).size !== ids.length) {
-      throw new TemplateStoreError("TEMPLATE_INVALID", "Built-in template IDs repeat.");
+      throw new TemplateStoreError(
+        "TEMPLATE_INVALID",
+        "Built-in template IDs repeat.",
+      );
     }
     return templates;
   }
@@ -115,7 +141,9 @@ export class JsonTemplateStore implements TemplateStore {
   async list(): Promise<TemplateCatalogEntry[]> {
     const builtIns = await this.readBuiltIns();
     const reserved = new Set(builtIns.map((template) => template.templateId));
-    const entries = builtIns.map((template) => asCatalogEntry(template, "built-in"));
+    const entries = builtIns.map((template) =>
+      asCatalogEntry(template, "built-in"),
+    );
     let fileNames: string[];
 
     try {
@@ -134,7 +162,9 @@ export class JsonTemplateStore implements TemplateStore {
       const id = fileName.slice(0, -".template.json".length);
       if (!templateIdSchema.safeParse(id).success || reserved.has(id)) continue;
       try {
-        const template = await readTemplateFile(join(this.userRoot(), fileName));
+        const template = await readTemplateFile(
+          join(this.userRoot(), fileName),
+        );
         if (template.templateId !== id) continue;
         entries.push(asCatalogEntry(template, "user"));
       } catch {
@@ -148,7 +178,8 @@ export class JsonTemplateStore implements TemplateStore {
     const templateId = templateIdSchema.parse(templateIdInput);
     const builtIns = await this.readBuiltIns();
     const builtIn = builtIns.find((item) => item.templateId === templateId);
-    if (builtIn !== undefined) return validateTemplate(structuredClone(builtIn));
+    if (builtIn !== undefined)
+      return validateTemplate(structuredClone(builtIn));
 
     const userTemplate = await readTemplateFile(
       join(this.userRoot(), `${templateId}.template.json`),

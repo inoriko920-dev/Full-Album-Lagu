@@ -15,9 +15,7 @@ export const templateCategorySchema = z.enum([
   "Motion",
 ]);
 
-export const templateIdSchema = z
-  .string()
-  .regex(/^[a-z0-9][a-z0-9_-]{0,79}$/);
+export const templateIdSchema = z.string().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/);
 
 function containsPrivatePath(value: unknown): boolean {
   if (typeof value === "string") {

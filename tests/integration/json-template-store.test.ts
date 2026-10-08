@@ -57,7 +57,9 @@ describe("T11-W05-03 main-owned local template store", () => {
 
   it("saves without dirtying the project and protects built-ins and duplicates", async () => {
     const { store, userRoot } = await createStore();
-    const session = new ProjectSessionHistory(createEmptyProject("template-save"));
+    const session = new ProjectSessionHistory(
+      createEmptyProject("template-save"),
+    );
     const before = session.snapshot();
 
     await saveTemplateFromProject(store, before.project, {
@@ -99,17 +101,23 @@ describe("T11-W05-03 main-owned local template store", () => {
 
   it("rejects corrupt and incompatible user templates without damaging project", async () => {
     const { store, userRoot } = await createStore();
-    await saveTemplateFromProject(
-      store,
-      createEmptyProject("source"),
-      { templateId: "corrupt", name: "Corrupt", category: "Neon" },
+    await saveTemplateFromProject(store, createEmptyProject("source"), {
+      templateId: "corrupt",
+      name: "Corrupt",
+      category: "Neon",
+    });
+    await writeFile(
+      join(userRoot, "corrupt.template.json"),
+      "{invalid}",
+      "utf8",
     );
-    await writeFile(join(userRoot, "corrupt.template.json"), "{invalid}", "utf8");
 
     await expect(store.load("corrupt")).rejects.toMatchObject({
       code: "TEMPLATE_INVALID",
     });
-    expect((await store.list()).every((entry) => entry.templateId !== "corrupt")).toBe(true);
+    expect(
+      (await store.list()).every((entry) => entry.templateId !== "corrupt"),
+    ).toBe(true);
     await expect(store.load("../outside")).rejects.toThrow();
 
     const session = new ProjectSessionHistory(createEmptyProject("target"));
@@ -133,8 +141,12 @@ describe("T11-W05-03 main-owned local template store", () => {
 
     const catalog = await store.list();
     expect(catalog).toHaveLength(109);
-    expect(catalog.filter((entry) => entry.origin === "user")).toHaveLength(100);
-    expect(catalog.filter((entry) => entry.category === "Minimal")).toHaveLength(101);
+    expect(catalog.filter((entry) => entry.origin === "user")).toHaveLength(
+      100,
+    );
+    expect(
+      catalog.filter((entry) => entry.category === "Minimal"),
+    ).toHaveLength(101);
 
     const chosen = await store.load("user-099");
     const trial = new TemplateTrialSession(session.snapshot(), chosen);

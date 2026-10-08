@@ -81,10 +81,7 @@ describe("T11-W05-03 template schema and safety", () => {
   });
 
   it("rejects incompatible and corrupt templates and absolute file paths", () => {
-    const template = createTemplateFromProject(
-      fixture("s", "Track"),
-      details,
-    );
+    const template = createTemplateFromProject(fixture("s", "Track"), details);
     expect(() =>
       templateDocumentSchema.parse({
         ...template,
@@ -170,10 +167,7 @@ describe("T11-W05-03 non-destructive trial and history", () => {
 
   it("stale template apply rejects without partial mutation", () => {
     const session = new ProjectSessionHistory(fixture("alpha", "A"));
-    const template = createTemplateFromProject(
-      fixture("beta", "B"),
-      details,
-    );
+    const template = createTemplateFromProject(fixture("beta", "B"), details);
     const trial = new TemplateTrialSession(session.snapshot(), template);
     const before = session.snapshot();
     expect(
