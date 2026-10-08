@@ -1542,7 +1542,7 @@ function createMainWindow(): BrowserWindow {
 }
 
 const compositionRoot = createCompositionRoot(process.argv);
-registerIpcHandlers(compositionRoot.projectIpc);
+registerIpcHandlers({ ...compositionRoot.projectIpc, templateStore: compositionRoot.templateStore });
 
 app.whenReady().then(() => {
   if (process.argv.includes(PACKAGED_SMOKE_FLAG)) {
