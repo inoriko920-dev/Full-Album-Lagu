@@ -99,8 +99,13 @@ async function testAlbum(count) {
     child.once("close", (code) => {
       clearTimeout(timer);
       if (code !== 0) {
-        const message = ["Packaged editor", count, "tracks exit", code, output]
-          .join(" ");
+        const message = [
+          "Packaged editor",
+          count,
+          "tracks exit",
+          code,
+          output,
+        ].join(" ");
         rejectRun(new Error(message));
       } else {
         resolveRun();
