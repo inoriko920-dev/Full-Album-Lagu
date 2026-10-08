@@ -87,7 +87,8 @@ export function TemplateBrowser({
           code: "TEMPLATE_READ_FAILED",
           message: "Layanan template lokal tidak tersedia.",
         });
-    void listing.then((result) => {
+    void listing
+      .then((result) => {
         if (!mounted) return;
         if (result.status === "error") {
           setCatalogError(result.message);
@@ -266,7 +267,7 @@ export function TemplateBrowser({
                       session.revertTemplateTrial();
                       setSavedMessage(null);
                       setSelectedTemplate(null);
-                        setSelectedId(entry.templateId);
+                      setSelectedId(entry.templateId);
                     }
                   }}
                 >
