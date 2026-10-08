@@ -139,10 +139,7 @@ function createMainWindow(): BrowserWindow {
       // request\x27s forgeable Origin header. Browser-initiated media requests
       // may legitimately have no initiator origin.
       const initiatorOrigin = request.initiatorOrigin;
-      if (
-        initiatorOrigin !== undefined &&
-        initiatorOrigin !== rendererOrigin
-      ) {
+      if (initiatorOrigin !== undefined && initiatorOrigin !== rendererOrigin) {
         return new Response(null, {
           status: 403,
           headers: { "Cache-Control": "no-store" },
