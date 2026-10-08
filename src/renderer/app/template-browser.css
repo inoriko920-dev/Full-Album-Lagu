@@ -35,7 +35,7 @@
   min-height: 0;
   flex: 1;
   display: grid;
-  grid-template-columns: minmax(340px, 43%) 1fr;
+  grid-template-columns: minmax(590px, 52%) minmax(0, 1fr);
 }
 .template-browser__catalog {
   min-height: 0;
@@ -78,7 +78,7 @@
   overflow: auto;
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-content: start;
   gap: 12px;
 }
@@ -222,3 +222,6 @@
     overflow: visible;
   }
 }
+
+.template-browser__save-thumbnail { width: 196px; max-width: 100%; aspect-ratio: 16/9; border-radius: 6px; background: #10253d; border: 1px solid #cbd7e7; overflow: hidden; }
+.template-browser__save-thumbnail .static-scene-preview { height: 100%; }
