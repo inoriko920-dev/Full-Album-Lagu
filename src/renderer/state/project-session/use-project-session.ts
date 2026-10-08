@@ -163,7 +163,7 @@ export interface ProjectSessionView {
   beginTemplateTrial(template: TemplateDocument): boolean;
   revertTemplateTrial(): void;
   applyTemplateTrial(): boolean;
-  saveVisualTemplate(input: SaveTemplateInput): Promise<boolean>;
+  saveVisualTemplate(input: SaveTemplateInput, includedKinds?: VisualLayer["kind"][]): Promise<boolean>;
   layerError: string | null;
   addVisualLayer(layer: VisualLayer): boolean;
   duplicateVisualLayer(layerId: string, newLayerId: string): boolean;
@@ -918,14 +918,26 @@ export function useProjectSession(): ProjectSessionView {
   }, [history, publishHistorySnapshot]);
 
   const saveVisualTemplate = useCallback(
-    async (input: SaveTemplateInput): Promise<boolean> => {
+    async (input: SaveTemplateInput, includedKinds?: VisualLayer["kind"][]): Promise<boolean> => {
       if (!window.lfa.saveTemplate) {
         setTemplateError("Penyimpanan template lokal tidak tersedia.");
         return false;
       }
       try {
         const before = history.snapshot();
-        const template = createTemplateFromProject(before.project, input);
+        const projectForTemplate =
+          includedKinds === undefined
+            ? before.project
+            : {
+                ...before.project,
+                visualScene: {
+                  sceneVersion: 1 as const,
+                  layers: (before.project.visualScene?.layers ?? []).filter((layer) =>
+                    includedKinds.includes(layer.kind),
+                  ),
+                },
+              };
+        const template = createTemplateFromProject(projectForTemplate, input);
         const result = await window.lfa.saveTemplate(template);
         if (result.status === "error") {
           setTemplateError(
