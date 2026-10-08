@@ -33,6 +33,8 @@ export function useAlbumPreviewPlayback(
     localTimeMs: 0,
   });
   const [spectrum, setSpectrum] = useState<readonly number[]>(SILENCE);
+  const [muted, setMuted] = useState(false);
+  const volumeRef = useRef(1);
   const total = useMemo(
     () => projectAlbumTimeline(project).totalDurationMs ?? 0,
     [project],
@@ -61,6 +63,7 @@ export function useAlbumPreviewPlayback(
       runtime,
     );
     driverRef.current = driver;
+    driver.setVolume(volumeRef.current);
     // Renderer state is an external driver snapshot, not a React-derived
     // effect cascade. Publish it after the effect has completed.
     queueMicrotask(() => {
@@ -92,6 +95,15 @@ export function useAlbumPreviewPlayback(
     spectrum: clock.phase === "playing" ? spectrum : SILENCE,
     total,
     available,
+    muted,
+    toggleMute: () => {
+      const nextMuted = !muted;
+      const nextVolume = nextMuted ? 0 : 1;
+      if (available && driverRef.current?.setVolume(nextVolume)) {
+        volumeRef.current = nextVolume;
+        setMuted(nextMuted);
+      }
+    },
     playPause: () => {
       const driver = driverRef.current;
       if (!driver || !available) return;

@@ -809,8 +809,9 @@ function PreviewPanel({
           <IconButton
             icon="volume"
             iconSize={17}
-            disabled
-            aria-label="Volume"
+            disabled={!active}
+            onClick={playback.toggleMute}
+            aria-label={playback.muted ? "Suarakan" : "Bisukan"}
           />
           <span className="transport-separator" />
           <span className="transport-format">16:9</span>
@@ -870,16 +871,30 @@ function TimelinePanel({
   onSelectTrack,
   zoom,
   onZoomChange,
+  playback,
 }: {
   projectSession: ReturnType<typeof useProjectSession>;
   selectedTrackId: string | null;
   onSelectTrack: (trackId: string) => void;
   zoom: number;
   onZoomChange: (zoom: number) => void;
+  playback: ReturnType<typeof useAlbumPreviewPlayback>;
 }) {
   const tracks = projectSession.project.tracks;
   const projection = projectAlbumTimeline(projectSession.project);
   const trackWidth = Math.round((150 * zoom) / 100);
+  const activeIndex = projection.items.findIndex(
+    (item) => item.trackId === playback.clock.activeTrackId,
+  );
+  const activeItem = projection.items[activeIndex];
+  const localFraction =
+    activeItem?.durationMs === undefined || activeItem.durationMs <= 0
+      ? 0
+      : Math.min(1, playback.clock.localTimeMs / activeItem.durationMs);
+  // Match each visible track card's actual width/gap, rather than assuming
+  // the timeline body's viewport width represents total album duration.
+  const playheadX =
+    18 + activeIndex * (trackWidth + 5) + trackWidth * localFraction;
 
   return (
     <section
@@ -925,7 +940,12 @@ function TimelinePanel({
         <span>01:10</span>
       </div>
       <div className="timeline-body">
-        <div className="playhead playhead--zero" />
+        <div
+          className="playhead playhead--zero"
+          {...(playback.available && activeIndex >= 0
+            ? { style: { left: `${playheadX}px` } }
+            : {})}
+        />
         {tracks.length === 0 ? (
           <div className="timeline-empty">
             <span className="timeline-empty__icon">
@@ -1641,6 +1661,7 @@ export function AppShell() {
           }}
           zoom={timelineZoom}
           onZoomChange={setTimelineZoom}
+          playback={playback}
         />
       </div>
 
