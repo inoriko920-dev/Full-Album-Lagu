@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import { mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, symlink, truncate, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { NodePreviewAudioLeaseStore } from "../../src/main/infrastructure/media/node-preview-audio-lease-store";
@@ -248,6 +248,51 @@ describe("T11-W06-02 main-owned audio lease gateway", () => {
         token,
       }),
     ).toEqual({ status: 403 });
+  });
+
+  it("bounds sparse 256MiB source requests to small read-only ranges", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "lfa-w06-sparse-"));
+    directories.push(directory);
+    const sourcePath = join(directory, "large.wav");
+    const length = 256 * 1024 * 1024;
+    await writeFile(sourcePath, Buffer.from("RIFF"));
+    await truncate(sourcePath, length);
+
+    const gateway = new NodePreviewAudioLeaseStore();
+    services.push(gateway);
+    const token = await gateway.issueTrustedGrant({
+      projectId: "project-A",
+      assetId: "audio-large",
+      ownerWebContentsId: 7,
+      sourcePath,
+    });
+
+    const first = await gateway.openRange({
+      token,
+      projectId: "project-A",
+      ownerWebContentsId: 7,
+      rangeHeader: "bytes=0-3",
+    });
+    expect(first.status).toBe(206);
+    if (first.status !== 206) throw new Error("expected first range");
+    expect(first.headers["Content-Length"]).toBe("4");
+    expect(await readBytes(first.stream)).toEqual(Buffer.from("RIFF"));
+
+    const tail = await gateway.openRange({
+      token,
+      projectId: "project-A",
+      ownerWebContentsId: 7,
+      rangeHeader: "bytes=-4",
+    });
+    expect(tail.status).toBe(206);
+    if (tail.status !== 206) throw new Error("expected suffix range");
+    expect(tail.headers["Content-Range"]).toBe(
+      `bytes ${length - 4}-${length - 1}/${length}`,
+    );
+    expect(tail.headers["Content-Length"]).toBe("4");
+    expect(await readBytes(tail.stream)).toEqual(Buffer.alloc(4));
+
+    gateway.revoke(token);
   });
 
   it("does not mutate source bytes across read and revoked sessions", async () => {
