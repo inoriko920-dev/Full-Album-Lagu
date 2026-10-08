@@ -12,7 +12,7 @@
 - Last completed wave: `W11-04 Auto Susun + Track Binding`
 - W11-01 features: FTR-001 + FTR-002 + FTR-018 cross-cut
 - W11-01 status: COMPLETE / PASS
-- Current wave: `W11-05 Manual Layer Editor + Templates` — T11-W05-01..03 PASS / VERIFIED; T11-W05-04 READY
+- Current wave: `W11-05 Manual Layer Editor + Templates` — T11-W05-01..04 PASS / VERIFIED; T11-W05-05 READY
 - W11-02 features: FTR-003 + FTR-016 + FTR-018 cross-cut
 - W11-02 planning baseline: `main@c791e9bebc30c7db9337f4341cfdd7e421a64b57`
 - W11-02 ASTRA planning: COMPLETE / PASS
