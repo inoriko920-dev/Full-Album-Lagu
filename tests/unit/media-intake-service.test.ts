@@ -374,17 +374,17 @@ describe("MediaIntakeService", () => {
     }
 
     expect(
-      service.getTrustedAudioSource(
-        batchId,
-        "main-project",
-        goodAsset.id,
-      ),
+      service.getTrustedAudioSource(batchId, "main-project", goodAsset.id),
     ).toEqual(good);
     expect(
       service.getTrustedAudioSource(batchId, "wrong-project", goodAsset.id),
     ).toBeNull();
     expect(
-      service.getTrustedAudioSource("unknown-batch", "main-project", goodAsset.id),
+      service.getTrustedAudioSource(
+        "unknown-batch",
+        "main-project",
+        goodAsset.id,
+      ),
     ).toBeNull();
     expect(
       service.getTrustedAudioSource(batchId, "main-project", badAsset.id),
@@ -402,5 +402,4 @@ describe("MediaIntakeService", () => {
       service.getTrustedAudioSource(batchId, "main-project", goodAsset.id),
     ).toEqual(good);
   });
-
 });
