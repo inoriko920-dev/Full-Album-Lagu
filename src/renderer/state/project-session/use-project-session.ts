@@ -85,6 +85,8 @@ import {
 export interface TrustedPreviewBatch {
   readonly projectId: string;
   readonly batchId: string;
+  /** Ephemeral MAIN-verified import provenance. Never persisted in project. */
+  readonly batchByAssetId?: Readonly<Record<string, string>>;
 }
 
 export type ProjectSourceState = "new" | "loaded" | "load-error";
@@ -1157,6 +1159,13 @@ export function useProjectSession(): ProjectSessionView {
       if (mediaBusyRef.current) return;
 
       mediaBusyRef.current = true;
+      const previousTrust =
+        trustedPreviewBatch?.projectId === projectRef.current.projectId
+          ? trustedPreviewBatch
+          : null;
+      const existingReadyIds = new Set(
+        projectRef.current.mediaAssets?.map((asset) => asset.id) ?? [],
+      );
       // Main may revoke previous grants on a new successful import.
       // Fail closed now instead of retaining an obsolete preview authority.
       setTrustedPreviewBatch(null);
@@ -1286,9 +1295,34 @@ export function useProjectSession(): ProjectSessionView {
               pickerTrusted &&
               canonical.projectId === intake.project.projectId
             ) {
+              const byAsset: Record<string, string> = {
+                ...(previousTrust?.batchByAssetId ??
+                  Object.fromEntries(
+                    (projectRef.current.mediaAssets ?? [])
+                      .filter(
+                        (asset) =>
+                          asset.kind === "audio" &&
+                          existingReadyIds.has(asset.id),
+                      )
+                      .map((asset) => [
+                        asset.id,
+                        previousTrust?.batchId ?? "",
+                      ]),
+                  )),
+              };
+              for (const asset of intake.project.mediaAssets ?? []) {
+                if (
+                  asset.kind === "audio" &&
+                  asset.availability === "ready" &&
+                  !existingReadyIds.has(asset.id)
+                ) {
+                  byAsset[asset.id] = intakeStart.batchId;
+                }
+              }
               setTrustedPreviewBatch({
                 projectId: canonical.projectId,
                 batchId: intakeStart.batchId,
+                batchByAssetId: byAsset,
               });
             }
             return;
@@ -1305,7 +1339,7 @@ export function useProjectSession(): ProjectSessionView {
         mediaBusyRef.current = false;
       }
     },
-    [commitUserProjectMutation, reconcileMissingMedia],
+    [commitUserProjectMutation, reconcileMissingMedia, trustedPreviewBatch],
   );
 
   const importAudio = useCallback(

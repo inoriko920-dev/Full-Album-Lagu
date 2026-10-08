@@ -21,6 +21,7 @@ import type {
 export interface TrustedAudioBatch {
   readonly projectId: string;
   readonly batchId: string;
+  readonly batchByAssetId?: Readonly<Record<string, string>>;
 }
 
 export interface MediaElementPort {
@@ -243,10 +244,14 @@ export class HtmlMediaPlaybackDriver {
     effect: Extract<PlaybackTransportEffect, { kind: "load" }>,
   ): Promise<void> {
     const bound = this.trustedBatch;
+    const batchId =
+      bound?.batchByAssetId === undefined
+        ? bound?.batchId
+        : bound.batchByAssetId[effect.assetId];
     if (
       bound === null ||
       bound.projectId !== this.transport.snapshot.projectId ||
-      !bound.batchId
+      !batchId
     ) {
       this.fail(effect.generation);
       return;
@@ -256,7 +261,7 @@ export class HtmlMediaPlaybackDriver {
     try {
       result = await this.requestAudio({
         projectId: bound.projectId,
-        batchId: bound.batchId,
+        batchId,
         assetId: effect.assetId,
       });
     } catch {
