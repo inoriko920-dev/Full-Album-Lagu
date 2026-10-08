@@ -35,10 +35,14 @@ async function run(
   batchId: string,
 ): Promise<W06Evidence> {
   const wav = imported.mediaAssets?.find(
-    (asset) => asset.availability === "ready" && asset.fileName.toLowerCase().endsWith(".wav"),
+    (asset) =>
+      asset.availability === "ready" &&
+      asset.fileName.toLowerCase().endsWith(".wav"),
   );
   const mp3 = imported.mediaAssets?.find(
-    (asset) => asset.availability === "ready" && asset.fileName.toLowerCase().endsWith(".mp3"),
+    (asset) =>
+      asset.availability === "ready" &&
+      asset.fileName.toLowerCase().endsWith(".mp3"),
   );
   if (!wav || !mp3) throw new Error("No trusted WAV/MP3 imported for driver");
   const project: ProjectDocument = {
@@ -67,7 +71,8 @@ async function run(
     driver.play();
     await waitFor(driver, "playing", "probe-track-0");
     driver.pause();
-    if (driver.snapshot.phase !== "paused") throw new Error("Driver Pause failed");
+    if (driver.snapshot.phase !== "paused")
+      throw new Error("Driver Pause failed");
 
     driver.seek(100);
     await waitFor(driver, "paused", "probe-track-0");
@@ -82,18 +87,23 @@ async function run(
     driver.play();
     await waitFor(driver, "playing", "probe-track-0");
     driver.revokeMedia();
-    if (driver.snapshot.phase !== "ready") throw new Error("Relink revoke failed");
+    if (driver.snapshot.phase !== "ready")
+      throw new Error("Relink revoke failed");
     driver.play();
-    if (driver.snapshot.phase !== "error") throw new Error("Revoke allowed replay");
+    if (driver.snapshot.phase !== "error")
+      throw new Error("Revoke allowed replay");
 
     driver.switchProject(project, trusted);
     driver.play();
     await waitFor(driver, "playing", "probe-track-0");
     driver.switchProject({ ...project, projectId: "w06-other-project" }, null);
-    if (driver.snapshot.phase !== "ready") throw new Error("Switch did not stop");
+    if (driver.snapshot.phase !== "ready")
+      throw new Error("Switch did not stop");
     await delay(60);
     const stopped = () =>
-      audioElements.every((audio) => audio.paused && !audio.hasAttribute("src"));
+      audioElements.every(
+        (audio) => audio.paused && !audio.hasAttribute("src"),
+      );
     if (!stopped()) throw new Error("Ghost media after project switch");
     driver.close();
     await delay(60);
