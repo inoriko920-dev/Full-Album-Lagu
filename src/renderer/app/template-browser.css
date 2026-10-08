@@ -500,3 +500,12 @@
     right: 19%;
   }
 }
+
+/* R03 bundled illustrations: source-free SVGs owned by the frozen local picker. */
+.template-browser__thumbnail > svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.template-browser__thumbnail:has(> svg)::before { display: none; }
+.template-browser__thumbnail:has(> svg) .template-browser__thumbnail-line { display: none; }
+.template-trial-overlay__gallery-thumb svg { width: 100%; height: 100%; display: block; }
