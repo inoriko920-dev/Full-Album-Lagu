@@ -444,6 +444,18 @@ export function TemplateBrowser({
                 )}
               />
             </div>
+            <fieldset className="template-browser__save-scope">
+              <legend>Komponen visual yang disimpan</legend>
+              {scopeGroups.map(({ label, kinds, detail }) => (
+                <label key={label} className="template-browser__save-scope-item">
+                  <input type="checkbox" aria-label={label}
+                    checked={kinds.every((kind) => saveScope.includes(kind))}
+                    onChange={(event) => toggleScope(kinds, event.currentTarget.checked)} />
+                  <span><strong>{label}</strong><small>{detail}</small></span>
+                </label>
+              ))}
+              <small>Audio, urutan, durasi, dan kredensial tidak pernah ikut disimpan.</small>
+            </fieldset>
             <label>
               Nama Template
               <input
@@ -485,7 +497,7 @@ export function TemplateBrowser({
               <ActionButton
                 variant="primary"
                 label="Simpan Template"
-                disabled={busy || !saveName.trim()}
+                disabled={busy || !saveName.trim() || saveScope.length === 0}
                 onClick={() => void saveUserTemplate()}
               />
             </div>
