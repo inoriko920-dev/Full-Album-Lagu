@@ -989,6 +989,27 @@ function TimelinePanel({
                   type="button"
                   aria-pressed={selected}
                   onClick={() => onSelectTrack(track.id)}
+                  onDoubleClick={(event) => {
+                    // Reuse the approved timeline card surface for seek.
+                    // A normal click still only selects a track for editing.
+                    if (
+                      !playback.available ||
+                      item?.status !== "resolved" ||
+                      item.startMs === undefined ||
+                      item.durationMs === undefined
+                    ) {
+                      return;
+                    }
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    if (rect.width <= 0 || !Number.isFinite(event.clientX)) {
+                      return;
+                    }
+                    const fraction = Math.min(
+                      1,
+                      Math.max(0, (event.clientX - rect.left) / rect.width),
+                    );
+                    playback.seek(item.startMs + item.durationMs * fraction);
+                  }}
                   style={{
                     width: `${trackWidth}px`,
                     minWidth: `${trackWidth}px`,
