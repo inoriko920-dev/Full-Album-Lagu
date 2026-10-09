@@ -64,10 +64,10 @@ function requirePhase(
 
 /**
  * T06 packaged-Windows stress: use 2-second native WAV decoder/protocol media
- * and the same real HTMLMediaPlaybackDriver in 100 consecutive start/stop cycles.
+ * and the same real HTMLMediaPlaybackDriver in three separate rounds of 100 start/stop cycles.
  * Avoid mock audio, synthetic grant URLs or renderer filesystem privileges.
  */
-async function run100PackagedRestarts(
+async function run300PackagedRestarts(
   imported: ProjectDocument,
   batchId: string,
   requestPreview: PreviewAudioRequester,
@@ -91,7 +91,7 @@ async function run100PackagedRestarts(
   const original = JSON.stringify(project);
   // Do NOT retain hundreds of stopped Audio references in the probe:
   // retaining them would itself distort any process-memory leak analysis.
-  let latestAudio: HTMLAudioElement | null = null;
+  const currentMedia: { element?: HTMLAudioElement } = {};
   let createdElements = 0;
   const driver = new HtmlMediaPlaybackDriver(
     project,
@@ -100,7 +100,7 @@ async function run100PackagedRestarts(
     () => {
       const audio = new Audio();
       audio.muted = true;
-      latestAudio = audio;
+      currentMedia.element = audio;
       createdElements += 1;
       return audio;
     },
@@ -116,10 +116,10 @@ async function run100PackagedRestarts(
       const beforeRound = createdElements;
       const roundStartedAt = performance.now();
       for (let cycle = 0; cycle < 100; cycle += 1) {
-        latestAudio = null;
+        delete currentMedia.element;
         driver.play();
         await waitFor(driver, "playing", "stress-track");
-        const element = latestAudio;
+        const element = currentMedia.element;
         if (!element || createdElements !== beforeRound + cycle + 1) {
           throw new Error("T06 unexpected media instance at cycle " + cycle);
         }
@@ -129,7 +129,7 @@ async function run100PackagedRestarts(
           throw new Error("T06 audio survived Stop at cycle " + cycle);
         }
         // No outstanding strong references across the next cycle.
-        latestAudio = null;
+        delete currentMedia.element;
       }
       if (
         createdElements !== beforeRound + 100 ||
@@ -159,7 +159,7 @@ async function run100PackagedRestarts(
       projectUnchanged: true,
     };
   } finally {
-    latestAudio = null;
+    delete currentMedia.element;
     driver.close();
   }
 }
@@ -238,7 +238,7 @@ async function run(
     throw new Error("T06 corrupt WAV received a private playback lease");
   }
 
-  const restartStress = await run100PackagedRestarts(
+  const restartStress = await run300PackagedRestarts(
     imported,
     batchId,
     (request) => requestPreview(request),
