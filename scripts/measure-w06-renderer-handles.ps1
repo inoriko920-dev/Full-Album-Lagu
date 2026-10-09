@@ -31,7 +31,11 @@ while ([DateTime]::UtcNow -lt $deadline) {
   $phase = if (Test-Path -LiteralPath $IdleMarker) { "idle" } else { "active" }
   $count = [int]$target.HandleCount
   if ($count -le 0) {
-    throw "T06 renderer OS handle count was not positive"
+    # A Process instance can remain observable momentarily after Chromium
+    # has closed its handles. Do not treat an OS shutdown sample as an
+    # application leak. The strict active/idle minimums below still apply:
+    # premature shutdown MUST fail rather than fabricating observations.
+    break
   }
   $null = $samples.Add([pscustomobject]@{
     timestampMs = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
