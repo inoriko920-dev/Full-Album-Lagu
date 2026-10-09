@@ -742,7 +742,7 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     driver.close();
     expect(driver.setVolume(0)).toBe(false);
   });
-  it("T06: completes 100 Play/Stop/replay cycles without retaining listeners or ghost audio", async () => {
+  it("T06: 100 stop/replay cycles clean stale audio", async () => {
     const source = project();
     const original = structuredClone(source);
     const audioElements: FakeMedia[] = [];
@@ -811,7 +811,7 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(driver.snapshot.phase).toBe("ready");
   });
 
-  it("T06: navigates a 128-track authorized album with disabled gaps and no retained decoder events", async () => {
+  it("T06: 128-track navigation cleans stale listeners", async () => {
     const source = project("stress-album");
     source.mediaAssets = Array.from({ length: 128 }, (_, i) => ({
       id: `asset-${i}`,
@@ -886,5 +886,4 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(source).toEqual(original);
     driver.close();
   });
-
 });
