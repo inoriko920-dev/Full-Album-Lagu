@@ -387,4 +387,77 @@ describe("W11-06 main-owned preview grant authorization", () => {
     expect(releases).toHaveLength(25);
     expect(new Set(releases).size).toBe(25);
   });
+it("T06: fences in-flight grants during same-project reimport", async () => {
+    const { source } = await fixture();
+    const control: {
+      readonlyStarted?: () => void;
+      release?: () => void;
+    } = {};
+    const started = new Promise<void>((resolve) => {
+      control.readonlyStarted = resolve;
+    });
+    const delay = new Promise<void>((resolve) => {
+      control.release = resolve;
+    });
+    class DelayedGrantStore extends NodePreviewAudioLeaseStore {
+      override async issueTrustedGrant(
+        request: Parameters<NodePreviewAudioLeaseStore["issueTrustedGrant"]>[0],
+      ): Promise<string> {
+        const token = await super.issueTrustedGrant(request);
+        control.readonlyStarted?.();
+        await delay;
+        return token;
+      }
+    }
+    const store = new DelayedGrantStore();
+    const service = new PreviewAudioAccessService(store, {
+      getTrustedAudioSource(batch, project, asset) {
+        return project === "project-1" &&
+          (batch === "intake-1" || batch === "intake-2") &&
+          asset === "asset-ready"
+          ? source
+          : null;
+      },
+    });
+    services.push(service);
+    service.trustPickerDiscovery(7, "picked-1");
+    expect(service.bindIntake(7, "picked-1", "intake-1", "project-1")).toBe(
+      true,
+    );
+    const staleGrant = service.issue({
+      ownerWebContentsId: 7,
+      batchId: "intake-1",
+      projectId: "project-1",
+      assetId: "asset-ready",
+    });
+    // The old lease has ALREADY been allocated by main, but the asynchronous
+    // response has not returned to its caller when a new picker import begins.
+    await started;
+    service.trustPickerDiscovery(7, "picked-2");
+    expect(service.bindIntake(7, "picked-2", "intake-2", "project-1")).toBe(
+      true,
+    );
+    control.release?.();
+    expect(await staleGrant).toBeNull();
+    // Batch #1 remains discoverable for new grants in this album, but its
+    // original in-flight token can never cross the import authority epoch.
+    const refreshed = await service.issue({
+      ownerWebContentsId: 7,
+      batchId: "intake-1",
+      projectId: "project-1",
+      assetId: "asset-ready",
+    });
+    expect(refreshed).toMatch(/^lfa-preview:\/\/media\/[0-9a-f]{64}$/);
+    if (refreshed === null) throw new Error("Expected fresh audio authority");
+    const response = await createPreviewAudioProtocolResponse(
+      new Request(refreshed, { headers: { Range: "bytes=0-3" } }),
+      { projectId: "project-1", ownerWebContentsId: 7 },
+      store,
+    );
+    expect(response.status).toBe(206);
+    expect(Buffer.from(await response.arrayBuffer())).toEqual(
+      Buffer.from("RIFF"),
+    );
+  });
+
 });
