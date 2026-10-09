@@ -41,15 +41,6 @@ jobs:
       - name: Clean install
         run: npm ci
 
-      - name: TEMP W06-05 preview-context Prettier and component diagnostic
-        shell: pwsh
-        run: |
-          npx prettier --write tests/component/AppShell.playback-preview-context.test.tsx
-          git --no-pager diff -- tests/component/AppShell.playback-preview-context.test.tsx
-          npm run typecheck
-          npm run test:component
-          throw "Intentional W06-05 read-only diagnostic gate; remove before real CI"
-
       - name: Foundation and UI verification
         run: npm run verify
 
