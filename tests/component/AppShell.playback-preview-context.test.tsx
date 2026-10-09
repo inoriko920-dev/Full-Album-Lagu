@@ -219,9 +219,11 @@ describe("T11-W06-05 live preview track context", () => {
     const preview = within(screen.getByLabelText("Preview visual statis"));
     expect(preview.getByText("Title A")).toBeInTheDocument();
     expect(preview.getByText("Artist A")).toBeInTheDocument();
-    expect(preview.getByRole("img", {
-      name: "Ilustrasi contoh, bukan artwork asli",
-    })).toBeInTheDocument();
+    expect(
+      preview.getByRole("img", {
+        name: "Ilustrasi contoh, bukan artwork asli",
+      }),
+    ).toBeInTheDocument();
     expect(shell).toHaveAttribute("data-selected-track-id", "track-a");
 
     previewClock.available = true;
@@ -230,9 +232,11 @@ describe("T11-W06-05 live preview track context", () => {
     rerender(<AppShell />);
     expect(preview.getByText("Title B")).toBeInTheDocument();
     expect(preview.getByText("Artist B")).toBeInTheDocument();
-    expect(preview.getByRole("img", {
-      name: "Artwork sumber terhubung, thumbnail belum tersedia",
-    })).toBeInTheDocument();
+    expect(
+      preview.getByRole("img", {
+        name: "Artwork sumber terhubung, thumbnail belum tersedia",
+      }),
+    ).toBeInTheDocument();
     expect(shell).toHaveAttribute("data-selected-track-id", "track-a");
 
     fireEvent.click(screen.getByRole("tab", { name: "Inspector" }));
