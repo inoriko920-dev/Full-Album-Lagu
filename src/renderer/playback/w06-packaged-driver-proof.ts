@@ -15,6 +15,9 @@ interface W06Evidence {
   readonly unrelatedAssetDenied: true;
   readonly projectSwitchStopped: true;
   readonly closeStopped: true;
+  readonly simulatedSuspendRevoked: true;
+  readonly resumeStayedStopped: true;
+  readonly explicitlyReauthorizedPlayback: true;
   readonly createdElements: number;
   readonly restartStress: {
     readonly completedCycles: number;
@@ -325,13 +328,36 @@ async function run(
     });
     driver.play();
     await waitFor(driver, "playing", "probe-track-0");
-    driver.switchProject({ ...project, projectId: "w06-other-project" }, null);
+
+    // Renderer-side simulation only: the Windows runner must NOT put the OS
+    // to sleep. Assert that the real packaged HTMLMediaElement is torn down
+    // and Resume never silently restarts a previously authorized source.
+    driver.onSystemPower("suspend");
     requirePhase(driver, "ready");
-    await delay(60);
     const stopped = () =>
       audioElements.every(
         (audio) => audio.paused && !audio.hasAttribute("src"),
       );
+    if (!stopped()) throw new Error("T06 audio survived renderer Suspend");
+    driver.onSystemPower("resume");
+    await delay(70);
+    requirePhase(driver, "ready");
+    if (!stopped()) throw new Error("T06 Resume resurrected the audio");
+    driver.play();
+    requirePhase(driver, "error");
+
+    // Explicit reauthorization after resume is required. This models the
+    // trusted intake flow, not a real Windows Suspend/Resume hardware event.
+    driver.switchProject(relink.project, {
+      projectId: project.projectId,
+      batchId: newBatch,
+    });
+    driver.play();
+    await waitFor(driver, "playing", "probe-track-0");
+
+    driver.switchProject({ ...project, projectId: "w06-other-project" }, null);
+    requirePhase(driver, "ready");
+    await delay(60);
     if (!stopped()) throw new Error("Ghost media after project switch");
     driver.close();
     await delay(60);
@@ -346,6 +372,9 @@ async function run(
       unrelatedAssetDenied: true,
       projectSwitchStopped: true,
       closeStopped: true,
+      simulatedSuspendRevoked: true,
+      resumeStayedStopped: true,
+      explicitlyReauthorizedPlayback: true,
       createdElements: audioElements.length,
       restartStress,
     };
