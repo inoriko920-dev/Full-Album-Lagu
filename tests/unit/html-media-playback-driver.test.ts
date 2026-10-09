@@ -76,6 +76,13 @@ class FakeMedia implements MediaElementPort {
       listener(new Event(type));
     }
   }
+
+  listenerCount(): number {
+    return [...this.listeners.values()].reduce(
+      (total, handlers) => total + handlers.size,
+      0,
+    );
+  }
 }
 
 const trusted = { projectId: "project-1", batchId: "main-picked-intake-1" };
@@ -735,4 +742,149 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     driver.close();
     expect(driver.setVolume(0)).toBe(false);
   });
+  it("T06: completes 100 Play/Stop/replay cycles without retaining listeners or ghost audio", async () => {
+    const source = project();
+    const original = structuredClone(source);
+    const audioElements: FakeMedia[] = [];
+    let grantRequests = 0;
+    const driver = new HtmlMediaPlaybackDriver(
+      source,
+      trusted,
+      async () => {
+        grantRequests += 1;
+        return granted;
+      },
+      () => {
+        const audio = new FakeMedia();
+        audioElements.push(audio);
+        return audio;
+      },
+    );
+
+    for (let cycle = 0; cycle < 100; cycle += 1) {
+      driver.play();
+      expect(driver.snapshot.phase).toBe("loading");
+      await flush();
+      const audio = audioElements[cycle];
+      if (audio === undefined) throw new Error("Missing cycle media element");
+
+      audio.emit("loadedmetadata");
+      await flush();
+      expect(driver.snapshot.phase).toBe("playing");
+
+      if (cycle % 10 === 0) {
+        driver.pause();
+        expect(driver.snapshot.phase).toBe("paused");
+        driver.play();
+        await flush();
+        expect(driver.snapshot.phase).toBe("playing");
+      }
+
+      audio.currentTime = 0.3;
+      audio.emit("timeupdate");
+      expect(driver.snapshot.albumTimeMs).toBe(300);
+      driver.stop();
+      expect(driver.snapshot).toMatchObject({
+        phase: "ready",
+        activeTrackId: null,
+        albumTimeMs: 0,
+      });
+      expect(audio.src).toBe("");
+      expect(audio.pauseCount).toBeGreaterThan(0);
+      expect(audio.listenerCount()).toBe(0);
+
+      // All late events from a disposed decoder must be entirely inert.
+      audio.emit("loadedmetadata");
+      audio.emit("timeupdate");
+      audio.emit("ended");
+      audio.emit("error");
+      expect(driver.snapshot.phase).toBe("ready");
+    }
+
+    expect(grantRequests).toBe(100);
+    expect(audioElements).toHaveLength(100);
+    expect(audioElements.every((audio) => audio.listenerCount() === 0)).toBe(
+      true,
+    );
+    expect(source).toEqual(original);
+    driver.close();
+    expect(driver.snapshot.phase).toBe("ready");
+  });
+
+  it("T06: navigates a 128-track authorized album with disabled gaps and no retained decoder events", async () => {
+    const source = project("stress-album");
+    source.mediaAssets = Array.from({ length: 128 }, (_, i) => ({
+      id: `asset-${i}`,
+      kind: "audio" as const,
+      required: true,
+      sourcePath: `C:/Untrusted/stress-${i}.wav`,
+      fileName: `stress-${i}.wav`,
+      sizeBytes: 16000,
+      availability: "ready" as const,
+      metadata: { durationMs: 1000 },
+    }));
+    source.tracks = Array.from({ length: 128 }, (_, i) => ({
+      id: `track-${i}`,
+      title: `Track ${i}`,
+      sourcePath: `C:/Untrusted/stress-${i}.wav`,
+      audioAssetId: `asset-${i}`,
+      enabled: i % 11 !== 9,
+    }));
+    const original = structuredClone(source);
+    const enabled = source.tracks.filter((track) => track.enabled !== false);
+    const audioElements: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      source,
+      { projectId: source.projectId, batchId: "main-authorized-stress" },
+      async () => granted,
+      () => {
+        const audio = new FakeMedia();
+        audioElements.push(audio);
+        return audio;
+      },
+    );
+
+    driver.play();
+    await flush();
+    audioElements[0]?.emit("loadedmetadata");
+    await flush();
+    expect(driver.snapshot).toMatchObject({
+      phase: "playing",
+      activeTrackId: enabled[0]?.id,
+    });
+
+    for (let n = 1; n < enabled.length; n += 1) {
+      const former = audioElements.at(-1);
+      driver.seek(n * 1000 + 200);
+      await flush();
+      const active = audioElements.at(-1);
+      if (!active || active === former) {
+        throw new Error("Navigation reused or failed to load fresh media");
+      }
+      active.emit("loadedmetadata");
+      await flush();
+      expect(driver.snapshot).toMatchObject({
+        phase: "playing",
+        activeTrackId: enabled[n]?.id,
+      });
+      active.currentTime = 0.3;
+      active.emit("timeupdate");
+      expect(driver.snapshot.albumTimeMs).toBe(n * 1000 + 300);
+      former?.emit("ended");
+      former?.emit("error");
+      expect(driver.snapshot.activeTrackId).toBe(enabled[n]?.id);
+      expect(former?.src).toBe("");
+      expect(former?.listenerCount()).toBe(0);
+    }
+
+    driver.stop();
+    expect(driver.snapshot.phase).toBe("ready");
+    expect(audioElements).toHaveLength(enabled.length);
+    expect(audioElements.every((audio) => audio.listenerCount() === 0)).toBe(
+      true,
+    );
+    expect(source).toEqual(original);
+    driver.close();
+  });
+
 });
