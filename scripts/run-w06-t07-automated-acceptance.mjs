@@ -35,7 +35,9 @@ async function readJson(path) {
 
 function demand(condition, description) {
   if (!condition) {
-    throw new Error(`T07 automated acceptance evidence invalid: ${description}`);
+    throw new Error(
+      `T07 automated acceptance evidence invalid: ${description}`,
+    );
   }
 }
 
@@ -47,7 +49,10 @@ function record(name, evidence, condition) {
 }
 
 async function validate() {
-  demand(process.platform === "win32", "a genuine Windows CI runner is required");
+  demand(
+    process.platform === "win32",
+    "a genuine Windows CI runner is required",
+  );
 
   const [audio, handles, editor, zip, sums, exe] = await Promise.all([
     readJson(audioEvidence),
@@ -115,7 +120,7 @@ async function validate() {
   );
 
   record(
-    "Finite Windows renderer memory/handle observations (not a leak-free claim)",
+    "Windows memory/handle samples (not leak-free)",
     "WIN_PACKAGED_PREVIEW_AUDIO.json; WIN_RENDERER_HANDLES.json",
     audio.t06RendererMemory?.source ===
       "Electron app.getAppMetrics / Windows OS" &&
@@ -170,7 +175,7 @@ async function validate() {
     source: "GitHub Actions Windows packaged executable and CI test artifacts",
     automatedGate: "PASS",
     checks,
-    acceptanceMatrix: "AC-W11-06-01..20 requires separate individual final signoff",
+    acceptanceMatrix: "AC-W11-06-01..20 needs per-AC final signoff",
     physicalGates: [
       "Actual audible sound through physical speakers/headphones (AC04)",
       "Real hardware suspend/resume and multi-hour resource plateau (AC15/18)",
