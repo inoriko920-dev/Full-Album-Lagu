@@ -6,6 +6,8 @@ import {
 import { runW06SpectrumProof } from "./w06-packaged-spectrum-proof";
 
 interface W06Evidence {
+  readonly corruptSourceBlocked: true;
+  readonly unsupportedFileRejected: true;
   readonly mainIssuedGrant: true;
   readonly pauseSeekNextPrevious: true;
   readonly relinkRevoked: true;
@@ -156,6 +158,34 @@ async function run(
   if (typeof requestPreview !== "function") {
     throw new Error("Main-owned audio preview bridge is unavailable");
   }
+  // Both inputs went through the *actual* Windows main picker and metadata
+  // probe. A corrupted WAV stays visible as invalid but must NEVER be granted.
+  const corrupt = imported.mediaAssets?.find(
+    (asset) => asset.fileName === "T06 Corrupt Audio.wav",
+  );
+  if (
+    !corrupt ||
+    corrupt.availability !== "invalid" ||
+    corrupt.errorCode !== "MEDIA_CORRUPT"
+  ) {
+    throw new Error("T06 corrupted WAV passed the real Windows metadata probe");
+  }
+  if (
+    imported.mediaAssets?.some(
+      (asset) => asset.fileName === "T06 Unsupported Notes.txt",
+    )
+  ) {
+    throw new Error("T06 unsupported text file was imported as an audio asset");
+  }
+  const deniedCorrupt = await requestPreview({
+    projectId: imported.projectId,
+    batchId,
+    assetId: corrupt.id,
+  });
+  if (deniedCorrupt.status !== "blocked") {
+    throw new Error("T06 invalid WAV received a private playback lease");
+  }
+
   const restartStress = await run100PackagedRestarts(
     imported,
     batchId,
@@ -258,6 +288,8 @@ async function run(
     await delay(60);
     if (!stopped()) throw new Error("Ghost media after close");
     return {
+      corruptSourceBlocked: true,
+      unsupportedFileRejected: true,
       mainIssuedGrant: true,
       pauseSeekNextPrevious: true,
       relinkRevoked: true,
