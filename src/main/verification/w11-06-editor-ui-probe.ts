@@ -238,11 +238,11 @@ export async function captureW1106EditorInteractions(
       assert(shell.getAttribute("data-project-dirty") === playbackDirty,
         "double-click seek changed project dirty state");
 
-      // Resume at the newly mapped, real WAV position and capture its live
-      // decoded-audio spectrum, not a fake clock or static preview sample.
-      // Resume the real audio after validating Pause and select-last behavior.
-      // Capture a genuine playing visual with active sine-wave bars, while
-      // Inspector still references the manually selected last track.
+      // Resume at the newly mapped real WAV position after its private
+      // source has finished loading; show the last card for the evidence.
+      lastCard.scrollIntoView({ block: "nearest", inline: "nearest" });
+      await wait(() => button("Putar"),
+        "paused seek destination did not finish its native WAV load", 180);
       click(button("Putar"), "cannot resume packaged playback for screenshot");
       await wait(
         () => button("Jeda") && visibleBars().length === 32 &&
