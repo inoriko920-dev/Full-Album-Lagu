@@ -168,7 +168,13 @@ async function run(
     corrupt.availability !== "invalid" ||
     corrupt.errorCode !== "MEDIA_CORRUPT"
   ) {
-    throw new Error("T06 corrupted WAV passed the real Windows metadata probe");
+    throw new Error(
+      "T06 corrupt WAV intake status: " +
+        JSON.stringify({
+          corrupt,
+          files: imported.mediaAssets?.map((asset) => asset.fileName),
+        }),
+    );
   }
   if (
     imported.mediaAssets?.some(
