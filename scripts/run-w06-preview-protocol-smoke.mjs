@@ -98,7 +98,7 @@ async function launchPackaged(paths) {
     const timeout = setTimeout(() => {
       child.kill();
       rejectRun(new Error("Timed out waiting for packaged audio decoder"));
-    }, 90_000);
+    }, 180_000);
     child.stdout.on("data", (chunk) => {
       stdout += String(chunk);
     });
@@ -165,7 +165,13 @@ async function main() {
     report.driver?.unrelatedAssetDenied !== true ||
     report.driver?.projectSwitchStopped !== true ||
     report.driver?.closeStopped !== true ||
-    report.driver?.createdElements < 4
+    report.driver?.createdElements < 4 ||
+    report.driver?.restartStress?.completedCycles !== 100 ||
+    report.driver?.restartStress?.createdElements !== 100 ||
+    report.driver?.restartStress?.allMediaReleased !== true ||
+    report.driver?.restartStress?.projectUnchanged !== true ||
+    !Number.isFinite(report.driver?.restartStress?.elapsedMs) ||
+    report.driver?.restartStress?.elapsedMs <= 0
   ) {
     throw new Error("Real packaged T03 HtmlMediaPlaybackDriver proof failed.");
   }
@@ -185,6 +191,7 @@ async function main() {
     throw new Error("Preview audio process modified source file fingerprints.");
   }
   console.log("T11-W06-02 packaged Windows audio decode PASS");
+  console.log("T11-W06-06 packaged 100-cycle real WAV playback PASS");
   console.log(JSON.stringify({ ...launch, report }, null, 2));
 }
 
