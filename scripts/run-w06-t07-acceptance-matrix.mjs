@@ -201,10 +201,7 @@ const items = [
   ),
 ];
 
-requireEvidence(
-  items.length === 20,
-  "exactly 20 numbered acceptance criteria",
-);
+requireEvidence(items.length === 20, "exactly 20 numbered acceptance criteria");
 requireEvidence(
   items.some((row) => row.status === "NOT_TESTED") &&
     items.every((row, index) =>
