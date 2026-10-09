@@ -1,5 +1,8 @@
 import type { ProjectDocument } from "../../core/domain/project-document";
-import { HtmlMediaPlaybackDriver } from "./html-media-playback-driver";
+import {
+  HtmlMediaPlaybackDriver,
+  type PreviewAudioRequester,
+} from "./html-media-playback-driver";
 import { runW06SpectrumProof } from "./w06-packaged-spectrum-proof";
 
 interface W06Evidence {
@@ -11,6 +14,13 @@ interface W06Evidence {
   readonly projectSwitchStopped: true;
   readonly closeStopped: true;
   readonly createdElements: number;
+  readonly restartStress: {
+    readonly completedCycles: number;
+    readonly createdElements: number;
+    readonly elapsedMs: number;
+    readonly allMediaReleased: true;
+    readonly projectUnchanged: true;
+  };
 }
 
 const delay = (ms: number): Promise<void> =>
@@ -39,6 +49,82 @@ function requirePhase(
 ): void {
   if (driver.snapshot.phase !== expected) {
     throw new Error("Expected playback phase " + expected);
+  }
+}
+
+/**
+ * T06 packaged-Windows stress: use 2-second native WAV decoder/protocol media
+ * and the same real HTMLMediaPlaybackDriver in 100 consecutive start/stop cycles.
+ * Avoid mock audio, synthetic grant URLs or renderer filesystem privileges.
+ */
+async function run100PackagedRestarts(
+  imported: ProjectDocument,
+  batchId: string,
+  requestPreview: PreviewAudioRequester,
+): Promise<W06Evidence["restartStress"]> {
+  const tone = imported.mediaAssets?.find(
+    (asset) =>
+      asset.availability === "ready" &&
+      asset.fileName === "T04 Tone 440Hz.wav",
+  );
+  if (!tone) throw new Error("T06 real stress tone WAV was not imported");
+  const project: ProjectDocument = {
+    ...imported,
+    tracks: [
+      {
+        id: "stress-track",
+        title: "T06 Real Restart Stress",
+        audioAssetId: tone.id,
+        sourcePath: tone.sourcePath,
+      },
+    ],
+  };
+  const original = JSON.stringify(project);
+  const elements: HTMLAudioElement[] = [];
+  const driver = new HtmlMediaPlaybackDriver(
+    project,
+    { projectId: project.projectId, batchId },
+    requestPreview,
+    () => {
+      const audio = new Audio();
+      audio.muted = true;
+      elements.push(audio);
+      return audio;
+    },
+  );
+  const startedAt = performance.now();
+  try {
+    for (let cycle = 0; cycle < 100; cycle += 1) {
+      driver.play();
+      await waitFor(driver, "playing", "stress-track");
+      const element = elements[cycle];
+      if (!element || elements.length !== cycle + 1) {
+        throw new Error("T06 unexpected media instance on cycle " + cycle);
+      }
+      driver.stop();
+      requirePhase(driver, "ready");
+      if (!element.paused || element.hasAttribute("src")) {
+        throw new Error("T06 live audio survived Stop at cycle " + cycle);
+      }
+    }
+    if (
+      elements.length !== 100 ||
+      elements.some((audio) => !audio.paused || audio.hasAttribute("src"))
+    ) {
+      throw new Error("T06 audio element leak after 100 restarts");
+    }
+    if (JSON.stringify(project) !== original) {
+      throw new Error("T06 playback mutated the project document");
+    }
+    return {
+      completedCycles: 100,
+      createdElements: elements.length,
+      elapsedMs: Math.round(performance.now() - startedAt),
+      allMediaReleased: true,
+      projectUnchanged: true,
+    };
+  } finally {
+    driver.close();
   }
 }
 
@@ -71,6 +157,11 @@ async function run(
   if (typeof requestPreview !== "function") {
     throw new Error("Main-owned audio preview bridge is unavailable");
   }
+  const restartStress = await run100PackagedRestarts(
+    imported,
+    batchId,
+    (request) => requestPreview(request),
+  );
   const audioElements: HTMLAudioElement[] = [];
   const driver = new HtmlMediaPlaybackDriver(
     project,
@@ -176,6 +267,7 @@ async function run(
       projectSwitchStopped: true,
       closeStopped: true,
       createdElements: audioElements.length,
+      restartStress,
     };
   } finally {
     driver.close();
