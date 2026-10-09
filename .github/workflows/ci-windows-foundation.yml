@@ -44,6 +44,13 @@ jobs:
       - name: Foundation and UI verification
         run: npm run verify
 
+      - name: TEMP T06 formatting diff diagnostic
+        if: always()
+        shell: pwsh
+        run: |
+          ./node_modules/.bin/prettier.cmd src/main/bootstrap.ts tests/unit/html-media-playback-driver.test.ts --write
+          git diff -- src/main/bootstrap.ts tests/unit/html-media-playback-driver.test.ts
+
       - name: Runtime dependency audit
         run: npm audit --omit=dev --audit-level=high
 
