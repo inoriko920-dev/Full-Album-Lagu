@@ -156,7 +156,7 @@ async function validate() {
     );
   }
 
-  const expectedSum = sums.trim().match(/^([0-9a-f]{64})  (.+\.zip)$/);
+  const expectedSum = sums.trim().match(/^([0-9a-f]{64}) {2}(.+\.zip)$/);
   record(
     "Portable Windows folder ZIP and exact SHA-256 checksum",
     "artifacts/SHA256SUMS.txt; foundation Windows x64 ZIP",
