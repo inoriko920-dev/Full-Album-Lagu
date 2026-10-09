@@ -119,7 +119,12 @@ async function testAlbum(count) {
     report.imported?.tracks !== count ||
     report.frozenShellPresent !== true ||
     report.lastTrackSelected !== true ||
-    report.seekUiAvailable !== false ||
+    report.dedicatedSeekSliderPresent !== false ||
+    report.seekViaTimelineVerified !== true ||
+    report.disabledSeekRejected !== true ||
+    report.seekDidNotDirtyProject !== true ||
+    report.seekSeconds !== (count - 2) * 4 + 2 ||
+    !(report.resumedSeekSeconds >= report.seekSeconds - 1) ||
     report.appliedFrozenSpectrumTemplate !== true ||
     report.liveProgressVerified !== true ||
     report.pausedSpectrumZero !== true ||
@@ -150,6 +155,13 @@ async function testAlbum(count) {
     screenshot: evidence + ".png",
     evidence,
     checks: report.controls,
+    packagedTimelineSeek: {
+      verified: report.seekViaTimelineVerified,
+      seconds: report.seekSeconds,
+      resumedSeconds: report.resumedSeekSeconds,
+      disabledRejected: report.disabledSeekRejected,
+      noDirty: report.seekDidNotDirtyProject,
+    },
   };
 }
 
