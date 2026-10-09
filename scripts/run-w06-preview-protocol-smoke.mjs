@@ -226,7 +226,21 @@ async function main() {
         !Number.isSafeInteger(sample.workingSetKiB) ||
         sample.workingSetKiB <= 0 ||
         sample.pid !== memory.baseline.pid,
-    )
+    ) ||
+    memory.idleAfterStop?.length !== 3 ||
+    memory.idleAfterStop.some(
+      (sample) =>
+        !Number.isFinite(sample.elapsedMs) ||
+        !Number.isSafeInteger(sample.workingSetKiB) ||
+        sample.workingSetKiB <= 0 ||
+        sample.pid !== memory.baseline.pid,
+    ) ||
+    memory.handles?.source !== "Windows Get-Process HandleCount" ||
+    memory.handles?.pid !== memory.baseline.pid ||
+    !Number.isSafeInteger(memory.handles?.baseline) ||
+    memory.handles.baseline <= 0 ||
+    !Number.isSafeInteger(memory.handles?.afterIdle) ||
+    memory.handles.afterIdle <= 0
   ) {
     throw new Error("T06 real Windows renderer memory measurement unavailable");
   }
