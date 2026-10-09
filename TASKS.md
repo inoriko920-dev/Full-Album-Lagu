@@ -859,3 +859,12 @@
 - **SOL IMPLEMENTED / TECHNICALLY VERIFIED:** [Windows CI #709 PASS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/37919408413) at `ce7c88f`. Double-click existing approved track card to seek using its x fraction and canonical duration; single-click retains Inspector selection. Guard no trusted audio, disabled/unresolved track and invalid geometry; request is ephemeral, not CommandEngine mutation.
 - New component coverage: proper 2500ms second-track half-second fraction, boundary clamps, no trust, disable, unresolved duration, no project dirty. Added tests bring Vitest to 392 (229+59+61+43). Existing Windows executable, real FFT/preview, frozen UI regressions, portable all PASS.
 - **GATE:** exact documentation head CI pending after this status update; PR #58 **UNMERGED** pending explicit owner authorization. T06 #60 BLOCKED; MP4 not available.
+
+
+## T11-W06-06 — actual code + CI closure work (2026-10-09 WIB)
+- T05 predecessor: PR #58 merged `main@b3f4495af13c4840ca298d8c647d997a0fbfc541`; main Windows CI #712 SUCCESS.
+- Current isolated [Draft PR #61](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/61) / [issue #60](https://github.com/inoriko920-dev/Full-Album-Lagu/issues/60). T06 source automated tests PASS at [Windows CI #759](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/37934060789), 397 tests, 300/300 real packaged WAV cycles, 128-track Windows editor, UI, ZIP.
+- Fixed stale in-flight same-project audio grants with per-owner epoch; added deterministic held-IPC regression and discard the epoch when a window is fully revoked. Corrected genuine W11-05 100-template stress test timeout to 20s without weakening 109-template/128-layer/64-history assertions.
+- See [T06 automated evidence](docs/step11/evidence/T11_W06_06_AUTOMATED_ACCEPTANCE_20261009.md) for security, renderer memory/handle proof, and exact remaining risks. **Exact-head final documentation CI is still required**.
+- T06 **AUTOMATED VERIFIED / PHYSICAL NOT_TESTED**: hosted Windows cannot prove genuine device Suspend/Resume nor hours-long leak-free resource boundedness. Do not silently mark those PASS.
+- Gate: **PR #61 DRAFT / UNMERGED; main untouched**. T07 and MP4 remain gated and **NOT IMPLEMENTED**. User approval for PR #58 did not authorize merging #61.
