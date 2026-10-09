@@ -186,6 +186,21 @@ async function main() {
   ) {
     throw new Error("Real packaged Windows FFT tone/silence proof failed.");
   }
+  const memory = report.t06RendererMemory;
+  if (
+    memory?.source !== "Electron app.getAppMetrics / Windows OS" ||
+    memory?.units !== "KiB" ||
+    memory?.baseline?.pid !== memory?.afterAllProbes?.pid ||
+    !Number.isSafeInteger(memory?.baseline?.workingSetKiB) ||
+    memory.baseline.workingSetKiB <= 0 ||
+    !Number.isSafeInteger(memory?.afterAllProbes?.workingSetKiB) ||
+    memory.afterAllProbes.workingSetKiB <= 0 ||
+    !Number.isSafeInteger(memory?.afterAllProbes?.peakWorkingSetKiB) ||
+    memory.afterAllProbes.peakWorkingSetKiB <
+      memory.afterAllProbes.workingSetKiB
+  ) {
+    throw new Error("T06 real Windows renderer memory measurement unavailable");
+  }
   const after = await Promise.all(audioPaths.map(fingerprint));
   if (JSON.stringify(before) !== JSON.stringify(after)) {
     throw new Error("Preview audio process modified source file fingerprints.");
