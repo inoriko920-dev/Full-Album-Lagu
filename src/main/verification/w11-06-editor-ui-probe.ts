@@ -81,6 +81,43 @@ export async function captureW1106EditorInteractions(
       assert(document.querySelectorAll(".timeline-track").length === expectedTracks,
         "128-track cards were truncated");
 
+      // Apply the actual approved built-in visual template through UI controls.
+      // A fixture without visual layers cannot verify that decoded FFT reaches
+      // the frozen spectrum layer displayed to real Windows users.
+      const templateButton = Array.from(
+        document.querySelectorAll('[aria-label="Aksi proyek"] button'),
+      ).find((element) => element.textContent?.trim() === "Template");
+      click(templateButton, "Template toolbar control missing");
+      const tryTemplate = await wait(() => {
+        const candidate = Array.from(
+          document.querySelectorAll(".template-browser__actions button"),
+        ).find((element) => element.textContent?.trim() === "Coba Template");
+        return candidate && !candidate.disabled ? candidate : null;
+      }, "built-in template never became ready", 180);
+      click(tryTemplate, "cannot try frozen built-in template");
+      const applyTemplate = await wait(() =>
+        Array.from(document.querySelectorAll(
+          ".template-trial-overlay__controls button",
+        )).find((element) => element.textContent?.trim() === "Terapkan Template"),
+        "template trial did not open",
+      );
+      click(applyTemplate, "cannot apply frozen built-in template");
+      await wait(
+        () => document.querySelector(
+          ".preview-frame--visual .static-scene-preview__spectrum",
+        ) && !document.querySelector(".template-trial-overlay"),
+        "approved template with spectrum never appeared in editor",
+      );
+      const visibleBars = () => Array.from(document.querySelectorAll(
+        ".preview-frame--visual .static-scene-preview__spectrum .static-scene-preview__bar",
+      ));
+      const spectrumPeakPercent = () => Math.max(
+        0,
+        ...visibleBars().map((bar) => Number.parseFloat(bar.style.height) || 0),
+      );
+      assert(visibleBars().length === 32,
+        "preview must expose 32 real decoded-audio FFT bars");
+
       // This user edit intentionally changes revision BEFORE the playback-only baseline.
       const disabledTrack = document.querySelectorAll(".media-row")[1];
       const toggle = disabledTrack?.querySelector('input[type="checkbox"]');
@@ -98,6 +135,17 @@ export async function captureW1106EditorInteractions(
       assert(Number.isFinite(firstPlayhead) && firstPlayhead >= 18,
         "playing playhead has no geometry");
       const playingSeconds = elapsedSeconds();
+      await wait(
+        () => visibleBars().length === 32 && spectrumPeakPercent() > 2,
+        "sine-WAV never reached frozen Preview spectrum bars",
+        180,
+      );
+      const liveSpectrumPeakPercent = spectrumPeakPercent();
+      const liveProgressStyle = document.querySelector(
+        ".preview-frame--visual .static-scene-preview__progress-track",
+      )?.style.background || "";
+      assert(liveProgressStyle.includes("linear-gradient"),
+        "real album clock never reached frozen Preview progress layer");
 
       click(button("Bisukan"), "Mute button did not appear");
       await wait(() => button("Suarakan"), "Mute did not update");
@@ -127,6 +175,12 @@ export async function captureW1106EditorInteractions(
       await new Promise((done) => setTimeout(done, 250));
       assert(timecode() === pausedTime,
         "timecode changed after paused editor transport");
+      await wait(
+        () => visibleBars().length === 32 && visibleBars().every(
+          (bar) => Number.parseFloat(bar.style.height) === 0,
+        ),
+        "paused real spectrum bars failed to return to silence",
+      );
 
       const lastCard = Array.from(document.querySelectorAll(".timeline-track")).at(-1);
       click(lastCard, "last timeline card missing");
@@ -152,6 +206,10 @@ export async function captureW1106EditorInteractions(
         playbackRevision,
         playbackDirty,
         playingSeconds,
+        appliedFrozenSpectrumTemplate: true,
+        liveSpectrumPeakPercent,
+        liveProgressVerified: true,
+        pausedSpectrumZero: true,
         firstPlayhead,
         thirdPlayhead,
         zoomedPlayhead,
