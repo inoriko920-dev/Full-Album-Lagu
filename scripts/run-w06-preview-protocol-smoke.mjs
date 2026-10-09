@@ -175,9 +175,20 @@ async function main() {
     report.driver?.unrelatedAssetDenied !== true ||
     report.driver?.projectSwitchStopped !== true ||
     report.driver?.closeStopped !== true ||
+    report.driver?.simulatedSuspendRevoked !== true ||
+    report.driver?.resumeStayedStopped !== true ||
+    report.driver?.explicitlyReauthorizedPlayback !== true ||
     report.driver?.createdElements < 4 ||
-    report.driver?.restartStress?.completedCycles !== 100 ||
-    report.driver?.restartStress?.createdElements !== 100 ||
+    report.driver?.restartStress?.completedCycles !== 300 ||
+    report.driver?.restartStress?.createdElements !== 300 ||
+    report.driver?.restartStress?.rounds?.length !== 3 ||
+    report.driver.restartStress.rounds.some(
+      (round) =>
+        round.completedCycles !== 100 ||
+        round.createdElements !== 100 ||
+        !Number.isFinite(round.elapsedMs) ||
+        round.elapsedMs <= 0,
+    ) ||
     report.driver?.restartStress?.allMediaReleased !== true ||
     report.driver?.restartStress?.projectUnchanged !== true ||
     !Number.isFinite(report.driver?.restartStress?.elapsedMs) ||
@@ -207,7 +218,15 @@ async function main() {
     memory.afterAllProbes.workingSetKiB <= 0 ||
     !Number.isSafeInteger(memory?.afterAllProbes?.peakWorkingSetKiB) ||
     memory.afterAllProbes.peakWorkingSetKiB <
-      memory.afterAllProbes.workingSetKiB
+      memory.afterAllProbes.workingSetKiB ||
+    memory.samples?.length < 12 ||
+    memory.samples.some(
+      (sample) =>
+        !Number.isFinite(sample.elapsedMs) ||
+        !Number.isSafeInteger(sample.workingSetKiB) ||
+        sample.workingSetKiB <= 0 ||
+        sample.pid !== memory.baseline.pid,
+    )
   ) {
     throw new Error("T06 real Windows renderer memory measurement unavailable");
   }
@@ -216,7 +235,7 @@ async function main() {
     throw new Error("Preview audio process modified source file fingerprints.");
   }
   console.log("T11-W06-02 packaged Windows audio decode PASS");
-  console.log("T11-W06-06 packaged 100-cycle real WAV playback PASS");
+  console.log("T11-W06-06 packaged 3x100-cycle real WAV playback PASS");
   console.log(JSON.stringify({ ...launch, report }, null, 2));
 }
 
