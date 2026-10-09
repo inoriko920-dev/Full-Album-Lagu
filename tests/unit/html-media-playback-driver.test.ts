@@ -76,6 +76,14 @@ class FakeMedia implements MediaElementPort {
       listener(new Event(type));
     }
   }
+
+  /** Track active subscriptions without depending on browser GC timing. */
+  listenerCount(): number {
+    return Array.from(this.listeners.values()).reduce(
+      (count, listeners) => count + listeners.size,
+      0,
+    );
+  }
 }
 
 const trusted = { projectId: "project-1", batchId: "main-picked-intake-1" };
@@ -735,4 +743,99 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     driver.close();
     expect(driver.setVolume(0)).toBe(false);
   });
+  it("T06: releases every audio element and listener over 100 real driver restart cycles", async () => {
+    const source = project();
+    const before = structuredClone(source);
+    const elements: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      source,
+      trusted,
+      async () => granted,
+      () => {
+        const element = new FakeMedia();
+        elements.push(element);
+        return element;
+      },
+    );
+
+    let previousGeneration = driver.snapshot.generation;
+    for (let cycle = 0; cycle < 100; cycle += 1) {
+      driver.play();
+      await flush();
+      const element = elements[cycle];
+      if (element === undefined) throw new Error("Cycle did not create audio");
+      expect(elements).toHaveLength(cycle + 1);
+      expect(element.listenerCount()).toBe(4);
+      expect(driver.snapshot.phase).toBe("loading");
+
+      element.emit("loadedmetadata");
+      await flush();
+      expect(driver.snapshot.phase).toBe("playing");
+      expect(element.playCount).toBe(1);
+      element.currentTime = 0.2;
+      element.emit("timeupdate");
+      expect(driver.snapshot.albumTimeMs).toBe(200);
+
+      driver.stop();
+      expect(driver.snapshot.phase).toBe("ready");
+      expect(driver.snapshot.albumTimeMs).toBe(0);
+      expect(driver.snapshot.generation).toBeGreaterThan(previousGeneration);
+      previousGeneration = driver.snapshot.generation;
+      expect(element.src).toBe("");
+      expect(element.listenerCount()).toBe(0);
+      expect(element.pauseCount).toBeGreaterThanOrEqual(1);
+
+      // The old media can still deliver queued browser events.
+      element.emit("ended");
+      element.emit("error");
+      element.emit("loadedmetadata");
+      element.emit("timeupdate");
+      expect(driver.snapshot.phase).toBe("ready");
+      expect(driver.snapshot.generation).toBe(previousGeneration);
+    }
+
+    expect(elements).toHaveLength(100);
+    expect(elements.every((element) => element.listenerCount() === 0)).toBe(true);
+    expect(source).toEqual(before);
+    driver.close();
+    driver.play();
+    expect(elements).toHaveLength(100);
+  });
+
+  it("T06: 100 delayed main-grant replies cannot create ghost audio after Stop", async () => {
+    const source = project();
+    const before = structuredClone(source);
+    const pending: Array<(reply: PreviewAudioIssueResult) => void> = [];
+    const elements: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      source,
+      trusted,
+      () =>
+        new Promise<PreviewAudioIssueResult>((resolve) => {
+          pending.push(resolve);
+        }),
+      () => {
+        const audio = new FakeMedia();
+        elements.push(audio);
+        return audio;
+      },
+    );
+
+    for (let cycle = 0; cycle < 100; cycle += 1) {
+      driver.play();
+      expect(driver.snapshot.phase).toBe("loading");
+      driver.stop();
+      expect(driver.snapshot.phase).toBe("ready");
+    }
+    expect(pending).toHaveLength(100);
+    expect(elements).toHaveLength(0);
+    for (const resolve of pending) resolve(granted);
+    await flush();
+    expect(elements).toHaveLength(0);
+    expect(driver.snapshot.phase).toBe("ready");
+    expect(driver.snapshot.albumTimeMs).toBe(0);
+    expect(source).toEqual(before);
+    driver.close();
+  });
+
 });
