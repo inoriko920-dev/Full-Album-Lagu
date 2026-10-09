@@ -1,5 +1,12 @@
 import "@testing-library/jest-dom/vitest";
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { LfaBridge } from "../../src/core/contracts/lfa-bridge";
 import type { ProjectDocument } from "../../src/core/domain/project-document";
@@ -9,6 +16,7 @@ import { AppShell } from "../../src/renderer/app/AppShell";
 const previewClock = vi.hoisted(() => ({
   available: false,
   activeTrackId: null as string | null,
+  projectId: "t05-preview-track-context",
   phase: "ready" as "ready" | "playing" | "paused" | "loading",
 }));
 
@@ -20,7 +28,7 @@ vi.mock("../../src/renderer/state/use-album-preview-playback", () => ({
     clock: {
       phase: previewClock.phase,
       generation: 0,
-      projectId: "t05-preview-track-context",
+      projectId: previewClock.projectId,
       activeTrackId: previewClock.activeTrackId,
       albumTimeMs: 1000,
       localTimeMs: 1000,
@@ -156,7 +164,11 @@ const bridge: LfaBridge = {
   }),
   relinkMediaAsset: async () => ({
     status: "cancelled",
-    result: { status: "cancelled", code: "RELINK_CANCELLED", assetId: "asset-a" },
+    result: {
+      status: "cancelled",
+      code: "RELINK_CANCELLED",
+      assetId: "asset-a",
+    },
   }),
   relinkMissingMediaFolder: async () => ({
     status: "cancelled",
@@ -184,6 +196,7 @@ beforeEach(() => {
   startup = album();
   previewClock.available = false;
   previewClock.activeTrackId = null;
+  previewClock.projectId = "t05-preview-track-context";
   previewClock.phase = "ready";
   Object.defineProperty(window, "lfa", { configurable: true, value: bridge });
 });
@@ -194,7 +207,9 @@ describe("T11-W06-05 live preview track context", () => {
     const before = structuredClone(startup);
     const { rerender } = render(<AppShell />);
     await waitFor(() => {
-      expect(document.querySelector('[data-media-track-id="track-a"]')).not.toBeNull();
+      expect(
+        document.querySelector('[data-media-track-id="track-a"]'),
+      ).not.toBeNull();
     });
 
     fireEvent.click(
@@ -241,7 +256,9 @@ describe("T11-W06-05 live preview track context", () => {
   it("never resolves an unknown or inactive clock track into Preview", async () => {
     const { rerender } = render(<AppShell />);
     await waitFor(() =>
-      expect(document.querySelector('[data-media-track-id="track-a"]')).not.toBeNull(),
+      expect(
+        document.querySelector('[data-media-track-id="track-a"]'),
+      ).not.toBeNull(),
     );
     previewClock.available = true;
     previewClock.phase = "playing";
@@ -255,5 +272,32 @@ describe("T11-W06-05 live preview track context", () => {
     previewClock.phase = "ready";
     rerender(<AppShell />);
     expect(preview.getByText("Title A")).toBeInTheDocument();
+  });
+
+  it("ignores stale playback metadata from an earlier project even when track IDs collide", async () => {
+    const { rerender } = render(<AppShell />);
+    await waitFor(() => {
+      expect(
+        document.querySelector('[data-media-track-id="track-a"]'),
+      ).not.toBeNull();
+    });
+
+    previewClock.available = true;
+    previewClock.phase = "playing";
+    previewClock.activeTrackId = "track-b";
+    previewClock.projectId = "old-project-with-reused-track-ids";
+    rerender(<AppShell />);
+
+    const preview = within(screen.getByLabelText("Preview visual statis"));
+    expect(preview.getByText("Title A")).toBeInTheDocument();
+    expect(preview.queryByText("Title B")).toBeNull();
+
+    previewClock.projectId = "t05-preview-track-context";
+    rerender(<AppShell />);
+    expect(preview.getByText("Title B")).toBeInTheDocument();
+    expect(document.querySelector(".app-shell")).toHaveAttribute(
+      "data-project-revision",
+      "0",
+    );
   });
 });
