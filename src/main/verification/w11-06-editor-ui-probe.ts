@@ -196,6 +196,50 @@ export async function captureW1106EditorInteractions(
       assert(document.querySelectorAll(".timeline-track").length === expectedTracks,
         "album changed during transport interaction");
 
+      // Prove actual Electron-renderer double-click seeking with a real
+      // main-issued WAV lease, not only a React/jsdom component mock.
+      // The fixture consists of 4-second tracks with track 2 disabled.
+      const seekSeconds = (expectedTracks - 2) * 4 + 2;
+      const dblclickMidpoint = (card) => {
+        assert(card, "seek target is absent");
+        card.scrollIntoView({ block: "nearest", inline: "nearest" });
+        const rect = card.getBoundingClientRect();
+        assert(rect.width > 0 && Number.isFinite(rect.left),
+          "seek target has invalid Windows DOM geometry");
+        card.dispatchEvent(new MouseEvent("dblclick", {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          clientX: rect.left + rect.width * 0.5,
+          clientY: rect.top + rect.height * 0.5,
+        }));
+      };
+      dblclickMidpoint(lastCard);
+      await wait(
+        () => elapsedSeconds() >= seekSeconds - 1 &&
+          elapsedSeconds() <= seekSeconds + 1,
+        "double-click did not seek within last trusted track", 180,
+      );
+      const seekTime = timecode();
+      await new Promise((done) => setTimeout(done, 200));
+      assert(timecode() === seekTime,
+        "paused double-click seek restarted audio unexpectedly");
+      assert(shell.getAttribute("data-selected-track-id") ===
+          lastCard.getAttribute("data-timeline-track-id"),
+        "seek broke selected track inspector context");
+
+      // Attempting to seek a disabled card must be inert.
+      dblclickMidpoint(document.querySelectorAll(".timeline-track")[1]);
+      await new Promise((done) => setTimeout(done, 100));
+      assert(timecode() === seekTime,
+        "disabled second track became a seek destination");
+      assert(shell.getAttribute("data-project-revision") === playbackRevision,
+        "double-click seek changed canonical project revision");
+      assert(shell.getAttribute("data-project-dirty") === playbackDirty,
+        "double-click seek changed project dirty state");
+
+      // Resume at the newly mapped, real WAV position and capture its live
+      // decoded-audio spectrum, not a fake clock or static preview sample.
       // Resume the real audio after validating Pause and select-last behavior.
       // Capture a genuine playing visual with active sine-wave bars, while
       // Inspector still references the manually selected last track.
@@ -206,6 +250,11 @@ export async function captureW1106EditorInteractions(
         "real waveform not visible when capturing frozen Preview",
         180,
       );
+      await wait(
+        () => elapsedSeconds() >= seekSeconds - 1,
+        "resumed real audio did not continue from double-click seek", 180,
+      );
+      const resumedSeekSeconds = elapsedSeconds();
       const captureSpectrumPeakPercent = spectrumPeakPercent();
       await new Promise((done) =>
         requestAnimationFrame(() => requestAnimationFrame(done)));
@@ -229,10 +278,15 @@ export async function captureW1106EditorInteractions(
         zoom: shell.getAttribute("data-timeline-zoom"),
         pausedTime,
         lastTrackSelected: true,
+        seekViaTimelineVerified: true,
+        seekSeconds,
+        resumedSeekSeconds,
+        disabledSeekRejected: true,
+        seekDidNotDirtyProject: true,
         frozenShellPresent: true,
         controls: ["Play", "Pause", "Previous", "Next", "Mute",
           "Unmute", "Zoom", "Last track selection"],
-        seekUiAvailable: false,
+        dedicatedSeekSliderPresent: false,
         viewport: { width: window.innerWidth, height: window.innerHeight },
       };
     })()`,
