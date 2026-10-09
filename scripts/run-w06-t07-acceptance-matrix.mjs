@@ -117,32 +117,99 @@ const withheld = (id, reason) => ({
 });
 
 const items = [
-  partial("AC-W11-06-01", "Main-authorized import, disabled/untrusted playback checks", "Missing-file interaction on physical Windows"),
-  partial("AC-W11-06-02", "Canonical projectAlbumTimeline unit and editor CI", "Independent end-user order observation"),
-  partial("AC-W11-06-03", "One canonical album time mapper and no persisted playlist", "Final human project inspection"),
-  withheld("AC-W11-06-04", "Actual speaker-audible MP3/WAV playback and physical Stop/Resume require device validation"),
+  partial(
+    "AC-W11-06-01",
+    "Main-authorized import, disabled/untrusted playback checks",
+    "Missing-file interaction on physical Windows",
+  ),
+  partial(
+    "AC-W11-06-02",
+    "Canonical projectAlbumTimeline unit and editor CI",
+    "Independent end-user order observation",
+  ),
+  partial(
+    "AC-W11-06-03",
+    "One canonical album time mapper and no persisted playlist",
+    "Final human project inspection",
+  ),
+  withheld(
+    "AC-W11-06-04",
+    "Actual speaker-audible MP3/WAV playback and physical Stop/Resume require device validation",
+  ),
   verified("AC-W11-06-05", "Packaged seek + editor track-boundary controls"),
-  verified("AC-W11-06-06", "Packaged Next skips disabled track; controller Ended regressions"),
-  partial("AC-W11-06-07", "Active playback metadata resolver component regressions", "Final human visual metadata check"),
-  verified("AC-W11-06-08", "Real Windows timecode, pause, frozen progress and live playhead"),
-  verified("AC-W11-06-09", "Real decoded 440Hz/silence FFT and pause/stop zero"),
-  verified("AC-W11-06-10", "Playback project history and source fingerprint assertions"),
-  verified("AC-W11-06-11", "Malformed WAV and unsupported file fail closed in packaged Windows"),
-  verified("AC-W11-06-12", "Main scoped grant; invalid project, asset and stale token rejection"),
-  verified("AC-W11-06-13", "Bounded stream 206/416, large sparse range unit regressions"),
-  verified("AC-W11-06-14", "100 delayed grants and generation-guard security regressions"),
-  partial("AC-W11-06-15", "Native Stop/Close, relink and simulated Suspend cleanup", "Actual Windows Suspend/Resume + full project recovery on real hardware"),
-  verified("AC-W11-06-16", "Approved spectrum and progress layer visualization preserved"),
-  verified("AC-W11-06-17", "Frozen editor UI/preview, permanent Gemini rail and 1600×1000 screen"),
-  withheld("AC-W11-06-18", "128 tracks and 300 start/stop are automated, but prolonged bounded Windows memory/handles require final device stress"),
-  verified("AC-W11-06-19", "Upstream CI validates prior waves, frozen UI, integrity and architecture before this step"),
-  withheld("AC-W11-06-20", "Physical audio speaker and complete 20-AC portable final DoD not yet signed off"),
+  verified(
+    "AC-W11-06-06",
+    "Packaged Next skips disabled track; controller Ended regressions",
+  ),
+  partial(
+    "AC-W11-06-07",
+    "Active playback metadata resolver component regressions",
+    "Final human visual metadata check",
+  ),
+  verified(
+    "AC-W11-06-08",
+    "Real Windows timecode, pause, frozen progress and live playhead",
+  ),
+  verified(
+    "AC-W11-06-09",
+    "Real decoded 440Hz/silence FFT and pause/stop zero",
+  ),
+  verified(
+    "AC-W11-06-10",
+    "Playback project history and source fingerprint assertions",
+  ),
+  verified(
+    "AC-W11-06-11",
+    "Malformed WAV and unsupported file fail closed in packaged Windows",
+  ),
+  verified(
+    "AC-W11-06-12",
+    "Main scoped grant; invalid project, asset and stale token rejection",
+  ),
+  verified(
+    "AC-W11-06-13",
+    "Bounded stream 206/416, large sparse range unit regressions",
+  ),
+  verified(
+    "AC-W11-06-14",
+    "100 delayed grants and generation-guard security regressions",
+  ),
+  partial(
+    "AC-W11-06-15",
+    "Native Stop/Close, relink and simulated Suspend cleanup",
+    "Actual Windows Suspend/Resume + full project recovery on real hardware",
+  ),
+  verified(
+    "AC-W11-06-16",
+    "Approved spectrum and progress layer visualization preserved",
+  ),
+  verified(
+    "AC-W11-06-17",
+    "Frozen editor UI/preview, permanent Gemini rail and 1600×1000 screen",
+  ),
+  withheld(
+    "AC-W11-06-18",
+    "128 tracks and 300 start/stop are automated, but prolonged bounded Windows memory/handles require final device stress",
+  ),
+  verified(
+    "AC-W11-06-19",
+    "Upstream CI validates prior waves, frozen UI, integrity and architecture before this step",
+  ),
+  withheld(
+    "AC-W11-06-20",
+    "Physical audio speaker and complete 20-AC portable final DoD not yet signed off",
+  ),
 ];
 
-requireEvidence(items.length === 20, "exactly 20 numbered acceptance criteria");
+requireEvidence(
+  items.length === 20,
+  "exactly 20 numbered acceptance criteria",
+);
 requireEvidence(
   items.some((row) => row.status === "NOT_TESTED") &&
-    items.every((row, index) => row.id.endsWith(String(index + 1).padStart(2, "0"))),
+    items.every((row, index) =>
+      row.id.endsWith(String(index + 1).padStart(2, "0")),
+    ),
   "never waive final physical gates",
 );
 
