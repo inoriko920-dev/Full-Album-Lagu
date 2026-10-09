@@ -387,7 +387,8 @@ describe("W11-06 main-owned preview grant authorization", () => {
     expect(releases).toHaveLength(25);
     expect(new Set(releases).size).toBe(25);
   });
-it("T06: fences in-flight grants during same-project reimport", async () => {
+
+  it("T06: fences in-flight grants during same-project reimport", async () => {
     const { source } = await fixture();
     const control: {
       readonlyStarted?: () => void;
@@ -459,5 +460,4 @@ it("T06: fences in-flight grants during same-project reimport", async () => {
       Buffer.from("RIFF"),
     );
   });
-
 });
