@@ -343,7 +343,7 @@ describe("T11-W06-05 live preview track context", () => {
   });
 
   it("rejects timeline seeks when an enabled track has no resolved duration", async () => {
-    startup.mediaAssets![1]!.metadata!.durationMs = undefined;
+    delete startup.mediaAssets![1]!.metadata!.durationMs;
     const { rerender } = render(<AppShell />);
     await waitFor(() =>
       expect(
