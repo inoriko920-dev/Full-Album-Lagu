@@ -150,9 +150,9 @@ async function validate() {
       `${count}-track packaged editor and real screenshot`,
       `T05_WINDOWS_UI_SUMMARY.json / ${count}-track PNG`,
       png.length > 5000 &&
-        png.subarray(0, 8).equals(
-          Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-        ),
+        png
+          .subarray(0, 8)
+          .equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])),
     );
   }
 
