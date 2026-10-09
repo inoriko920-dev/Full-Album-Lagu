@@ -158,38 +158,49 @@ async function run(
   if (typeof requestPreview !== "function") {
     throw new Error("Main-owned audio preview bridge is unavailable");
   }
-  // Both inputs went through the *actual* Windows main picker and metadata
-  // probe. A corrupted WAV stays visible as invalid but must NEVER be granted.
-  const corrupt = imported.mediaAssets?.find(
-    (asset) => asset.fileName === "T06 Corrupt Audio.wav",
+  // Main's completed batch report is the authority for rejected files.
+  // An unsupported file is deliberately absent from ProjectDocument, even
+  // though it was discovered and probed by the real packaged Windows intake.
+  const intake = await window.lfa.getMediaIntakeStatus(batchId);
+  if (intake.status !== "completed") {
+    throw new Error("T06 completed import evidence is unavailable");
+  }
+  const corruptReport = intake.summary.items.find(
+    (item) => item.fileName === "T06 Corrupt Audio.wav",
+  );
+  const unsupportedReport = intake.summary.items.find(
+    (item) => item.fileName === "T06 Unsupported Notes.txt",
   );
   if (
-    !corrupt ||
-    corrupt.availability !== "invalid" ||
-    corrupt.errorCode !== "MEDIA_CORRUPT"
+    !corruptReport ||
+    !["invalid", "unsupported"].includes(corruptReport.status) ||
+    unsupportedReport?.status !== "unsupported"
   ) {
     throw new Error(
-      "T06 corrupt WAV intake status: " +
+      "T06 expected rejected media evidence: " +
         JSON.stringify({
-          corrupt,
-          files: imported.mediaAssets?.map((asset) => asset.fileName),
+          corrupt: corruptReport,
+          unsupported: unsupportedReport,
         }),
     );
   }
   if (
     imported.mediaAssets?.some(
-      (asset) => asset.fileName === "T06 Unsupported Notes.txt",
+      (asset) =>
+        (asset.fileName === "T06 Corrupt Audio.wav" ||
+          asset.fileName === "T06 Unsupported Notes.txt") &&
+        asset.availability === "ready",
     )
   ) {
-    throw new Error("T06 unsupported text file was imported as an audio asset");
+    throw new Error("T06 rejected fixture incorrectly became playable audio");
   }
   const deniedCorrupt = await requestPreview({
     projectId: imported.projectId,
     batchId,
-    assetId: corrupt.id,
+    assetId: corruptReport.assetId ?? "t06-rejected-media-without-asset",
   });
   if (deniedCorrupt.status !== "blocked") {
-    throw new Error("T06 invalid WAV received a private playback lease");
+    throw new Error("T06 corrupt WAV received a private playback lease");
   }
 
   const restartStress = await run100PackagedRestarts(
