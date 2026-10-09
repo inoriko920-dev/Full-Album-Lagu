@@ -195,6 +195,9 @@ export class PreviewAudioAccessService {
         this.relink.delete(batchId);
       }
     }
+    // All old bound-intake identities are gone; don't retain an epoch entry
+    // for a BrowserWindow that may never exist again.
+    this.grantEpoch.delete(ownerWebContentsId);
   }
 
   close(): void {
