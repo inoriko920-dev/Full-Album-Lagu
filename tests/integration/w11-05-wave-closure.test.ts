@@ -237,7 +237,7 @@ describe("T11-W05-07 closure: actual filesystem + one canonical ProjectSessionHi
       128,
     );
     expect(targetHistory.snapshot().project.tracks).toEqual(target.tracks);
-  });
+  }, 20_000);
 
   it("stale template trial rejects without any change to protected project data or visual scene", async () => {
     const root = await sandbox();

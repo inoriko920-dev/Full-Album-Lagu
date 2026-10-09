@@ -605,3 +605,14 @@ After the next `lanjutkan`, remain SOL at **T11-W05-07 visual drift remediation 
 - Guards block attempts with no main-authorized audio, disabled cards, unresolved duration or invalid card geometry; coordinates clamp within a track. No direct FS/media writes, Undo/Redo/project revision unchanged by preview-only seeking.
 - Source `ce7c88f750309d9df1cf31ef31f4f4b1328a6c29`, [Windows CI #709](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/37919408413) **SUCCESS** (392 tests: 229 unit, 59 contract, 61 component, 43 integration; previous Electron regressions, real packaged MP3/WAV/FFT and portable ZIP PASS).
 - Technical T05 verified at above source code SHA; this documentation commit needs exact-head CI. PR #58 remains **Ready for Review / NOT MERGED**. T06 [issue #60](https://github.com/inoriko920-dev/Full-Album-Lagu/issues/60) remains blocked until explicit owner merge approval and verified main. T07 and MP4 deferred.
+
+
+## Current work — 2026-10-09 WIB, W11-06 T06 automated stress and security
+
+This newest entry supersedes historical notes incorrectly showing PR #58 open or T06 BLOCKED. T05 **merged** into `main@b3f4495af13c4840ca298d8c647d997a0fbfc541` under explicit permission; CI #712 passed. T06 is developed ONLY on [Draft PR #61](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/61), separated from main.
+
+Automated Windows evidence: [CI #759](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/37934060789) **SUCCESS** on `86d46f125049418f13c7d9208acc029dcd10cc91` (397 tests: 234 unit, 59 contract, 61 component, 43 integration; native Electron MP3/WAV, 3x100 WAV restarts, FFT, actual 3/128-track editor, frozen UI and Windows ZIP PASS). New genuine **authorization race bug fixed**: pending audio grants cannot survive an intervening *same-project* reimport by sharing retained batch provenance; per-window revocation epoch verified against delayed grant regression. Epoch cleanup on window close landed after #759; CI on final evidence/documentation commit required.
+
+Windows external OS HandleCount CI (not from Electron main or renderer), three post-Stop memory samples, 25-batch preserved provenance, malformed media denial, relink/project switch and simulated Suspend/Resume are covered. Report: `docs/step11/evidence/T11_W06_06_AUTOMATED_ACCEPTANCE_20261009.md`.
+
+**Do not mislabel T06 COMPLETE:** genuine hardware Windows sleep/wake and extended multi-session resource plateau are **NOT_TESTED**; T07 speaker listening/20-AC is not started, video/MP4 exporter not yet implemented. T06 PR remains **DRAFT/UNMERGED** without separate owner permission. UI, CommandEngine, project and main must not drift.

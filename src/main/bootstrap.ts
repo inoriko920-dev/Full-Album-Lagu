@@ -31,7 +31,6 @@ protocol.registerSchemesAsPrivileged([
 const PACKAGED_SMOKE_FLAG = "--smoke-test";
 const UI_TEST_SCREEN = "SCR-002A";
 const CANONICAL_VIEWPORT = { width: 1600, height: 1000 } as const;
-
 function readArgValue(name: string): string | undefined {
   const prefix = `--${name}=`;
   const value = process.argv.find((arg) => arg.startsWith(prefix));
@@ -224,7 +223,60 @@ function createMainWindow(): BrowserWindow {
 
   if (w06Probe === "decode" && w06EvidencePath) {
     window.webContents.once("did-finish-load", async () => {
+      let memoryTimer: ReturnType<typeof setInterval> | null = null;
       try {
+        // CI-only OS process memory samples for the *actual* packaged
+        // Chromium renderer. No privileged API is exposed to the renderer.
+        const rendererPid = window.webContents.getOSProcessId();
+        const sampleRendererMemory = () => {
+          const metric = app
+            .getAppMetrics()
+            .find((item) => item.pid === rendererPid);
+          return metric === undefined
+            ? null
+            : {
+                pid: rendererPid,
+                workingSetKiB: metric.memory.workingSetSize,
+                peakWorkingSetKiB: metric.memory.peakWorkingSetSize,
+                privateKiB: metric.memory.privateBytes,
+              };
+        };
+        // CI-only handoff to the *external test runner*. No process spawning,
+        // shell or new renderer privilege is introduced in Electron main.
+        await mkdir(dirname(resolve(w06EvidencePath)), { recursive: true });
+        await writeFile(
+          `${w06EvidencePath}.renderer-pid`,
+          String(rendererPid),
+          "utf8",
+        );
+        const beforeMemory = sampleRendererMemory();
+        const memorySamples: Array<{
+          elapsedMs: number;
+          pid: number;
+          workingSetKiB: number;
+          privateKiB: number;
+        }> = [];
+        const samplesStartedAt = Date.now();
+        const captureMemorySample = () => {
+          const sample = sampleRendererMemory();
+          if (
+            sample &&
+            typeof sample.privateKiB === "number" &&
+            Number.isSafeInteger(sample.privateKiB) &&
+            sample.privateKiB >= 0 &&
+            Number.isSafeInteger(sample.workingSetKiB) &&
+            sample.workingSetKiB > 0
+          ) {
+            memorySamples.push({
+              elapsedMs: Date.now() - samplesStartedAt,
+              pid: sample.pid,
+              workingSetKiB: sample.workingSetKiB,
+              privateKiB: sample.privateKiB,
+            });
+          }
+        };
+        captureMemorySample();
+        memoryTimer = setInterval(captureMemorySample, 50);
         const report = (await window.webContents.executeJavaScript(
           '(async () => {\n  const project = {\n    schemaVersion: 1,\n    projectId: "w06-real-decoder-probe",\n    name: "W06 Decode Probe",\n    revision: 0,\n    tracks: [],\n  };\n  const wait = async (getStatus) => {\n    for (let attempt = 0; attempt < 300; attempt += 1) {\n      const result = await getStatus();\n      if (result.status !== "discovering" && result.status !== "probing" &&\n          result.status !== "committing") {\n        return result;\n      }\n      await new Promise((resolve) => setTimeout(resolve, 20));\n    }\n    throw new Error("Timed out waiting for main-owned media import");\n  };\n  const discovered = await window.lfa.pickAudioFiles();\n  if (discovered.status !== "started") throw new Error("Picker did not return batch ID");\n  const discovery = await wait(() =>\n    window.lfa.getMediaDiscoveryStatus(discovered.batchId));\n  if (discovery.status !== "completed") throw new Error("Main discovery failed");\n  const started = await window.lfa.startMediaIntake({\n    discoveryBatchId: discovered.batchId,\n    project,\n  });\n  if (started.status !== "started") throw new Error("Intake did not start");\n  const intake = await wait(() =>\n    window.lfa.getMediaIntakeStatus(started.batchId));\n  if (intake.status !== "completed") throw new Error("Probe intake did not complete");\n  const output = { wav: null, mp3: null };\n  const assets = intake.project.mediaAssets || [];\n  for (const kind of ["wav", "mp3"]) {\n    const asset = assets.find((candidate) =>\n      candidate.availability === "ready" &&\n      candidate.fileName.toLowerCase().endsWith("." + kind));\n    if (!asset) throw new Error("No main-probed ready asset: " + kind);\n    const grant = await window.lfa.requestAudioPreview({\n      batchId: started.batchId,\n      projectId: project.projectId,\n      assetId: asset.id,\n    });\n    if (grant.status !== "granted") throw new Error("Secure audio lease blocked: " + kind);\n    const unauthorized = await window.lfa.requestAudioPreview({\n      batchId: started.batchId,\n      projectId: "forged-project",\n      assetId: asset.id,\n    });\n    if (unauthorized.status !== "blocked") throw new Error("Cross-project IPC leak");\n    const partial = await fetch(grant.url, {\n      headers: { Range: "bytes=0-3" },\n    });\n    if (partial.status !== 206 ||\n        (await partial.arrayBuffer()).byteLength !== 4 ||\n        !partial.headers.get("Content-Range")) {\n      throw new Error("Private audio byte-range 206 failed: " + kind);\n    }\n    const denied = await fetch(grant.url, {\n      headers: { Range: "bytes=999999999-" },\n    });\n    if (denied.status !== 416) throw new Error("Invalid range did not return 416");\n    const response = await fetch(grant.url);\n    if (response.status !== 200) throw new Error("Private audio stream is not HTTP 200");\n    const compressedBytes = await response.arrayBuffer();\n    const streamedBytes = compressedBytes.byteLength;\n    const ctx = new AudioContext();\n    try {\n      const decoded = await ctx.decodeAudioData(compressedBytes);\n      if (decoded.duration <= 0 || decoded.numberOfChannels < 1) {\n        throw new Error("Real " + kind + " decoder returned no audio frames");\n      }\n      // T03: real Chromium media element playback, distinct from WebAudio\n      // decodeAudioData. The source is synthetic and muted for headless CI.\n      const native = new Audio();\n      native.muted = true;\n      native.preload = "auto";\n      native.src = grant.url;\n      let playbackProgressMs = 0;\n      let seekPositionMs = 0;\n      try {\n        await new Promise((resolve, reject) => {\n          const timeout = setTimeout(() => reject(new Error(\n            "HTML audio metadata timed out: " + kind)), 5000);\n          native.addEventListener("loadedmetadata", () => {\n            clearTimeout(timeout);\n            resolve();\n          }, { once: true });\n          native.addEventListener("error", () => {\n            clearTimeout(timeout);\n            reject(new Error("HTML audio failed loading: " + kind));\n          }, { once: true });\n          native.load();\n        });\n        if (!(native.duration > 0)) {\n          throw new Error("HTML audio duration unavailable: " + kind);\n        }\n        await native.play();\n        const deadline = Date.now() + 4000;\n        while (\n          native.currentTime < 0.025 &&\n          !native.ended &&\n          Date.now() < deadline\n        ) {\n          await new Promise((done) => setTimeout(done, 30));\n        }\n        playbackProgressMs = Math.round(native.currentTime * 1000);\n        if (playbackProgressMs < 25) {\n          throw new Error("HTML audio did not progress while playing: " + kind);\n        }\n        native.pause();\n        const pausedAt = native.currentTime;\n        await new Promise((done) => setTimeout(done, 70));\n        if (Math.abs(native.currentTime - pausedAt) > 0.03) {\n          throw new Error("HTML audio continued progressing after pause: " + kind);\n        }\n        const target = Math.min(0.1, native.duration * 0.5);\n        native.currentTime = target;\n        await new Promise((done) => setTimeout(done, 100));\n        seekPositionMs = Math.round(native.currentTime * 1000);\n        if (Math.abs(native.currentTime - target) > 0.09) {\n          throw new Error("HTML audio seek failed: " + kind);\n        }\n      } finally {\n        native.pause();\n        native.removeAttribute("src");\n        native.load();\n      }\n      output[kind] = {\n        nativePlayback: true,\n        playbackProgressMs,\n        seekPositionMs,\n        decoded: true,\n        durationSeconds: decoded.duration,\n        channels: decoded.numberOfChannels,\n        sampleRate: decoded.sampleRate,\n        streamedBytes,\n        range206: true,\n        range416: true,\n        crossProjectBlocked: true,\n      };\n    } finally {\n      await ctx.close();\n    }\n  }\n  const deadline = Date.now() + 8000;\n  while (typeof window.__w06DriverProbe !== "function" && Date.now() < deadline) {\n    await new Promise((done) => setTimeout(done, 25));\n  }\n  if (typeof window.__w06DriverProbe !== "function") {\n    throw new Error("Packaged T03 driver helper was not installed");\n  }\n  if (typeof window.__w06SpectrumProbe !== "function") {\n    throw new Error("Packaged T04 analyser probe helper not installed");\n  }\n  const spectrum = await window.__w06SpectrumProbe(intake.project, started.batchId);\n  const driver = await window.__w06DriverProbe(intake.project, started.batchId);\n  return { success: true, ...output, spectrum, driver };\n})()',
           true,
@@ -232,7 +284,59 @@ function createMainWindow(): BrowserWindow {
         if (report.success !== true) {
           throw new Error("Packaged codec probe returned an invalid result");
         }
-        await writeJsonEvidence(w06EvidencePath, report);
+        await writeFile(
+          `${w06EvidencePath}.idle-start`,
+          String(Date.now()),
+          "utf8",
+        );
+        // Playback has ended. Observe a short, quiet renderer interval
+        // separately from active decoder/FFT activity, without forcing GC.
+        // A short settle period alone is NOT evidence of leak-free operation.
+        const idleSamples = [];
+        for (let idleIndex = 0; idleIndex < 3; idleIndex += 1) {
+          await new Promise<void>((resolve) => setTimeout(resolve, 750));
+          const idle = sampleRendererMemory();
+          if (!idle) throw new Error("T06 renderer exited during idle probe");
+          idleSamples.push({
+            elapsedMs: Date.now() - samplesStartedAt,
+            pid: idle.pid,
+            workingSetKiB: idle.workingSetKiB,
+            privateKiB: idle.privateKiB,
+          });
+        }
+        if (memoryTimer !== null) clearInterval(memoryTimer);
+        memoryTimer = null;
+        captureMemorySample();
+        const afterMemory = sampleRendererMemory();
+        if (
+          memorySamples.length < 12 ||
+          idleSamples.length !== 3 ||
+          !beforeMemory ||
+          !afterMemory ||
+          !Number.isFinite(afterMemory.workingSetKiB) ||
+          afterMemory.workingSetKiB <= 0 ||
+          !Number.isFinite(afterMemory.peakWorkingSetKiB) ||
+          afterMemory.peakWorkingSetKiB < afterMemory.workingSetKiB
+        ) {
+          throw new Error(
+            "T06 Windows renderer process memory telemetry unavailable",
+          );
+        }
+        await writeJsonEvidence(w06EvidencePath, {
+          ...report,
+          t06RendererMemory: {
+            source: "Electron app.getAppMetrics / Windows OS",
+            units: "KiB",
+            baseline: beforeMemory,
+            afterAllProbes: afterMemory,
+            // The samples cover all codec, FFT and 300 restart probes.
+            // They are observations, NOT a claim of GC or leak-free memory.
+            samples: memorySamples,
+            samplingIntervalMs: 50,
+            idleAfterStop: idleSamples,
+            peakScope: "renderer process lifetime, not one WAV cycle",
+          },
+        });
         console.log("W06 packaged private protocol and decoder PASS");
         window.destroy();
         app.exit(0);
@@ -241,6 +345,8 @@ function createMainWindow(): BrowserWindow {
         console.error("W06 packaged decoder FAIL: " + message);
         if (!window.isDestroyed()) window.destroy();
         app.exit(10);
+      } finally {
+        if (memoryTimer !== null) clearInterval(memoryTimer);
       }
     });
   }

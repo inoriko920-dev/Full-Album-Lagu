@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { spawn } from "node:child_process";
-import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 
 const root = resolve("artifacts", "step11", "T11-W06-02");
@@ -68,6 +68,14 @@ async function prepareAudioFiles() {
     await writeFile(path, synthesizePcmWav(hz));
     paths.push(path);
   }
+  // Must be discovered as a WAV, but fail the genuine main-owned parser.
+  const corrupt = join(fixtures, "T06 Corrupt Audio.wav");
+  await writeFile(corrupt, Buffer.from("This is not a RIFF WAVE audio file."));
+  paths.push(corrupt);
+  // Discovery accepts this root, while intake must exclude non-audio assets.
+  const unsupported = join(fixtures, "T06 Unsupported Notes.txt");
+  await writeFile(unsupported, Buffer.from("Not a supported audio file."));
+  paths.push(unsupported);
   return paths;
 }
 
@@ -98,7 +106,7 @@ async function launchPackaged(paths) {
     const timeout = setTimeout(() => {
       child.kill();
       rejectRun(new Error("Timed out waiting for packaged audio decoder"));
-    }, 90_000);
+    }, 180_000);
     child.stdout.on("data", (chunk) => {
       stdout += String(chunk);
     });
@@ -124,6 +132,59 @@ async function launchPackaged(paths) {
   });
 }
 
+function monitorWindowsHandles(pidFile, idleMarker, outputFile) {
+  const child = spawn(
+    "powershell.exe",
+    [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      resolve("scripts", "measure-w06-renderer-handles.ps1"),
+      "-PidFile",
+      pidFile,
+      "-IdleMarker",
+      idleMarker,
+      "-OutputFile",
+      outputFile,
+    ],
+    {
+      cwd: process.cwd(),
+      windowsHide: true,
+      stdio: ["ignore", "pipe", "pipe"],
+    },
+  );
+  let diagnostics = "";
+  const result = new Promise((resolveRun, rejectRun) => {
+    child.stdout.on("data", (chunk) => {
+      diagnostics += String(chunk).slice(-2000);
+    });
+    child.stderr.on("data", (chunk) => {
+      diagnostics += String(chunk).slice(-2000);
+    });
+    child.once("error", rejectRun);
+    child.once("close", (exitCode) => {
+      if (exitCode === 0) {
+        resolveRun();
+      } else {
+        rejectRun(
+          new Error(
+            `External Windows HandleCount probe exited ${exitCode}: ${diagnostics.slice(-2500)}`,
+          ),
+        );
+      }
+    });
+  });
+  // Resolve a failed monitor into an observed outcome immediately, so an OS
+  // error while Electron is running never becomes an unhandled rejection.
+  const outcome = result.then(
+    () => ({ ok: true }),
+    (error) => ({ ok: false, error: String(error) }),
+  );
+  return { child, outcome };
+}
+
 async function main() {
   if (process.platform !== "win32") {
     throw new Error("Real packaged codec smoke must run on Windows.");
@@ -131,7 +192,28 @@ async function main() {
   const audioPaths = await prepareAudioFiles();
   await mkdir(join(root, "user-data"), { recursive: true });
   const before = await Promise.all(audioPaths.map(fingerprint));
-  const launch = await launchPackaged(audioPaths);
+  const pidFile = `${evidence}.renderer-pid`;
+  const idleMarker = `${evidence}.idle-start`;
+  const handleEvidence = join(root, "evidence", "WIN_RENDERER_HANDLES.json");
+  await Promise.all(
+    [pidFile, idleMarker, handleEvidence].map((path) =>
+      rm(path, { force: true }),
+    ),
+  );
+  // OS-specific handle monitoring belongs to the external CI test runner,
+  // NEVER src/main or the sandboxed renderer.
+  const monitor = monitorWindowsHandles(pidFile, idleMarker, handleEvidence);
+  let launch;
+  try {
+    launch = await launchPackaged(audioPaths);
+    const monitorResult = await monitor.outcome;
+    if (!monitorResult.ok) {
+      throw new Error(monitorResult.error);
+    }
+  } finally {
+    monitor.child.kill();
+  }
+  const handleReport = JSON.parse(await readFile(handleEvidence, "utf8"));
   const report = JSON.parse(await readFile(evidence, "utf8"));
   if (!report.success || !report.wav?.decoded || !report.mp3?.decoded) {
     throw new Error("Packaged Windows failed MP3/WAV preview decoding.");
@@ -158,6 +240,8 @@ async function main() {
     }
   }
   if (
+    report.driver?.corruptSourceBlocked !== true ||
+    report.driver?.unsupportedFileRejected !== true ||
     report.driver?.mainIssuedGrant !== true ||
     report.driver?.pauseSeekNextPrevious !== true ||
     report.driver?.relinkRevoked !== true ||
@@ -165,7 +249,24 @@ async function main() {
     report.driver?.unrelatedAssetDenied !== true ||
     report.driver?.projectSwitchStopped !== true ||
     report.driver?.closeStopped !== true ||
-    report.driver?.createdElements < 4
+    report.driver?.simulatedSuspendRevoked !== true ||
+    report.driver?.resumeStayedStopped !== true ||
+    report.driver?.explicitlyReauthorizedPlayback !== true ||
+    report.driver?.createdElements < 4 ||
+    report.driver?.restartStress?.completedCycles !== 300 ||
+    report.driver?.restartStress?.createdElements !== 300 ||
+    report.driver?.restartStress?.rounds?.length !== 3 ||
+    report.driver.restartStress.rounds.some(
+      (round) =>
+        round.completedCycles !== 100 ||
+        round.createdElements !== 100 ||
+        !Number.isFinite(round.elapsedMs) ||
+        round.elapsedMs <= 0,
+    ) ||
+    report.driver?.restartStress?.allMediaReleased !== true ||
+    report.driver?.restartStress?.projectUnchanged !== true ||
+    !Number.isFinite(report.driver?.restartStress?.elapsedMs) ||
+    report.driver?.restartStress?.elapsedMs <= 0
   ) {
     throw new Error("Real packaged T03 HtmlMediaPlaybackDriver proof failed.");
   }
@@ -180,12 +281,68 @@ async function main() {
   ) {
     throw new Error("Real packaged Windows FFT tone/silence proof failed.");
   }
+  const memory = report.t06RendererMemory;
+  if (
+    memory?.source !== "Electron app.getAppMetrics / Windows OS" ||
+    memory?.units !== "KiB" ||
+    memory?.baseline?.pid !== memory?.afterAllProbes?.pid ||
+    !Number.isSafeInteger(memory?.baseline?.workingSetKiB) ||
+    memory.baseline.workingSetKiB <= 0 ||
+    !Number.isSafeInteger(memory?.afterAllProbes?.workingSetKiB) ||
+    memory.afterAllProbes.workingSetKiB <= 0 ||
+    !Number.isSafeInteger(memory?.afterAllProbes?.peakWorkingSetKiB) ||
+    memory.afterAllProbes.peakWorkingSetKiB <
+      memory.afterAllProbes.workingSetKiB ||
+    memory.samples?.length < 12 ||
+    memory.samples.some(
+      (sample) =>
+        !Number.isFinite(sample.elapsedMs) ||
+        !Number.isSafeInteger(sample.workingSetKiB) ||
+        sample.workingSetKiB <= 0 ||
+        sample.pid !== memory.baseline.pid,
+    ) ||
+    memory.idleAfterStop?.length !== 3 ||
+    memory.idleAfterStop.some(
+      (sample) =>
+        !Number.isFinite(sample.elapsedMs) ||
+        !Number.isSafeInteger(sample.workingSetKiB) ||
+        sample.workingSetKiB <= 0 ||
+        sample.pid !== memory.baseline.pid,
+    )
+  ) {
+    throw new Error("T06 real Windows renderer memory measurement unavailable");
+  }
+  if (
+    handleReport?.source !==
+      "Windows Get-Process HandleCount (external CI harness)" ||
+    handleReport?.pid !== memory.baseline.pid ||
+    !Array.isArray(handleReport?.samples) ||
+    handleReport.samples.length < 11 ||
+    handleReport.activeCount < 8 ||
+    handleReport.idleCount < 3 ||
+    !Number.isSafeInteger(handleReport.firstActiveHandles) ||
+    !Number.isSafeInteger(handleReport.lastIdleHandles) ||
+    handleReport.firstActiveHandles <= 0 ||
+    handleReport.lastIdleHandles <= 0 ||
+    handleReport.samples.some(
+      (sample) =>
+        sample.pid !== handleReport.pid ||
+        !["active", "idle"].includes(sample.phase) ||
+        !Number.isSafeInteger(sample.handleCount) ||
+        sample.handleCount <= 0 ||
+        !Number.isFinite(sample.timestampMs),
+    )
+  ) {
+    throw new Error("T06 external Windows renderer handle telemetry invalid");
+  }
   const after = await Promise.all(audioPaths.map(fingerprint));
   if (JSON.stringify(before) !== JSON.stringify(after)) {
     throw new Error("Preview audio process modified source file fingerprints.");
   }
   console.log("T11-W06-02 packaged Windows audio decode PASS");
-  console.log(JSON.stringify({ ...launch, report }, null, 2));
+  console.log("T11-W06-06 packaged 3x100-cycle real WAV playback PASS");
+  console.log("T11-W06-06 Windows OS renderer HandleCount probe PASS");
+  console.log(JSON.stringify({ ...launch, report, handleReport }, null, 2));
 }
 
 await main();

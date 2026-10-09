@@ -41,6 +41,10 @@ export class PreviewAudioAccessService {
     { bound: BoundIntake; sources: Map<string, MediaSourceDescriptor> }
   >();
   private readonly activeProjects = new Map<number, string>();
+  // A new same-project intake can preserve its old batch provenance while
+  // invalidating all grants issued before that intake. An epoch also fences
+  // grants that are still waiting for async filesystem verification.
+  private readonly grantEpoch = new Map<number, number>();
 
   constructor(
     private readonly store: NodePreviewAudioLeaseStore,
@@ -69,9 +73,9 @@ export class PreviewAudioAccessService {
 
     this.selected.delete(discoveryBatchId);
     if (this.activeProjects.get(ownerWebContentsId) === projectId) {
-      // A later picker import of the SAME album must not orphan already
-      // imported track IDs. Tear down active streams, not batch provenance.
-      this.store.revokeWindow(ownerWebContentsId);
+      // Preserve same-project batch provenance, but invalidate old streams
+      // AND asynchronous grants still in flight before this new picker.
+      this.invalidateGrants(ownerWebContentsId);
     } else {
       // Different project or a stale window loses ALL prior authority.
       this.revokeWindow(ownerWebContentsId);
@@ -115,6 +119,14 @@ export class PreviewAudioAccessService {
     return projectId === undefined ? null : { projectId, ownerWebContentsId };
   }
 
+  private invalidateGrants(ownerWebContentsId: number): void {
+    this.grantEpoch.set(
+      ownerWebContentsId,
+      (this.grantEpoch.get(ownerWebContentsId) ?? 0) + 1,
+    );
+    this.store.revokeWindow(ownerWebContentsId);
+  }
+
   async issue(request: PreviewAudioIssueRequest): Promise<string | null> {
     const trustedImport = this.intake.get(request.batchId);
     const trustedRelink = this.relink.get(request.batchId);
@@ -128,6 +140,7 @@ export class PreviewAudioAccessService {
       return null;
     }
 
+    const epoch = this.grantEpoch.get(request.ownerWebContentsId) ?? 0;
     const source =
       trustedImport === undefined
         ? (trustedRelink?.sources.get(request.assetId) ?? null)
@@ -152,7 +165,8 @@ export class PreviewAudioAccessService {
           ? this.intake.get(request.batchId) !== bound
           : this.relink.get(request.batchId) !== trustedRelink) ||
         this.activeProjects.get(request.ownerWebContentsId) !==
-          request.projectId
+          request.projectId ||
+        (this.grantEpoch.get(request.ownerWebContentsId) ?? 0) !== epoch
       ) {
         this.store.revoke(token);
         return null;
@@ -165,7 +179,7 @@ export class PreviewAudioAccessService {
   }
 
   revokeWindow(ownerWebContentsId: number): void {
-    this.store.revokeWindow(ownerWebContentsId);
+    this.invalidateGrants(ownerWebContentsId);
     this.activeProjects.delete(ownerWebContentsId);
     for (const [batchId, owner] of this.selected) {
       if (owner === ownerWebContentsId) this.selected.delete(batchId);
@@ -181,6 +195,9 @@ export class PreviewAudioAccessService {
         this.relink.delete(batchId);
       }
     }
+    // All old bound-intake identities are gone; don't retain an epoch entry
+    // for a BrowserWindow that may never exist again.
+    this.grantEpoch.delete(ownerWebContentsId);
   }
 
   close(): void {
@@ -189,5 +206,6 @@ export class PreviewAudioAccessService {
     this.intake.clear();
     this.relink.clear();
     this.activeProjects.clear();
+    this.grantEpoch.clear();
   }
 }

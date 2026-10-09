@@ -76,6 +76,14 @@ class FakeMedia implements MediaElementPort {
       listener(new Event(type));
     }
   }
+
+  /** Track active subscriptions without depending on browser GC timing. */
+  listenerCount(): number {
+    return Array.from(this.listeners.values()).reduce(
+      (count, listeners) => count + listeners.size,
+      0,
+    );
+  }
 }
 
 const trusted = { projectId: "project-1", batchId: "main-picked-intake-1" };
@@ -734,5 +742,173 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(original).toEqual(before);
     driver.close();
     expect(driver.setVolume(0)).toBe(false);
+  });
+
+  it("T06: 100 restarts release audio elements and listeners", async () => {
+    const source = project();
+    const before = structuredClone(source);
+    const elements: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      source,
+      trusted,
+      async () => granted,
+      () => {
+        const element = new FakeMedia();
+        elements.push(element);
+        return element;
+      },
+    );
+
+    let previousGeneration = driver.snapshot.generation;
+    for (let cycle = 0; cycle < 100; cycle += 1) {
+      driver.play();
+      await flush();
+      const element = elements[cycle];
+      if (element === undefined) throw new Error("Cycle did not create audio");
+      expect(elements).toHaveLength(cycle + 1);
+      expect(element.listenerCount()).toBe(4);
+      expect(driver.snapshot.phase).toBe("loading");
+
+      element.emit("loadedmetadata");
+      await flush();
+      expect(driver.snapshot.phase).toBe("playing");
+      expect(element.playCount).toBe(1);
+      element.currentTime = 0.2;
+      element.emit("timeupdate");
+      expect(driver.snapshot.albumTimeMs).toBe(200);
+
+      driver.stop();
+      expect(driver.snapshot.phase).toBe("ready");
+      expect(driver.snapshot.albumTimeMs).toBe(0);
+      expect(driver.snapshot.generation).toBeGreaterThan(previousGeneration);
+      previousGeneration = driver.snapshot.generation;
+      expect(element.src).toBe("");
+      expect(element.listenerCount()).toBe(0);
+      expect(element.pauseCount).toBeGreaterThanOrEqual(1);
+
+      // The old media can still deliver queued browser events.
+      element.emit("ended");
+      element.emit("error");
+      element.emit("loadedmetadata");
+      element.emit("timeupdate");
+      expect(driver.snapshot.phase).toBe("ready");
+      expect(driver.snapshot.generation).toBe(previousGeneration);
+    }
+
+    expect(elements).toHaveLength(100);
+    expect(elements.every((element) => element.listenerCount() === 0)).toBe(
+      true,
+    );
+    expect(source).toEqual(before);
+    driver.close();
+    driver.play();
+    expect(elements).toHaveLength(100);
+  });
+
+  it("T06: 100 stale main grants cannot create ghost audio", async () => {
+    const source = project();
+    const before = structuredClone(source);
+    const pending: Array<(reply: PreviewAudioIssueResult) => void> = [];
+    const elements: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      source,
+      trusted,
+      () =>
+        new Promise<PreviewAudioIssueResult>((resolve) => {
+          pending.push(resolve);
+        }),
+      () => {
+        const audio = new FakeMedia();
+        elements.push(audio);
+        return audio;
+      },
+    );
+
+    for (let cycle = 0; cycle < 100; cycle += 1) {
+      driver.play();
+      expect(driver.snapshot.phase).toBe("loading");
+      driver.stop();
+      expect(driver.snapshot.phase).toBe("ready");
+    }
+    expect(pending).toHaveLength(100);
+    expect(elements).toHaveLength(0);
+    for (const resolve of pending) resolve(granted);
+    await flush();
+    expect(elements).toHaveLength(0);
+    expect(driver.snapshot.phase).toBe("ready");
+    expect(driver.snapshot.albumTimeMs).toBe(0);
+    expect(source).toEqual(before);
+    driver.close();
+  });
+  it("T06: 128-track rapid seeks release stale audio and preserve project", async () => {
+    const original = project();
+    const firstAsset = original.mediaAssets?.[0];
+    if (!firstAsset) throw new Error("Missing audio fixture");
+    const source: ProjectDocument = {
+      ...original,
+      mediaAssets: Array.from({ length: 128 }, (_, index) => ({
+        ...firstAsset,
+        id: `asset-${index}`,
+        fileName: `${index}.wav`,
+        metadata: { durationMs: 1000 },
+      })),
+      tracks: Array.from({ length: 128 }, (_, index) => ({
+        id: `track-${index}`,
+        title: `Song ${index}`,
+        audioAssetId: `asset-${index}`,
+        sourcePath: `C:/Untrusted/${index}.wav`,
+        ...(index === 7 || index === 33 || index === 96
+          ? { enabled: false }
+          : {}),
+      })),
+    };
+    const pristine = structuredClone(source);
+    const media: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      source,
+      trusted,
+      async () => granted,
+      () => {
+        const element = new FakeMedia();
+        media.push(element);
+        return element;
+      },
+    );
+
+    driver.play();
+    await flush();
+    media[0]?.emit("loadedmetadata");
+    await flush();
+    expect(driver.snapshot.phase).toBe("playing");
+
+    const enabled = Array.from({ length: 128 }, (_, index) => index).filter(
+      (index) => index !== 7 && index !== 33 && index !== 96,
+    );
+    for (const [step, index] of enabled.entries()) {
+      driver.seek(step * 1000 + 250);
+      await flush();
+      const current = media[step + 1];
+      if (!current) throw new Error("No media for rapid seek step");
+      expect(driver.snapshot.activeTrackId).toBe(`track-${index}`);
+      expect(current.listenerCount()).toBe(4);
+      current.emit("loadedmetadata");
+      await flush();
+      expect(driver.snapshot.phase).toBe("playing");
+      expect(driver.snapshot.albumTimeMs).toBe(step * 1000 + 250);
+      if (step > 0) {
+        const stale = media[step];
+        stale?.emit("ended");
+        stale?.emit("error");
+        expect(stale?.listenerCount()).toBe(0);
+        expect(driver.snapshot.activeTrackId).toBe(`track-${index}`);
+      }
+    }
+    driver.stop();
+    expect(driver.snapshot.phase).toBe("ready");
+    expect(media).toHaveLength(enabled.length + 1);
+    expect(media.every((element) => element.src === "")).toBe(true);
+    expect(media.every((element) => element.listenerCount() === 0)).toBe(true);
+    expect(source).toEqual(pristine);
+    driver.close();
   });
 });
