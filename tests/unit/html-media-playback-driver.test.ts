@@ -840,4 +840,76 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(source).toEqual(before);
     driver.close();
   });
+  it("T06: 128-track rapid seeks release stale audio and preserve project", async () => {
+    const original = project();
+    const firstAsset = original.mediaAssets?.[0];
+    if (!firstAsset) throw new Error("Missing audio fixture");
+    const source: ProjectDocument = {
+      ...original,
+      mediaAssets: Array.from({ length: 128 }, (_, index) => ({
+        ...firstAsset,
+        id: `asset-${index}`,
+        fileName: `${index}.wav`,
+        metadata: { durationMs: 1000 },
+      })),
+      tracks: Array.from({ length: 128 }, (_, index) => ({
+        id: `track-${index}`,
+        title: `Song ${index}`,
+        audioAssetId: `asset-${index}`,
+        sourcePath: `C:/Untrusted/${index}.wav`,
+        ...(index === 7 || index === 33 || index === 96
+          ? { enabled: false }
+          : {}),
+      })),
+    };
+    const pristine = structuredClone(source);
+    const media: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      source,
+      trusted,
+      async () => granted,
+      () => {
+        const element = new FakeMedia();
+        media.push(element);
+        return element;
+      },
+    );
+
+    driver.play();
+    await flush();
+    media[0]?.emit("loadedmetadata");
+    await flush();
+    expect(driver.snapshot.phase).toBe("playing");
+
+    const enabled = Array.from({ length: 128 }, (_, index) => index).filter(
+      (index) => index !== 7 && index !== 33 && index !== 96,
+    );
+    for (const [step, index] of enabled.entries()) {
+      driver.seek(step * 1000 + 250);
+      await flush();
+      const current = media[step + 1];
+      if (!current) throw new Error("No media for rapid seek step");
+      expect(driver.snapshot.activeTrackId).toBe(`track-${index}`);
+      expect(current.listenerCount()).toBe(4);
+      current.emit("loadedmetadata");
+      await flush();
+      expect(driver.snapshot.phase).toBe("playing");
+      expect(driver.snapshot.albumTimeMs).toBe(step * 1000 + 250);
+      if (step > 0) {
+        const stale = media[step - 1];
+        stale?.emit("ended");
+        stale?.emit("error");
+        expect(stale?.listenerCount()).toBe(0);
+        expect(driver.snapshot.activeTrackId).toBe(`track-${index}`);
+      }
+    }
+    driver.stop();
+    expect(driver.snapshot.phase).toBe("ready");
+    expect(media).toHaveLength(enabled.length + 1);
+    expect(media.every((element) => element.src === "")).toBe(true);
+    expect(media.every((element) => element.listenerCount() === 0)).toBe(true);
+    expect(source).toEqual(pristine);
+    driver.close();
+  });
+
 });
