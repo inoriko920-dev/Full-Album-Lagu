@@ -13,6 +13,8 @@ import type { ProjectDocument } from "../../src/core/domain/project-document";
 import { createStarterLayer } from "../../src/renderer/app/visual-layer-defaults";
 import { AppShell } from "../../src/renderer/app/AppShell";
 
+const seekFromTimeline = vi.hoisted(() => vi.fn());
+
 const previewClock = vi.hoisted(() => ({
   available: false,
   activeTrackId: null as string | null,
@@ -40,7 +42,7 @@ vi.mock("../../src/renderer/state/use-album-preview-playback", () => ({
     playPause: vi.fn(),
     previous: vi.fn(),
     next: vi.fn(),
-    seek: vi.fn(),
+    seek: seekFromTimeline,
   }),
 }));
 
@@ -193,6 +195,7 @@ const bridge: LfaBridge = {
 };
 
 beforeEach(() => {
+  seekFromTimeline.mockReset();
   startup = album();
   previewClock.available = false;
   previewClock.activeTrackId = null;
@@ -276,6 +279,88 @@ describe("T11-W06-05 live preview track context", () => {
     previewClock.phase = "ready";
     rerender(<AppShell />);
     expect(preview.getByText("Title A")).toBeInTheDocument();
+  });
+
+  it("seeks from approved timeline cards on double click while a normal click only selects", async () => {
+    const { rerender } = render(<AppShell />);
+    await waitFor(() => {
+      expect(
+        document.querySelector('[data-timeline-track-id="track-b"]'),
+      ).not.toBeNull();
+    });
+    const card = document.querySelector<HTMLButtonElement>(
+      '[data-timeline-track-id="track-b"]',
+    )!;
+    vi.spyOn(card, "getBoundingClientRect").mockReturnValue({
+      left: 10,
+      width: 100,
+    } as DOMRect);
+
+    // Selection is not an implicit audio seek.
+    fireEvent.click(card);
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+    expect(document.querySelector(".app-shell")).toHaveAttribute(
+      "data-selected-track-id",
+      "track-b",
+    );
+
+    // No main-issued authorization: double-click must fail closed.
+    fireEvent.doubleClick(card, { clientX: 35 });
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+
+    previewClock.available = true;
+    previewClock.phase = "playing";
+    previewClock.activeTrackId = "track-a";
+    rerender(<AppShell />);
+    fireEvent.doubleClick(card, { clientX: 35 });
+    expect(seekFromTimeline).toHaveBeenLastCalledWith(2500);
+
+    // Out-of-card pointer coordinates are clamped safely.
+    fireEvent.doubleClick(card, { clientX: -200 });
+    expect(seekFromTimeline).toHaveBeenLastCalledWith(2000);
+    fireEvent.doubleClick(card, { clientX: 200 });
+    expect(seekFromTimeline).toHaveBeenLastCalledWith(4000);
+    expect(document.querySelector(".app-shell")).toHaveAttribute(
+      "data-project-revision",
+      "0",
+    );
+    expect(document.querySelector(".app-shell")).toHaveAttribute(
+      "data-project-dirty",
+      "false",
+    );
+
+    // A user-disabled card is not a seek target even with trusted playback.
+    const toggle = document.querySelector<HTMLInputElement>(
+      '[data-media-track-id="track-b"] input[type="checkbox"]',
+    )!;
+    fireEvent.click(toggle);
+    await waitFor(() =>
+      expect(card.classList.contains("timeline-track--disabled")).toBe(true),
+    );
+    seekFromTimeline.mockClear();
+    fireEvent.doubleClick(card, { clientX: 35 });
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+  });
+
+  it("rejects timeline seeks when an enabled track has no resolved duration", async () => {
+    startup.mediaAssets![1]!.metadata!.durationMs = undefined;
+    const { rerender } = render(<AppShell />);
+    await waitFor(() =>
+      expect(
+        document.querySelector('[data-timeline-track-id="track-b"]'),
+      ).not.toBeNull(),
+    );
+    previewClock.available = true;
+    rerender(<AppShell />);
+    const card = document.querySelector<HTMLButtonElement>(
+      '[data-timeline-track-id="track-b"]',
+    )!;
+    vi.spyOn(card, "getBoundingClientRect").mockReturnValue({
+      left: 0,
+      width: 100,
+    } as DOMRect);
+    fireEvent.doubleClick(card, { clientX: 40 });
+    expect(seekFromTimeline).not.toHaveBeenCalled();
   });
 
   it("ignores stale playback metadata from an earlier project even when track IDs collide", async () => {
