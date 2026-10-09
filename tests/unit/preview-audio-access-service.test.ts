@@ -290,4 +290,97 @@ describe("W11-06 main-owned preview grant authorization", () => {
       }),
     ).toBeNull();
   });
+  it("T06: preserves 25 main-picked same-project batches but revokes old tokens", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "lfa-w06-25-batches-"));
+    directories.push(dir);
+    const sourcePath = join(dir, "source.wav");
+    await writeFile(sourcePath, Buffer.from("RIFF1234"));
+    const releases: string[] = [];
+    const lookup: TrustedIntakeLookup = {
+      getTrustedAudioSource(batchId, projectId, assetId) {
+        const index = Number(batchId.replace("intake-", ""));
+        return projectId === "album-many" &&
+          Number.isSafeInteger(index) &&
+          index >= 0 &&
+          index < 25 &&
+          assetId === `asset-${index}`
+          ? { sourcePath, fileName: "source.wav", sizeBytes: 8 }
+          : null;
+      },
+      releaseTrustedAudioBatch(batchId) {
+        releases.push(batchId);
+      },
+    };
+    const store = new NodePreviewAudioLeaseStore();
+    const service = new PreviewAudioAccessService(store, lookup);
+    services.push(service);
+
+    let firstToken: string | null = null;
+    for (let index = 0; index < 25; index += 1) {
+      const picked = `picked-${index}`;
+      const batchId = `intake-${index}`;
+      service.trustPickerDiscovery(7, picked);
+      expect(service.bindIntake(7, picked, batchId, "album-many")).toBe(true);
+      const token = await service.issue({
+        ownerWebContentsId: 7,
+        projectId: "album-many",
+        batchId,
+        assetId: `asset-${index}`,
+      });
+      expect(token).toMatch(/^lfa-preview:\/\/media\/[0-9a-f]{64}$/);
+      if (index === 0) firstToken = token;
+    }
+
+    if (firstToken === null) throw new Error("Missing original grant");
+    const stale = await createPreviewAudioProtocolResponse(
+      new Request(firstToken),
+      { projectId: "album-many", ownerWebContentsId: 7 },
+      store,
+    );
+    expect(stale.status).toBe(403);
+    expect(releases).toHaveLength(0);
+
+    for (const index of [0, 1, 12, 23, 24]) {
+      const token = await service.issue({
+        ownerWebContentsId: 7,
+        projectId: "album-many",
+        batchId: `intake-${index}`,
+        assetId: `asset-${index}`,
+      });
+      if (!token) throw new Error("Older trusted batch was orphaned");
+      const response = await createPreviewAudioProtocolResponse(
+        new Request(token, { headers: { Range: "bytes=0-3" } }),
+        { projectId: "album-many", ownerWebContentsId: 7 },
+        store,
+      );
+      expect(response.status).toBe(206);
+      expect(Buffer.from(await response.arrayBuffer())).toEqual(
+        Buffer.from("RIFF"),
+      );
+      expect(
+        await service.issue({
+          ownerWebContentsId: 8,
+          projectId: "album-many",
+          batchId: `intake-${index}`,
+          assetId: `asset-${index}`,
+        }),
+      ).toBeNull();
+    }
+
+    service.trustPickerDiscovery(7, "picked-other-project");
+    expect(
+      service.bindIntake(7, "picked-other-project", "new-project", "album-next"),
+    ).toBe(true);
+    expect(
+      await service.issue({
+        ownerWebContentsId: 7,
+        projectId: "album-many",
+        batchId: "intake-0",
+        assetId: "asset-0",
+      }),
+    ).toBeNull();
+    expect(releases).toHaveLength(25);
+    expect(new Set(releases).size).toBe(25);
+  });
+
 });
