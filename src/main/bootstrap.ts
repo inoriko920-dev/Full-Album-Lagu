@@ -229,7 +229,9 @@ function createMainWindow(): BrowserWindow {
         // Chromium renderer. No privileged API is exposed to the renderer.
         const rendererPid = window.webContents.getOSProcessId();
         const sampleRendererMemory = () => {
-          const metric = app.getAppMetrics().find((item) => item.pid === rendererPid);
+          const metric = app
+            .getAppMetrics()
+            .find((item) => item.pid === rendererPid);
           return metric === undefined
             ? null
             : {
@@ -256,7 +258,9 @@ function createMainWindow(): BrowserWindow {
           !Number.isFinite(afterMemory.peakWorkingSetKiB) ||
           afterMemory.peakWorkingSetKiB < afterMemory.workingSetKiB
         ) {
-          throw new Error("T06 Windows renderer process memory telemetry unavailable");
+          throw new Error(
+            "T06 Windows renderer process memory telemetry unavailable",
+          );
         }
         await writeJsonEvidence(w06EvidencePath, {
           ...report,
