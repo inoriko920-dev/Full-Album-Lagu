@@ -1,5 +1,14 @@
 # TASK LEDGER
 
+## 2026-10-09 — T11-W06-07 acceptance automation, Draft PR #63
+
+- Explicit owner-approved PR #61 merge verified: `main@9100f2f39b6ebfe32b2988b103f91ebb82744ff6`, postmerge Windows CI #766 SUCCESS.
+- T06 automated code evidence PASS; hardware Suspend/Resume, hours-long resource plateau, 25 physical picker clicks and human audible output remain **DEFERRED / NOT_TESTED**, never PASS.
+- Stage 1 T07 implementation (branch `sol/t11-w06-07-acceptance-gate-20261009`, Draft [PR #63](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/63)) adds Windows packaged MP3/WAV/FFT/3-and-128-track/screenshot/ZIP checksum acceptance script plus CI artifact; exact latest-head CI **PENDING** until proved SUCCESS.
+- Final 20/20 AC, physical hardware checks, W11-06 wave closure and final release remain **BLOCKED**. No merge permission for PR #63. Separate [T07 issue #64](https://github.com/inoriko920-dev/Full-Album-Lagu/issues/64); see `docs/step11/evidence/T11_W06_07_STAGE1_AUTOMATED_GATE_20261009.md`.
+- W11-07 animation, W11-08 rendering and STEP12 FFmpeg MP4 are future tasks, not implemented by this checkpoint.
+
+
 ## Completed foundation / UI / vertical slice
 - STEP 08 Repository Foundation — DONE / PASS_WITH_PROVISIONAL.
 - STEP 09 App Shell / UI Implementation — DONE / verified frozen screenshot baseline.
