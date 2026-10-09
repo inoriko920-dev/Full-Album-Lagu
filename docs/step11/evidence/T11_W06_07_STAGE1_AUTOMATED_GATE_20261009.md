@@ -19,3 +19,11 @@ Checked by actual machine code (not inferred from documentation): packaged nativ
 Use `docs/step11/W11_06_ACCEPTANCE_MATRIX.md`; assess every AC-W11-06-01..20 separately. Do not retrofit a global PASS from aggregate machine checks. Audio monitoring on a physical Windows 11 PC, multi-hour resource/HandleCount recording, actual OS power events, genuine file picker clicks and full user-visible portable playback signoff remain **NOT_TESTED**; if mandatory for final release they stay **BLOCKING** until performed.
 
 W11-07 animation, W11-08 renderer and STEP 12 FFmpeg MP4 are future tasks, **not implemented in this T07 code**. No final build/release is authorized.
+
+## Combined 20-AC ledger from previously parallel PR #65
+
+The former independent T07 acceptance matrix on Draft PR #65 is now integrated into this branch as `scripts/run-w06-t07-acceptance-matrix.mjs`. The unified Windows workflow calls both the strict source/ZIP acceptance verifier and the 20-AC evidence ledger, in order, using one T07 evidence artifact directory. There must be one canonical T07 workflow and no duplicate PR merges.
+
+The matrix distinguishes `VERIFIED` automated acceptance, `IMPLEMENTED` with outstanding physical proof and `NOT_TESTED` validation. It explicitly withholds final wave completion, physical speaker listening, hardware Suspend/Resume and multi-hour resource certification. The matrix's automated VERIFIED entries do **not** imply real-world end-user signoff. The new combined exact-head Windows CI is still required before considering this integration technically PASS.
+
+No new UI reference asset is needed for this scope. Do not generate imagery or change the frozen editor.
