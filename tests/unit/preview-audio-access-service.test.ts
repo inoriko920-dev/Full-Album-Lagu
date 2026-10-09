@@ -369,7 +369,12 @@ describe("W11-06 main-owned preview grant authorization", () => {
 
     service.trustPickerDiscovery(7, "picked-other-project");
     expect(
-      service.bindIntake(7, "picked-other-project", "new-project", "album-next"),
+      service.bindIntake(
+        7,
+        "picked-other-project",
+        "new-project",
+        "album-next",
+      ),
     ).toBe(true);
     expect(
       await service.issue({
