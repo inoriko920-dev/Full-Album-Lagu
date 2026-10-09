@@ -13,6 +13,7 @@ import {
   projectAlbumTimeline,
 } from "../../core/domain/album-timeline";
 import { useProjectSession } from "../state/project-session/use-project-session";
+import { useAlbumPreviewPlayback } from "../state/use-album-preview-playback";
 import { AppIcon } from "../ui/AppIcon";
 import { ActionButton, IconButton } from "../ui/controls";
 import "./app-shell.css";
@@ -713,10 +714,25 @@ function WorkRail({
 function PreviewPanel({
   visualModel,
   onSelectLayer,
+  playback,
 }: {
   visualModel: StaticScenePreviewModel;
   onSelectLayer: (layerId: string) => void;
+  playback: ReturnType<typeof useAlbumPreviewPlayback>;
 }) {
+  const active = playback.available;
+  const playing =
+    playback.clock.phase === "playing" || playback.clock.phase === "loading";
+  const clock = (millis: number) => {
+    const seconds = Math.max(0, Math.floor(millis / 1000));
+    return [
+      Math.floor(seconds / 3600),
+      Math.floor((seconds % 3600) / 60),
+      seconds % 60,
+    ]
+      .map((part) => String(part).padStart(2, "0"))
+      .join(":");
+  };
   return (
     <section className="preview-panel" aria-label="Preview video">
       <div className="preview-stage">
@@ -727,6 +743,18 @@ function PreviewPanel({
             <StaticScenePreview
               model={visualModel}
               onSelectLayer={onSelectLayer}
+              {...(active
+                ? {
+                    spectrumLevels: playback.spectrum,
+                    progressFraction:
+                      playback.total > 0
+                        ? Math.min(
+                            1,
+                            playback.clock.albumTimeMs / playback.total,
+                          )
+                        : 0,
+                  }
+                : {})}
             />
           ) : (
             <>
@@ -748,25 +776,32 @@ function PreviewPanel({
         </div>
       </div>
       <div className="transport-bar" aria-label="Kontrol playback">
-        <span className="timecode">00:00:00 / 00:00:00</span>
+        <span className="timecode">
+          {active
+            ? `${clock(playback.clock.albumTimeMs)} / ${clock(playback.total)}`
+            : "00:00:00 / 00:00:00"}
+        </span>
         <div className="transport-controls">
           <IconButton
             icon="previous"
             iconSize={17}
-            disabled
+            disabled={!active}
+            onClick={playback.previous}
             aria-label="Track sebelumnya"
           />
           <IconButton
-            icon="play"
+            icon={playing ? "pause" : "play"}
             iconSize={18}
             play
-            disabled
-            aria-label="Putar"
+            disabled={!active}
+            onClick={playback.playPause}
+            aria-label={playing ? "Jeda" : "Putar"}
           />
           <IconButton
             icon="next"
             iconSize={17}
-            disabled
+            disabled={!active}
+            onClick={playback.next}
             aria-label="Track berikutnya"
           />
         </div>
@@ -774,8 +809,9 @@ function PreviewPanel({
           <IconButton
             icon="volume"
             iconSize={17}
-            disabled
-            aria-label="Volume"
+            disabled={!active}
+            onClick={playback.toggleMute}
+            aria-label={playback.muted ? "Suarakan" : "Bisukan"}
           />
           <span className="transport-separator" />
           <span className="transport-format">16:9</span>
@@ -835,16 +871,30 @@ function TimelinePanel({
   onSelectTrack,
   zoom,
   onZoomChange,
+  playback,
 }: {
   projectSession: ReturnType<typeof useProjectSession>;
   selectedTrackId: string | null;
   onSelectTrack: (trackId: string) => void;
   zoom: number;
   onZoomChange: (zoom: number) => void;
+  playback: ReturnType<typeof useAlbumPreviewPlayback>;
 }) {
   const tracks = projectSession.project.tracks;
   const projection = projectAlbumTimeline(projectSession.project);
   const trackWidth = Math.round((150 * zoom) / 100);
+  const activeIndex = projection.items.findIndex(
+    (item) => item.trackId === playback.clock.activeTrackId,
+  );
+  const activeItem = projection.items[activeIndex];
+  const localFraction =
+    activeItem?.durationMs === undefined || activeItem.durationMs <= 0
+      ? 0
+      : Math.min(1, playback.clock.localTimeMs / activeItem.durationMs);
+  // Match each visible track card's actual width/gap, rather than assuming
+  // the timeline body's viewport width represents total album duration.
+  const playheadX =
+    18 + activeIndex * (trackWidth + 5) + trackWidth * localFraction;
 
   return (
     <section
@@ -890,7 +940,12 @@ function TimelinePanel({
         <span>01:10</span>
       </div>
       <div className="timeline-body">
-        <div className="playhead playhead--zero" />
+        <div
+          className="playhead playhead--zero"
+          {...(playback.available && activeIndex >= 0
+            ? { style: { left: `${playheadX}px` } }
+            : {})}
+        />
         {tracks.length === 0 ? (
           <div className="timeline-empty">
             <span className="timeline-empty__icon">
@@ -934,6 +989,27 @@ function TimelinePanel({
                   type="button"
                   aria-pressed={selected}
                   onClick={() => onSelectTrack(track.id)}
+                  onDoubleClick={(event) => {
+                    // Reuse the approved timeline card surface for seek.
+                    // A normal click still only selects a track for editing.
+                    if (
+                      !playback.available ||
+                      item?.status !== "resolved" ||
+                      item.startMs === undefined ||
+                      item.durationMs === undefined
+                    ) {
+                      return;
+                    }
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    if (rect.width <= 0 || !Number.isFinite(event.clientX)) {
+                      return;
+                    }
+                    const fraction = Math.min(
+                      1,
+                      Math.max(0, (event.clientX - rect.left) / rect.width),
+                    );
+                    playback.seek(item.startMs + item.durationMs * fraction);
+                  }}
                   style={{
                     width: `${trackWidth}px`,
                     minWidth: `${trackWidth}px`,
@@ -1310,6 +1386,10 @@ export function AppShell() {
   );
   const [timelineZoom, setTimelineZoom] = useState(100);
   const projectSession = useProjectSession();
+  const playback = useAlbumPreviewPlayback(
+    projectSession.project,
+    projectSession.trustedPreviewBatch,
+  );
   const [selectionSession] = useState(() => new VisualSelectionSession());
   const [visualUiState, setVisualUiState] = useState(() =>
     selectionSession.snapshot(),
@@ -1346,6 +1426,41 @@ export function AppShell() {
       visualUiState,
     ],
   );
+
+  // Playback uses the ACTUAL active track for dynamic title/artist/artwork.
+  // Editor selection still controls the left Inspector and stays session-only.
+  const playbackVisualModel = useMemo(() => {
+    const activeTrackId = playback.clock.activeTrackId;
+    if (
+      !playback.available ||
+      playback.clock.projectId !== projectSession.project.projectId ||
+      activeTrackId === null ||
+      !projectSession.project.tracks.some(
+        (track) => track.id === activeTrackId && track.enabled !== false,
+      )
+    ) {
+      return visualModel;
+    }
+
+    return buildStaticScenePreview(
+      projectSession.templateTrialProject ?? projectSession.project,
+      {
+        selectedTrackId: activeTrackId,
+        selectedLayerId: visualUiState.selectedLayerId,
+        ...(visualUiState.gesturePreview === null
+          ? {}
+          : { gesturePreview: visualUiState.gesturePreview }),
+      },
+    );
+  }, [
+    playback.available,
+    playback.clock.activeTrackId,
+    playback.clock.projectId,
+    projectSession.project,
+    projectSession.templateTrialProject,
+    visualUiState,
+    visualModel,
+  ]);
 
   const cancelVisualLayerGesture = projectSession.cancelVisualLayerGesture;
   const visualProject = projectSession.project;
@@ -1588,8 +1703,9 @@ export function AppShell() {
           onCancelTransform={cancelLayerTransform}
         />
         <PreviewPanel
-          visualModel={visualModel}
+          visualModel={playbackVisualModel}
           onSelectLayer={(id) => selectLayer(id, true)}
+          playback={playback}
         />
         <GeminiRail />
         <TimelinePanel
@@ -1601,6 +1717,7 @@ export function AppShell() {
           }}
           zoom={timelineZoom}
           onZoomChange={setTimelineZoom}
+          playback={playback}
         />
       </div>
 

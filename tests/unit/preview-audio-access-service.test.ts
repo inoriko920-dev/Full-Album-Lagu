@@ -24,9 +24,9 @@ async function fixture() {
   };
   const lookup: TrustedIntakeLookup = {
     getTrustedAudioSource(batch, project, asset) {
-      return batch === "intake-1" &&
-        project === "project-1" &&
-        asset === "asset-ready"
+      return project === "project-1" &&
+        ((batch === "intake-1" && asset === "asset-ready") ||
+          (batch === "intake-2" && asset === "asset-second"))
         ? source
         : null;
     },
@@ -109,6 +109,66 @@ describe("W11-06 main-owned preview grant authorization", () => {
         }),
       ).toBeNull();
     }
+  });
+
+  it("keeps older same-project ready imports addressable but revokes old streams", async () => {
+    const { service, store } = await fixture();
+    service.trustPickerDiscovery(7, "picked-1");
+    expect(service.bindIntake(7, "picked-1", "intake-1", "project-1")).toBe(
+      true,
+    );
+    const oldToken = await service.issue({
+      ownerWebContentsId: 7,
+      batchId: "intake-1",
+      projectId: "project-1",
+      assetId: "asset-ready",
+    });
+    if (oldToken === null) throw new Error("Missing first import token");
+
+    service.trustPickerDiscovery(7, "picked-2");
+    expect(service.bindIntake(7, "picked-2", "intake-2", "project-1")).toBe(
+      true,
+    );
+    const revoked = await createPreviewAudioProtocolResponse(
+      new Request(oldToken),
+      { projectId: "project-1", ownerWebContentsId: 7 },
+      store,
+    );
+    expect(revoked.status).toBe(403);
+
+    for (const [batchId, assetId] of [
+      ["intake-1", "asset-ready"],
+      ["intake-2", "asset-second"],
+    ] as const) {
+      const url = await service.issue({
+        ownerWebContentsId: 7,
+        batchId,
+        projectId: "project-1",
+        assetId,
+      });
+      expect(url).toMatch(/^lfa-preview:\/\/media\/[0-9a-f]{64}$/);
+      if (url === null) throw new Error("Missing renewed grant");
+      const response = await createPreviewAudioProtocolResponse(
+        new Request(url, { headers: { Range: "bytes=0-3" } }),
+        { projectId: "project-1", ownerWebContentsId: 7 },
+        store,
+      );
+      expect(response.status).toBe(206);
+      expect(Buffer.from(await response.arrayBuffer())).toEqual(
+        Buffer.from("RIFF"),
+      );
+    }
+
+    service.trustPickerDiscovery(7, "picked-other");
+    service.bindIntake(7, "picked-other", "other-intake", "different");
+    expect(
+      await service.issue({
+        ownerWebContentsId: 7,
+        batchId: "intake-1",
+        projectId: "project-1",
+        assetId: "asset-ready",
+      }),
+    ).toBeNull();
   });
 
   it("revokes issued tokens and their stream on a window/project change", async () => {

@@ -81,6 +81,14 @@ import {
   type SelectedTrackProjection,
 } from "../../../core/domain/selected-track-projection";
 
+/** Ephemeral only: binds the renderer to a completed MAIN picker-based intake. */
+export interface TrustedPreviewBatch {
+  readonly projectId: string;
+  readonly batchId: string;
+  /** Ephemeral MAIN-verified import provenance. Never persisted in project. */
+  readonly batchByAssetId?: Readonly<Record<string, string>>;
+}
+
 export type ProjectSourceState = "new" | "loaded" | "load-error";
 export type ProjectPersistenceState =
   "idle" | "saving" | "saved" | "cancelled" | "error";
@@ -147,6 +155,8 @@ export interface ProjectSessionView {
   canUndo: boolean;
   canRedo: boolean;
   mediaOperationState: MediaOperationState;
+  /** Never persisted to ProjectDocument; dropped/opened projects stay blocked. */
+  trustedPreviewBatch: TrustedPreviewBatch | null;
   mediaProgress: MediaUiProgress | null;
   mediaSummary: MediaBatchSummary | null;
   mediaError: MediaUiError | null;
@@ -242,6 +252,8 @@ export function useProjectSession(): ProjectSessionView {
 
   const [mediaOperationState, setMediaOperationState] =
     useState<MediaOperationState>("idle");
+  const [trustedPreviewBatch, setTrustedPreviewBatch] =
+    useState<TrustedPreviewBatch | null>(null);
   const [mediaProgress, setMediaProgress] = useState<MediaUiProgress | null>(
     null,
   );
@@ -386,6 +398,7 @@ export function useProjectSession(): ProjectSessionView {
         const scannedProject = await scanMissingMediaState(result.project);
         if (!alive) return;
 
+        setTrustedPreviewBatch(null);
         history.resetClean(scannedProject);
         publishHistorySnapshot();
         setSourceState("loaded");
@@ -1069,6 +1082,7 @@ export function useProjectSession(): ProjectSessionView {
             return { status: "none" };
           }
 
+          setTrustedPreviewBatch(null);
           history.resetDirty(scannedProject, recoveryBase.savedRevision);
           publishHistorySnapshot();
           setRecoveryState({ status: "none" });
@@ -1140,10 +1154,21 @@ export function useProjectSession(): ProjectSessionView {
   const runMediaImport = useCallback(
     async (
       startDiscovery: () => ReturnType<typeof window.lfa.pickAudioFiles>,
+      pickerTrusted: boolean,
     ): Promise<void> => {
       if (mediaBusyRef.current) return;
 
       mediaBusyRef.current = true;
+      const previousTrust =
+        trustedPreviewBatch?.projectId === projectRef.current.projectId
+          ? trustedPreviewBatch
+          : null;
+      const existingReadyIds = new Set(
+        projectRef.current.mediaAssets?.map((asset) => asset.id) ?? [],
+      );
+      // Main may revoke previous grants on a new successful import.
+      // Fail closed now instead of retaining an obsolete preview authority.
+      setTrustedPreviewBatch(null);
       setMediaOperationState("selecting");
       setMediaProgress(null);
       setMediaSummary(null);
@@ -1265,7 +1290,38 @@ export function useProjectSession(): ProjectSessionView {
               "media.import",
               "Impor media",
             );
-            await reconcileMissingMedia(committedProject);
+            const canonical = await reconcileMissingMedia(committedProject);
+            if (
+              pickerTrusted &&
+              canonical.projectId === intake.project.projectId
+            ) {
+              const byAsset: Record<string, string> = {
+                ...(previousTrust?.batchByAssetId ??
+                  Object.fromEntries(
+                    (projectRef.current.mediaAssets ?? [])
+                      .filter(
+                        (asset) =>
+                          asset.kind === "audio" &&
+                          existingReadyIds.has(asset.id),
+                      )
+                      .map((asset) => [asset.id, previousTrust?.batchId ?? ""]),
+                  )),
+              };
+              for (const asset of intake.project.mediaAssets ?? []) {
+                if (
+                  asset.kind === "audio" &&
+                  asset.availability === "ready" &&
+                  !existingReadyIds.has(asset.id)
+                ) {
+                  byAsset[asset.id] = intakeStart.batchId;
+                }
+              }
+              setTrustedPreviewBatch({
+                projectId: canonical.projectId,
+                batchId: intakeStart.batchId,
+                batchByAssetId: byAsset,
+              });
+            }
             return;
           }
         }
@@ -1280,25 +1336,25 @@ export function useProjectSession(): ProjectSessionView {
         mediaBusyRef.current = false;
       }
     },
-    [commitUserProjectMutation, reconcileMissingMedia],
+    [commitUserProjectMutation, reconcileMissingMedia, trustedPreviewBatch],
   );
 
   const importAudio = useCallback(
     async (): Promise<void> =>
-      runMediaImport(() => window.lfa.pickAudioFiles()),
+      runMediaImport(() => window.lfa.pickAudioFiles(), true),
     [runMediaImport],
   );
 
   const importMediaFolder = useCallback(
     async (): Promise<void> =>
-      runMediaImport(() => window.lfa.pickMediaFolder()),
+      runMediaImport(() => window.lfa.pickMediaFolder(), true),
     [runMediaImport],
   );
 
   const importDroppedAudio = useCallback(
     async (files: readonly File[]): Promise<void> => {
       if (files.length === 0) return;
-      await runMediaImport(() => window.lfa.discoverDroppedMedia(files));
+      await runMediaImport(() => window.lfa.discoverDroppedMedia(files), false);
     },
     [runMediaImport],
   );
@@ -1342,6 +1398,7 @@ export function useProjectSession(): ProjectSessionView {
         });
 
         if (result.status === "relinked") {
+          setTrustedPreviewBatch(null);
           setLastRelinkResults([result.result]);
           const committedProject = commitUserProjectMutation(
             result.project,
@@ -1407,6 +1464,7 @@ export function useProjectSession(): ProjectSessionView {
         });
 
         if (result.status === "completed") {
+          setTrustedPreviewBatch(null);
           setLastRelinkResults(result.results);
           const committedProject = commitUserProjectMutation(
             result.project,
@@ -1449,6 +1507,7 @@ export function useProjectSession(): ProjectSessionView {
     canUndo: historySnapshot.canUndo,
     canRedo: historySnapshot.canRedo,
     mediaOperationState,
+    trustedPreviewBatch,
     mediaProgress,
     mediaSummary,
     mediaError,

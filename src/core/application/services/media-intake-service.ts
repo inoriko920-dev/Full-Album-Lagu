@@ -217,6 +217,12 @@ async function runBounded<T>(
 
 export class MediaIntakeService {
   private readonly batches = new Map<string, IntakeBatchState>();
+  // Only explicitly main-picker-authorized imports survive status pruning.
+  private readonly retainedBatchIds = new Set<string>();
+  private readonly retainedSources = new Map<
+    string,
+    { projectId: string; sources: Map<string, MediaSourceDescriptor> }
+  >();
 
   constructor(
     private readonly discovery: MediaDiscoverySourceProvider,
@@ -252,7 +258,11 @@ export class MediaIntakeService {
     this.pruneTerminalBatches();
 
     const batchId = this.idFactory();
-    if (!batchId || this.batches.has(batchId)) {
+    if (
+      !batchId ||
+      this.batches.has(batchId) ||
+      this.retainedBatchIds.has(batchId)
+    ) {
       throw new MediaIntakeStartError(
         "MEDIA_PROBE_FAILED",
         "Media intake batch ID must be unique.",
@@ -281,10 +291,35 @@ export class MediaIntakeService {
     return { batchId };
   }
 
+  /** Called only after Electron main validated an OS picker discovery. */
+  retainTrustedAudioBatch(batchId: string, projectId: string): boolean {
+    const state = this.batches.get(batchId);
+    if (
+      state?.baseProject.projectId !== projectId ||
+      state.status === "cancelled" ||
+      state.status === "error"
+    ) {
+      return false;
+    }
+    this.retainedBatchIds.add(batchId);
+    if (state.status === "completed") {
+      this.retainedSources.set(batchId, {
+        projectId,
+        sources: state.trustedAudioSources,
+      });
+    }
+    return true;
+  }
+
+  /** Releases the lightweight provenance when its window/project is revoked. */
+  releaseTrustedAudioBatch(batchId: string): void {
+    this.retainedBatchIds.delete(batchId);
+    this.retainedSources.delete(batchId);
+  }
+
   /**
-   * Only a completed main-probed intake batch can authorize a source for the
-   * future audio protocol. No renderer-provided sourcePath is consulted.
-   * Caller MUST still bind the batch to its invoking WebContents identity.
+   * Only a completed main-probed intake can authorize a source. Retained
+   * ready sources outlive bounded status history, not their window/project.
    */
   getTrustedAudioSource(
     batchId: string,
@@ -292,14 +327,16 @@ export class MediaIntakeService {
     assetId: string,
   ): MediaSourceDescriptor | null {
     const state = this.batches.get(batchId);
+    const retained = this.retainedSources.get(batchId);
     if (
-      state?.status !== "completed" ||
-      state.completedProject?.projectId !== projectId
+      state?.status === "completed" &&
+      state.completedProject?.projectId === projectId
     ) {
-      return null;
+      const source = state.trustedAudioSources.get(assetId);
+      return source === undefined ? null : { ...source };
     }
-
-    const source = state.trustedAudioSources.get(assetId);
+    if (retained?.projectId !== projectId) return null;
+    const source = retained.sources.get(assetId);
     return source === undefined ? null : { ...source };
   }
 
@@ -402,16 +439,24 @@ export class MediaIntakeService {
       state.completedProject = project;
       state.completedSummary = summary;
       state.status = "completed";
+      if (this.retainedBatchIds.has(state.batchId)) {
+        this.retainedSources.set(state.batchId, {
+          projectId: project.projectId,
+          sources: state.trustedAudioSources,
+        });
+      }
     } catch (error) {
       if (
         error instanceof MediaIntakeCancelledError ||
         state.controller.signal.aborted
       ) {
         state.status = "cancelled";
+        this.releaseTrustedAudioBatch(state.batchId);
         return;
       }
 
       state.status = "error";
+      this.releaseTrustedAudioBatch(state.batchId);
       state.errorCode = "MEDIA_PROBE_FAILED";
       state.errorMessage = "Media probing failed safely.";
     }

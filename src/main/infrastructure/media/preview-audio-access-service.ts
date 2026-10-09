@@ -9,6 +9,8 @@ export interface TrustedIntakeLookup {
     projectId: string,
     assetId: string,
   ): MediaSourceDescriptor | null;
+  retainTrustedAudioBatch?(batchId: string, projectId: string): boolean;
+  releaseTrustedAudioBatch?(batchId: string): void;
 }
 
 interface BoundIntake {
@@ -61,9 +63,19 @@ export class PreviewAudioAccessService {
     if (this.selected.get(discoveryBatchId) !== ownerWebContentsId) {
       return false;
     }
+    if (this.sources.retainTrustedAudioBatch?.(batchId, projectId) === false) {
+      return false;
+    }
 
     this.selected.delete(discoveryBatchId);
-    this.revokeWindow(ownerWebContentsId);
+    if (this.activeProjects.get(ownerWebContentsId) === projectId) {
+      // A later picker import of the SAME album must not orphan already
+      // imported track IDs. Tear down active streams, not batch provenance.
+      this.store.revokeWindow(ownerWebContentsId);
+    } else {
+      // Different project or a stale window loses ALL prior authority.
+      this.revokeWindow(ownerWebContentsId);
+    }
     this.intake.set(batchId, { ownerWebContentsId, projectId, batchId });
     this.activeProjects.set(ownerWebContentsId, projectId);
     return true;
@@ -161,6 +173,7 @@ export class PreviewAudioAccessService {
     for (const [batchId, bound] of this.intake) {
       if (bound.ownerWebContentsId === ownerWebContentsId) {
         this.intake.delete(batchId);
+        this.sources.releaseTrustedAudioBatch?.(batchId);
       }
     }
     for (const [batchId, entry] of this.relink) {

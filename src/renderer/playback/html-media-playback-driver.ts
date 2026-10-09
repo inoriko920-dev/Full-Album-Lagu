@@ -21,6 +21,7 @@ import type {
 export interface TrustedAudioBatch {
   readonly projectId: string;
   readonly batchId: string;
+  readonly batchByAssetId?: Readonly<Record<string, string>>;
 }
 
 export interface MediaElementPort {
@@ -28,6 +29,7 @@ export interface MediaElementPort {
   /** Set BEFORE src: WebAudio otherwise silences cross-origin protocol media. */
   crossOrigin?: string | null;
   currentTime: number;
+  volume?: number;
   play(): Promise<void>;
   pause(): void;
   load(): void;
@@ -62,6 +64,7 @@ export class HtmlMediaPlaybackDriver {
   private active: ActiveMedia | null = null;
   private closed = false;
   private pausedAtMs: number | null = null;
+  private outputVolume = 1;
   private trustedBatch: TrustedAudioBatch | null;
   private readonly unsubscribePower: (() => void) | null;
 
@@ -88,6 +91,16 @@ export class HtmlMediaPlaybackDriver {
 
   get snapshot(): PlaybackClockSnapshot {
     return this.transport.snapshot;
+  }
+
+  /** Renderer-only volume, never saved into ProjectDocument. */
+  setVolume(level: number): boolean {
+    if (this.closed || !Number.isFinite(level) || level < 0 || level > 1) {
+      return false;
+    }
+    this.outputVolume = level;
+    if (this.active !== null) this.active.element.volume = level;
+    return true;
   }
 
   /** Read-only sample of the same real HTMLMediaElement used for playback. */
@@ -231,10 +244,14 @@ export class HtmlMediaPlaybackDriver {
     effect: Extract<PlaybackTransportEffect, { kind: "load" }>,
   ): Promise<void> {
     const bound = this.trustedBatch;
+    const batchId =
+      bound?.batchByAssetId === undefined
+        ? bound?.batchId
+        : bound.batchByAssetId[effect.assetId];
     if (
       bound === null ||
       bound.projectId !== this.transport.snapshot.projectId ||
-      !bound.batchId
+      !batchId
     ) {
       this.fail(effect.generation);
       return;
@@ -244,7 +261,7 @@ export class HtmlMediaPlaybackDriver {
     try {
       result = await this.requestAudio({
         projectId: bound.projectId,
-        batchId: bound.batchId,
+        batchId,
         assetId: effect.assetId,
       });
     } catch {
@@ -340,6 +357,7 @@ export class HtmlMediaPlaybackDriver {
       // for non-CORS media from a different scheme. The private protocol only
       // allows the current editor origin and a scoped main-issued token.
       element.crossOrigin = "anonymous";
+      element.volume = this.outputVolume;
       this.spectrum?.attach(element as HTMLMediaElement);
       this.emitSpectrum();
       element.src = result.url;

@@ -37,6 +37,7 @@ class FakeMedia implements MediaElementPort {
   src = "";
   crossOrigin: string | null = null;
   currentTime = 0;
+  volume = 1;
   playCount = 0;
   pauseCount = 0;
   loadCount = 0;
@@ -137,6 +138,67 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(source).toEqual(unchanged);
     driver.close();
     expect(first.src).toBe("");
+  });
+
+  it("uses the trusted per-asset batch after multiple imports and never falls back for unknown assets", async () => {
+    const requests: Array<{ batchId: string; assetId: string }> = [];
+    const media: FakeMedia[] = [];
+    const session = new HtmlMediaPlaybackDriver(
+      project(),
+      {
+        projectId: "project-1",
+        batchId: "latest-batch",
+        batchByAssetId: {
+          "asset-0": "first-batch",
+          "asset-1": "second-batch",
+        },
+      },
+      async (request) => {
+        requests.push({
+          batchId: request.batchId,
+          assetId: request.assetId,
+        });
+        return granted;
+      },
+      () => {
+        const audio = new FakeMedia();
+        media.push(audio);
+        return audio;
+      },
+    );
+
+    session.play();
+    await flush();
+    expect(requests).toEqual([{ batchId: "first-batch", assetId: "asset-0" }]);
+    media[0]?.emit("loadedmetadata");
+    await flush();
+    media[0]?.emit("ended");
+    await flush();
+    expect(requests).toEqual([
+      { batchId: "first-batch", assetId: "asset-0" },
+      { batchId: "second-batch", assetId: "asset-1" },
+    ]);
+    session.close();
+
+    const denied: string[] = [];
+    const blocked = new HtmlMediaPlaybackDriver(
+      project(),
+      {
+        projectId: "project-1",
+        batchId: "latest-batch",
+        batchByAssetId: { "asset-1": "second-batch" },
+      },
+      async (request) => {
+        denied.push(request.assetId);
+        return granted;
+      },
+      () => new FakeMedia(),
+    );
+    blocked.play();
+    await flush();
+    expect(blocked.snapshot.phase).toBe("error");
+    expect(denied).toEqual([]);
+    blocked.close();
   });
 
   it("never attaches late token from the old project after a switch", async () => {
@@ -640,5 +702,37 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(driver.sampleSpectrum()?.active).toBe(false);
     expect(Math.max(...driver.sampleSpectrum()!.barLevels)).toBe(0);
     driver.close();
+  });
+
+  it("keeps volume ephemeral across track handoffs and rejects invalid levels", async () => {
+    const original = project();
+    const before = structuredClone(original);
+    const files: FakeMedia[] = [];
+    const driver = new HtmlMediaPlaybackDriver(
+      original,
+      trusted,
+      async () => granted,
+      () => {
+        const audio = new FakeMedia();
+        files.push(audio);
+        return audio;
+      },
+    );
+
+    expect(driver.setVolume(Number.NaN)).toBe(false);
+    expect(driver.setVolume(-1)).toBe(false);
+    expect(driver.setVolume(2)).toBe(false);
+    expect(driver.setVolume(0)).toBe(true);
+    driver.play();
+    await flush();
+    expect(files[0]?.volume).toBe(0);
+    driver.next();
+    await flush();
+    expect(files[1]?.volume).toBe(0);
+    expect(driver.setVolume(1)).toBe(true);
+    expect(files[1]?.volume).toBe(1);
+    expect(original).toEqual(before);
+    driver.close();
+    expect(driver.setVolume(0)).toBe(false);
   });
 });
