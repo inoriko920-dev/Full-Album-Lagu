@@ -44,6 +44,13 @@ jobs:
       - name: Foundation and UI verification
         run: npm run verify
 
+      - name: TEMP T07 Prettier exact-diff diagnostic
+        if: always()
+        shell: pwsh
+        run: |
+          ./node_modules/.bin/prettier.cmd scripts/run-w06-t07-acceptance-matrix.mjs --write
+          git diff -- scripts/run-w06-t07-acceptance-matrix.mjs
+
       - name: Runtime dependency audit
         run: npm audit --omit=dev --audit-level=high
 
