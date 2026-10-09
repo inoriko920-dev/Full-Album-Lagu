@@ -911,5 +911,4 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(source).toEqual(pristine);
     driver.close();
   });
-
 });
