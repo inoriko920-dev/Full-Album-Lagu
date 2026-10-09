@@ -92,6 +92,8 @@ async function run300PackagedRestarts(
   // Do NOT retain hundreds of stopped Audio references in the probe:
   // retaining them would itself distort any process-memory leak analysis.
   const currentMedia: { element?: HTMLAudioElement } = {};
+  const getCurrentAudio = (): HTMLAudioElement | undefined =>
+    currentMedia.element;
   let createdElements = 0;
   const driver = new HtmlMediaPlaybackDriver(
     project,
@@ -119,7 +121,7 @@ async function run300PackagedRestarts(
         delete currentMedia.element;
         driver.play();
         await waitFor(driver, "playing", "stress-track");
-        const element = currentMedia.element;
+        const element = getCurrentAudio();
         if (!element || createdElements !== beforeRound + cycle + 1) {
           throw new Error("T06 unexpected media instance at cycle " + cycle);
         }
