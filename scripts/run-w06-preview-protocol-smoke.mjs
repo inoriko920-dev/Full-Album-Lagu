@@ -68,6 +68,14 @@ async function prepareAudioFiles() {
     await writeFile(path, synthesizePcmWav(hz));
     paths.push(path);
   }
+  // Must be discovered as a WAV, but fail the genuine main-owned parser.
+  const corrupt = join(fixtures, "T06 Corrupt Audio.wav");
+  await writeFile(corrupt, Buffer.from("This is not a RIFF WAVE audio file."));
+  paths.push(corrupt);
+  // Discovery accepts this root, while intake must exclude non-audio assets.
+  const unsupported = join(fixtures, "T06 Unsupported Notes.txt");
+  await writeFile(unsupported, Buffer.from("Not a supported audio file."));
+  paths.push(unsupported);
   return paths;
 }
 
@@ -158,6 +166,8 @@ async function main() {
     }
   }
   if (
+    report.driver?.corruptSourceBlocked !== true ||
+    report.driver?.unsupportedFileRejected !== true ||
     report.driver?.mainIssuedGrant !== true ||
     report.driver?.pauseSeekNextPrevious !== true ||
     report.driver?.relinkRevoked !== true ||
