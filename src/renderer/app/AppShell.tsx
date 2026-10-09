@@ -1412,6 +1412,7 @@ export function AppShell() {
     const activeTrackId = playback.clock.activeTrackId;
     if (
       !playback.available ||
+      playback.clock.projectId !== projectSession.project.projectId ||
       activeTrackId === null ||
       !projectSession.project.tracks.some(
         (track) => track.id === activeTrackId && track.enabled !== false,
@@ -1433,6 +1434,7 @@ export function AppShell() {
   }, [
     playback.available,
     playback.clock.activeTrackId,
+    playback.clock.projectId,
     projectSession.project,
     projectSession.templateTrialProject,
     visualUiState,
