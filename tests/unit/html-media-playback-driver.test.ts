@@ -743,7 +743,8 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     driver.close();
     expect(driver.setVolume(0)).toBe(false);
   });
-  it("T06: releases every audio element and listener over 100 real driver restart cycles", async () => {
+
+  it("T06: 100 restarts release audio elements and listeners", async () => {
     const source = project();
     const before = structuredClone(source);
     const elements: FakeMedia[] = [];
@@ -795,14 +796,16 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     }
 
     expect(elements).toHaveLength(100);
-    expect(elements.every((element) => element.listenerCount() === 0)).toBe(true);
+    expect(elements.every((element) => element.listenerCount() === 0)).toBe(
+      true,
+    );
     expect(source).toEqual(before);
     driver.close();
     driver.play();
     expect(elements).toHaveLength(100);
   });
 
-  it("T06: 100 delayed main-grant replies cannot create ghost audio after Stop", async () => {
+  it("T06: 100 stale main grants cannot create ghost audio", async () => {
     const source = project();
     const before = structuredClone(source);
     const pending: Array<(reply: PreviewAudioIssueResult) => void> = [];
@@ -837,5 +840,4 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
     expect(source).toEqual(before);
     driver.close();
   });
-
 });
