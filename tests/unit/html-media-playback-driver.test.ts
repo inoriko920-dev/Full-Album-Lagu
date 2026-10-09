@@ -896,7 +896,7 @@ describe("T11-W06-03 main-token HTML audio driver (without UI)", () => {
       expect(driver.snapshot.phase).toBe("playing");
       expect(driver.snapshot.albumTimeMs).toBe(step * 1000 + 250);
       if (step > 0) {
-        const stale = media[step - 1];
+        const stale = media[step];
         stale?.emit("ended");
         stale?.emit("error");
         expect(stale?.listenerCount()).toBe(0);
