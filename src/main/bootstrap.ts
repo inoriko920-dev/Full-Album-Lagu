@@ -254,6 +254,9 @@ function createMainWindow(): BrowserWindow {
           const sample = sampleRendererMemory();
           if (
             sample &&
+            typeof sample.privateKiB === "number" &&
+            Number.isSafeInteger(sample.privateKiB) &&
+            sample.privateKiB >= 0 &&
             Number.isSafeInteger(sample.workingSetKiB) &&
             sample.workingSetKiB > 0
           ) {
