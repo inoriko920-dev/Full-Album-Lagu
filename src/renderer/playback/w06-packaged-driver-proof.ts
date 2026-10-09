@@ -20,6 +20,11 @@ interface W06Evidence {
     readonly completedCycles: number;
     readonly createdElements: number;
     readonly elapsedMs: number;
+    readonly rounds: readonly {
+      readonly completedCycles: 100;
+      readonly createdElements: 100;
+      readonly elapsedMs: number;
+    }[];
     readonly allMediaReleased: true;
     readonly projectUnchanged: true;
   };
@@ -81,7 +86,10 @@ async function run100PackagedRestarts(
     ],
   };
   const original = JSON.stringify(project);
-  const elements: HTMLAudioElement[] = [];
+  // Do NOT retain hundreds of stopped Audio references in the probe:
+  // retaining them would itself distort any process-memory leak analysis.
+  let latestAudio: HTMLAudioElement | null = null;
+  let createdElements = 0;
   const driver = new HtmlMediaPlaybackDriver(
     project,
     { projectId: project.projectId, batchId },
@@ -89,42 +97,66 @@ async function run100PackagedRestarts(
     () => {
       const audio = new Audio();
       audio.muted = true;
-      elements.push(audio);
+      latestAudio = audio;
+      createdElements += 1;
       return audio;
     },
   );
   const startedAt = performance.now();
+  const rounds: Array<{
+    completedCycles: 100;
+    createdElements: 100;
+    elapsedMs: number;
+  }> = [];
   try {
-    for (let cycle = 0; cycle < 100; cycle += 1) {
-      driver.play();
-      await waitFor(driver, "playing", "stress-track");
-      const element = elements[cycle];
-      if (!element || elements.length !== cycle + 1) {
-        throw new Error("T06 unexpected media instance on cycle " + cycle);
+    for (let round = 0; round < 3; round += 1) {
+      const beforeRound = createdElements;
+      const roundStartedAt = performance.now();
+      for (let cycle = 0; cycle < 100; cycle += 1) {
+        latestAudio = null;
+        driver.play();
+        await waitFor(driver, "playing", "stress-track");
+        const element = latestAudio;
+        if (!element || createdElements !== beforeRound + cycle + 1) {
+          throw new Error("T06 unexpected media instance at cycle " + cycle);
+        }
+        driver.stop();
+        requirePhase(driver, "ready");
+        if (!element.paused || element.hasAttribute("src")) {
+          throw new Error("T06 audio survived Stop at cycle " + cycle);
+        }
+        // No outstanding strong references across the next cycle.
+        latestAudio = null;
       }
-      driver.stop();
-      requirePhase(driver, "ready");
-      if (!element.paused || element.hasAttribute("src")) {
-        throw new Error("T06 live audio survived Stop at cycle " + cycle);
+      if (
+        createdElements !== beforeRound + 100 ||
+        JSON.stringify(project) !== original
+      ) {
+        throw new Error("T06 restart round leaked playback or mutated project");
       }
+      rounds.push({
+        completedCycles: 100,
+        createdElements: 100,
+        elapsedMs: Math.round(performance.now() - roundStartedAt),
+      });
+      // Give Chromium decoder teardown and process-memory sampling a chance
+      // to run between rounds. Do not assert garbage collection took place.
+      await delay(75);
     }
-    if (
-      elements.length !== 100 ||
-      elements.some((audio) => !audio.paused || audio.hasAttribute("src"))
-    ) {
-      throw new Error("T06 audio element leak after 100 restarts");
-    }
-    if (JSON.stringify(project) !== original) {
-      throw new Error("T06 playback mutated the project document");
+    requirePhase(driver, "ready");
+    if (createdElements !== 300 || rounds.length !== 3) {
+      throw new Error("T06 300-cycle real WAV stress was incomplete");
     }
     return {
-      completedCycles: 100,
-      createdElements: elements.length,
+      completedCycles: 300,
+      createdElements,
       elapsedMs: Math.round(performance.now() - startedAt),
+      rounds,
       allMediaReleased: true,
       projectUnchanged: true,
     };
   } finally {
+    latestAudio = null;
     driver.close();
   }
 }
