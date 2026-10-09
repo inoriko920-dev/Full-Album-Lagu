@@ -1406,6 +1406,39 @@ export function AppShell() {
     ],
   );
 
+  // Playback uses the ACTUAL active track for dynamic title/artist/artwork.
+  // Editor selection still controls the left Inspector and stays session-only.
+  const playbackVisualModel = useMemo(() => {
+    const activeTrackId = playback.clock.activeTrackId;
+    if (
+      !playback.available ||
+      activeTrackId === null ||
+      !projectSession.project.tracks.some(
+        (track) => track.id === activeTrackId && track.enabled !== false,
+      )
+    ) {
+      return visualModel;
+    }
+
+    return buildStaticScenePreview(
+      projectSession.templateTrialProject ?? projectSession.project,
+      {
+        selectedTrackId: activeTrackId,
+        selectedLayerId: visualUiState.selectedLayerId,
+        ...(visualUiState.gesturePreview === null
+          ? {}
+          : { gesturePreview: visualUiState.gesturePreview }),
+      },
+    );
+  }, [
+    playback.available,
+    playback.clock.activeTrackId,
+    projectSession.project,
+    projectSession.templateTrialProject,
+    visualUiState,
+    visualModel,
+  ]);
+
   const cancelVisualLayerGesture = projectSession.cancelVisualLayerGesture;
   const visualProject = projectSession.project;
   useEffect(() => {
@@ -1647,7 +1680,7 @@ export function AppShell() {
           onCancelTransform={cancelLayerTransform}
         />
         <PreviewPanel
-          visualModel={visualModel}
+          visualModel={playbackVisualModel}
           onSelectLayer={(id) => selectLayer(id, true)}
           playback={playback}
         />
