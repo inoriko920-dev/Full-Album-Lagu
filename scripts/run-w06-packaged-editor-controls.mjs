@@ -120,6 +120,12 @@ async function testAlbum(count) {
     report.frozenShellPresent !== true ||
     report.lastTrackSelected !== true ||
     report.seekUiAvailable !== false ||
+    report.appliedFrozenSpectrumTemplate !== true ||
+    report.liveProgressVerified !== true ||
+    report.pausedSpectrumZero !== true ||
+    report.capturedWhilePlaying !== true ||
+    !(report.liveSpectrumPeakPercent > 2) ||
+    !(report.captureSpectrumPeakPercent > 2) ||
     report.capture?.width !== 1600 ||
     report.capture?.height !== 1000 ||
     report.zoom !== "125"
