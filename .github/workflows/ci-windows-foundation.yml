@@ -44,6 +44,13 @@ jobs:
       - name: Foundation and UI verification
         run: npm run verify
 
+      - name: T06 TEMPORARY Prettier exact diff diagnostic
+        if: always()
+        shell: pwsh
+        run: |
+          ./node_modules/.bin/prettier.cmd src/renderer/playback/w06-packaged-driver-proof.ts --write
+          git diff -- src/renderer/playback/w06-packaged-driver-proof.ts
+
       - name: Runtime dependency audit
         run: npm audit --omit=dev --audit-level=high
 
