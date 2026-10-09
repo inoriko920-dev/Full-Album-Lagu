@@ -51,7 +51,7 @@ async function readWindowsRendererHandles(pid: number): Promise<number> {
     { windowsHide: true, timeout: 10_000 },
   );
   const value = stdout.trim();
-  if (!/^\\d+$/.test(value)) {
+  if (!/^\d+$/.test(value)) {
     throw new Error("T06 Windows renderer handle telemetry unavailable");
   }
   const handles = Number(value);
@@ -60,7 +60,6 @@ async function readWindowsRendererHandles(pid: number): Promise<number> {
   }
   return handles;
 }
-
 
 function readArgValue(name: string): string | undefined {
   const prefix = `--${name}=`;
