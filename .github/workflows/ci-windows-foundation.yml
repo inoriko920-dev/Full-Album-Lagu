@@ -267,6 +267,19 @@ jobs:
           if-no-files-found: warn
           retention-days: 14
 
+      - name: T11-W06-07 verify 20 AC evidence without waiving physical gates
+        run: node scripts/run-w06-t07-acceptance-matrix.mjs
+
+      - name: Upload W11-06-07 20-AC automated acceptance matrix
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-T11-W06-07-20-AC-Matrix
+          path: |
+            artifacts/step11/T11-W06-07/evidence/**
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Build portable multi-file ZIP
         shell: pwsh
         run: |
