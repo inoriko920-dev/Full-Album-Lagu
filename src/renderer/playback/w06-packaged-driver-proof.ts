@@ -64,8 +64,7 @@ async function run100PackagedRestarts(
 ): Promise<W06Evidence["restartStress"]> {
   const tone = imported.mediaAssets?.find(
     (asset) =>
-      asset.availability === "ready" &&
-      asset.fileName === "T04 Tone 440Hz.wav",
+      asset.availability === "ready" && asset.fileName === "T04 Tone 440Hz.wav",
   );
   if (!tone) throw new Error("T06 real stress tone WAV was not imported");
   const project: ProjectDocument = {
