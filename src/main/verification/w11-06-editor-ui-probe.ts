@@ -196,6 +196,17 @@ export async function captureW1106EditorInteractions(
       assert(document.querySelectorAll(".timeline-track").length === expectedTracks,
         "album changed during transport interaction");
 
+      // Resume the real audio after validating Pause and select-last behavior.
+      // Capture a genuine playing visual with active sine-wave bars, while
+      // Inspector still references the manually selected last track.
+      click(button("Putar"), "cannot resume packaged playback for screenshot");
+      await wait(
+        () => button("Jeda") && visibleBars().length === 32 &&
+          spectrumPeakPercent() > 2,
+        "real waveform not visible when capturing frozen Preview",
+        180,
+      );
+      const captureSpectrumPeakPercent = spectrumPeakPercent();
       await new Promise((done) =>
         requestAnimationFrame(() => requestAnimationFrame(done)));
       return {
@@ -210,6 +221,8 @@ export async function captureW1106EditorInteractions(
         liveSpectrumPeakPercent,
         liveProgressVerified: true,
         pausedSpectrumZero: true,
+        capturedWhilePlaying: true,
+        captureSpectrumPeakPercent,
         firstPlayhead,
         thirdPlayhead,
         zoomedPlayhead,
@@ -243,4 +256,14 @@ export async function captureW1106EditorInteractions(
   const payload = { ...report, capture: size };
   await writeFile(destination, JSON.stringify(payload, null, 2), "utf8");
   await writeFile(destination + ".png", screenshot.toPNG());
+  // No playback remains active after the live screenshot evidence is saved.
+  await browser.webContents.executeJavaScript(
+    `(() => {
+      const pause = Array.from(
+        document.querySelectorAll(".transport-bar button"),
+      ).find((element) => element.getAttribute("aria-label") === "Jeda");
+      if (pause && !pause.disabled) pause.click();
+    })()`,
+    true,
+  );
 }
