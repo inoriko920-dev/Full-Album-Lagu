@@ -241,6 +241,14 @@ function createMainWindow(): BrowserWindow {
                 privateKiB: metric.memory.privateBytes,
               };
         };
+        // CI-only handoff to the *external test runner*. No process spawning,
+        // shell or new renderer privilege is introduced in Electron main.
+        await mkdir(dirname(resolve(w06EvidencePath)), { recursive: true });
+        await writeFile(
+          `${w06EvidencePath}.renderer-pid`,
+          String(rendererPid),
+          "utf8",
+        );
         const beforeMemory = sampleRendererMemory();
         const memorySamples: Array<{
           elapsedMs: number;
@@ -276,6 +284,11 @@ function createMainWindow(): BrowserWindow {
         if (report.success !== true) {
           throw new Error("Packaged codec probe returned an invalid result");
         }
+        await writeFile(
+          `${w06EvidencePath}.idle-start`,
+          String(Date.now()),
+          "utf8",
+        );
         // Playback has ended. Observe a short, quiet renderer interval
         // separately from active decoder/FFT activity, without forcing GC.
         // A short settle period alone is NOT evidence of leak-free operation.
