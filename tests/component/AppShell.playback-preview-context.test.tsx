@@ -343,6 +343,10 @@ describe("T11-W06-05 live preview track context", () => {
   });
 
   it("rejects timeline seeks when an enabled track has no resolved duration", async () => {
+    // Ready audio must always have a duration; model a valid unresolved
+    // project with an explicitly invalid/duration-unavailable asset instead.
+    startup.mediaAssets![1]!.availability = "invalid";
+    startup.mediaAssets![1]!.errorCode = "MEDIA_DURATION_UNAVAILABLE";
     delete startup.mediaAssets![1]!.metadata!.durationMs;
     const { rerender } = render(<AppShell />);
     await waitFor(() =>
