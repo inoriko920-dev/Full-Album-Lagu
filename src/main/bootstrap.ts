@@ -1,8 +1,10 @@
 import { app, BrowserWindow, powerMonitor, protocol } from "electron";
 import { PLAYBACK_POWER_CHANNEL } from "../core/contracts/playback-power";
+import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
+import { promisify } from "node:util";
 import { createCompositionRoot } from "./composition-root";
 import { registerIpcHandlers } from "./ipc/register-ipc";
 import { NodePreviewAudioLeaseStore } from "./infrastructure/media/node-preview-audio-lease-store";
@@ -31,6 +33,34 @@ protocol.registerSchemesAsPrivileged([
 const PACKAGED_SMOKE_FLAG = "--smoke-test";
 const UI_TEST_SCREEN = "SCR-002A";
 const CANONICAL_VIEWPORT = { width: 1600, height: 1000 } as const;
+const execFileAsync = promisify(execFile);
+
+/** CI-only native Windows OS handle count; never exposed through the renderer. */
+async function readWindowsRendererHandles(pid: number): Promise<number> {
+  if (process.platform !== "win32" || !Number.isSafeInteger(pid) || pid <= 0) {
+    throw new Error("T06 Windows renderer PID is invalid");
+  }
+  const { stdout } = await execFileAsync(
+    "powershell.exe",
+    [
+      "-NoProfile",
+      "-NonInteractive",
+      "-Command",
+      `(Get-Process -Id ${pid} -ErrorAction Stop).HandleCount`,
+    ],
+    { windowsHide: true, timeout: 10_000 },
+  );
+  const value = stdout.trim();
+  if (!/^\\d+$/.test(value)) {
+    throw new Error("T06 Windows renderer handle telemetry unavailable");
+  }
+  const handles = Number(value);
+  if (!Number.isSafeInteger(handles) || handles <= 0) {
+    throw new Error("T06 Windows renderer handle count invalid");
+  }
+  return handles;
+}
+
 
 function readArgValue(name: string): string | undefined {
   const prefix = `--${name}=`;
@@ -243,6 +273,7 @@ function createMainWindow(): BrowserWindow {
               };
         };
         const beforeMemory = sampleRendererMemory();
+        const beforeHandles = await readWindowsRendererHandles(rendererPid);
         const memorySamples: Array<{
           elapsedMs: number;
           pid: number;
@@ -277,12 +308,30 @@ function createMainWindow(): BrowserWindow {
         if (report.success !== true) {
           throw new Error("Packaged codec probe returned an invalid result");
         }
+        // Playback has ended. Observe a short, quiet renderer interval
+        // separately from active decoder/FFT activity, without forcing GC.
+        // A short settle period alone is NOT evidence of leak-free operation.
+        const idleSamples = [];
+        for (let idleIndex = 0; idleIndex < 3; idleIndex += 1) {
+          await new Promise<void>((resolve) => setTimeout(resolve, 750));
+          const idle = sampleRendererMemory();
+          if (!idle) throw new Error("T06 renderer exited during idle probe");
+          idleSamples.push({
+            elapsedMs: Date.now() - samplesStartedAt,
+            pid: idle.pid,
+            workingSetKiB: idle.workingSetKiB,
+            privateKiB: idle.privateKiB,
+          });
+        }
         if (memoryTimer !== null) clearInterval(memoryTimer);
         memoryTimer = null;
         captureMemorySample();
         const afterMemory = sampleRendererMemory();
+        const afterHandles = await readWindowsRendererHandles(rendererPid);
         if (
           memorySamples.length < 12 ||
+          idleSamples.length !== 3 ||
+          afterHandles <= 0 ||
           !beforeMemory ||
           !afterMemory ||
           !Number.isFinite(afterMemory.workingSetKiB) ||
@@ -305,6 +354,13 @@ function createMainWindow(): BrowserWindow {
             // They are observations, NOT a claim of GC or leak-free memory.
             samples: memorySamples,
             samplingIntervalMs: 50,
+            idleAfterStop: idleSamples,
+            handles: {
+              source: "Windows Get-Process HandleCount",
+              baseline: beforeHandles,
+              afterIdle: afterHandles,
+              pid: rendererPid,
+            },
             peakScope: "renderer process lifetime, not one WAV cycle",
           },
         });
