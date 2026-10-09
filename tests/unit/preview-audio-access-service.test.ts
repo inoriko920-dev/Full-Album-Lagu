@@ -381,4 +381,5 @@ describe("W11-06 main-owned preview grant authorization", () => {
     ).toBeNull();
     expect(releases).toHaveLength(25);
     expect(new Set(releases).size).toBe(25);
-  })});
+   });
+});
