@@ -180,10 +180,12 @@ export async function captureW1106EditorInteractions(
       );
       click(historyControl("Undo"), "cannot return to unedited boundary state");
       await wait(
-        () => shell.getAttribute("data-project-revision") === boundaryBaseRevision &&
+        () => Number.isSafeInteger(Number(shell.getAttribute("data-project-revision"))) &&
+          Number(shell.getAttribute("data-project-revision")) > Number(boundaryBaseRevision) &&
           shell.getAttribute("data-project-dirty") === boundaryBaseDirty &&
-          boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === "",
-        "boundary QA altered project revision or dirty state after final Undo",
+          boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === "" &&
+          !document.querySelector(".boundary-visual-preview"),
+        "boundary Undo must restore the semantic project and dirty flag while revision remains monotonic",
       );
       assert(document.querySelectorAll(".timeline-track").length === expectedTracks,
         "boundary QA changed album track count");
