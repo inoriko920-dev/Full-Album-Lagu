@@ -386,6 +386,8 @@ describe("T11-W06-05 live preview track context", () => {
     previewClock.available = true;
     previewClock.phase = "playing";
     previewClock.activeTrackId = "track-b";
+    previewClock.albumTimeMs = 3000;
+    previewClock.localTimeMs = 1000;
     previewClock.projectId = "old-project-with-reused-track-ids";
     rerender(<AppShell />);
 
