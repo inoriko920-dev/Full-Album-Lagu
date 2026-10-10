@@ -1,5 +1,14 @@
 # PROJECT STATE
 
+## 2026-10-10 — W11-07 audio continuity during visual edits (Draft PR #82)
+
+- Baseline `main@6ceba57a`, Windows #919 SUCCESS. W11-07 T01–T07 and QA through #81 already merged.
+- **PR #82 IMPLEMENTED / FINAL EXACT-HEAD WINDOWS CI PENDING:** `use-album-preview-playback.ts` no longer restarts the real media driver whenever CommandEngine commits keyframe, animation, boundary preset, artwork or display-title edits. New audio-only lifecycle key still tears down trusted media on project switch, track reorder/enable state, audio source/availability/duration change or batch authorization change.
+- New React-hook regression test counts real lifecycle subscriptions to prove visual changes do not restart audio and that revoked audio authorization does stop previous driver.
+- Diagnostic [Windows CI #921 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38047236138) ran a temporary formatter; exact Prettier diff committed and temporary CI stage removed, workflow restored to `main`. This run is not final-source verification; no merge until clean normal exact-head CI.
+- Evidence `docs/step11/evidence/W11_07_AUDIO_VISUAL_EDIT_LIFECYCLE_QA_20261010.md`. W11-07 aggregate remains 8 PASS_AUTOMATED / 4 PARTIAL_AUTOMATED; W11-06 physical listening, real Windows Suspend/Resume, picker operations and multi-hour resource plateau NOT_TESTED; final release/MP4 BLOCKED.
+
+
 ## 2026-10-10 — W11-07 AC09 live Preview spectrum/progress continuity QA (PR #77)
 
 - **Latest verified baseline** `main@1376450f` postmerge Windows [CI #891 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38040264022); T11-W07-01..07 and QA #74..76 merged.
