@@ -432,7 +432,7 @@ export function VisualAnimationControls({
                 setKeyValue(
                   String(
                     property === "opacity"
-                      ? Math.round(point.value * 100)
+                      ? point.value * 100
                       : point.value,
                   ),
                 );
