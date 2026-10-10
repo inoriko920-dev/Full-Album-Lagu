@@ -39,6 +39,37 @@ export function useAlbumPreviewPlayback(
     () => projectAlbumTimeline(project).totalDurationMs ?? 0,
     [project],
   );
+  /**
+   * Keep the live media driver mounted for purely visual ProjectDocument
+   * edits (keyframes, boundary presets, colors, title/artwork binding).
+   * CommandEngine creates a new project object on every edit, but none of
+   * those properties alters the decoder, audio grant or album timing.
+   *
+   * Any changed audio track identity/order/enablement or media source,
+   * availability, duration, metadata, or trusted batch still resets the
+   * driver and revokes its previous media generation in the normal cleanup.
+   */
+  const audioRuntimeIdentity = JSON.stringify({
+    projectId: project.projectId,
+    schemaVersion: project.schemaVersion,
+    tracks: project.tracks.map((track) => ({
+      id: track.id,
+      enabled: track.enabled !== false,
+      audioAssetId: track.audioAssetId ?? null,
+      sourcePath: track.sourcePath,
+    })),
+    audioAssets: (project.mediaAssets ?? [])
+      .filter((asset) => asset.kind === "audio")
+      .map((asset) => ({
+        id: asset.id,
+        sourcePath: asset.sourcePath,
+        fileName: asset.fileName,
+        sizeBytes: asset.sizeBytes,
+        availability: asset.availability,
+        errorCode: asset.errorCode ?? null,
+        durationMs: asset.metadata?.durationMs ?? null,
+      })),
+  });
   const available =
     trustedBatch?.projectId === project.projectId &&
     project.tracks.some((track) => track.enabled !== false) &&
@@ -78,7 +109,10 @@ export function useAlbumPreviewPlayback(
       runtime.close();
       if (driverRef.current === driver) driverRef.current = null;
     };
-  }, [project, trustedBatch]);
+    // Deliberately keyed by canonical AUDIO identity rather than the entire
+    // project: changing visual source must never tear down audible playback.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [audioRuntimeIdentity, trustedBatch]);
 
   useEffect(() => {
     if (clock.phase !== "playing") return;
