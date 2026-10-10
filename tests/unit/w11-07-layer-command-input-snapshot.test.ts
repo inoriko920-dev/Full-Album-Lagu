@@ -18,26 +18,45 @@ import type {
 } from "../../src/core/domain/visual-scene-schema";
 
 const transform: VisualLayerTransform = {
-  x: 0.5, y: 0.5, width: 0.5, height: 0.2,
-  rotationDeg: 0, opacity: 1, anchor: "center",
+  x: 0.5,
+  y: 0.5,
+  width: 0.5,
+  height: 0.2,
+  rotationDeg: 0,
+  opacity: 1,
+  anchor: "center",
 };
 const style: VisualTextStyle = {
-  fontFamily: "Inter", fontSizeRatio: 0.05, fontWeight: "semibold",
-  italic: false, align: "center", color: "#FFFFFFFF",
-  letterSpacingRatio: 0, lineHeight: 1.2,
+  fontFamily: "Inter",
+  fontSizeRatio: 0.05,
+  fontWeight: "semibold",
+  italic: false,
+  align: "center",
+  color: "#FFFFFFFF",
+  letterSpacingRatio: 0,
+  lineHeight: 1.2,
 };
 
 function layer(id: string): VisualLayer {
   return {
-    id, kind: "text", name: id, visible: true, locked: false,
-    transform: structuredClone(transform), role: "static",
-    text: `Original ${id}`, style: structuredClone(style),
+    id,
+    kind: "text",
+    name: id,
+    visible: true,
+    locked: false,
+    transform: structuredClone(transform),
+    role: "static",
+    text: `Original ${id}`,
+    style: structuredClone(style),
   };
 }
 function fixture(): ProjectDocument {
   return {
-    schemaVersion: 1, projectId: "layer-snapshot-qa",
-    name: "Existing approved editor", revision: 0, tracks: [],
+    schemaVersion: 1,
+    projectId: "layer-snapshot-qa",
+    name: "Existing approved editor",
+    revision: 0,
+    tracks: [],
     visualScene: {
       sceneVersion: 1,
       layers: [layer("first"), layer("second"), layer("third")],
@@ -45,10 +64,14 @@ function fixture(): ProjectDocument {
   };
 }
 function ids(engine: ProjectCommandEngine): string[] {
-  return engine.snapshot().project.visualScene?.layers.map((item) => item.id) ?? [];
+  return (
+    engine.snapshot().project.visualScene?.layers.map((item) => item.id) ?? []
+  );
 }
 function chosen(engine: ProjectCommandEngine, id: string): VisualLayer {
-  const result = engine.snapshot().project.visualScene?.layers.find((item) => item.id === id);
+  const result = engine
+    .snapshot()
+    .project.visualScene?.layers.find((item) => item.id === id);
   if (result === undefined) throw new Error(`Missing layer ${id}`);
   return result;
 }
@@ -127,19 +150,32 @@ describe("W11-07 regression: deferred legacy layer commands cannot retarget", ()
     input.patch.visible = true;
     input.patch.locked = false;
     expect(engine.execute(command).status).toBe("applied");
-    expect(chosen(engine, "first")).toMatchObject({ visible: false, locked: true });
-    expect(chosen(engine, "second")).toMatchObject({ visible: true, locked: false });
+    expect(chosen(engine, "first")).toMatchObject({
+      visible: false,
+      locked: true,
+    });
+    expect(chosen(engine, "second")).toMatchObject({
+      visible: true,
+      locked: false,
+    });
   });
 
   it("keeps text style and target immutable for delayed writes", () => {
     const engine = new ProjectCommandEngine(fixture());
-    const input = { layerId: "first", style: { ...style, fontFamily: "Arial" } };
+    const input = {
+      layerId: "first",
+      style: { ...style, fontFamily: "Arial" },
+    };
     const command = createLayerSetTextStyleCommand(input);
     input.layerId = "second";
     input.style.fontFamily = "Injected";
     expect(engine.execute(command).status).toBe("applied");
-    expect(chosen(engine, "first")).toMatchObject({ style: { fontFamily: "Arial" } });
-    expect(chosen(engine, "second")).toMatchObject({ style: { fontFamily: "Inter" } });
+    expect(chosen(engine, "first")).toMatchObject({
+      style: { fontFamily: "Arial" },
+    });
+    expect(chosen(engine, "second")).toMatchObject({
+      style: { fontFamily: "Inter" },
+    });
   });
 
   it("preserves original static text and target, independent of later input edits", () => {
@@ -158,12 +194,18 @@ describe("W11-07 regression: deferred legacy layer commands cannot retarget", ()
     const input = { layerId: "first" };
     const removeFirst = createLayerRemoveCommand(input);
     input.layerId = "second";
-    expect(engine.execute(createLayerSetCommonCommand({
-      layerId: "first", patch: { locked: true },
-    })).status).toBe("applied");
+    expect(
+      engine.execute(
+        createLayerSetCommonCommand({
+          layerId: "first",
+          patch: { locked: true },
+        }),
+      ).status,
+    ).toBe("applied");
     const before = engine.snapshot();
     expect(engine.execute(removeFirst)).toEqual({
-      status: "rejected", code: "COMMAND_FAILED",
+      status: "rejected",
+      code: "COMMAND_FAILED",
     });
     expect(engine.snapshot()).toEqual(before);
     expect(ids(engine)).toEqual(["first", "second", "third"]);
