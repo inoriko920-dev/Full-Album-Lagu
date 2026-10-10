@@ -1871,14 +1871,20 @@ export function AppShell() {
             selectLayer(null);
           }}
           visualModel={visualModel}
-          onSelectLayer={(id) => selectLayer(id)}
+          onSelectLayer={(id) => {
+            setSelectedBoundary(null);
+            selectLayer(id);
+          }}
           onPreviewTransform={previewLayerTransform}
           onCommitTransform={commitLayerTransform}
           onCancelTransform={cancelLayerTransform}
         />
         <PreviewPanel
           visualModel={playbackVisualModel}
-          onSelectLayer={(id) => selectLayer(id, true)}
+          onSelectLayer={(id) => {
+            setSelectedBoundary(null);
+            selectLayer(id, true);
+          }}
           playback={playback}
           project={projectSession.project}
           selectedBoundary={selectedBoundary}
