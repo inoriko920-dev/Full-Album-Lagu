@@ -1,5 +1,13 @@
 # PROJECT STATE
 
+## 2026-10-10 — W11-07 AC09 live Preview spectrum/progress continuity QA (PR #77)
+
+- **Latest verified baseline** `main@1376450f` postmerge Windows [CI #891 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38040264022); T11-W07-01..07 and QA #74..76 merged.
+- **PR #77 IMPLEMENTED / EXACT-HEAD NORMAL CI PENDING**: only extends `tests/component/AppShell.playback-preview-context.test.tsx` to prove real AppShell Preview with a mocked authoritative audio snapshot at 1999/2000/2400/2800ms, live 32-bar FFT continuity, nonreset album progress, title/artist handoff, exact one foundation spectrum/progress/background, backward seek replay, stale project ID rejection and unchanged project revision/dirty state. No application/runtime/UI code changed.
+- First normal CI #892 formatting-only failure; diagnostic [CI #893 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38041305599) with temporary Prettier runner: full Windows verify, Electron save/reopen, packaged decoder/playback and ZIP tests PASS. Applied exact formatter diff; **temporary CI stage removed and workflow confirmed byte-identical to main**. Final normal latest SHA CI and postmerge `main` CI remain required.
+- Evidence: `docs/step11/evidence/W11_07_AC09_LIVE_PREVIEW_SPECTRUM_CONTINUITY_QA_20261010.md`. AC09 remains **PARTIAL_AUTOMATED** since audio driver is mocked for this AppShell binding test and real listener AV sync is untested. Aggregate remains 8 PASS_AUTOMATED / 4 PARTIAL_AUTOMATED. W11-06 physical speaker/OS suspend/native picker/multi-hour QA **NOT_TESTED**. No final release or MP4.
+
+
 ## 2026-10-10 — W11-07 AC08 combined real-file QA (Draft PR #76)
 
 - **Main baseline** `e918aeb4`: [Windows CI #883 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38038991012); W11-07 T01–T07 and QA PR #74–75 all merged.
