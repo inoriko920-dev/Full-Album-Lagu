@@ -762,8 +762,7 @@ function PreviewPanel({
   const followsLiveAudio =
     playback.available &&
     playback.clock.projectId === project.projectId &&
-    (playback.clock.phase === "playing" ||
-      playback.clock.phase === "paused");
+    (playback.clock.phase === "playing" || playback.clock.phase === "paused");
   const animationTrack = followsLiveAudio
     ? projectAlbumTimeline(project).items.find(
         (item) =>
