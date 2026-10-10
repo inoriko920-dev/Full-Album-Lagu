@@ -203,12 +203,14 @@ function isAudioReady(
 ): boolean {
   const track = project.tracks[item.sourceIndex];
   if (track?.audioAssetId === undefined) return false;
-  return project.mediaAssets?.some(
-    (asset) =>
-      asset.id === track.audioAssetId &&
-      asset.kind === "audio" &&
-      asset.availability === "ready",
-  ) ?? false;
+  return (
+    project.mediaAssets?.some(
+      (asset) =>
+        asset.id === track.audioAssetId &&
+        asset.kind === "audio" &&
+        asset.availability === "ready",
+    ) ?? false
+  );
 }
 
 /**
@@ -251,9 +253,7 @@ export function resolveAlbumBoundaryVisualFrame(
   }
 
   const projection = projectAlbumTimeline(project);
-  const enabled = projection.items.filter(
-    (item) => item.status === "resolved",
-  );
+  const enabled = projection.items.filter((item) => item.status === "resolved");
   const incomingIndex = enabled.findIndex(
     (item) => item.trackId === position.trackId,
   );
