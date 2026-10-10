@@ -334,6 +334,7 @@ export function createLayerSetAnimationCommand(
   input: SetLayerAnimationCommandInput,
 ): ProjectCommand {
   // Snapshot caller data at command creation so delayed execution is stable.
+  const layerId = input.layerId;
   const animation =
     input.animation === undefined
       ? undefined
@@ -341,11 +342,11 @@ export function createLayerSetAnimationCommand(
 
   return {
     kind: "layer.set-animation",
-    label: `Ubah animasi layer ${input.layerId}`,
+    label: `Ubah animasi layer ${layerId}`,
     origin: "manual",
     ...expectationFields(input),
     apply: (project) => {
-      const { layer, index } = findLayer(project, input.layerId);
+      const { layer, index } = findLayer(project, layerId);
       requireUnlocked(layer);
 
       const candidate: VisualLayer = { ...layer };

@@ -291,6 +291,68 @@ describe("W11-07 T03 official animation command / history", () => {
     ).toBeCloseTo(0.85);
   });
 
+  it("snapshots layer ID for a deferred animation SET, ignoring caller retargeting", () => {
+    const session = new ProjectSessionHistory(fixture(2, true));
+    const input = {
+      layerId: "layer-0",
+      animation: structuredClone(nextAnimation),
+    };
+    const command = createLayerSetAnimationCommand(input);
+    expect(command.label).toBe("Ubah animasi layer layer-0");
+
+    // The second layer is locked. Mutating the caller's object must not
+    // redirect the deferred command or cause a spurious locked-layer failure.
+    input.layerId = "layer-1";
+    input.animation.keyframes![0]!.points[1]!.value = 0.25;
+    expect(session.execute(command).status).toBe("applied");
+    expect(animationAt(session.snapshot().project, 0)).toEqual(nextAnimation);
+    expect(animationAt(session.snapshot().project, 1)).toEqual(
+      originalAnimation,
+    );
+    expect(session.snapshot().undoDepth).toBe(1);
+
+    expect(session.undo().status).toBe("applied");
+    expect(animationAt(session.snapshot().project, 0)).toEqual(
+      originalAnimation,
+    );
+    expect(session.redo().status).toBe("applied");
+    expect(animationAt(session.snapshot().project, 0)).toEqual(nextAnimation);
+    expect(animationAt(session.snapshot().project, 1)).toEqual(
+      originalAnimation,
+    );
+  });
+
+  it("snapshots layer ID when removing an animation before deferred execution", () => {
+    const session = new ProjectSessionHistory(fixture(2, true));
+    const input = { layerId: "layer-0" };
+    const command = createLayerSetAnimationCommand(input);
+    input.layerId = "layer-1";
+    expect(session.execute(command).status).toBe("applied");
+    expect(animationAt(session.snapshot().project, 0)).toBeUndefined();
+    expect(animationAt(session.snapshot().project, 1)).toEqual(
+      originalAnimation,
+    );
+    expect(session.undo().status).toBe("applied");
+    expect(animationAt(session.snapshot().project, 0)).toEqual(
+      originalAnimation,
+    );
+    expect(session.redo().status).toBe("applied");
+    expect(animationAt(session.snapshot().project, 0)).toBeUndefined();
+  });
+
+  it("cannot bypass a locked layer by mutating the command input after creation", () => {
+    const session = new ProjectSessionHistory(fixture(2));
+    const initial = session.snapshot();
+    const input = { layerId: "layer-1", animation: originalAnimation };
+    const command = createLayerSetAnimationCommand(input);
+    input.layerId = "layer-0";
+    expect(session.execute(command)).toEqual({
+      status: "rejected",
+      code: "COMMAND_FAILED",
+    });
+    expect(session.snapshot()).toEqual(initial);
+  });
+
   it("rolls back a batch when the second mutation hits a locked layer", () => {
     const engine = new ProjectCommandEngine(fixture(2));
     const before = engine.snapshot();
