@@ -185,7 +185,10 @@ export interface ProjectSessionView {
   removeVisualLayer(layerId: string): boolean;
   reorderVisualLayer(layerId: string, toIndex: number): boolean;
   setVisualLayerCommon(layerId: string, patch: LayerCommonPatch): boolean;
-  setVisualLayerAnimation(layerId: string, animation: VisualLayerAnimation | undefined): boolean;
+  setVisualLayerAnimation(
+    layerId: string,
+    animation: VisualLayerAnimation | undefined,
+  ): boolean;
   setVisualLayerTransform(
     layerId: string,
     transform: VisualLayerTransform,
