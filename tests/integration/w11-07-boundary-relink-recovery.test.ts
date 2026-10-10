@@ -1,6 +1,7 @@
 import { mkdir, mkdtemp, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
+import { realpath } from "node:fs/promises";
 import { afterEach, describe, expect, it } from "vitest";
 import { MediaRelinkService } from "../../src/core/application/services/media-relink-service";
 import { MissingMediaService } from "../../src/core/application/services/missing-media-service";
@@ -151,7 +152,7 @@ describe("W11-07 AC08 combined real-file boundary relink/recovery regression", (
     expect(fixed.boundaryTransitions).toEqual(initial.boundaryTransitions);
     expect(fixed.mediaAssets?.find((asset) => asset.id === "audio-b")).toMatchObject({
       availability: "ready",
-      sourcePath: fixture.relocatedB,
+      sourcePath: await realpath(fixture.relocatedB),
     });
     expect(await readFile(fixture.relocatedB)).toEqual(fixture.bytes);
 
