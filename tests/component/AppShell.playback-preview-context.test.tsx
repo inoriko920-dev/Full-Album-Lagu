@@ -513,6 +513,93 @@ describe("T11-W06-05 live preview track context", () => {
     expect(seekFromTimeline).not.toHaveBeenCalled();
   });
 
+  it("ignores a retained ready-phase timestamp and preserves explicit selected-boundary sampling", async () => {
+    startup = {
+      ...album(),
+      boundaryTransitions: [
+        {
+          fromTrackId: "track-a",
+          toTrackId: "track-b",
+          preset: "crossfade",
+          durationMs: 800,
+          easing: "linear",
+          artworkHandoff: "during-transition",
+          titleHandoff: "during-transition",
+        },
+      ],
+      visualScene: {
+        sceneVersion: 1,
+        layers: [
+          createStarterLayer("title", "title"),
+          createStarterLayer("artist", "artist"),
+        ],
+      },
+    };
+    const unchanged = structuredClone(startup);
+    const { rerender } = render(<AppShell />);
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", {
+          name: "Pilih boundary track-a ke track-b",
+        }),
+      ).toBeInTheDocument(),
+    );
+
+    previewClock.available = true;
+    previewClock.phase = "ready";
+    previewClock.activeTrackId = "track-b";
+    previewClock.albumTimeMs = 2000;
+    previewClock.localTimeMs = 0;
+    rerender(<AppShell />);
+
+    // A previously retained audio position cannot autonomously activate
+    // boundary pixels while playback is idle/ready.
+    expect(
+      screen.queryByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toBeNull();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Pilih boundary track-a ke track-b",
+      }),
+    );
+    expect(
+      screen.getByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toHaveAttribute("data-boundary-progress", "0.500");
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+
+    previewClock.phase = "paused";
+    rerender(<AppShell />);
+    // Paused (unlike ready) is an authoritative live audio position.
+    expect(
+      screen.getByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toHaveAttribute("data-boundary-progress", "0.000");
+
+    previewClock.phase = "ready";
+    rerender(<AppShell />);
+    expect(
+      screen.getByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toHaveAttribute("data-boundary-progress", "0.500");
+    expect(document.querySelector(".app-shell")).toHaveAttribute(
+      "data-project-revision",
+      "0",
+    );
+    expect(document.querySelector(".app-shell")).toHaveAttribute(
+      "data-project-dirty",
+      "false",
+    );
+    expect(startup).toEqual(unchanged);
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+  });
+
   it("keeps real audio spectrum/progress and song metadata continuous across a configured boundary without mutating the album", async () => {
     startup = {
       ...album(),
