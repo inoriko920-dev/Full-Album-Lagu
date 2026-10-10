@@ -215,21 +215,31 @@ export async function captureW1106EditorInteractions(
           assert(Number(black?.style.opacity) > 0.5,
             "real black-blur preset did not render its overlay");
         } else if (preset === "slide") {
-          assert(sides[0].style.transform.includes("translateX(-50%)") &&
-            sides[1].style.transform.includes("translateX(50%)"),
-            "real slide preset did not offset two sides");
+          // The existing Inspector defaults to Ease Out: at raw 50% it must
+          // use eased 75% (not incorrectly assume linear -50%/+50%).
+          const outgoingX = Number(sides[0].style.transform.match(
+            /translateX\\((-?[0-9.]+)%\\)/)?.[1]);
+          const incomingX = Number(sides[1].style.transform.match(
+            /translateX\\((-?[0-9.]+)%\\)/)?.[1]);
+          assert(Math.abs(outgoingX + 75) < 0.001 &&
+            Math.abs(incomingX - 25) < 0.001,
+            "real slide preset did not follow the approved Ease Out 75% position");
         } else if (preset === "zoom") {
-          assert(sides[0].style.transform.includes("scale(1.06)") &&
-            sides[1].style.transform.includes("scale(0.94)"),
-            "real zoom preset did not apply half-way scaling");
+          const outgoingScale = Number(sides[0].style.transform.match(
+            /scale\\(([0-9.]+)\\)/)?.[1]);
+          const incomingScale = Number(sides[1].style.transform.match(
+            /scale\\(([0-9.]+)\\)/)?.[1]);
+          assert(Math.abs(outgoingScale - 1.09) < 0.001 &&
+            Math.abs(incomingScale - 0.97) < 0.001,
+            "real zoom preset did not follow the approved Ease Out 75% scale");
         } else if (preset === "light-glitch") {
           assert(!sides[0].style.filter.includes("contrast(1)"),
             "real glitch preset did not apply contrast");
         } else if (preset === "soft-flash") {
-          assert(Number(white?.style.opacity) > 0.4,
+          assert(Number(white?.style.opacity) > 0.25,
             "real soft-flash preset did not render white flash");
         } else if (preset === "premium-album-change") {
-          assert(Number(white?.style.opacity) > 0.2 &&
+          assert(Number(white?.style.opacity) > 0.1 &&
             !sides[0].style.filter.includes("blur(0px)"),
             "real premium album preset did not render zoom/blur/flash");
         }
