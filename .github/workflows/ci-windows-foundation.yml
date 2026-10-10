@@ -41,13 +41,6 @@ jobs:
       - name: Clean install
         run: npm ci
 
-      - name: TEMP AC09 Prettier diff diagnostic (remove after exact patch)
-        shell: pwsh
-        run: |
-          npx prettier --write tests/component/AppShell.playback-preview-context.test.tsx
-          git diff -- tests/component/AppShell.playback-preview-context.test.tsx
-          exit 1
-
       - name: Foundation and UI verification
         run: npm run verify
 
