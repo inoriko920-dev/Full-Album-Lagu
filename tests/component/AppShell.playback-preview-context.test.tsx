@@ -400,6 +400,115 @@ describe("T11-W06-05 live preview track context", () => {
     );
   });
 
+  it("does not replace an authorized playing or paused song with a selected boundary midpoint", async () => {
+    startup = {
+      ...album(),
+      boundaryTransitions: [{
+        fromTrackId: "track-a",
+        toTrackId: "track-b",
+        preset: "crossfade",
+        durationMs: 800,
+        easing: "linear",
+        artworkHandoff: "during-transition",
+        titleHandoff: "during-transition",
+      }],
+      visualScene: {
+        sceneVersion: 1,
+        layers: [
+          createStarterLayer("background", "background"),
+          createStarterLayer("artwork", "artwork"),
+          createStarterLayer("title", "title"),
+          createStarterLayer("artist", "artist"),
+          createStarterLayer("spectrum", "spectrum"),
+          createStarterLayer("progress", "progress"),
+        ],
+      },
+    };
+    const unchanged = structuredClone(startup);
+    const { rerender } = render(<AppShell />);
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Pilih boundary track-a ke track-b" }),
+      ).toBeInTheDocument(),
+    );
+
+    previewClock.available = true;
+    previewClock.phase = "playing";
+    previewClock.activeTrackId = "track-a";
+    previewClock.albumTimeMs = 1000;
+    previewClock.localTimeMs = 1000;
+    rerender(<AppShell />);
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Pilih boundary track-a ke track-b",
+      }),
+    );
+    expect(screen.getByLabelText("Inspector Boundary")).toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toBeNull();
+    expect(screen.getByLabelText("Preview visual statis")).toHaveTextContent(
+      "Title A",
+    );
+    expect(
+      screen.getByLabelText("Preview visual statis"),
+    ).not.toHaveTextContent("Title B");
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+
+    previewClock.phase = "paused";
+    rerender(<AppShell />);
+    expect(
+      screen.queryByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toBeNull();
+
+    // Idle/ready mode may show the chosen boundary's static sample without
+    // seeking the audio driver or changing the authoritative album position.
+    previewClock.phase = "ready";
+    rerender(<AppShell />);
+    expect(
+      screen.getByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toHaveAttribute("data-boundary-progress", "0.500");
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+
+    // As soon as active audio resumes, the live boundary frame wins.
+    previewClock.phase = "playing";
+    previewClock.activeTrackId = "track-b";
+    previewClock.albumTimeMs = 2000;
+    previewClock.localTimeMs = 0;
+    rerender(<AppShell />);
+    expect(
+      screen.getByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toHaveAttribute("data-boundary-progress", "0.000");
+
+    // After the 800ms transition, the selected midpoint must not ghost.
+    previewClock.phase = "paused";
+    previewClock.albumTimeMs = 2900;
+    previewClock.localTimeMs = 900;
+    rerender(<AppShell />);
+    expect(
+      screen.queryByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toBeNull();
+    expect(screen.getByLabelText("Preview visual statis")).toHaveTextContent(
+      "Title B",
+    );
+
+    const shell = document.querySelector(".app-shell");
+    expect(shell).toHaveAttribute("data-project-revision", "0");
+    expect(shell).toHaveAttribute("data-project-dirty", "false");
+    expect(startup).toEqual(unchanged);
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+  });
+
   it("keeps real audio spectrum/progress and song metadata continuous across a configured boundary without mutating the album", async () => {
     startup = {
       ...album(),
