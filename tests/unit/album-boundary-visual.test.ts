@@ -58,7 +58,10 @@ function project(
         fileName: `Song-${i}.wav`,
         sizeBytes: 512,
         ...(durationMs === undefined
-          ? { availability: "invalid" as const, errorCode: "MEDIA_DURATION_UNAVAILABLE" as const }
+          ? {
+              availability: "invalid" as const,
+              errorCode: "MEDIA_DURATION_UNAVAILABLE" as const,
+            }
           : {
               availability: "ready" as const,
               metadata: {
@@ -176,8 +179,14 @@ describe("W11-07 T04 canonical boundary transition projection", () => {
       progress: 0,
       fromTrackId: "track-0",
       toTrackId: "track-1",
-      from: { title: { value: "Metadata Title 0" }, artwork: { assetId: "image-0" } },
-      to: { title: { value: "Metadata Title 1" }, artwork: { assetId: "image-1" } },
+      from: {
+        title: { value: "Metadata Title 0" },
+        artwork: { assetId: "image-0" },
+      },
+      to: {
+        title: { value: "Metadata Title 1" },
+        artwork: { assetId: "image-1" },
+      },
       backgroundState: "unchanged",
       spectrumClock: "continuous",
     });
@@ -189,8 +198,12 @@ describe("W11-07 T04 canonical boundary transition projection", () => {
     expect(exact.toScene.layers[1]).toMatchObject({
       resolvedArtwork: { assetId: "image-1" },
     });
-    expect(exact.fromScene.layers[2]).toMatchObject({ runtimeState: "structural-placeholder" });
-    expect(exact.toScene.layers[2]).toMatchObject({ runtimeState: "structural-placeholder" });
+    expect(exact.fromScene.layers[2]).toMatchObject({
+      runtimeState: "structural-placeholder",
+    });
+    expect(exact.toScene.layers[2]).toMatchObject({
+      runtimeState: "structural-placeholder",
+    });
   });
 
   it("honors at-boundary title and continuous artwork handoff independently", () => {
@@ -203,7 +216,11 @@ describe("W11-07 T04 canonical boundary transition projection", () => {
       progress: 0.5,
       titleHandoff: { mode: "at-boundary", fromWeight: 0, toWeight: 1 },
       artistHandoff: { mode: "at-boundary", fromWeight: 0, toWeight: 1 },
-      artworkHandoff: { mode: "during-transition", fromWeight: 0.5, toWeight: 0.5 },
+      artworkHandoff: {
+        mode: "during-transition",
+        fromWeight: 0.5,
+        toWeight: 0.5,
+      },
       from: { artist: { value: "Metadata Artist 0" } },
       to: { artist: { value: "Metadata Artist 1" } },
     });
@@ -247,11 +264,13 @@ describe("W11-07 T04 canonical boundary transition projection", () => {
 
   it("supports during-transition title/artist and at-boundary artwork without ghosting", () => {
     const album = project([1000, 2000], {
-      transitions: [{
-        ...setting("track-0", "track-1"),
-        titleHandoff: "during-transition",
-        artworkHandoff: "at-boundary",
-      }],
+      transitions: [
+        {
+          ...setting("track-0", "track-1"),
+          titleHandoff: "during-transition",
+          artworkHandoff: "at-boundary",
+        },
+      ],
     });
     expect(resolveAlbumBoundaryVisualFrame(album, 1200)).toMatchObject({
       status: "active",
@@ -314,10 +333,17 @@ describe("W11-07 T04 canonical boundary transition projection", () => {
     for (const missing of [0, 1]) {
       const assets = source.mediaAssets!.map((asset) =>
         asset.id === `audio-${missing}`
-          ? { ...asset, availability: "missing" as const, errorCode: "MEDIA_NOT_FOUND" as const }
+          ? {
+              ...asset,
+              availability: "missing" as const,
+              errorCode: "MEDIA_NOT_FOUND" as const,
+            }
           : asset,
       );
-      const album = projectDocumentSchema.parse({ ...source, mediaAssets: assets });
+      const album = projectDocumentSchema.parse({
+        ...source,
+        mediaAssets: assets,
+      });
       expect(resolveAlbumBoundaryVisualFrame(album, 1000)).toEqual({
         status: "blocked",
         reason: "audio-unavailable",
@@ -335,41 +361,45 @@ describe("W11-07 T04 canonical boundary transition projection", () => {
     });
   });
 
-  it.each([NaN, Infinity, -Infinity, -1])("blocks invalid album timestamp %s", (time) => {
-    const album = project([1000, 2000], {
-      transitions: [setting("track-0", "track-1")],
-    });
-    expect(resolveAlbumBoundaryVisualFrame(album, time)).toEqual({
-      status: "blocked",
-      reason: "invalid-time",
-    });
-  });
+  it.each([NaN, Infinity, -Infinity, -1])(
+    "blocks invalid album timestamp %s",
+    (time) => {
+      const album = project([1000, 2000], {
+        transitions: [setting("track-0", "track-1")],
+      });
+      expect(resolveAlbumBoundaryVisualFrame(album, time)).toEqual({
+        status: "blocked",
+        reason: "invalid-time",
+      });
+    },
+  );
 
-  it.each(presets)("produces distinct bounded finite effect channels for %s", (preset) => {
-    const initial = evaluateBoundaryVisualEffect(preset, 0);
-    const middle = evaluateBoundaryVisualEffect(preset, 0.5);
-    const final = evaluateBoundaryVisualEffect(preset, 1);
-    expect(initial.outgoing.opacity).toBe(1);
-    expect(initial.incoming.opacity).toBe(0);
-    expect(final.outgoing.opacity).toBe(0);
-    expect(final.incoming.opacity).toBe(1);
-    expect(middle).toEqual(evaluateBoundaryVisualEffect(preset, 0.5));
-    for (const frame of [initial, middle, final]) {
-      expect(
-        JSON.stringify(frame),
-      ).not.toContain("null");
-      for (const side of [frame.outgoing, frame.incoming]) {
-        expect(side.opacity).toBeGreaterThanOrEqual(0);
-        expect(side.opacity).toBeLessThanOrEqual(1);
-        expect(side.scale).toBeGreaterThan(0);
+  it.each(presets)(
+    "produces distinct bounded finite effect channels for %s",
+    (preset) => {
+      const initial = evaluateBoundaryVisualEffect(preset, 0);
+      const middle = evaluateBoundaryVisualEffect(preset, 0.5);
+      const final = evaluateBoundaryVisualEffect(preset, 1);
+      expect(initial.outgoing.opacity).toBe(1);
+      expect(initial.incoming.opacity).toBe(0);
+      expect(final.outgoing.opacity).toBe(0);
+      expect(final.incoming.opacity).toBe(1);
+      expect(middle).toEqual(evaluateBoundaryVisualEffect(preset, 0.5));
+      for (const frame of [initial, middle, final]) {
+        expect(JSON.stringify(frame)).not.toContain("null");
+        for (const side of [frame.outgoing, frame.incoming]) {
+          expect(side.opacity).toBeGreaterThanOrEqual(0);
+          expect(side.opacity).toBeLessThanOrEqual(1);
+          expect(side.scale).toBeGreaterThan(0);
+        }
+        expect(frame.blackOverlayOpacity).toBeGreaterThanOrEqual(0);
+        expect(frame.whiteOverlayOpacity).toBeLessThanOrEqual(1);
+        expect(frame.glitchAmount).toBeLessThanOrEqual(1);
       }
-      expect(frame.blackOverlayOpacity).toBeGreaterThanOrEqual(0);
-      expect(frame.whiteOverlayOpacity).toBeLessThanOrEqual(1);
-      expect(frame.glitchAmount).toBeLessThanOrEqual(1);
-    }
-    expect(evaluateBoundaryVisualEffect(preset, -50)).toEqual(initial);
-    expect(evaluateBoundaryVisualEffect(preset, 50)).toEqual(final);
-  });
+      expect(evaluateBoundaryVisualEffect(preset, -50)).toEqual(initial);
+      expect(evaluateBoundaryVisualEffect(preset, 50)).toEqual(final);
+    },
+  );
 
   it("each of eight presets has a valid complete canonical track-to-track event", () => {
     for (const preset of presets) {
