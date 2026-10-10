@@ -91,7 +91,15 @@ export function VisualAnimationControls({
   const allPoints = propertyTrack?.points ?? [];
 
   function save(next: VisualLayerAnimation): void {
-    session.setVisualLayerAnimation(layer.id, next);
+    // No undefined JSON properties and no empty animation object after clearing
+    // the last preset/keyframe. Preserve legacy absent-field semantics.
+    const normalized = Object.fromEntries(
+      Object.entries(next).filter(([, value]) => value !== undefined),
+    ) as VisualLayerAnimation;
+    session.setVisualLayerAnimation(
+      layer.id,
+      Object.keys(normalized).length === 0 ? undefined : normalized,
+    );
   }
 
   function updateEntrance(preset: EntrancePreset | "") {
