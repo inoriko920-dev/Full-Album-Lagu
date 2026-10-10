@@ -49,7 +49,8 @@ export function BoundaryVisualPreview({
             : layer.kind === "text" && layer.role === "title"
               ? frame.titleHandoff
               : frame.artistHandoff;
-        let factor = frame.effect[side === "from" ? "outgoing" : "incoming"].opacity;
+        let factor =
+          frame.effect[side === "from" ? "outgoing" : "incoming"].opacity;
         if (weights.mode === "at-boundary") {
           factor = side === "from" ? weights.fromWeight : weights.toWeight;
         }
