@@ -49,29 +49,31 @@ const anchorOffsets: Record<VisualLayerAnchor, readonly [number, number]> = {
  * calling the already-validated T02 evaluator; never persist derived fields.
  */
 function persistedLayerForAnimation(layer: StaticSceneLayer): VisualLayer {
-  const { selected: _selected, ...resolved } = layer;
-  switch (resolved.kind) {
-    case "background": {
-      const { resolvedKind: _kind, ...source } = resolved;
-      return source;
-    }
-    case "artwork": {
-      const {
-        resolvedKind: _kind,
-        resolvedArtwork: _artwork,
-        ...source
-      } = resolved;
-      return source;
-    }
-    case "text": {
-      const { resolvedKind: _kind, resolvedText: _text, ...source } = resolved;
-      return source;
-    }
+  const base = {
+    id: layer.id,
+    name: layer.name,
+    visible: layer.visible,
+    locked: layer.locked,
+    transform: layer.transform,
+    ...(layer.animation === undefined ? {} : { animation: layer.animation }),
+  };
+  switch (layer.kind) {
+    case "background":
+      return { ...base, kind: "background", fill: layer.fill };
+    case "artwork":
+      return { ...base, kind: "artwork", binding: layer.binding };
+    case "text":
+      return {
+        ...base,
+        kind: "text",
+        role: layer.role,
+        style: layer.style,
+        ...(layer.text === undefined ? {} : { text: layer.text }),
+      };
     case "spectrum":
-    case "progress": {
-      const { resolvedKind: _kind, runtimeState: _state, ...source } = resolved;
-      return source;
-    }
+      return { ...base, kind: "spectrum" };
+    case "progress":
+      return { ...base, kind: "progress" };
   }
 }
 
