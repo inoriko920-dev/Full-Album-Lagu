@@ -1621,11 +1621,7 @@ export function AppShell() {
     );
   }, [
     playback.available,
-    playback.clock.activeTrackId,
-    playback.clock.projectId,
-    playback.clock.phase,
-    playback.clock.albumTimeMs,
-    playback.clock.localTimeMs,
+    playback.clock,
     projectSession.project,
     projectSession.templateTrialProject,
     visualUiState,
