@@ -20,7 +20,10 @@ const transform = {
   anchor: "center" as const,
 };
 
-function project(animation?: VisualLayerAnimation, locked = false): ProjectDocument {
+function project(
+  animation?: VisualLayerAnimation,
+  locked = false,
+): ProjectDocument {
   return projectDocumentSchema.parse({
     schemaVersion: 1,
     projectId: "visual-animation-controls-test",
@@ -29,31 +32,40 @@ function project(animation?: VisualLayerAnimation, locked = false): ProjectDocum
     tracks: [],
     visualScene: {
       sceneVersion: 1,
-      layers: [{
-        id: "artwork",
-        name: "Artwork",
-        kind: "artwork",
-        visible: true,
-        locked,
-        binding: "active-track-artwork",
-        transform,
-        ...(animation === undefined ? {} : { animation }),
-      }],
+      layers: [
+        {
+          id: "artwork",
+          name: "Artwork",
+          kind: "artwork",
+          visible: true,
+          locked,
+          binding: "active-track-artwork",
+          transform,
+          ...(animation === undefined ? {} : { animation }),
+        },
+      ],
     },
   });
 }
 
-function setup(animation?: VisualLayerAnimation, locked = false, trial = false) {
-  const spy = vi.fn<(...args: [string, VisualLayerAnimation | undefined]) => boolean>(() => true);
+function setup(
+  animation?: VisualLayerAnimation,
+  locked = false,
+  trial = false,
+) {
+  const spy = vi.fn<
+    (...args: [string, VisualLayerAnimation | undefined]) => boolean
+  >(() => true);
   const session = {
     templateTrialProject: trial ? project() : null,
     setVisualLayerAnimation: spy,
   } as unknown as ProjectSessionView;
-  const layer = buildStaticScenePreview(
-    project(animation, locked),
-    { selectedLayerId: "artwork" },
-  ).layers[0]!;
-  const view = render(<VisualAnimationControls layer={layer} session={session}/>);
+  const layer = buildStaticScenePreview(project(animation, locked), {
+    selectedLayerId: "artwork",
+  }).layers[0]!;
+  const view = render(
+    <VisualAnimationControls layer={layer} session={session} />,
+  );
   return { ...view, spy };
 }
 
@@ -113,19 +125,23 @@ describe("W11-07 T05 Inspector UI-IMG-002G animation controls", () => {
     const { spy } = setup();
     fireEvent.click(screen.getByRole("button", { name: "Tambah Keyframe" }));
     expect(spy).toHaveBeenCalledWith("artwork", {
-      keyframes: [{
-        property: "opacity",
-        points: [{ timeMs: 2500, value: 0.85 }],
-      }],
+      keyframes: [
+        {
+          property: "opacity",
+          points: [{ timeMs: 2500, value: 0.85 }],
+        },
+      ],
     });
   });
 
   it("adds 0s and updates 2.5s keys in ordered nonduplicating tracks", () => {
     const existing: VisualLayerAnimation = {
-      keyframes: [{
-        property: "opacity",
-        points: [{ timeMs: 2500, value: 0.85 }],
-      }],
+      keyframes: [
+        {
+          property: "opacity",
+          points: [{ timeMs: 2500, value: 0.85 }],
+        },
+      ],
     };
     const { spy } = setup(existing);
     fireEvent.change(screen.getByLabelText("Waktu Keyframe (dtk)"), {
@@ -136,22 +152,28 @@ describe("W11-07 T05 Inspector UI-IMG-002G animation controls", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: "Tambah Keyframe" }));
     expect(spy).toHaveBeenCalledWith("artwork", {
-      keyframes: [{
-        property: "opacity",
-        points: [
-          { timeMs: 0, value: 1 },
-          { timeMs: 2500, value: 0.85 },
-        ],
-      }],
+      keyframes: [
+        {
+          property: "opacity",
+          points: [
+            { timeMs: 0, value: 1 },
+            { timeMs: 2500, value: 0.85 },
+          ],
+        },
+      ],
     });
   });
 
   it("deletes only matching keys and preserves the other properties", () => {
     const existing: VisualLayerAnimation = {
       keyframes: [
-        { property: "opacity", points: [
-          { timeMs: 0, value: 1 }, { timeMs: 2500, value: 0.85 },
-        ] },
+        {
+          property: "opacity",
+          points: [
+            { timeMs: 0, value: 1 },
+            { timeMs: 2500, value: 0.85 },
+          ],
+        },
         { property: "scale", points: [{ timeMs: 0, value: 1.1 }] },
       ],
     };
@@ -178,11 +200,15 @@ describe("W11-07 T05 Inspector UI-IMG-002G animation controls", () => {
   it("disables mutations for locked layers and an active template Try state", () => {
     const locked = setup(undefined, true);
     expect(screen.getByLabelText("Preset Animasi Masuk")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Tambah Keyframe" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Tambah Keyframe" }),
+    ).toBeDisabled();
     locked.unmount();
     const trial = setup(undefined, false, true);
     expect(screen.getByLabelText("Preset Animasi Masuk")).toBeDisabled();
-    expect(screen.getByRole("button", { name: "Tambah Keyframe" })).toBeDisabled();
+    expect(
+      screen.getByRole("button", { name: "Tambah Keyframe" }),
+    ).toBeDisabled();
     expect(trial.spy).not.toHaveBeenCalled();
   });
 
@@ -199,21 +225,38 @@ describe("W11-07 T05 Inspector UI-IMG-002G animation controls", () => {
 
   it("renders committed animation geometry from the real per-track local clock", () => {
     const animation: VisualLayerAnimation = {
-      keyframes: [{ property: "opacity", points: [
-        { timeMs: 0, value: 1 }, { timeMs: 2500, value: 0.85 },
-      ] }],
+      keyframes: [
+        {
+          property: "opacity",
+          points: [
+            { timeMs: 0, value: 1 },
+            { timeMs: 2500, value: 0.85 },
+          ],
+        },
+      ],
     };
-    const model = buildStaticScenePreview(
-      project(animation),
-      { selectedLayerId: "artwork" },
+    const model = buildStaticScenePreview(project(animation), {
+      selectedLayerId: "artwork",
+    });
+    const { rerender } = render(
+      <StaticScenePreview
+        model={model}
+        animationTimeMs={1250}
+        animationDurationMs={5000}
+      />,
     );
-    const { rerender } = render(<StaticScenePreview model={model} animationTimeMs={1250} animationDurationMs={5000}/>);
     const art = screen.getByRole("button", { name: "Pilih layer Artwork" });
     expect(art).toHaveStyle({ opacity: "0.925" });
     expect(art).toHaveAttribute("aria-pressed", "true");
-    rerender(<StaticScenePreview model={model} animationTimeMs={2500} animationDurationMs={5000}/>);
+    rerender(
+      <StaticScenePreview
+        model={model}
+        animationTimeMs={2500}
+        animationDurationMs={5000}
+      />,
+    );
     expect(art).toHaveStyle({ opacity: "0.85" });
-    rerender(<StaticScenePreview model={model}/>);
+    rerender(<StaticScenePreview model={model} />);
     expect(art).toHaveStyle({ opacity: "1" });
   });
 });
