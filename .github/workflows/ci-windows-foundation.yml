@@ -41,12 +41,6 @@ jobs:
       - name: Clean install
         run: npm ci
 
-      - name: TEMP T02 collect exact source formatter diff (REMOVE before merge)
-        shell: pwsh
-        run: |
-          npx prettier --write src/core/domain/visual-animation-evaluator.ts tests/unit/visual-animation-evaluator.test.ts
-          git diff -- src/core/domain/visual-animation-evaluator.ts tests/unit/visual-animation-evaluator.test.ts
-
       - name: Foundation and UI verification
         run: npm run verify
 
