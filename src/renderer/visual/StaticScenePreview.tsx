@@ -56,7 +56,11 @@ function persistedLayerForAnimation(layer: StaticSceneLayer): VisualLayer {
       return source;
     }
     case "artwork": {
-      const { resolvedKind: _kind, resolvedArtwork: _artwork, ...source } = resolved;
+      const {
+        resolvedKind: _kind,
+        resolvedArtwork: _artwork,
+        ...source
+      } = resolved;
       return source;
     }
     case "text": {
