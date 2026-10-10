@@ -403,15 +403,17 @@ describe("T11-W06-05 live preview track context", () => {
   it("does not replace an authorized playing or paused song with a selected boundary midpoint", async () => {
     startup = {
       ...album(),
-      boundaryTransitions: [{
-        fromTrackId: "track-a",
-        toTrackId: "track-b",
-        preset: "crossfade",
-        durationMs: 800,
-        easing: "linear",
-        artworkHandoff: "during-transition",
-        titleHandoff: "during-transition",
-      }],
+      boundaryTransitions: [
+        {
+          fromTrackId: "track-a",
+          toTrackId: "track-b",
+          preset: "crossfade",
+          durationMs: 800,
+          easing: "linear",
+          artworkHandoff: "during-transition",
+          titleHandoff: "during-transition",
+        },
+      ],
       visualScene: {
         sceneVersion: 1,
         layers: [
@@ -428,7 +430,9 @@ describe("T11-W06-05 live preview track context", () => {
     const { rerender } = render(<AppShell />);
     await waitFor(() =>
       expect(
-        screen.getByRole("button", { name: "Pilih boundary track-a ke track-b" }),
+        screen.getByRole("button", {
+          name: "Pilih boundary track-a ke track-b",
+        }),
       ).toBeInTheDocument(),
     );
 
