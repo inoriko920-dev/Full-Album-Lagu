@@ -199,7 +199,11 @@ async function verify() {
                 sample.foundationSpectrumCount === 1,
             ) &&
             result.boundaryUndoRedoPackagedVerified === true &&
-            result.boundaryProjectStateRestored === true,
+            result.boundaryProjectStateRestored === true &&
+            result.boundaryLiveAudioFftVerified === true &&
+            result.boundaryLiveAudioSample?.progress > 0 &&
+            result.boundaryLiveAudioSample?.progress < 0.92 &&
+            result.boundaryLiveAudioSample?.spectrumPeakPercent > 2,
         ),
       ),
     "packaged 3/128 boundary Inspector/Preview/Undo-Redo proof missing",
@@ -294,8 +298,8 @@ async function verify() {
     partial(
       "AC-W11-07-09",
       "Artwork/title/artist transition with real spectrum clock",
-      "T04/W11-06 native spectrum + component tests; packaged 3/128 WAV boundary Inspector/Preview/Undo-Redo",
-      "Full visual/audio synchronization inspection on physical output not performed",
+      "Native spectrum + component tests; real packaged 3/128 WAV boundary Inspector/Preview/Undo-Redo, live audio FFT and real-time transition sample",
+      "Automated Electron FFT/DOM timing proves live output signals but not audible speaker sync, frame-perfect pixel timing or user perception",
     ),
     partial(
       "AC-W11-07-10",

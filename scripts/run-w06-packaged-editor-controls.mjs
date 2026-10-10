@@ -146,6 +146,10 @@ async function testAlbum(count) {
     ) ||
     report.boundaryUndoRedoPackagedVerified !== true ||
     report.boundaryProjectStateRestored !== true ||
+    report.boundaryLiveAudioFftVerified !== true ||
+    !(report.boundaryLiveAudioSample?.progress > 0) ||
+    !(report.boundaryLiveAudioSample?.progress < 0.92) ||
+    !(report.boundaryLiveAudioSample?.spectrumPeakPercent > 2) ||
     report.disabledTimelineSeekRejected !== true ||
     report.seekPreservedProjectRevision !== true ||
     report.timelineSeekSeconds !== (count - 2) * 4 + 2 ||
@@ -183,6 +187,8 @@ async function testAlbum(count) {
     boundaryPresetSamples: report.boundaryPresetSamples,
     boundaryUndoRedoPackagedVerified: true,
     boundaryProjectStateRestored: true,
+    boundaryLiveAudioFftVerified: true,
+    boundaryLiveAudioSample: report.boundaryLiveAudioSample,
     screenshot: evidence + ".png",
     evidence,
     checks: report.controls,

@@ -300,6 +300,77 @@ export async function captureW1106EditorInteractions(
       );
       assert(document.querySelectorAll(".timeline-track").length === expectedTracks,
         "boundary QA changed album track count");
+
+      // AC09: prove the real packaged WAV decoder/FFT clock actually drives
+      // the existing two-track visual compositor, not the static 0.500 sample.
+      // This is deliberately BEFORE disabling track 2 for the existing W06 QA.
+      presetControl.value = "crossfade";
+      presetControl.dispatchEvent(new Event("change", { bubbles: true }));
+      await wait(
+        () => boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === "crossfade" &&
+          document.querySelector('.boundary-visual-preview[data-boundary-progress="0.500"]'),
+        "real-audio boundary setup did not save a crossfade",
+      );
+      const transitionDuration = boundaryInspector.querySelector('[aria-label="Durasi Transisi"]');
+      assert(transitionDuration && !transitionDuration.disabled,
+        "real-audio duration field is disabled");
+      // Use the native value setter so React's controlled input detects the
+      // same input event as a real keyboard edit (2.0 seconds is a valid preset
+      // duration, not a new feature). This gives the decoder a stable window.
+      const valueSetter = Object.getOwnPropertyDescriptor(
+        HTMLInputElement.prototype, "value",
+      )?.set;
+      assert(valueSetter, "native duration input setter missing");
+      const beforeDurationRevision = shell.getAttribute("data-project-revision");
+      valueSetter.call(transitionDuration, "2");
+      transitionDuration.dispatchEvent(new Event("input", { bubbles: true }));
+      await wait(
+        () => boundaryInspector.querySelector('[aria-label="Durasi Transisi"]')?.value === "2" &&
+          shell.getAttribute("data-project-revision") !== beforeDurationRevision,
+        "real-audio transition duration did not commit through Inspector",
+      );
+      const previewBoundary = boundaryInspector.querySelector('[aria-label="Preview Boundary"]');
+      click(previewBoundary, "packaged Preview Boundary seek is disabled");
+      // Preview Boundary issues an actual decoder load with autoPlay=false.
+      // Its transport label is Jeda while loading, then Putar when paused;
+      // starting too early falsely reports a missing/disabled Play control.
+      await wait(
+        () => elapsedSeconds() >= 4 && elapsedSeconds() < 6 &&
+          button("Putar") && !button("Putar").disabled,
+        "Preview Boundary did not reach a paused, seeked audio track", 180,
+      );
+      click(button("Putar"), "packaged audio cannot start after paused boundary seek");
+      const liveFrame = await wait(() => {
+        const preview = document.querySelector(".boundary-visual-preview");
+        const progress = Number(preview?.getAttribute("data-boundary-progress"));
+        return preview && button("Jeda") && fromId === preview.getAttribute("data-boundary-from") &&
+          toId === preview.getAttribute("data-boundary-to") &&
+          Number.isFinite(progress) && progress > 0 && progress < 0.92 &&
+          progress !== 0.5 &&
+          preview.querySelectorAll(
+            ".boundary-visual-preview__foundation .static-scene-preview__spectrum .static-scene-preview__bar",
+          ).length === 32 && spectrumPeakPercent() > 2
+          ? { progress, spectrumPeakPercent: spectrumPeakPercent() } : null;
+      }, "real audio FFT and live boundary visual did not run together", 180);
+      await wait(
+        () => elapsedSeconds() >= 6 && !document.querySelector(".boundary-visual-preview"),
+        "real audio passed transition window but selected static sample ghosted", 180,
+      );
+      click(button("Jeda"), "cannot pause real audio after boundary QA");
+      await wait(() => button("Putar"), "boundary QA did not pause playback");
+      click(historyControl("Undo"), "cannot undo live-boundary duration");
+      click(historyControl("Undo"), "cannot undo live-boundary crossfade");
+      await wait(
+        () => boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === "" &&
+          !document.querySelector(".boundary-visual-preview") &&
+          shell.getAttribute("data-project-dirty") === boundaryBaseDirty,
+        "real audio boundary QA failed to restore original project after Undo",
+      );
+      // Real audio output and React CSS/FFT timing are automated evidence,
+      // never proof of physical audible speaker or human visual acceptance.
+      const boundaryLiveAudioFftVerified = true;
+      const boundaryLiveAudioSample = liveFrame;
+
       // The existing W11-06 playback checks inspect Media rows. Restore that
       // original left tab after the boundary-only Inspector regression.
       click(document.querySelector("#work-tab-media"),
@@ -480,6 +551,8 @@ export async function captureW1106EditorInteractions(
         boundaryPresetSamples,
         boundaryUndoRedoPackagedVerified: true,
         boundaryProjectStateRestored: true,
+        boundaryLiveAudioFftVerified,
+        boundaryLiveAudioSample,
         timelineDoubleClickSeekVerified: true,
         timelineSeekSeconds: seekSeconds,
         disabledTimelineSeekRejected: true,
