@@ -763,10 +763,15 @@ function PreviewPanel({
   );
   // The live clock owns active transitions; selection-only Preview samples
   // the same T04 projection at the approved boundary midpoint (no seek side effect).
-  const liveBoundary =
-    playback.available && playback.clock.projectId === project.projectId
-      ? resolveAlbumBoundaryVisualFrame(project, playback.clock.albumTimeMs)
-      : null;
+  // A ready/idle driver has no authoritative live sample: its retained
+  // album timestamp must not override an explicitly selected boundary.
+  const followsLiveAudio =
+    playback.available &&
+    playback.clock.projectId === project.projectId &&
+    (playing || playback.clock.phase === "paused");
+  const liveBoundary = followsLiveAudio
+    ? resolveAlbumBoundaryVisualFrame(project, playback.clock.albumTimeMs)
+    : null;
   const selectedSetting =
     selectedBoundary === null
       ? undefined
@@ -801,10 +806,6 @@ function PreviewPanel({
   // Manual boundary selection is a static preview fallback, not a second
   // playback clock. When authorized audio is playing or paused, the live
   // timestamp is authoritative even outside the configured transition window.
-  const followsLiveAudio =
-    playback.available &&
-    playback.clock.projectId === project.projectId &&
-    (playing || playback.clock.phase === "paused");
   const boundaryFrame =
     liveBoundary?.status === "active"
       ? liveBoundary
