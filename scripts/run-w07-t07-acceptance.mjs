@@ -29,6 +29,9 @@ const uiDocx = resolve(
 const legacyGate = resolve(
   "artifacts/step11/T11-W06-07/evidence/T07_20_AC_MATRIX.json",
 );
+const editorEvidencePath = resolve(
+  "artifacts/step11/T11-W06-05/evidence/T05_WINDOWS_UI_SUMMARY.json",
+);
 const domPath = resolve("artifacts/ui/SCR-002A-dom.json");
 const pngPath = resolve("artifacts/ui/SCR-002A.png");
 
@@ -72,7 +75,7 @@ async function verify() {
     "requires exact commit from GitHub Actions",
   );
 
-  const [reference, freeze, oldGate, sums, zip, captureDom, capturePng] =
+  const [reference, freeze, oldGate, sums, zip, captureDom, capturePng, packagedEditor] =
     await Promise.all([
       json(referenceManifest),
       json(freezeManifest),
@@ -81,6 +84,7 @@ async function verify() {
       readFile(zipPath),
       json(domPath),
       readFile(pngPath),
+      json(editorEvidencePath),
     ]);
 
   requireProof(
@@ -160,6 +164,27 @@ async function verify() {
       zip.subarray(0, 2).toString("ascii") === "PK" &&
       sha256(zip) === m[1],
     "Windows portable ZIP SHA-256 mismatch",
+  );
+  // These checks ran against the actual packaged Electron executable with
+  // 3 and 128 real WAV fixtures, not a mocked React component. They prove
+  // boundary selector + two-track Preview + full Undo/Redo interaction
+  // without changing the playlist or dirty state after reversal.
+  requireProof(
+    packagedEditor.task === "T11-W06-05" &&
+      packagedEditor.status === "PASS" &&
+      packagedEditor.results?.length === 2 &&
+      [3, 128].every((count) =>
+        packagedEditor.results.some(
+          (result) =>
+            result.trackCount === count &&
+            result.realPackagedUi === true &&
+            result.boundaryInspectorPackagedVerified === true &&
+            result.boundaryPreviewPackagedVerified === true &&
+            result.boundaryUndoRedoPackagedVerified === true &&
+            result.boundaryProjectStateRestored === true,
+        ),
+      ),
+    "packaged 3/128 boundary Inspector/Preview/Undo-Redo proof missing",
   );
   const exe = await stat(resolve("out/win-unpacked/Lagu Full Album.exe"));
   requireProof(
@@ -251,7 +276,7 @@ async function verify() {
     partial(
       "AC-W11-07-09",
       "Artwork/title/artist transition with real spectrum clock",
-      "T04 boundary and W11-06 native spectrum playback; T06 Preview component tests",
+      "T04/W11-06 native spectrum + component tests; packaged 3/128 WAV boundary Inspector/Preview/Undo-Redo",
       "Full visual/audio synchronization inspection on physical output not performed",
     ),
     partial(
