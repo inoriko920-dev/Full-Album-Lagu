@@ -41,6 +41,12 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: TEMP W07-QA capture exact Prettier diff (remove before merge)
+        shell: pwsh
+        run: |
+          npx prettier --write src/renderer/app/BoundaryVisualPreview.tsx tests/component/BoundaryVisualPreview.regression.test.tsx
+          git diff -- src/renderer/app/BoundaryVisualPreview.tsx tests/component/BoundaryVisualPreview.regression.test.tsx
+
       - name: Foundation and UI verification
         run: npm run verify
 
