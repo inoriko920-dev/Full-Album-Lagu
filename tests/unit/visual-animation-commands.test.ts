@@ -306,14 +306,20 @@ describe("W11-07 T03 official animation command / history", () => {
     input.animation.keyframes![0]!.points[1]!.value = 0.25;
     expect(session.execute(command).status).toBe("applied");
     expect(animationAt(session.snapshot().project, 0)).toEqual(nextAnimation);
-    expect(animationAt(session.snapshot().project, 1)).toEqual(originalAnimation);
+    expect(animationAt(session.snapshot().project, 1)).toEqual(
+      originalAnimation,
+    );
     expect(session.snapshot().undoDepth).toBe(1);
 
     expect(session.undo().status).toBe("applied");
-    expect(animationAt(session.snapshot().project, 0)).toEqual(originalAnimation);
+    expect(animationAt(session.snapshot().project, 0)).toEqual(
+      originalAnimation,
+    );
     expect(session.redo().status).toBe("applied");
     expect(animationAt(session.snapshot().project, 0)).toEqual(nextAnimation);
-    expect(animationAt(session.snapshot().project, 1)).toEqual(originalAnimation);
+    expect(animationAt(session.snapshot().project, 1)).toEqual(
+      originalAnimation,
+    );
   });
 
   it("snapshots layer ID when removing an animation before deferred execution", () => {
@@ -323,9 +329,13 @@ describe("W11-07 T03 official animation command / history", () => {
     input.layerId = "layer-1";
     expect(session.execute(command).status).toBe("applied");
     expect(animationAt(session.snapshot().project, 0)).toBeUndefined();
-    expect(animationAt(session.snapshot().project, 1)).toEqual(originalAnimation);
+    expect(animationAt(session.snapshot().project, 1)).toEqual(
+      originalAnimation,
+    );
     expect(session.undo().status).toBe("applied");
-    expect(animationAt(session.snapshot().project, 0)).toEqual(originalAnimation);
+    expect(animationAt(session.snapshot().project, 0)).toEqual(
+      originalAnimation,
+    );
     expect(session.redo().status).toBe("applied");
     expect(animationAt(session.snapshot().project, 0)).toBeUndefined();
   });
