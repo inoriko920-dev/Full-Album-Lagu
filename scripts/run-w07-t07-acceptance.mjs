@@ -191,11 +191,11 @@ async function verify() {
             result.boundaryAllEightPresetPackagedVerified === true &&
             Array.isArray(result.boundaryPresetSamples) &&
             result.boundaryPresetSamples.length === 8 &&
-            new Set(result.boundaryPresetSamples.map(
-              (sample) => sample.preset,
-            )).size === 8 &&
+            new Set(result.boundaryPresetSamples.map((sample) => sample.preset))
+              .size === 8 &&
             result.boundaryPresetSamples.every(
-              (sample) => sample.progress === "0.500" &&
+              (sample) =>
+                sample.progress === "0.500" &&
                 sample.foundationSpectrumCount === 1,
             ) &&
             result.boundaryUndoRedoPackagedVerified === true &&
