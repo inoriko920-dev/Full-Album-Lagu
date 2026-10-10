@@ -798,10 +798,17 @@ function PreviewPanel({
               Math.max(0, incoming.durationMs - 1),
             ),
         );
+  // Manual boundary selection is a static preview fallback, not a second
+  // playback clock. When authorized audio is playing or paused, the live
+  // timestamp is authoritative even outside the configured transition window.
+  const followsLiveAudio =
+    playback.available &&
+    playback.clock.projectId === project.projectId &&
+    (playing || playback.clock.phase === "paused");
   const boundaryFrame =
     liveBoundary?.status === "active"
       ? liveBoundary
-      : selectedSample?.status === "active"
+      : !followsLiveAudio && selectedSample?.status === "active"
         ? selectedSample
         : null;
 
