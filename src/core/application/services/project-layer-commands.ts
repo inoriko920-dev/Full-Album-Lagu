@@ -4,9 +4,11 @@ import {
 } from "../../domain/project-document";
 import {
   visualLayerSchema,
+  visualLayerAnimationSchema,
   visualLayerTransformSchema,
   visualTextStyleSchema,
   type VisualLayer,
+  type VisualLayerAnimation,
   type VisualLayerTransform,
   type VisualTextStyle,
 } from "../../domain/visual-scene-schema";
@@ -44,6 +46,12 @@ export interface ReorderLayerCommandInput extends LayerCommandExpectation {
 export interface SetLayerTransformCommandInput extends LayerCommandExpectation {
   layerId: string;
   transform: VisualLayerTransform;
+}
+
+export interface SetLayerAnimationCommandInput extends LayerCommandExpectation {
+  layerId: string;
+  /** Undefined removes animation state without leaving an undefined JSON property. */
+  animation?: VisualLayerAnimation;
 }
 
 export interface LayerCommonPatch {
@@ -311,6 +319,44 @@ export function createLayerSetTransformCommand(
         ...layer,
         transform,
       });
+      return withLayers(project, nextLayers);
+    },
+  };
+}
+
+/**
+ * Replace the approved per-layer animation as one atomic user action.
+ *
+ * The ProjectCommandEngine owns revision, dirty state and Undo/Redo; never
+ * publish animation edits by writing the ProjectDocument directly.
+ */
+export function createLayerSetAnimationCommand(
+  input: SetLayerAnimationCommandInput,
+): ProjectCommand {
+  // Snapshot caller data at command creation so delayed execution is stable.
+  const animation =
+    input.animation === undefined
+      ? undefined
+      : visualLayerAnimationSchema.parse(structuredClone(input.animation));
+
+  return {
+    kind: "layer.set-animation",
+    label: `Ubah animasi layer ${input.layerId}`,
+    origin: "manual",
+    ...expectationFields(input),
+    apply: (project) => {
+      const { layer, index } = findLayer(project, input.layerId);
+      requireUnlocked(layer);
+
+      const candidate: VisualLayer = { ...layer };
+      if (animation === undefined) {
+        delete candidate.animation;
+      } else {
+        candidate.animation = structuredClone(animation);
+      }
+
+      const nextLayers = [...currentLayers(project)];
+      nextLayers[index] = visualLayerSchema.parse(candidate);
       return withLayers(project, nextLayers);
     },
   };
