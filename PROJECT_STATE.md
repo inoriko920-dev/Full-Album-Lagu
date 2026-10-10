@@ -1,5 +1,14 @@
 # PROJECT STATE
 
+## 2026-10-10 — W11-07 T07 Windows automated acceptance audit (Draft PR #73)
+
+- **Previous T01–T06 merged**; T06 [PR #72](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/72) on `main@26a55ad7209b5313cc2278e2d876f4eee47dc8b8`, [postmerge Windows CI #858 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38035108907).
+- **T11-W07-07 AUDIT CODE IMPLEMENTED / NORMAL EXACT-HEAD CI PENDING** in [Draft PR #73](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/73). Mandatory Windows CI audit script `scripts/run-w07-t07-acceptance.mjs` verifies canonical 29-state UI freeze, original owner UI-IMG-002G + UI/planning DOCX blob hashes, live SCR-002A evidence, W11-06 open physical gates, Windows portable ZIP checksum and official 12 AC evidence. Produces JSON + TXT as named GitHub artifact.
+- [CI #860 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38035593444) **with temporary formatter**: all existing regressions, packaged MP3/WAV and 128-track tests, new T07 audit and artifact upload PASS. T07 audit counts **8 PASS_AUTOMATED / 4 PARTIAL_AUTOMATED**; no full UI pixel comparison. Exact Prettier diffs applied and temporary stage removed. **Normal exact-head CI is mandatory before merge**, then main CI after merge.
+- Automated acceptance is not real user/speaker/hardware acceptance: actual speaker sound, physical Windows Suspend/Resume, 25 real picker interactions, long resource plateau and visual check of 002G/002D/full 29 states **NOT_TESTED**. Release **BLOCKED**; FFmpeg MP4 belongs to later W11-08/STEP12.
+
+
+
 ## 2026-10-10 — SOL W11-07 T06 boundary Inspector and Preview (Draft PR #72)
 
 - Previous T01..T05 merged; latest `main@429951da`, postmerge Windows CI #837 SUCCESS.
