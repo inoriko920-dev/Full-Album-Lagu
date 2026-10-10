@@ -41,6 +41,12 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: TEMP W11-07 fractional keyframe exact Prettier diff (REMOVE before merge)
+        shell: pwsh
+        run: |
+          npx prettier --write src/renderer/app/VisualAnimationControls.tsx tests/component/VisualAnimationControls.test.tsx
+          git diff -- src/renderer/app/VisualAnimationControls.tsx tests/component/VisualAnimationControls.test.tsx
+
       - name: Foundation and UI verification
         run: npm run verify
 
