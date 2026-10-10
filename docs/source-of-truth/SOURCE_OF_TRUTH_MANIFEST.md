@@ -24,3 +24,13 @@ This register ties the original conversation/workspace artifacts to the reposito
 Repository compact planning DOCX files preserve the extracted planning content for handoff and are the operative repository copies. The UI visual compact DOCX is a binary copy generated from the approved UI reference and contains all 29 images; only embedded-image quality was reduced to keep the repository lightweight.
 
 No compacting operation changes the locked product/UI/architecture decisions.
+
+## W11-07 additive UI/planning assets — 2026-10-10
+
+| Exact repository path | Git blob SHA-1 | SHA-256 of original bytes | Verified size |
+|---|---|---|---:|
+| `docs/source-of-truth/ui/07_W11_07_UI_IMG_002G.png` | `b1bf98c9a251c1bfea0672e534e5745c16068f57` | `2e82582bce81f8d0f5ad344d71968731f4f9593e90b5dea39dd0864b421eb073` | 1615919 |
+| `docs/source-of-truth/ui/07_STEP_04_W11_07_UI_REFERENCE_UI_IMG_002G_v1_0_REVIEW.docx` | `817d9f7a5791ba865d3f18b84cdd2570410d5dbc` | `70f299f3baf1303e7f8dab77e95172524690db84b3cbe44e65f4715b3b32ded4` | 1502906 |
+| `docs/source-of-truth/planning/current/16_STEP_11_W11_07_ANIMATION_TRANSITION_CHARTER_v1_0_PRE_GATE.docx` | `8ea6e1cceb4bc4a707c975886b0b5fbb7e71ac09` | `0c6aa4d6622919ab23e2fb615e5e5a10545391f592b411a9665f11477aed68f1` | 42973 |
+
+Asset image at 1586×992 is accepted only with documented layout tolerance against the 1600×1000 target; original file not rescaled. This extension does not change the canonical frozen UI reference pack's 29 state/hash manifest.
