@@ -403,15 +403,17 @@ describe("T11-W06-05 live preview track context", () => {
   it("keeps real audio spectrum/progress and song metadata continuous across a configured boundary without mutating the album", async () => {
     startup = {
       ...album(),
-      boundaryTransitions: [{
-        fromTrackId: "track-a",
-        toTrackId: "track-b",
-        preset: "crossfade",
-        durationMs: 800,
-        easing: "linear",
-        artworkHandoff: "during-transition",
-        titleHandoff: "during-transition",
-      }],
+      boundaryTransitions: [
+        {
+          fromTrackId: "track-a",
+          toTrackId: "track-b",
+          preset: "crossfade",
+          durationMs: 800,
+          easing: "linear",
+          artworkHandoff: "during-transition",
+          titleHandoff: "during-transition",
+        },
+      ],
       visualScene: {
         sceneVersion: 1,
         layers: [
@@ -427,7 +429,9 @@ describe("T11-W06-05 live preview track context", () => {
     const initial = structuredClone(startup);
     const { rerender } = render(<AppShell />);
     await waitFor(() =>
-      expect(document.querySelector('[data-timeline-track-id="track-b"]')).not.toBeNull(),
+      expect(
+        document.querySelector('[data-timeline-track-id="track-b"]'),
+      ).not.toBeNull(),
     );
 
     previewClock.available = true;
@@ -435,20 +439,32 @@ describe("T11-W06-05 live preview track context", () => {
     previewClock.activeTrackId = "track-a";
     previewClock.albumTimeMs = 1999;
     previewClock.localTimeMs = 1999;
-    previewClock.spectrumLevels = [0.75, 0.15, ...Array.from({ length: 30 }, () => 0)];
+    previewClock.spectrumLevels = [
+      0.75,
+      0.15,
+      ...Array.from({ length: 30 }, () => 0),
+    ];
     rerender(<AppShell />);
 
     const before = screen.getByLabelText("Preview visual statis");
     expect(before).toHaveTextContent("Title A");
-    expect(before.querySelectorAll(".static-scene-preview__layer--spectrum")).toHaveLength(1);
-    expect(before.querySelectorAll(".static-scene-preview__layer--progress")).toHaveLength(1);
-    expect(before.querySelector(".static-scene-preview__bar")).toHaveStyle({ height: "75%" });
+    expect(
+      before.querySelectorAll(".static-scene-preview__layer--spectrum"),
+    ).toHaveLength(1);
+    expect(
+      before.querySelectorAll(".static-scene-preview__layer--progress"),
+    ).toHaveLength(1);
+    expect(before.querySelector(".static-scene-preview__bar")).toHaveStyle({
+      height: "75%",
+    });
 
     previewClock.activeTrackId = "track-b";
     previewClock.albumTimeMs = 2000;
     previewClock.localTimeMs = 0;
     rerender(<AppShell />);
-    let boundary = screen.getByLabelText("Preview Boundary", { selector: ".boundary-visual-preview" });
+    let boundary = screen.getByLabelText("Preview Boundary", {
+      selector: ".boundary-visual-preview",
+    });
     expect(boundary).toHaveAttribute("data-boundary-from", "track-a");
     expect(boundary).toHaveAttribute("data-boundary-to", "track-b");
     expect(boundary).toHaveAttribute("data-boundary-progress", "0.000");
@@ -458,23 +474,41 @@ describe("T11-W06-05 live preview track context", () => {
     expect(boundary).toHaveTextContent("Artist B");
     // Only the canonical incoming audio FFT/progress are rendered. Source
     // and target metadata layers must not duplicate spectrum or progress.
-    expect(boundary.querySelectorAll(".static-scene-preview__layer--spectrum")).toHaveLength(1);
-    expect(boundary.querySelectorAll(".static-scene-preview__layer--progress")).toHaveLength(1);
-    expect(boundary.querySelectorAll(".static-scene-preview__layer--background")).toHaveLength(1);
-    expect(boundary.querySelectorAll(".static-scene-preview__bar")).toHaveLength(32);
-    expect(boundary.querySelector(".static-scene-preview__bar")).toHaveStyle({ height: "75%" });
+    expect(
+      boundary.querySelectorAll(".static-scene-preview__layer--spectrum"),
+    ).toHaveLength(1);
+    expect(
+      boundary.querySelectorAll(".static-scene-preview__layer--progress"),
+    ).toHaveLength(1);
+    expect(
+      boundary.querySelectorAll(".static-scene-preview__layer--background"),
+    ).toHaveLength(1);
+    expect(
+      boundary.querySelectorAll(".static-scene-preview__bar"),
+    ).toHaveLength(32);
+    expect(boundary.querySelector(".static-scene-preview__bar")).toHaveStyle({
+      height: "75%",
+    });
 
     previewClock.albumTimeMs = 2400;
     previewClock.localTimeMs = 400;
-    previewClock.spectrumLevels = [0.31, 0.8, ...Array.from({ length: 30 }, () => 0)];
+    previewClock.spectrumLevels = [
+      0.31,
+      0.8,
+      ...Array.from({ length: 30 }, () => 0),
+    ];
     rerender(<AppShell />);
-    boundary = screen.getByLabelText("Preview Boundary", { selector: ".boundary-visual-preview" });
+    boundary = screen.getByLabelText("Preview Boundary", {
+      selector: ".boundary-visual-preview",
+    });
     expect(boundary).toHaveAttribute("data-boundary-progress", "0.500");
     const peakBars = boundary.querySelectorAll(".static-scene-preview__bar");
     expect(peakBars).toHaveLength(32);
     expect(peakBars[0]).toHaveStyle({ height: "31%" });
     expect(peakBars[1]).toHaveStyle({ height: "80%" });
-    const progress = boundary.querySelector<HTMLElement>(".static-scene-preview__progress-track");
+    const progress = boundary.querySelector<HTMLElement>(
+      ".static-scene-preview__progress-track",
+    );
     expect(progress?.style.background).toContain("60%");
     const repeated = {
       incomingOpacity: boundary.querySelector<HTMLElement>(
@@ -487,29 +521,47 @@ describe("T11-W06-05 live preview track context", () => {
     previewClock.albumTimeMs = 2800;
     previewClock.localTimeMs = 800;
     rerender(<AppShell />);
-    expect(screen.queryByLabelText("Preview Boundary", { selector: ".boundary-visual-preview" })).toBeNull();
+    expect(
+      screen.queryByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toBeNull();
     const after = screen.getByLabelText("Preview visual statis");
     expect(after).toHaveTextContent("Title B");
-    expect(after.querySelectorAll(".static-scene-preview__layer--spectrum")).toHaveLength(1);
-    expect(after.querySelector(".static-scene-preview__bar")).toHaveStyle({ height: "31%" });
+    expect(
+      after.querySelectorAll(".static-scene-preview__layer--spectrum"),
+    ).toHaveLength(1);
+    expect(after.querySelector(".static-scene-preview__bar")).toHaveStyle({
+      height: "31%",
+    });
 
     // Reverse seek must reproduce the identical artwork/title/FFT/progress state.
     previewClock.albumTimeMs = 2400;
     previewClock.localTimeMs = 400;
     rerender(<AppShell />);
-    boundary = screen.getByLabelText("Preview Boundary", { selector: ".boundary-visual-preview" });
+    boundary = screen.getByLabelText("Preview Boundary", {
+      selector: ".boundary-visual-preview",
+    });
     expect({
       incomingOpacity: boundary.querySelector<HTMLElement>(
         '.boundary-visual-preview__side:nth-of-type(3) [data-scene-layer-id="title"]',
       )?.style.opacity,
-      spectrum: boundary.querySelector(".static-scene-preview__bar")?.getAttribute("style"),
-      progress: boundary.querySelector(".static-scene-preview__progress-track")?.getAttribute("style"),
+      spectrum: boundary
+        .querySelector(".static-scene-preview__bar")
+        ?.getAttribute("style"),
+      progress: boundary
+        .querySelector(".static-scene-preview__progress-track")
+        ?.getAttribute("style"),
     }).toEqual(repeated);
 
     // A clock belonging to a previous project cannot activate a ghost boundary.
     previewClock.projectId = "stale-project-id";
     rerender(<AppShell />);
-    expect(screen.queryByLabelText("Preview Boundary", { selector: ".boundary-visual-preview" })).toBeNull();
+    expect(
+      screen.queryByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toBeNull();
     const shell = document.querySelector(".app-shell");
     expect(shell).toHaveAttribute("data-project-revision", "0");
     expect(shell).toHaveAttribute("data-project-dirty", "false");
