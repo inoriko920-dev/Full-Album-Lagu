@@ -5,6 +5,7 @@ import type {
 } from "../../core/domain/static-scene-preview";
 import type {
   VisualLayerAnchor,
+  VisualLayer,
   VisualLayerTransform,
 } from "../../core/domain/visual-scene-schema";
 import { evaluateVisualLayerAnimation } from "../../core/domain/visual-animation-evaluator";
@@ -41,6 +42,34 @@ const anchorOffsets: Record<VisualLayerAnchor, readonly [number, number]> = {
   "bottom-center": [-50, -100],
   "bottom-right": [-100, -100],
 };
+
+/**
+ * Scene projections contain derived UI-only fields which are deliberately
+ * not accepted by the strict persisted VisualLayer schema. Strip them before
+ * calling the already-validated T02 evaluator; never persist derived fields.
+ */
+function persistedLayerForAnimation(layer: StaticSceneLayer): VisualLayer {
+  const { selected: _selected, ...resolved } = layer;
+  switch (resolved.kind) {
+    case "background": {
+      const { resolvedKind: _kind, ...source } = resolved;
+      return source;
+    }
+    case "artwork": {
+      const { resolvedKind: _kind, resolvedArtwork: _artwork, ...source } = resolved;
+      return source;
+    }
+    case "text": {
+      const { resolvedKind: _kind, resolvedText: _text, ...source } = resolved;
+      return source;
+    }
+    case "spectrum":
+    case "progress": {
+      const { resolvedKind: _kind, runtimeState: _state, ...source } = resolved;
+      return source;
+    }
+  }
+}
 
 function frameStyle(transform: VisualLayerTransform): CSSProperties {
   const [dx, dy] = anchorOffsets[transform.anchor];
@@ -220,7 +249,7 @@ export function StaticScenePreview({
                   animationDurationMs !== undefined &&
                   animationDurationMs > 0
                   ? evaluateVisualLayerAnimation(
-                      layer,
+                      persistedLayerForAnimation(layer),
                       animationTimeMs,
                       animationDurationMs,
                     )
