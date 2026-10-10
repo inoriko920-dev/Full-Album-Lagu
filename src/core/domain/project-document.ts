@@ -42,7 +42,10 @@ export const projectDocumentSchema = z
     revision: z.number().int().nonnegative(),
     albumPresentation: projectAlbumPresentationSchema.optional(),
     visualScene: visualSceneSchema.optional(),
-    boundaryTransitions: z.array(visualBoundaryTransitionSchema).max(2048).optional(),
+    boundaryTransitions: z
+      .array(visualBoundaryTransitionSchema)
+      .max(2048)
+      .optional(),
     tracks: z.array(projectTrackSchema),
     mediaAssets: z.array(mediaAssetReferenceSchema).optional(),
   })
@@ -50,11 +53,15 @@ export const projectDocumentSchema = z
   .superRefine((project, context) => {
     const boundaryPairs = new Set<string>();
     project.boundaryTransitions?.forEach((transition, index) => {
-      const pair = JSON.stringify([transition.fromTrackId, transition.toTrackId]);
+      const pair = JSON.stringify([
+        transition.fromTrackId,
+        transition.toTrackId,
+      ]);
       if (boundaryPairs.has(pair)) {
         context.addIssue({
           code: "custom",
-          message: "Each directed track pair may have only one boundary transition.",
+          message:
+            "Each directed track pair may have only one boundary transition.",
           path: ["boundaryTransitions", index],
         });
       }
