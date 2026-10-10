@@ -41,12 +41,6 @@ jobs:
       - name: Clean install
         run: npm ci
 
-      - name: TEMP T05 capture exact Prettier diff (remove before merge)
-        shell: pwsh
-        run: |
-          npx prettier --write src/renderer/app/VisualAnimationControls.tsx src/renderer/app/VisualLayerControls.tsx src/renderer/state/project-session/use-project-session.ts src/renderer/visual/StaticScenePreview.tsx src/renderer/app/AppShell.tsx tests/component/VisualAnimationControls.test.tsx
-          git diff -- src/renderer/app/VisualAnimationControls.tsx src/renderer/app/VisualLayerControls.tsx src/renderer/state/project-session/use-project-session.ts src/renderer/visual/StaticScenePreview.tsx src/renderer/app/AppShell.tsx tests/component/VisualAnimationControls.test.tsx
-
       - name: Foundation and UI verification
         run: npm run verify
 
