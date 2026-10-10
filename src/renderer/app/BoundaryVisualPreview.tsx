@@ -1,5 +1,7 @@
 import type { CSSProperties } from "react";
 import type { ProjectDocument } from "../../core/domain/project-document";
+import { projectAlbumTimeline } from "../../core/domain/album-timeline";
+import { evaluateVisualLayerAnimation } from "../../core/domain/visual-animation-evaluator";
 import {
   buildStaticScenePreview,
   type StaticScenePreviewModel,
@@ -30,6 +32,20 @@ export function BoundaryVisualPreview({
   const from = buildStaticScenePreview(project, {
     selectedTrackId: frame.fromTrackId,
   });
+  const items = projectAlbumTimeline(project).items;
+  const fromTrack = items.find(
+    (item) => item.trackId === frame.fromTrackId && item.status === "resolved",
+  );
+  const toTrack = items.find(
+    (item) => item.trackId === frame.toTrackId && item.status === "resolved",
+  );
+
+  // The outgoing animation freezes at its real track end; incoming animation
+  // advances from the same canonical album boundary. No second playback clock.
+  const fromLocalTimeMs =
+    fromTrack?.startMs === undefined
+      ? undefined
+      : Math.max(0, frame.boundaryTimeMs - fromTrack.startMs);
 
   const metadataLayers = (
     model: StaticScenePreviewModel,
@@ -49,6 +65,27 @@ export function BoundaryVisualPreview({
             : layer.kind === "text" && layer.role === "title"
               ? frame.titleHandoff
               : frame.artistHandoff;
+        const source = project.visualScene?.layers.find(
+          (item) => item.id === layer.id,
+        );
+        const durationMs =
+          side === "from" ? fromTrack?.durationMs : toTrack?.durationMs;
+        const localTimeMs =
+          side === "from" ? fromLocalTimeMs : frame.elapsedMs;
+        // Compute the layer animation BEFORE applying the boundary weight:
+        // an opacity keyframe replaces static opacity, and applying it later
+        // would silently erase the crossfade/dissolve/at-boundary handoff.
+        const transform =
+          source !== undefined &&
+          durationMs !== undefined &&
+          durationMs > 0 &&
+          localTimeMs !== undefined
+            ? evaluateVisualLayerAnimation(
+                source,
+                Math.min(durationMs, localTimeMs),
+                durationMs,
+              )
+            : layer.transform;
         let factor =
           frame.effect[side === "from" ? "outgoing" : "incoming"].opacity;
         if (weights.mode === "at-boundary") {
@@ -58,8 +95,8 @@ export function BoundaryVisualPreview({
           ...layer,
           selected: false,
           transform: {
-            ...layer.transform,
-            opacity: layer.transform.opacity * factor,
+            ...transform,
+            opacity: transform.opacity * factor,
           },
         };
       });
