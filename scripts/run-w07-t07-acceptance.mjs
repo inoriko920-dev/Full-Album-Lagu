@@ -75,8 +75,16 @@ async function verify() {
     "requires exact commit from GitHub Actions",
   );
 
-  const [reference, freeze, oldGate, sums, zip, captureDom, capturePng, packagedEditor] =
-    await Promise.all([
+  const [
+    reference,
+    freeze,
+    oldGate,
+    sums,
+    zip,
+    captureDom,
+    capturePng,
+    packagedEditor,
+  ] = await Promise.all([
       json(referenceManifest),
       json(freezeManifest),
       json(legacyGate),
