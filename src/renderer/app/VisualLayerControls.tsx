@@ -12,6 +12,7 @@ import {
   starterLayerTypes,
   type StarterLayerType,
 } from "./visual-layer-defaults";
+import { VisualAnimationControls } from "./VisualAnimationControls";
 import "./visual-layer-controls.css";
 
 export interface VisualLayerPanelProps {
@@ -384,6 +385,12 @@ export function VisualLayerInspector({
           </select>
         </label>
       </section>
+      {model.layers.find((layer) => layer.id === id) ? (
+        <VisualAnimationControls
+          layer={model.layers.find((layer) => layer.id === id)!}
+          session={session}
+        />
+      ) : null}
       {details.kind === "text" ? (
         <section className="inspector-section">
           <div className="inspector-section__header">
