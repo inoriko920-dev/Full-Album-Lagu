@@ -11,6 +11,7 @@ import {
   LayerTransformGestureSession,
   type LayerCommonPatch,
 } from "../../../core/application/services/project-layer-commands";
+import { createSetBoundaryTransitionCommand } from "../../../core/application/services/project-boundary-commands";
 import type {
   ProjectCommand,
   ProjectStateToken,
@@ -18,6 +19,7 @@ import type {
 import type {
   VisualLayer,
   VisualLayerAnimation,
+  VisualBoundaryTransition,
   VisualLayerTransform,
   VisualTextStyle,
 } from "../../../core/domain/visual-scene-schema";
@@ -188,6 +190,11 @@ export interface ProjectSessionView {
   setVisualLayerAnimation(
     layerId: string,
     animation: VisualLayerAnimation | undefined,
+  ): boolean;
+  setBoundaryTransition(
+    fromTrackId: string,
+    toTrackId: string,
+    transition: VisualBoundaryTransition | undefined,
   ): boolean;
   setVisualLayerTransform(
     layerId: string,
@@ -555,6 +562,19 @@ export function useProjectSession(): ProjectSessionView {
       }
     },
     [history, publishHistorySnapshot],
+  );
+
+  const setBoundaryTransition = useCallback(
+    (fromTrackId: string, toTrackId: string, transition: VisualBoundaryTransition | undefined) =>
+      executeVisualLayerCommand((guards) =>
+        createSetBoundaryTransitionCommand({
+          fromTrackId,
+          toTrackId,
+          ...(transition === undefined ? {} : { transition }),
+          ...guards,
+        }),
+      ),
+    [executeVisualLayerCommand],
   );
 
   const addVisualLayer = useCallback(
@@ -1549,6 +1569,7 @@ export function useProjectSession(): ProjectSessionView {
     reorderVisualLayer,
     setVisualLayerCommon,
     setVisualLayerAnimation,
+    setBoundaryTransition,
     setVisualLayerTransform,
     setVisualLayerTextStyle,
     setVisualLayerStaticText,
