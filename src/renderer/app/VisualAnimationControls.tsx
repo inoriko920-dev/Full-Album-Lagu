@@ -431,9 +431,7 @@ export function VisualAnimationControls({
                 setKeyTime(String(point.timeMs / 1000));
                 setKeyValue(
                   String(
-                    property === "opacity"
-                      ? point.value * 100
-                      : point.value,
+                    property === "opacity" ? point.value * 100 : point.value,
                   ),
                 );
               }}
