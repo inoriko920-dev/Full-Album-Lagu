@@ -120,6 +120,10 @@ async function testAlbum(count) {
     report.frozenShellPresent !== true ||
     report.lastTrackSelected !== true ||
     report.timelineDoubleClickSeekVerified !== true ||
+    report.boundaryInspectorPackagedVerified !== true ||
+    report.boundaryPreviewPackagedVerified !== true ||
+    report.boundaryUndoRedoPackagedVerified !== true ||
+    report.boundaryProjectStateRestored !== true ||
     report.disabledTimelineSeekRejected !== true ||
     report.seekPreservedProjectRevision !== true ||
     report.timelineSeekSeconds !== (count - 2) * 4 + 2 ||
@@ -151,6 +155,10 @@ async function testAlbum(count) {
     success: true,
     realPackagedUi: true,
     sourceFilesUnchanged: true,
+    boundaryInspectorPackagedVerified: true,
+    boundaryPreviewPackagedVerified: true,
+    boundaryUndoRedoPackagedVerified: true,
+    boundaryProjectStateRestored: true,
     screenshot: evidence + ".png",
     evidence,
     checks: report.controls,

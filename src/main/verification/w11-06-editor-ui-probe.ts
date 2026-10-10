@@ -118,6 +118,86 @@ export async function captureW1106EditorInteractions(
       assert(visibleBars().length === 32,
         "preview must expose 32 real decoded-audio FFT bars");
 
+      // W11-07 packaged proof: drive the actual frozen Boundary Inspector and
+      // its two-track Preview through real React events, then Undo/Redo every
+      // change BEFORE measuring playback. This is not an owner pixel verdict.
+      const boundaryBaseRevision = shell.getAttribute("data-project-revision");
+      const boundaryBaseDirty = shell.getAttribute("data-project-dirty");
+      const firstBoundary = await wait(
+        () => document.querySelector(".timeline-boundary-marker[data-boundary-from][data-boundary-to]"),
+        "no canonical adjacent audio boundary in packaged editor",
+      );
+      const fromId = firstBoundary.getAttribute("data-boundary-from");
+      const toId = firstBoundary.getAttribute("data-boundary-to");
+      assert(fromId && toId && fromId !== toId,
+        "boundary marker contains invalid directed track IDs");
+      click(firstBoundary, "cannot select canonical boundary");
+      const boundaryInspector = await wait(
+        () => document.querySelector('[aria-label="Inspector Boundary"]'),
+        "selecting timeline boundary did not open the existing left Inspector",
+      );
+      assert(boundaryInspector.getAttribute("data-boundary-from") === fromId &&
+        boundaryInspector.getAttribute("data-boundary-to") === toId,
+        "Inspector selected a different or stale track pair");
+      assert(document.querySelector('[aria-label="Gemini Agent"]'),
+        "boundary selection removed the permanent Gemini rail");
+      assert(document.querySelector('[aria-label="Album Timeline"]'),
+        "boundary selection removed the original album timeline");
+      const presetControl = boundaryInspector.querySelector('[aria-label="Jenis Transisi"]');
+      assert(presetControl && presetControl.value === "" && !presetControl.disabled,
+        "existing boundary should be editable with no implicit preset");
+      presetControl.value = "crossfade";
+      presetControl.dispatchEvent(new Event("change", { bubbles: true }));
+      await wait(
+        () => boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === "crossfade" &&
+          shell.getAttribute("data-project-revision") !== boundaryBaseRevision,
+        "crossfade did not commit via packaged CommandEngine",
+      );
+      const sampledTransition = await wait(
+        () => document.querySelector('.boundary-visual-preview[data-boundary-preset="crossfade"]'),
+        "real packaged two-track Preview did not render the approved preset",
+      );
+      assert(sampledTransition.getAttribute("data-boundary-from") === fromId &&
+        sampledTransition.getAttribute("data-boundary-to") === toId &&
+        sampledTransition.querySelectorAll(".boundary-visual-preview__side").length === 2,
+        "Preview sampled wrong artwork/title pair or missing transition sides");
+      assert(sampledTransition.getAttribute("data-boundary-progress") === "0.500",
+        "selected boundary sample did not use deterministic halfway progress");
+      const historyControl = (label) => Array.from(document.querySelectorAll("button"))
+        .find((element) => element.getAttribute("aria-label") === label ||
+          element.textContent?.trim() === label);
+      click(historyControl("Undo"), "boundary Undo action unavailable");
+      await wait(
+        () => boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === "" &&
+          !document.querySelector(".boundary-visual-preview"),
+        "boundary Undo did not remove preset and sample",
+      );
+      click(historyControl("Redo"), "boundary Redo action unavailable");
+      await wait(
+        () => boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === "crossfade" &&
+          document.querySelector('.boundary-visual-preview[data-boundary-preset="crossfade"]'),
+        "boundary Redo did not restore the same two-track sample",
+      );
+      click(historyControl("Undo"), "cannot return to unedited boundary state");
+      await wait(
+        () => Number.isSafeInteger(Number(shell.getAttribute("data-project-revision"))) &&
+          Number(shell.getAttribute("data-project-revision")) > Number(boundaryBaseRevision) &&
+          shell.getAttribute("data-project-dirty") === boundaryBaseDirty &&
+          boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === "" &&
+          !document.querySelector(".boundary-visual-preview"),
+        "boundary Undo must restore the semantic project and dirty flag while revision remains monotonic",
+      );
+      assert(document.querySelectorAll(".timeline-track").length === expectedTracks,
+        "boundary QA changed album track count");
+      // The existing W11-06 playback checks inspect Media rows. Restore that
+      // original left tab after the boundary-only Inspector regression.
+      click(document.querySelector("#work-tab-media"),
+        "cannot restore the frozen Media tab after boundary QA");
+      await wait(
+        () => document.querySelectorAll(".media-row").length === expectedTracks,
+        "Media panel did not reappear after boundary Inspector QA",
+      );
+
       // This user edit intentionally changes revision BEFORE the playback-only baseline.
       const disabledTrack = document.querySelectorAll(".media-row")[1];
       const toggle = disabledTrack?.querySelector('input[type="checkbox"]');
@@ -283,6 +363,10 @@ export async function captureW1106EditorInteractions(
         zoom: shell.getAttribute("data-timeline-zoom"),
         pausedTime,
         lastTrackSelected: true,
+        boundaryInspectorPackagedVerified: true,
+        boundaryPreviewPackagedVerified: true,
+        boundaryUndoRedoPackagedVerified: true,
+        boundaryProjectStateRestored: true,
         timelineDoubleClickSeekVerified: true,
         timelineSeekSeconds: seekSeconds,
         disabledTimelineSeekRejected: true,
