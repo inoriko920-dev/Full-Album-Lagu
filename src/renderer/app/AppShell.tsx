@@ -726,7 +726,9 @@ function PreviewPanel({
   const playing =
     playback.clock.phase === "playing" || playback.clock.phase === "loading";
   const animationTrack = projectAlbumTimeline(project).items.find(
-    (item) => item.trackId === playback.clock.activeTrackId && item.status === "resolved",
+    (item) =>
+      item.trackId === playback.clock.activeTrackId &&
+      item.status === "resolved",
   );
   const clock = (millis: number) => {
     const seconds = Math.max(0, Math.floor(millis / 1000));
