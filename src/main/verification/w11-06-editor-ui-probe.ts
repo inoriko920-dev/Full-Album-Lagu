@@ -163,9 +163,120 @@ export async function captureW1106EditorInteractions(
         "Preview sampled wrong artwork/title pair or missing transition sides");
       assert(sampledTransition.getAttribute("data-boundary-progress") === "0.500",
         "selected boundary sample did not use deterministic halfway progress");
+
+      // W11-07 AC10 QA: exercise all eight owner-approved presets inside the
+      // REAL packaged Windows editor, never a synthetic React-only fixture.
+      // Test CSS/composited DOM behavior, then Undo every added edit so the
+      // existing W11-06 playback test retains its original clean checkpoint.
+      // This is automated renderer evidence, NOT owner-approved pixel parity.
+      const approvedPresets = [
+        "crossfade", "fade-through-black-blur", "slide", "zoom",
+        "dissolve", "light-glitch", "soft-flash", "premium-album-change",
+      ];
+      const boundaryPresetSamples = [];
+      for (const preset of approvedPresets) {
+        if (preset !== "crossfade") {
+          const current = boundaryInspector.querySelector('[aria-label="Jenis Transisi"]');
+          assert(current && !current.disabled,
+            "packaged boundary preset control unexpectedly became unavailable");
+          current.value = preset;
+          current.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        const preview = await wait(
+          () => {
+            const current = document.querySelector(".boundary-visual-preview");
+            const control = boundaryInspector.querySelector('[aria-label="Jenis Transisi"]');
+            return control?.value === preset &&
+              current?.getAttribute("data-boundary-preset") === preset &&
+              current?.getAttribute("data-boundary-progress") === "0.500"
+              ? current : null;
+          },
+          "real Windows Preview did not render approved preset " + preset,
+          150,
+        );
+        await new Promise((done) =>
+          requestAnimationFrame(() => requestAnimationFrame(done)));
+        const sides = Array.from(preview.querySelectorAll(".boundary-visual-preview__side"));
+        assert(sides.length === 2 && sides.every((side) =>
+          side.getBoundingClientRect().width > 0 &&
+          side.style.transform.includes("scale(") &&
+          side.style.filter.includes("contrast(")),
+          "real compositor omitted or hid a transition side for " + preset);
+        assert(preview.querySelectorAll(
+          ".boundary-visual-preview__foundation .static-scene-preview__spectrum"
+        ).length === 1,
+          "transition duplicated or dropped the real spectrum for " + preset);
+        assert(document.querySelector('[aria-label="Gemini Agent"]') &&
+          document.querySelector('[aria-label="Album Timeline"]'),
+          "transition altered frozen editor rails for " + preset);
+        const black = preview.querySelector(".boundary-visual-preview__overlay--black");
+        const white = preview.querySelector(".boundary-visual-preview__overlay--white");
+        if (preset === "fade-through-black-blur") {
+          assert(Number(black?.style.opacity) > 0.5,
+            "real black-blur preset did not render its overlay");
+        } else if (preset === "slide") {
+          // The existing Inspector defaults to Ease Out: at raw 50% it must
+          // use eased 75% (not incorrectly assume linear -50%/+50%).
+          const outgoingX = Number(sides[0].style.transform.match(
+            /translateX\\((-?[0-9.]+)%\\)/)?.[1]);
+          const incomingX = Number(sides[1].style.transform.match(
+            /translateX\\((-?[0-9.]+)%\\)/)?.[1]);
+          assert(Math.abs(outgoingX + 75) < 0.001 &&
+            Math.abs(incomingX - 25) < 0.001,
+            "real slide preset did not follow the approved Ease Out 75% position");
+        } else if (preset === "zoom") {
+          const outgoingScale = Number(sides[0].style.transform.match(
+            /scale\\(([0-9.]+)\\)/)?.[1]);
+          const incomingScale = Number(sides[1].style.transform.match(
+            /scale\\(([0-9.]+)\\)/)?.[1]);
+          assert(Math.abs(outgoingScale - 1.09) < 0.001 &&
+            Math.abs(incomingScale - 0.97) < 0.001,
+            "real zoom preset did not follow the approved Ease Out 75% scale");
+        } else if (preset === "light-glitch") {
+          assert(!sides[0].style.filter.includes("contrast(1)"),
+            "real glitch preset did not apply contrast");
+        } else if (preset === "soft-flash") {
+          assert(Number(white?.style.opacity) > 0.25,
+            "real soft-flash preset did not render white flash");
+        } else if (preset === "premium-album-change") {
+          assert(Number(white?.style.opacity) > 0.1 &&
+            !sides[0].style.filter.includes("blur(0px)"),
+            "real premium album preset did not render zoom/blur/flash");
+        }
+        boundaryPresetSamples.push({
+          preset,
+          progress: preview.getAttribute("data-boundary-progress"),
+          fromTrackId: preview.getAttribute("data-boundary-from"),
+          toTrackId: preview.getAttribute("data-boundary-to"),
+          outgoingTransform: sides[0].style.transform,
+          incomingTransform: sides[1].style.transform,
+          outgoingFilter: sides[0].style.filter,
+          incomingFilter: sides[1].style.filter,
+          blackOverlayOpacity: black ? Number(black.style.opacity) : 0,
+          whiteOverlayOpacity: white ? Number(white.style.opacity) : 0,
+          foundationSpectrumCount: 1,
+        });
+      }
       const historyControl = (label) => Array.from(document.querySelectorAll("button"))
         .find((element) => element.getAttribute("aria-label") === label ||
           element.textContent?.trim() === label);
+      // Seven newer preset edits must Undo back to the original Crossfade.
+      // This proves ordered independent CommandEngine history in a real app,
+      // and keeps the original Crossfade -> absent Undo/Redo proof intact.
+      for (let index = approvedPresets.length - 1; index > 0; index--) {
+        click(historyControl("Undo"),
+          "Undo unavailable while restoring eight-preset Windows QA");
+        const previous = approvedPresets[index - 1];
+        await wait(
+          () => boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === previous &&
+            document.querySelector(".boundary-visual-preview")?.getAttribute(
+              "data-boundary-preset") === previous,
+          "Undo failed to restore approved preset " + previous,
+        );
+      }
+      assert(boundaryPresetSamples.length === 8 &&
+        new Set(boundaryPresetSamples.map((sample) => sample.preset)).size === 8,
+        "packaged eight-preset proof was incomplete");
       click(historyControl("Undo"), "boundary Undo action unavailable");
       await wait(
         () => boundaryInspector.querySelector('[aria-label="Jenis Transisi"]')?.value === "" &&
@@ -365,6 +476,8 @@ export async function captureW1106EditorInteractions(
         lastTrackSelected: true,
         boundaryInspectorPackagedVerified: true,
         boundaryPreviewPackagedVerified: true,
+        boundaryAllEightPresetPackagedVerified: true,
+        boundaryPresetSamples,
         boundaryUndoRedoPackagedVerified: true,
         boundaryProjectStateRestored: true,
         timelineDoubleClickSeekVerified: true,

@@ -5,6 +5,16 @@ import { join, resolve } from "node:path";
 
 const root = resolve("artifacts", "step11", "T11-W06-05");
 const executable = resolve("out", "win-unpacked", "Lagu Full Album.exe");
+const approvedPresets = [
+  "crossfade",
+  "fade-through-black-blur",
+  "slide",
+  "zoom",
+  "dissolve",
+  "light-glitch",
+  "soft-flash",
+  "premium-album-change",
+];
 
 function makeWav(frequency, durationSeconds = 4) {
   const sampleRate = 8000;
@@ -122,6 +132,18 @@ async function testAlbum(count) {
     report.timelineDoubleClickSeekVerified !== true ||
     report.boundaryInspectorPackagedVerified !== true ||
     report.boundaryPreviewPackagedVerified !== true ||
+    report.boundaryAllEightPresetPackagedVerified !== true ||
+    !Array.isArray(report.boundaryPresetSamples) ||
+    report.boundaryPresetSamples.length !== approvedPresets.length ||
+    report.boundaryPresetSamples.some(
+      (sample, index) =>
+        sample.preset !== approvedPresets[index] ||
+        sample.progress !== "0.500" ||
+        sample.fromTrackId === sample.toTrackId ||
+        !sample.outgoingTransform?.includes("scale(") ||
+        !sample.incomingFilter?.includes("contrast(") ||
+        sample.foundationSpectrumCount !== 1,
+    ) ||
     report.boundaryUndoRedoPackagedVerified !== true ||
     report.boundaryProjectStateRestored !== true ||
     report.disabledTimelineSeekRejected !== true ||
@@ -157,6 +179,8 @@ async function testAlbum(count) {
     sourceFilesUnchanged: true,
     boundaryInspectorPackagedVerified: true,
     boundaryPreviewPackagedVerified: true,
+    boundaryAllEightPresetPackagedVerified: true,
+    boundaryPresetSamples: report.boundaryPresetSamples,
     boundaryUndoRedoPackagedVerified: true,
     boundaryProjectStateRestored: true,
     screenshot: evidence + ".png",
