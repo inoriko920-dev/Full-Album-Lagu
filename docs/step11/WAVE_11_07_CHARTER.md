@@ -26,3 +26,9 @@ Entrance fade/slide/zoom, exit fade/slide/shrink, loop slow zoom/float/pulse. Pe
 W11-07 tasks are serial, T01..T07. No code until PNG+both required DOCX are committed and verified in the correct GitHub tree, UI acceptance and planning gate are recorded, and current code baseline/regressions remain valid. No final W11-06 physical PASS, no final release, no MP4 claim.
 
 **STOP — MENUNGGU FILE WAJIB TERUNGGAH KE GITHUB.**
+
+## 2026-10-10 Gate resolution — verified Git binary source of truth
+
+This checkpoint supersedes the historic BLOCKED_BINARY_UPLOAD status above. All three mandatory binary files now exist on Draft PR #66's branch and their Git blob SHA-1 matches identical local original file bytes; filenames and SHA-256 are recorded in `W11_07_DOR.md`. Owner generated UI-IMG-002G (1586x992) and instructed continuation; reviewed visual structure (left Inspector, center preview, right permanent Gemini, lower album timeline) meets W11-07 state with documented dimension tolerance. **UI ACCEPTANCE = PASS_WITH_TOLERANCE** only for this addendum, not an implicit redesign of old 29-state frozen pack.
+
+Pre-implementation planning gate is now eligible for planning PR merge after exact-head CI. Coding starts strictly **after planning PR merge + main CI** and only on a fresh SOL implementation branch. The W11-06 physical and owner/device 20-AC acceptance remains NOT_TESTED, independently blocks final W11-06 closure and release, but does not require the user to test the app before autonomous pure-domain T07 work. Preserve all original features and never infer additional features from attractive mockup elements.
