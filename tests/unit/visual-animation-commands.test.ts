@@ -170,7 +170,6 @@ describe("W11-07 T03 official animation command / history", () => {
       session.execute(
         createLayerSetAnimationCommand({
           layerId: "layer-0",
-
         }),
       ),
     ).toEqual({ status: "noop" });
