@@ -41,12 +41,6 @@ jobs:
       - name: Clean install
         run: npm ci
 
-      - name: TEMP QA snapshot hardening Prettier diff (REMOVE before merge)
-        shell: pwsh
-        run: |
-          npx prettier --write src/core/application/services/project-layer-commands.ts tests/unit/w11-07-layer-command-input-snapshot.test.ts
-          git diff -- src/core/application/services/project-layer-commands.ts tests/unit/w11-07-layer-command-input-snapshot.test.ts
-
       - name: Foundation and UI verification
         run: npm run verify
 
