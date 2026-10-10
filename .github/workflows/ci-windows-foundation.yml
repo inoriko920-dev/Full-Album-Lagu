@@ -41,6 +41,12 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: TEMP T04 capture Windows Prettier diff (REMOVE before merge)
+        shell: pwsh
+        run: |
+          npx prettier --write src/core/domain/album-boundary-visual.ts tests/unit/album-boundary-visual.test.ts
+          git diff -- src/core/domain/album-boundary-visual.ts tests/unit/album-boundary-visual.test.ts
+
       - name: Foundation and UI verification
         run: npm run verify
 
