@@ -321,19 +321,25 @@ export async function captureW1106EditorInteractions(
         HTMLInputElement.prototype, "value",
       )?.set;
       assert(valueSetter, "native duration input setter missing");
+      const beforeDurationRevision = shell.getAttribute("data-project-revision");
       valueSetter.call(transitionDuration, "2");
       transitionDuration.dispatchEvent(new Event("input", { bubbles: true }));
       await wait(
-        () => boundaryInspector.querySelector('[aria-label="Durasi Transisi"]')?.value === "2",
+        () => boundaryInspector.querySelector('[aria-label="Durasi Transisi"]')?.value === "2" &&
+          shell.getAttribute("data-project-revision") !== beforeDurationRevision,
         "real-audio transition duration did not commit through Inspector",
       );
       const previewBoundary = boundaryInspector.querySelector('[aria-label="Preview Boundary"]');
       click(previewBoundary, "packaged Preview Boundary seek is disabled");
+      // Preview Boundary issues an actual decoder load with autoPlay=false.
+      // Its transport label is Jeda while loading, then Putar when paused;
+      // starting too early falsely reports a missing/disabled Play control.
       await wait(
-        () => elapsedSeconds() >= 4 && elapsedSeconds() < 6,
-        "Preview Boundary did not seek to the incoming audio track", 180,
+        () => elapsedSeconds() >= 4 && elapsedSeconds() < 6 &&
+          button("Putar") && !button("Putar").disabled,
+        "Preview Boundary did not reach a paused, seeked audio track", 180,
       );
-      click(button("Putar"), "packaged audio cannot start at boundary");
+      click(button("Putar"), "packaged audio cannot start after paused boundary seek");
       const liveFrame = await wait(() => {
         const preview = document.querySelector(".boundary-visual-preview");
         const progress = Number(preview?.getAttribute("data-boundary-progress"));
