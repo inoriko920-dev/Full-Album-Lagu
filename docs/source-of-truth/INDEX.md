@@ -128,3 +128,7 @@ Latest explicit user decision -> current Product Definition/planning -> UI Freez
 - W11-06 ASTRA v1.0 full planning: `docs/step11/WAVE_11_06_CHARTER.md`, `TASK_CARDS_W11_06.md`, `W11_06_ACCEPTANCE_MATRIX.md`, `W11_06_DOR.md`, and final native DOCX `docs/source-of-truth/planning/current/15_STEP_11_W11_06_PLAYBACK_SPECTRUM_CHARTER_LAGU_FULL_ALBUM_v1_0.docx`.
 - Frozen UI-IMG-002B/002D Play/Pause/Prev/Next/volume/timecode/progress/timeline is reused; Stop is **controller lifecycle only** with no new visible button. No new UI prompt/image stage needed in this scope.
 - W11-06 ASTRA planning **READY FOR CI REVIEW**; implementation `T11-W06-01` **BLOCKED until planning-only PR #53 passes latest CI, DOCX verification, and merges to main**. T02..07 blocked sequentially. No playback, FFT, MP4 or provider works yet.
+
+## W11-07 source-of-truth addendum — reviewed 2026-10-10
+
+Additional, additive and non-destructive planning: `planning/current/16_STEP_11_W11_07_ANIMATION_TRANSITION_CHARTER_v1_0_PRE_GATE.docx` and `../ui/07_STEP_04_W11_07_UI_REFERENCE_UI_IMG_002G_v1_0_REVIEW.docx`. Authored from owner-provided PNG `../ui/07_W11_07_UI_IMG_002G.png`. Git blob proofs, SHA-256 values and PASS_WITH_TOLERANCE (1586×992 vs 1600×1000 target) are in `../../step11/W11_07_DOR.md`. This one-image addendum does not replace or modify the 29 frozen UI pack.

@@ -1,0 +1,45 @@
+LAGU FULL ALBUM — PROMPT GAMBAR UI W11-07
+UI-IMG-002G | SCR-002 Album Editor — Animasi dan Keyframe Manual
+PROMPT ID: PROMPT-UI-STATE-002G-v1.0
+STATUS: CANDIDATE — MENUNGGU GENERATE DAN PERSETUJUAN PENGGUNA
+
+TUJUAN
+Generate SATU gambar screenshot/mockup desktop Windows 11 high fidelity untuk keadaan baru editor: pengguna memilih Artwork dan mengatur animasi masuk, keluar, loop, dan keyframe manual terbatas. Ini bukan desain ulang. Referensi visual wajib: final UI-IMG-002B, 002C, 002D v1.1. Pertahankan seluruh bentuk visual dan hirarki UI sebelumnya.
+
+OUTPUT
+- Tepat 1 PNG landscape 1600×1000, tajam, tanpa watermark/kolase/device mockup/browser chrome.
+- UI profesional putih/abu muda, aksen biru, font kecil teratur, Bahasa Indonesia, tanpa efek neon/glassmorphism.
+- Empat sisi utuh; tidak ada tombol, teks, atau panel terpotong.
+
+KONTRAK TATA LETAK
+- ATAS: toolbar asli Lagu Full Album tetap sama.
+- KIRI: tab 'Media | Layer | Inspector', pilih 'Inspector'. Semua kontrol manual di kiri.
+- TENGAH: Preview 16:9 yang sama, album visual abstrak, Artwork aktif, judul 'Senja Terakhir', artis 'Arunika', Spectrum dan Progress tetap ada; border seleksi biru hanya pada Artwork.
+- KANAN PERMANEN: 'Gemini Agent', status 'Gemini • Siap • 24/100 key', 'Kelola API', konteks 'Konteks: Layer Artwork', chat ringkas, input 'Minta Gemini mengedit proyek…'. JANGAN pindahkan Inspector ke kanan.
+- BAWAH: 'Album Timeline' track-centric sama, 12 lagu berurutan, playhead pada track 05, boundary 05→06; jangan tambah DAW mixer, lane video atau lane keyframe besar.
+
+WAJIB DI PANEL INSPECTOR KIRI
+- Heading 'Inspector', badge 'Artwork', subjudul 'Layer: Artwork'.
+- Seksi 'Animasi Masuk': preset 'Zoom In', 'Durasi 0,8 dtk', easing 'Ease Out'.
+- Seksi 'Animasi Keluar': preset 'Fade Out', 'Durasi 0,6 dtk'.
+- Seksi 'Animasi Loop': preset 'Slow Zoom', toggle 'Aktif' hidup, 'Intensitas: Halus'.
+- Seksi 'Keyframe Manual': properti dipilih 'Opasitas'; ruler MINI hanya dalam Inspector, dua diamond keyframe di 0,0 dan 2,5 dtk; field 'Waktu 2,5 dtk' dan 'Nilai 85%'; tombol 'Tambah Keyframe' dan 'Hapus Keyframe'; hint 'Posisi, skala, dan opasitas'.
+- Semua field muat dalam Inspector atau panel scrolling asli; harus terlihat utuh di screenshot.
+- Tidak ada editor motion graph, rigging, masking kompleks, DAW lanes atau video effects yang tidak disepakati.
+
+STATE & PERILAKU YANG DIGAMBARKAN
+- Inspector dan border seleksi canvas sama-sama mengikuti Artwork.
+- Canvas menampilkan snapshot mid-animation yang elegan; tanpa motion trail/glow berlebihan.
+- Transisi antar lagu TIDAK diedit di gambar ini. Referensi boundary/transisi yang sudah DISETUJUI adalah UI-IMG-002D, jadi jangan buat gambar transisi baru.
+- Animasi tidak mengubah durasi album, metadata musik, urutan lagu atau status sumber.
+- Jangan membuat toolbar/proyek paralel; fungsi simpan/Undo mengikuti toolbar proyek resmi.
+- Ini GAMBAR REFERENSI STATIS, bukan bukti coding/pemutaran sebenarnya.
+
+HARD CONSTRAINTS
+Jangan menghapus/mengganti panel Gemini permanen, tab kiri, Album Timeline, Preview, Play/Pause, Previous/Next, atau menyisipkan tab utama baru. Jangan membuat tulisan Mandarin, placeholder gibberish, watermark atau callout. Pertahankan style frozen LFA UI v1.1. Buat satu screenshot biasa, tanpa anotasi.
+
+KRITERIA REVIEW
+(1) Gambar 1600×1000 tajam; (2) keempat zona editor utuh; (3) animasi masuk/keluar/loop dan keyframe semua terlihat; (4) tulisan Indonesia terbaca; (5) konsisten dengan UI-IMG-002B/002C/002D; (6) tidak ada kontrol liar/area baru di luar scope.
+Gambar harus GENERATE SENDIRI OLEH PENGGUNA, lalu dikirim dan disetujui secara eksplisit sebelum dianggap UI FINAL dan dirangkum dalam DOCX referensi UI. Gambar/asset lain tidak boleh digenerate oleh SOL.
+
+STOP — MENUNGGU GAMBAR DARI PENGGUNA
