@@ -228,6 +228,60 @@ describe("W11-07 T06 official boundary CommandEngine/history", () => {
     }
   });
 
+  it("holds original boundary IDs and preset even if caller mutates the input after creation", () => {
+    const session = new ProjectSessionHistory(fixture(3));
+    const transition = { ...setting };
+    const input = {
+      fromTrackId: "track-0",
+      toTrackId: "track-1",
+      transition,
+    };
+    const command = createSetBoundaryTransitionCommand(input);
+    // A later caller mutation redirects the old implementation's adjacency
+    // guard and filter to track-1 -> track-2, despite its captured payload.
+    input.fromTrackId = "track-1";
+    input.toTrackId = "track-2";
+    transition.preset = "slide";
+    const result = session.execute(command);
+    expect(result.status).toBe("applied");
+    expect(session.snapshot().project.boundaryTransitions).toEqual([setting]);
+    expect(session.snapshot().project.boundaryTransitions?.[0]).toMatchObject({
+      fromTrackId: "track-0",
+      toTrackId: "track-1",
+      preset: "premium-album-change",
+    });
+    expect(session.undo().status).toBe("applied");
+    expect(session.snapshot().project.boundaryTransitions).toBeUndefined();
+    expect(session.redo().status).toBe("applied");
+    expect(session.snapshot().project.boundaryTransitions).toEqual([setting]);
+  });
+
+  it("removes only the captured boundary even if a reused caller object changes target IDs", () => {
+    const session = new ProjectSessionHistory(fixture(3));
+    const other = { ...setting, fromTrackId: "track-1", toTrackId: "track-2" };
+    expect(session.execute(createSetBoundaryTransitionCommand({
+      fromTrackId: "track-0",
+      toTrackId: "track-1",
+      transition: setting,
+    })).status).toBe("applied");
+    expect(session.execute(createSetBoundaryTransitionCommand({
+      fromTrackId: "track-1",
+      toTrackId: "track-2",
+      transition: other,
+    })).status).toBe("applied");
+
+    const input = { fromTrackId: "track-0", toTrackId: "track-1" };
+    const removal = createSetBoundaryTransitionCommand(input);
+    input.fromTrackId = "track-1";
+    input.toTrackId = "track-2";
+    expect(session.execute(removal).status).toBe("applied");
+    expect(session.snapshot().project.boundaryTransitions).toEqual([other]);
+    expect(session.undo().status).toBe("applied");
+    expect(session.snapshot().project.boundaryTransitions).toEqual([setting, other]);
+    expect(session.redo().status).toBe("applied");
+    expect(session.snapshot().project.boundaryTransitions).toEqual([other]);
+  });
+
   it("tests all 127 boundaries in a 128-song album without timing drift", () => {
     const session = new ProjectSessionHistory(fixture(128));
     for (let i = 0; i < 127; i++) {
