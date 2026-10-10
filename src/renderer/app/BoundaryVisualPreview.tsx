@@ -49,7 +49,10 @@ export function BoundaryVisualPreview({
             : layer.kind === "text" && layer.role === "title"
               ? frame.titleHandoff
               : frame.artistHandoff;
-        const factor = side === "from" ? weights.fromWeight : weights.toWeight;
+        const factor =
+          weights.mode === "at-boundary"
+            ? side === "from" ? weights.fromWeight : weights.toWeight
+            : frame.effect[side === "from" ? "outgoing" : "incoming"].opacity;
         return {
           ...layer,
           selected: false,
@@ -84,7 +87,7 @@ export function BoundaryVisualPreview({
     const channel = frame.effect[side];
     return {
       transform: `translateX(${channel.offsetX * 100}%) scale(${channel.scale})`,
-      filter: `blur(${channel.blur * 12}px)`,
+      filter: `blur(${channel.blur * 12}px) contrast(${1 + frame.effect.glitchAmount * 0.35})`,
     };
   }
 
