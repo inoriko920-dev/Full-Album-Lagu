@@ -565,7 +565,11 @@ export function useProjectSession(): ProjectSessionView {
   );
 
   const setBoundaryTransition = useCallback(
-    (fromTrackId: string, toTrackId: string, transition: VisualBoundaryTransition | undefined) =>
+    (
+      fromTrackId: string,
+      toTrackId: string,
+      transition: VisualBoundaryTransition | undefined,
+    ) =>
       executeVisualLayerCommand((guards) =>
         createSetBoundaryTransitionCommand({
           fromTrackId,
