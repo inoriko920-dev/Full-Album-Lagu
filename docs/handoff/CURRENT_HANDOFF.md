@@ -1,5 +1,14 @@
 # CURRENT HANDOFF
 
+## 2026-10-10 — W11-07 T04 canonical boundary visuals, Draft PR #70
+
+- Previous T01..T03 merged, `main@fb14b3f2` postmerge Windows CI #814 SUCCESS.
+- **T11-W07-04 IMPLEMENTED / FINAL EXACT-HEAD CI PENDING** on [PR #70](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/70). Pure `src/core/domain/album-boundary-visual.ts` reuses canonical album timing, current adjacent enabled pair, track presentation, visual scenes, approved artwork/title/artist handoff and exactly eight preset numeric effects, with fail-closed handling of missing media/unresolved duration and stale pair settings.
+- New tests cover 8 effects, real track metadata/artwork, exact incoming boundary, 128 tracks /127 boundaries, disabled/removed/reordered tracks, song-length clipping, seek-order independence and no ProjectDocument mutation.
+- CI diagnostic [#816 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38027512354) used a **temporary formatting step**. Exact Prettier diffs were incorporated into source and temporary workflow was removed; final normal commit CI must PASS before merge.
+- **No Preview pixels/Inspector widget are wired by T04**. Those are explicitly T05..07. W11-06 physical speaker/hardware sleep/resource plateau **NOT_TESTED**. Final release and MP4 unavailable.
+
+
 ## 2026-10-10 — SOL W11-07 T03 animation/keyframe CommandEngine implementation (PR #69)
 
 - **T11-W07-01** merged via PR #67 (`main@026ddf99`), post-merge Windows #799 SUCCESS; **T11-W07-02** via PR #68 (`main@876d965e`), post-merge Windows [#805 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38026062230).
