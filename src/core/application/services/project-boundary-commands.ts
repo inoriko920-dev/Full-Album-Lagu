@@ -77,14 +77,11 @@ export function createSetBoundaryTransitionCommand(
           entry.toTrackId === input.toTrackId),
       );
       if (transition !== undefined) entries.push(structuredClone(transition));
-      const { boundaryTransitions: _old, ...base } = project;
-      // ProjectDocument has a passthrough schema; explicitly omit the field
-      // when no boundaries remain, preserving clean legacy JSON.
-      if (entries.length === 0) {
-        const next = { ...base };
-        return projectDocumentSchema.parse(next);
-      }
-      return projectDocumentSchema.parse({ ...base, boundaryTransitions: entries });
+      const next = { ...project };
+      // Preserve absent-field semantics when the last boundary is removed.
+      if (entries.length === 0) delete next.boundaryTransitions;
+      else next.boundaryTransitions = entries;
+      return projectDocumentSchema.parse(next);
     },
   };
 }
