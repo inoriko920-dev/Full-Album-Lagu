@@ -13,9 +13,13 @@ const output = resolve(
 const zipFile = "Lagu-Full-Album-0.0.0-foundation-windows-x64.zip";
 const zipPath = resolve("artifacts", zipFile);
 const checksumPath = resolve("artifacts/SHA256SUMS.txt");
-const referenceManifest = resolve("docs/ui/manifests/UI_REFERENCE_MANIFEST.json");
+const referenceManifest = resolve(
+  "docs/ui/manifests/UI_REFERENCE_MANIFEST.json",
+);
 const freezeManifest = resolve("docs/ui/manifests/UI_FREEZE_MANIFEST.json");
-const uiSourcePath = resolve("docs/source-of-truth/ui/07_W11_07_UI_IMG_002G.png");
+const uiSourcePath = resolve(
+  "docs/source-of-truth/ui/07_W11_07_UI_IMG_002G.png",
+);
 const planningDocx = resolve(
   "docs/source-of-truth/planning/current/16_STEP_11_W11_07_ANIMATION_TRANSITION_CHARTER_v1_0_PRE_GATE.docx",
 );
@@ -49,7 +53,12 @@ async function json(path) {
 
 async function fingerprint(path) {
   const bytes = await readFile(path);
-  return { path, bytes: bytes.length, sha256: sha256(bytes), gitBlob: gitBlob(bytes) };
+  return {
+    path,
+    bytes: bytes.length,
+    sha256: sha256(bytes),
+    gitBlob: gitBlob(bytes),
+  };
 }
 
 function accept(id, requirement, status, evidence, limitation = null) {
@@ -74,7 +83,10 @@ async function verify() {
       readFile(pngPath),
     ]);
 
-  requireProof(reference.status === "FROZEN", "reference manifest is not frozen");
+  requireProof(
+    reference.status === "FROZEN",
+    "reference manifest is not frozen",
+  );
   requireProof(freeze.status === "FROZEN", "UI freeze manifest is not frozen");
   requireProof(
     reference.visualReference.approvedVisualStateCount === 29 &&
@@ -84,9 +96,21 @@ async function verify() {
 
   const assets = {};
   for (const [name, path, expected] of [
-    ["UI-IMG-002G source", uiSourcePath, "b1bf98c9a251c1bfea0672e534e5745c16068f57"],
-    ["W11-07 planning DOCX", planningDocx, "8ea6e1cceb4bc4a707c975886b0b5fbb7e71ac09"],
-    ["UI-IMG-002G reviewed DOCX", uiDocx, "817d9f7a5791ba865d3f18b84cdd2570410d5dbc"],
+    [
+      "UI-IMG-002G source",
+      uiSourcePath,
+      "b1bf98c9a251c1bfea0672e534e5745c16068f57",
+    ],
+    [
+      "W11-07 planning DOCX",
+      planningDocx,
+      "8ea6e1cceb4bc4a707c975886b0b5fbb7e71ac09",
+    ],
+    [
+      "UI-IMG-002G reviewed DOCX",
+      uiDocx,
+      "817d9f7a5791ba865d3f18b84cdd2570410d5dbc",
+    ],
   ]) {
     const hash = await fingerprint(path);
     requireProof(hash.gitBlob === expected, `${name} fingerprint mismatch`);
@@ -101,7 +125,10 @@ async function verify() {
     ["UI freeze DOCX", freeze.freezeDocument],
   ]) {
     const hash = await fingerprint(resolve(ref.path));
-    requireProof(hash.gitBlob === ref.gitBlobSha, `${label} fingerprint mismatch`);
+    requireProof(
+      hash.gitBlob === ref.gitBlobSha,
+      `${label} fingerprint mismatch`,
+    );
     assets[label] = hash;
   }
 
@@ -120,9 +147,9 @@ async function verify() {
       captureDom.hasPreviewEmpty === true &&
       captureDom.hasTimelineEmpty === true &&
       capturePng.length > 5000 &&
-      capturePng.subarray(0, 8).equals(
-        Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-      ),
+      capturePng
+        .subarray(0, 8)
+        .equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])),
     "real Windows frozen SCR-002A and Gemini evidence",
   );
 
@@ -135,7 +162,10 @@ async function verify() {
     "Windows portable ZIP SHA-256 mismatch",
   );
   const exe = await stat(resolve("out/win-unpacked/Lagu Full Album.exe"));
-  requireProof(exe.isFile() && exe.size > 0, "packaged Windows executable missing");
+  requireProof(
+    exe.isFile() && exe.size > 0,
+    "packaged Windows executable missing",
+  );
 
   const testedPaths = [
     "tests/unit/visual-animation-schema.test.ts",
@@ -149,7 +179,10 @@ async function verify() {
   ];
   for (const path of testedPaths) {
     const file = await stat(resolve(path));
-    requireProof(file.isFile() && file.size > 100, `missing test owner: ${path}`);
+    requireProof(
+      file.isFile() && file.size > 100,
+      `missing test owner: ${path}`,
+    );
   }
 
   const sourceFiles = [
@@ -174,40 +207,79 @@ async function verify() {
     accept(id, requirement, "PARTIAL_AUTOMATED", evidence, limitation);
 
   const checks = [
-    verified("AC-W11-07-01", "Legacy schema v1 remains valid",
-      "Windows npm run verify / animation schema + persistence tests"),
-    verified("AC-W11-07-02", "Reject invalid animation/keyframes atomically",
-      "Windows validation / schema + CommandEngine tests"),
-    verified("AC-W11-07-03", "Entrance/exit/loop deterministic evaluator",
-      "Windows unit tests: visual-animation-evaluator"),
-    verified("AC-W11-07-04", "0 and 2.5s/85% keyframe interpolation",
-      "Windows unit and Preview component tests"),
-    verified("AC-W11-07-05", "Animation edits have one history and save checkpoint",
-      "Windows command/session + persistence regressions"),
-    verified("AC-W11-07-06", "Locked, copied and removed layer/Template Try protections",
-      "Windows layer command + VisualAnimationControls component tests"),
-    verified("AC-W11-07-07", "First/middle/last song boundary and 128-track replay",
-      "Windows album-boundary-visual + project-boundary-commands tests"),
-    partial("AC-W11-07-08", "Reorder/relink/seek/recovery stale boundary protections",
+    verified(
+      "AC-W11-07-01",
+      "Legacy schema v1 remains valid",
+      "Windows npm run verify / animation schema + persistence tests",
+    ),
+    verified(
+      "AC-W11-07-02",
+      "Reject invalid animation/keyframes atomically",
+      "Windows validation / schema + CommandEngine tests",
+    ),
+    verified(
+      "AC-W11-07-03",
+      "Entrance/exit/loop deterministic evaluator",
+      "Windows unit tests: visual-animation-evaluator",
+    ),
+    verified(
+      "AC-W11-07-04",
+      "0 and 2.5s/85% keyframe interpolation",
+      "Windows unit and Preview component tests",
+    ),
+    verified(
+      "AC-W11-07-05",
+      "Animation edits have one history and save checkpoint",
+      "Windows command/session + persistence regressions",
+    ),
+    verified(
+      "AC-W11-07-06",
+      "Locked, copied and removed layer/Template Try protections",
+      "Windows layer command + VisualAnimationControls component tests",
+    ),
+    verified(
+      "AC-W11-07-07",
+      "First/middle/last song boundary and 128-track replay",
+      "Windows album-boundary-visual + project-boundary-commands tests",
+    ),
+    partial(
+      "AC-W11-07-08",
+      "Reorder/relink/seek/recovery stale boundary protections",
       "Unit boundary guards and upstream W11-01 recovery, W11-02 media E2E",
-      "A combined real-device reconnect/relink and long seek session is not proven"),
-    partial("AC-W11-07-09", "Artwork/title/artist transition with real spectrum clock",
+      "A combined real-device reconnect/relink and long seek session is not proven",
+    ),
+    partial(
+      "AC-W11-07-09",
+      "Artwork/title/artist transition with real spectrum clock",
       "T04 boundary and W11-06 native spectrum playback; T06 Preview component tests",
-      "Full visual/audio synchronization inspection on physical output not performed"),
-    partial("AC-W11-07-10", "Eight named transition profiles",
+      "Full visual/audio synchronization inspection on physical output not performed",
+    ),
+    partial(
+      "AC-W11-07-10",
+      "Eight named transition profiles",
       "All eight evaluated in Windows unit tests; UI Inspector bindings in component tests",
-      "Visual pixel-by-pixel parity for all eight presets not certified"),
-    partial("AC-W11-07-11", "Approved UI-IMG-002G/002D and 29 frozen states",
+      "Visual pixel-by-pixel parity for all eight presets not certified",
+    ),
+    partial(
+      "AC-W11-07-11",
+      "Approved UI-IMG-002G/002D and 29 frozen states",
       "Frozen reference hash checks, owner image/charter integrity and real SCR-002A 1600x1000 capture",
-      "Complete visual comparison of 002G, 002D and all 29 states is not available"),
-    verified("AC-W11-07-12", "Offline/reference fingerprint/security/package ZIP regression",
-      "Frozen reference checks; Windows npm verify, architecture/security, packager and SHA256"),
+      "Complete visual comparison of 002G, 002D and all 29 states is not available",
+    ),
+    verified(
+      "AC-W11-07-12",
+      "Offline/reference fingerprint/security/package ZIP regression",
+      "Frozen reference checks; Windows npm verify, architecture/security, packager and SHA256",
+    ),
   ];
 
   requireProof(checks.length === 12, "expected twelve criteria");
-  requireProof(checks.every((item, i) =>
-    item.id === `AC-W11-07-${String(i + 1).padStart(2, "0")}`),
-  "acceptance order/IDs are incorrect");
+  requireProof(
+    checks.every(
+      (item, i) => item.id === `AC-W11-07-${String(i + 1).padStart(2, "0")}`,
+    ),
+    "acceptance order/IDs are incorrect",
+  );
   requireProof(
     checks.some((item) => item.status === "PARTIAL_AUTOMATED"),
     "cannot claim complete visual/hardware proof",
@@ -226,8 +298,10 @@ async function verify() {
     referencePack: reference.packId,
     checks,
     counts: {
-      automated: checks.filter((item) => item.status === "PASS_AUTOMATED").length,
-      partial: checks.filter((item) => item.status === "PARTIAL_AUTOMATED").length,
+      automated: checks.filter((item) => item.status === "PASS_AUTOMATED")
+        .length,
+      partial: checks.filter((item) => item.status === "PARTIAL_AUTOMATED")
+        .length,
     },
     uiAssets: assets,
     sourceFingerprints,
