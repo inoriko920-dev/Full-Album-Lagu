@@ -93,22 +93,106 @@ describe("W11-07 T01 additive visual animation contracts", () => {
   });
 
   it.each([
-    ["unsupported entrance preset", { entrance: { preset: "spin", durationMs: 800, easing: "linear" } }],
-    ["wrong-phase entrance", { entrance: { preset: "fade-out", durationMs: 800, easing: "linear" } }],
-    ["zero entrance duration", { entrance: { preset: "zoom-in", durationMs: 0, easing: "linear" } }],
-    ["fractional duration", { entrance: { preset: "zoom-in", durationMs: 0.5, easing: "linear" } }],
-    ["unknown settings field", { entrance: validSettings.entrance, pluginSecret: "not allowed" }],
-    ["duplicate keyframe timestamps", { keyframes: [{ property: "opacity", points: [{ timeMs: 0, value: 1 }, { timeMs: 0, value: 0.85 }] }] }],
-    ["descending keyframe timestamps", { keyframes: [{ property: "opacity", points: [{ timeMs: 2500, value: 1 }, { timeMs: 0, value: 0.85 }] }] }],
-    ["opacity value out of bounds", { keyframes: [{ property: "opacity", points: [{ timeMs: 0, value: 1.01 }] }] }],
-    ["zero scale", { keyframes: [{ property: "scale", points: [{ timeMs: 0, value: 0 }] }] }],
-    ["non-finite position", { keyframes: [{ property: "x", points: [{ timeMs: 0, value: Number.POSITIVE_INFINITY }] }] }],
-    ["non-finite time", { keyframes: [{ property: "x", points: [{ timeMs: Number.NaN, value: 0 }] }] }],
-    ["negative keyframe time", { keyframes: [{ property: "x", points: [{ timeMs: -1, value: 0 }] }] }],
-    ["duplicate keyframe property", { keyframes: [{ property: "opacity", points: [{ timeMs: 0, value: 1 }] }, { property: "opacity", points: [{ timeMs: 2500, value: 0.85 }] }] }],
-  ])("rejects %s without producing persisted animation state", (_reason, candidate) => {
-    expect(visualLayerAnimationSchema.safeParse(candidate).success).toBe(false);
-  });
+    [
+      "unsupported entrance preset",
+      { entrance: { preset: "spin", durationMs: 800, easing: "linear" } },
+    ],
+    [
+      "wrong-phase entrance",
+      { entrance: { preset: "fade-out", durationMs: 800, easing: "linear" } },
+    ],
+    [
+      "zero entrance duration",
+      { entrance: { preset: "zoom-in", durationMs: 0, easing: "linear" } },
+    ],
+    [
+      "fractional duration",
+      { entrance: { preset: "zoom-in", durationMs: 0.5, easing: "linear" } },
+    ],
+    [
+      "unknown settings field",
+      { entrance: validSettings.entrance, pluginSecret: "not allowed" },
+    ],
+    [
+      "duplicate keyframe timestamps",
+      {
+        keyframes: [
+          {
+            property: "opacity",
+            points: [
+              { timeMs: 0, value: 1 },
+              { timeMs: 0, value: 0.85 },
+            ],
+          },
+        ],
+      },
+    ],
+    [
+      "descending keyframe timestamps",
+      {
+        keyframes: [
+          {
+            property: "opacity",
+            points: [
+              { timeMs: 2500, value: 1 },
+              { timeMs: 0, value: 0.85 },
+            ],
+          },
+        ],
+      },
+    ],
+    [
+      "opacity value out of bounds",
+      {
+        keyframes: [
+          { property: "opacity", points: [{ timeMs: 0, value: 1.01 }] },
+        ],
+      },
+    ],
+    [
+      "zero scale",
+      { keyframes: [{ property: "scale", points: [{ timeMs: 0, value: 0 }] }] },
+    ],
+    [
+      "non-finite position",
+      {
+        keyframes: [
+          {
+            property: "x",
+            points: [{ timeMs: 0, value: Number.POSITIVE_INFINITY }],
+          },
+        ],
+      },
+    ],
+    [
+      "non-finite time",
+      {
+        keyframes: [
+          { property: "x", points: [{ timeMs: Number.NaN, value: 0 }] },
+        ],
+      },
+    ],
+    [
+      "negative keyframe time",
+      { keyframes: [{ property: "x", points: [{ timeMs: -1, value: 0 }] }] },
+    ],
+    [
+      "duplicate keyframe property",
+      {
+        keyframes: [
+          { property: "opacity", points: [{ timeMs: 0, value: 1 }] },
+          { property: "opacity", points: [{ timeMs: 2500, value: 0.85 }] },
+        ],
+      },
+    ],
+  ])(
+    "rejects %s without producing persisted animation state",
+    (_reason, candidate) => {
+      expect(visualLayerAnimationSchema.safeParse(candidate).success).toBe(
+        false,
+      );
+    },
+  );
 
   it("persists only the agreed V1 source model, without changing playlist order or revision", () => {
     const source = projectWithTracks();
@@ -125,7 +209,9 @@ describe("W11-07 T01 additive visual animation contracts", () => {
     expect(output.revision).toBe(source.revision);
     expect(output.tracks).toEqual(source.tracks);
     expect(output.boundaryTransitions?.[0]).toEqual(transition);
-    expect(projectDocumentSchema.parse(JSON.parse(JSON.stringify(output)))).toEqual(output);
+    expect(
+      projectDocumentSchema.parse(JSON.parse(JSON.stringify(output))),
+    ).toEqual(output);
   });
 
   it.each([
@@ -138,7 +224,10 @@ describe("W11-07 T01 additive visual animation contracts", () => {
     ["soft-flash"],
     ["premium-album-change"],
   ])("has an explicit contract for the agreed %s boundary preset", (preset) => {
-    expect(visualBoundaryTransitionSchema.safeParse({ ...transition, preset }).success).toBe(true);
+    expect(
+      visualBoundaryTransitionSchema.safeParse({ ...transition, preset })
+        .success,
+    ).toBe(true);
   });
 
   it.each([
@@ -151,31 +240,38 @@ describe("W11-07 T01 additive visual animation contracts", () => {
     ["unknown private field", { absolutePath: "C:/private.wav" }],
   ])("rejects %s transition", (_reason, mutation) => {
     expect(
-      visualBoundaryTransitionSchema.safeParse({ ...transition, ...mutation }).success,
+      visualBoundaryTransitionSchema.safeParse({ ...transition, ...mutation })
+        .success,
     ).toBe(false);
   });
 
   it("rejects duplicate directed boundary pairs but retains distinct pairs", () => {
     const project = projectWithTracks();
-    expect(projectDocumentSchema.safeParse({
-      ...project,
-      boundaryTransitions: [transition, transition],
-    }).success).toBe(false);
-    expect(projectDocumentSchema.safeParse({
-      ...project,
-      boundaryTransitions: [
-        transition,
-        { ...transition, fromTrackId: "track-06", toTrackId: "track-05" },
-      ],
-    }).success).toBe(true);
+    expect(
+      projectDocumentSchema.safeParse({
+        ...project,
+        boundaryTransitions: [transition, transition],
+      }).success,
+    ).toBe(false);
+    expect(
+      projectDocumentSchema.safeParse({
+        ...project,
+        boundaryTransitions: [
+          transition,
+          { ...transition, fromTrackId: "track-06", toTrackId: "track-05" },
+        ],
+      }).success,
+    ).toBe(true);
   });
 
   it("does not reject a saved transition solely because tracks were reordered", () => {
     const project = projectWithTracks();
-    expect(projectDocumentSchema.safeParse({
-      ...project,
-      tracks: [...project.tracks].reverse(),
-      boundaryTransitions: [transition],
-    }).success).toBe(true);
+    expect(
+      projectDocumentSchema.safeParse({
+        ...project,
+        tracks: [...project.tracks].reverse(),
+        boundaryTransitions: [transition],
+      }).success,
+    ).toBe(true);
   });
 });
