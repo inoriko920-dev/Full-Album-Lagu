@@ -144,14 +144,22 @@ export const visualLayerAnimationSchema = z
           .strict()
           .superRefine((track, context) => {
             track.points.forEach((point, index) => {
-              if (index > 0 && point.timeMs <= track.points[index - 1]!.timeMs) {
+              if (
+                index > 0 &&
+                point.timeMs <= track.points[index - 1]!.timeMs
+              ) {
                 context.addIssue({
                   code: "custom",
                   message: "Keyframe timestamps must be strictly increasing.",
                   path: ["points", index, "timeMs"],
                 });
               }
-              const minimum = track.property === "scale" ? 0.01 : track.property === "opacity" ? 0 : -1;
+              const minimum =
+                track.property === "scale"
+                  ? 0.01
+                  : track.property === "opacity"
+                    ? 0
+                    : -1;
               const maximum = track.property === "opacity" ? 1 : 2;
               if (point.value < minimum || point.value > maximum) {
                 context.addIssue({
@@ -309,9 +317,7 @@ export type VisualLayerAnimation = z.infer<typeof visualLayerAnimationSchema>;
 export type VisualBoundaryTransition = z.infer<
   typeof visualBoundaryTransitionSchema
 >;
-export type VisualAnimationEasing = z.infer<
-  typeof visualAnimationEasingSchema
->;
+export type VisualAnimationEasing = z.infer<typeof visualAnimationEasingSchema>;
 export type VisualLayerAnchor = z.infer<typeof visualLayerAnchorSchema>;
 export type VisualLayerTransform = z.infer<typeof visualLayerTransformSchema>;
 export type VisualBackgroundFill = z.infer<typeof visualBackgroundFillSchema>;
