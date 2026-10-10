@@ -49,10 +49,10 @@ export function BoundaryVisualPreview({
             : layer.kind === "text" && layer.role === "title"
               ? frame.titleHandoff
               : frame.artistHandoff;
-        const factor =
-          weights.mode === "at-boundary"
-            ? side === "from" ? weights.fromWeight : weights.toWeight
-            : frame.effect[side === "from" ? "outgoing" : "incoming"].opacity;
+        let factor = frame.effect[side === "from" ? "outgoing" : "incoming"].opacity;
+        if (weights.mode === "at-boundary") {
+          factor = side === "from" ? weights.fromWeight : weights.toWeight;
+        }
         return {
           ...layer,
           selected: false,
@@ -85,9 +85,10 @@ export function BoundaryVisualPreview({
   };
   function sideStyle(side: "incoming" | "outgoing"): CSSProperties {
     const channel = frame.effect[side];
+    const contrast = 1 + frame.effect.glitchAmount * 0.35;
     return {
       transform: `translateX(${channel.offsetX * 100}%) scale(${channel.scale})`,
-      filter: `blur(${channel.blur * 12}px) contrast(${1 + frame.effect.glitchAmount * 0.35})`,
+      filter: `blur(${channel.blur * 12}px) contrast(${contrast})`,
     };
   }
 
