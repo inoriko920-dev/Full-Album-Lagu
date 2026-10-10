@@ -4,6 +4,7 @@ import {
   createLayerRemoveCommand,
   createLayerReorderCommand,
   createLayerSetCommonCommand,
+  createLayerSetAnimationCommand,
   createLayerSetTextStyleCommand,
   createLayerSetStaticTextCommand,
   createLayerSetTransformCommand,
@@ -16,6 +17,7 @@ import type {
 } from "../../../core/application/services/project-command-engine";
 import type {
   VisualLayer,
+  VisualLayerAnimation,
   VisualLayerTransform,
   VisualTextStyle,
 } from "../../../core/domain/visual-scene-schema";
@@ -183,6 +185,7 @@ export interface ProjectSessionView {
   removeVisualLayer(layerId: string): boolean;
   reorderVisualLayer(layerId: string, toIndex: number): boolean;
   setVisualLayerCommon(layerId: string, patch: LayerCommonPatch): boolean;
+  setVisualLayerAnimation(layerId: string, animation: VisualLayerAnimation | undefined): boolean;
   setVisualLayerTransform(
     layerId: string,
     transform: VisualLayerTransform,
@@ -583,6 +586,17 @@ export function useProjectSession(): ProjectSessionView {
     (layerId: string, patch: LayerCommonPatch) =>
       executeVisualLayerCommand((guards) =>
         createLayerSetCommonCommand({ layerId, patch, ...guards }),
+      ),
+    [executeVisualLayerCommand],
+  );
+  const setVisualLayerAnimation = useCallback(
+    (layerId: string, animation: VisualLayerAnimation | undefined) =>
+      executeVisualLayerCommand((guards) =>
+        createLayerSetAnimationCommand({
+          layerId,
+          ...(animation === undefined ? {} : { animation }),
+          ...guards,
+        }),
       ),
     [executeVisualLayerCommand],
   );
@@ -1531,6 +1545,7 @@ export function useProjectSession(): ProjectSessionView {
     removeVisualLayer,
     reorderVisualLayer,
     setVisualLayerCommon,
+    setVisualLayerAnimation,
     setVisualLayerTransform,
     setVisualLayerTextStyle,
     setVisualLayerStaticText,
