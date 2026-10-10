@@ -188,6 +188,16 @@ async function verify() {
             result.realPackagedUi === true &&
             result.boundaryInspectorPackagedVerified === true &&
             result.boundaryPreviewPackagedVerified === true &&
+            result.boundaryAllEightPresetPackagedVerified === true &&
+            Array.isArray(result.boundaryPresetSamples) &&
+            result.boundaryPresetSamples.length === 8 &&
+            new Set(result.boundaryPresetSamples.map(
+              (sample) => sample.preset,
+            )).size === 8 &&
+            result.boundaryPresetSamples.every(
+              (sample) => sample.progress === "0.500" &&
+                sample.foundationSpectrumCount === 1,
+            ) &&
             result.boundaryUndoRedoPackagedVerified === true &&
             result.boundaryProjectStateRestored === true,
         ),
@@ -290,7 +300,7 @@ async function verify() {
     partial(
       "AC-W11-07-10",
       "Eight named transition profiles",
-      "All eight evaluated in Windows unit tests; UI Inspector bindings in component tests",
+      "All eight evaluated in Windows unit tests and real packaged Electron Inspector/Preview at 50% on 3/128 synthetic WAV tracks; CSS effect channels logged",
       "Visual pixel-by-pixel parity for all eight presets not certified",
     ),
     partial(
