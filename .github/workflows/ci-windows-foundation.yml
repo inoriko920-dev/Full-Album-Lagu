@@ -41,6 +41,12 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: TEMP capture exact Prettier diff for animation ID regression (remove before merge)
+        shell: pwsh
+        run: |
+          npx prettier --write tests/unit/visual-animation-commands.test.ts
+          git diff -- tests/unit/visual-animation-commands.test.ts
+
       - name: Foundation and UI verification
         run: npm run verify
 
