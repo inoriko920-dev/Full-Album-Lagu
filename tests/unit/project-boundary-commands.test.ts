@@ -259,16 +259,24 @@ describe("W11-07 T06 official boundary CommandEngine/history", () => {
   it("removes only the captured boundary even if a reused caller object changes target IDs", () => {
     const session = new ProjectSessionHistory(fixture(3));
     const other = { ...setting, fromTrackId: "track-1", toTrackId: "track-2" };
-    expect(session.execute(createSetBoundaryTransitionCommand({
-      fromTrackId: "track-0",
-      toTrackId: "track-1",
-      transition: setting,
-    })).status).toBe("applied");
-    expect(session.execute(createSetBoundaryTransitionCommand({
-      fromTrackId: "track-1",
-      toTrackId: "track-2",
-      transition: other,
-    })).status).toBe("applied");
+    expect(
+      session.execute(
+        createSetBoundaryTransitionCommand({
+          fromTrackId: "track-0",
+          toTrackId: "track-1",
+          transition: setting,
+        }),
+      ).status,
+    ).toBe("applied");
+    expect(
+      session.execute(
+        createSetBoundaryTransitionCommand({
+          fromTrackId: "track-1",
+          toTrackId: "track-2",
+          transition: other,
+        }),
+      ).status,
+    ).toBe("applied");
 
     const input = { fromTrackId: "track-0", toTrackId: "track-1" };
     const removal = createSetBoundaryTransitionCommand(input);
@@ -277,7 +285,10 @@ describe("W11-07 T06 official boundary CommandEngine/history", () => {
     expect(session.execute(removal).status).toBe("applied");
     expect(session.snapshot().project.boundaryTransitions).toEqual([other]);
     expect(session.undo().status).toBe("applied");
-    expect(session.snapshot().project.boundaryTransitions).toEqual([setting, other]);
+    expect(session.snapshot().project.boundaryTransitions).toEqual([
+      setting,
+      other,
+    ]);
     expect(session.redo().status).toBe("applied");
     expect(session.snapshot().project.boundaryTransitions).toEqual([other]);
   });
