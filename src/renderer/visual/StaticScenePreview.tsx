@@ -7,6 +7,7 @@ import type {
   VisualLayerAnchor,
   VisualLayerTransform,
 } from "../../core/domain/visual-scene-schema";
+import { evaluateVisualLayerAnimation } from "../../core/domain/visual-animation-evaluator";
 import { TemplateArtwork } from "./TemplateArtwork";
 import "./static-scene-preview.css";
 
@@ -17,6 +18,9 @@ export interface StaticScenePreviewProps {
   spectrumLevels?: readonly number[];
   /** Album-wide audio clock; omitted for the approved static illustration. */
   progressFraction?: number;
+  /** Canonical active-track local audio clock for committed layer animations. */
+  animationTimeMs?: number;
+  animationDurationMs?: number;
   /** Local illustrative sample, never a source media asset or encoded in project. */
   templateArtwork?: { templateId: string; category: string } | undefined;
 }
@@ -183,6 +187,8 @@ export function StaticScenePreview({
   templateArtwork,
   spectrumLevels,
   progressFraction,
+  animationTimeMs,
+  animationDurationMs,
 }: StaticScenePreviewProps) {
   return (
     <div
@@ -209,7 +215,17 @@ export function StaticScenePreview({
             aria-pressed={layer.selected}
             onClick={() => onSelectLayer?.(layer.id)}
             style={{
-              ...frameStyle(layer.transform),
+              ...frameStyle(
+                animationTimeMs !== undefined &&
+                  animationDurationMs !== undefined &&
+                  animationDurationMs > 0
+                  ? evaluateVisualLayerAnimation(
+                      layer,
+                      animationTimeMs,
+                      animationDurationMs,
+                    )
+                  : layer.transform,
+              ),
               ...(layer.kind === "background" ? backgroundStyle(layer) : {}),
             }}
           >
