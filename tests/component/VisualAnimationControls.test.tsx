@@ -170,26 +170,29 @@ describe("W11-07 T05 Inspector UI-IMG-002G animation controls", () => {
   it.each([
     ["85.5%", 0.855],
     ["33.33%", 0.3333],
-  ])("preserves an existing fractional opacity %s when selecting and re-saving its keyframe", (_label, opacity) => {
-    const animation: VisualLayerAnimation = {
-      keyframes: [
-        {
-          property: "opacity",
-          points: [{ timeMs: 2500, value: opacity }],
-        },
-      ],
-    };
-    const { spy } = setup(animation);
+  ])(
+    "preserves an existing fractional opacity %s when selecting and re-saving its keyframe",
+    (_label, opacity) => {
+      const animation: VisualLayerAnimation = {
+        keyframes: [
+          {
+            property: "opacity",
+            points: [{ timeMs: 2500, value: opacity }],
+          },
+        ],
+      };
+      const { spy } = setup(animation);
 
-    // Selecting an existing diamond must not round the editor display.
-    fireEvent.click(screen.getByRole("button", { name: "Keyframe 2,5 detik" }));
-    expect(screen.getByLabelText("Nilai Keyframe")).toHaveValue(opacity * 100);
-    expect(spy).not.toHaveBeenCalled();
+      // Selecting an existing diamond must not round the editor display.
+      fireEvent.click(screen.getByRole("button", { name: "Keyframe 2,5 detik" }));
+      expect(screen.getByLabelText("Nilai Keyframe")).toHaveValue(opacity * 100);
+      expect(spy).not.toHaveBeenCalled();
 
-    // Saving without changing its value must not silently corrupt the project.
-    fireEvent.click(screen.getByRole("button", { name: "Tambah Keyframe" }));
-    expect(spy).toHaveBeenCalledWith("artwork", animation);
-  });
+      // Saving without changing its value must not silently corrupt the project.
+      fireEvent.click(screen.getByRole("button", { name: "Tambah Keyframe" }));
+      expect(spy).toHaveBeenCalledWith("artwork", animation);
+    },
+  );
 
   it("deletes only matching keys and preserves the other properties", () => {
     const existing: VisualLayerAnimation = {
