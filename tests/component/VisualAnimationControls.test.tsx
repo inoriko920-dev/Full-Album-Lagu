@@ -184,8 +184,12 @@ describe("W11-07 T05 Inspector UI-IMG-002G animation controls", () => {
       const { spy } = setup(animation);
 
       // Selecting an existing diamond must not round the editor display.
-      fireEvent.click(screen.getByRole("button", { name: "Keyframe 2,5 detik" }));
-      expect(screen.getByLabelText("Nilai Keyframe")).toHaveValue(opacity * 100);
+      fireEvent.click(
+        screen.getByRole("button", { name: "Keyframe 2,5 detik" }),
+      );
+      expect(screen.getByLabelText("Nilai Keyframe")).toHaveValue(
+        opacity * 100,
+      );
       expect(spy).not.toHaveBeenCalled();
 
       // Saving without changing its value must not silently corrupt the project.
