@@ -1,5 +1,14 @@
 # TASK LEDGER
 
+## 2026-10-10 WIB — LATEST VERIFIED W11-07 STATUS (supersedes historical Draft entries)
+
+- **T11-W07-01 through T11-W07-07 are all MERGED in main**, and subsequent W11-07 stabilization/QA PRs through **#90** are merged. Latest exact-main `0c5e000dc317617429fddc48fc0bc454cdf014eb`, [Windows CI #973 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38062786888).
+- Successful Windows package and both W11-06/W11-07 automated acceptance artifacts exist on CI #973. **W11-07 acceptance: 8 PASS_AUTOMATED / 4 PARTIAL_AUTOMATED** (AC08–AC11 retain real-human/device gates).
+- **W11-06 physical QA NOT_TESTED**: actual sound via speaker/headphones, genuine Windows Suspend/Resume, 25 native OS picker operations, multi-hour memory/handle resource plateau, final 20-AC physical signoff. Frozen 29 UI states and owner UI image comparison likewise not human-approved final.
+- Product scope/UI remain locked: no new presets, layout changes, regenerated images, invented tests, or skip of hardware validation. **Final release and MP4 remain BLOCKED**; do not advance automatically to W11-08/STEP12.
+- The former PR #82/#77/#74 Draft entries below are historical snapshots, not current task state. Details, artifact names and next action: [authoritative latest handoff](docs/step11/evidence/W11_07_LATEST_MAIN_QA_HANDOFF_20261010.md).
+
+
 ## 2026-10-10 — W11-07 audio continuity during visual edits (Draft PR #82)
 
 - Baseline `main@6ceba57a`, Windows #919 SUCCESS. W11-07 T01–T07 and QA through #81 already merged.
