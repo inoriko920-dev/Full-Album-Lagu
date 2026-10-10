@@ -189,6 +189,14 @@ export async function captureW1106EditorInteractions(
       );
       assert(document.querySelectorAll(".timeline-track").length === expectedTracks,
         "boundary QA changed album track count");
+      // The existing W11-06 playback checks inspect Media rows. Restore that
+      // original left tab after the boundary-only Inspector regression.
+      click(document.querySelector("#work-tab-media"),
+        "cannot restore the frozen Media tab after boundary QA");
+      await wait(
+        () => document.querySelectorAll(".media-row").length === expectedTracks,
+        "Media panel did not reappear after boundary Inspector QA",
+      );
 
       // This user edit intentionally changes revision BEFORE the playback-only baseline.
       const disabledTrack = document.querySelectorAll(".media-row")[1];
