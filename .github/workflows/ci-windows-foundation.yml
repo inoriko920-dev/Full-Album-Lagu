@@ -41,6 +41,12 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: TEMP T07 exact Prettier output (remove before merge)
+        shell: pwsh
+        run: |
+          npx prettier --write scripts/run-w07-t07-acceptance.mjs
+          git diff -- scripts/run-w07-t07-acceptance.mjs
+
       - name: Foundation and UI verification
         run: npm run verify
 
