@@ -70,8 +70,7 @@ export function BoundaryVisualPreview({
         );
         const durationMs =
           side === "from" ? fromTrack?.durationMs : toTrack?.durationMs;
-        const localTimeMs =
-          side === "from" ? fromLocalTimeMs : frame.elapsedMs;
+        const localTimeMs = side === "from" ? fromLocalTimeMs : frame.elapsedMs;
         // Compute the layer animation BEFORE applying the boundary weight:
         // an opacity keyframe replaces static opacity, and applying it later
         // would silently erase the crossfade/dissolve/at-boundary handoff.
