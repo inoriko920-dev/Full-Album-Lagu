@@ -85,15 +85,15 @@ async function verify() {
     capturePng,
     packagedEditor,
   ] = await Promise.all([
-      json(referenceManifest),
-      json(freezeManifest),
-      json(legacyGate),
-      readFile(checksumPath, "utf8"),
-      readFile(zipPath),
-      json(domPath),
-      readFile(pngPath),
-      json(editorEvidencePath),
-    ]);
+    json(referenceManifest),
+    json(freezeManifest),
+    json(legacyGate),
+    readFile(checksumPath, "utf8"),
+    readFile(zipPath),
+    json(domPath),
+    readFile(pngPath),
+    json(editorEvidencePath),
+  ]);
 
   requireProof(
     reference.status === "FROZEN",
