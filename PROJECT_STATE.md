@@ -1,5 +1,14 @@
 # PROJECT STATE
 
+## 2026-10-10 — SOL W11-07 T03 animation/keyframe CommandEngine implementation (PR #69)
+
+- **T11-W07-01** merged via PR #67 (`main@026ddf99`), post-merge Windows #799 SUCCESS; **T11-W07-02** via PR #68 (`main@876d965e`), post-merge Windows [#805 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38026062230).
+- **T11-W07-03 IMPLEMENTED; verification PENDING exact-head Windows CI** in [Draft PR #69](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/69), branch `sol/t11-w07-03-animation-command-history-20261010`. One new approved animation setter in canonical `src/core/application/services/project-layer-commands.ts` uses validated immutable payload, stable layer IDs, locked-layer rejection, CommandEngine stale revision/token guards, atomic revision/dirty and single-entry Undo/Redo. Removing animation preserves the original JSON shape.
+- Tests: single history entry, Undo/Redo, no-op, stale/locked/missing rejection, invalid and nonfinite keyframes, JSON serialize/reopen, save-checkpoint, independent duplicate, batch rollback, 64 operations against 128 layers; no changed UI, no extra features.
+- Diagnostic Windows CI #807 exposed exact-optional-property TypeScript failure **in test input only** and formatting; corrected in branch, temporary formatter step removed to restore exact `main` workflow. Normal CI must PASS at final SHA before merge.
+- **W11-06 physical sound/hardware Suspend-Resume/multi-hour resource plateau and final 20-AC remain NOT_TESTED**, regardless of CI success. Release / MP4 **BLOCKED**. Next only after T03 exact-head CI + post-merge main CI: T11-W07-04 canonical track-boundary transition runtime events, no feature expansion.
+
+
 ## 2026-10-09 — T11-W06-07 acceptance automation, Draft PR #63
 
 - Explicit owner-approved PR #61 merge verified: `main@9100f2f39b6ebfe32b2988b103f91ebb82744ff6`, postmerge Windows CI #766 SUCCESS.
