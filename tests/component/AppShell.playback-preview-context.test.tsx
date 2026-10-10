@@ -238,6 +238,8 @@ describe("T11-W06-05 live preview track context", () => {
     previewClock.available = true;
     previewClock.phase = "playing";
     previewClock.activeTrackId = "track-b";
+    previewClock.albumTimeMs = 3000;
+    previewClock.localTimeMs = 1000;
     rerender(<AppShell />);
     expect(preview.getByText("Title B")).toBeInTheDocument();
     expect(preview.getByText("Artist B")).toBeInTheDocument();
@@ -846,4 +848,80 @@ describe("T11-W06-05 live preview track context", () => {
     expect(shell).toHaveAttribute("data-project-dirty", "false");
     expect(startup).toEqual(initial);
   });
+  it("refuses torn track/time snapshots at exact boundary before accepting next-track Preview", async () => {
+    startup = {
+      ...album(),
+      boundaryTransitions: [{
+        fromTrackId: "track-a",
+        toTrackId: "track-b",
+        preset: "crossfade",
+        durationMs: 800,
+        easing: "linear",
+        artworkHandoff: "during-transition",
+        titleHandoff: "during-transition",
+      }],
+      visualScene: {
+        sceneVersion: 1,
+        layers: [
+          createStarterLayer("title", "title"),
+          createStarterLayer("artist", "artist"),
+          createStarterLayer("spectrum", "spectrum"),
+        ],
+      },
+    };
+    const original = structuredClone(startup);
+    const { rerender } = render(<AppShell />);
+    await waitFor(() => expect(
+      document.querySelector('[data-timeline-track-id="track-b"]'),
+    ).not.toBeNull());
+
+    previewClock.available = true;
+    previewClock.phase = "playing";
+    previewClock.activeTrackId = "track-a";
+    previewClock.albumTimeMs = 2000;
+    previewClock.localTimeMs = 2000;
+    rerender(<AppShell />);
+
+    // The last outgoing media time can touch the half-open boundary before
+    // an ended event switches the active media generation. Never show the
+    // incoming artwork/title or outgoing FFT as if the new song started.
+    expect(screen.queryByLabelText("Preview Boundary", {
+      selector: ".boundary-visual-preview",
+    })).toBeNull();
+    expect(screen.getByLabelText("Preview visual statis")).toHaveTextContent("Title A");
+
+    previewClock.activeTrackId = "track-b";
+    previewClock.localTimeMs = 800; // stale local clock despite matching track ID
+    rerender(<AppShell />);
+    expect(screen.queryByLabelText("Preview Boundary", {
+      selector: ".boundary-visual-preview",
+    })).toBeNull();
+    expect(screen.getByLabelText("Preview visual statis")).toHaveTextContent("Title A");
+
+    previewClock.localTimeMs = 0;
+    rerender(<AppShell />);
+    expect(screen.getByLabelText("Preview Boundary", {
+      selector: ".boundary-visual-preview",
+    })).toHaveAttribute("data-boundary-progress", "0.000");
+
+    previewClock.albumTimeMs = 2400;
+    previewClock.localTimeMs = 400;
+    rerender(<AppShell />);
+    expect(screen.getByLabelText("Preview Boundary", {
+      selector: ".boundary-visual-preview",
+    })).toHaveAttribute("data-boundary-progress", "0.500");
+
+    previewClock.activeTrackId = "track-a"; // late stale track event
+    rerender(<AppShell />);
+    expect(screen.queryByLabelText("Preview Boundary", {
+      selector: ".boundary-visual-preview",
+    })).toBeNull();
+    expect(screen.getByLabelText("Preview visual statis")).toHaveTextContent("Title A");
+
+    expect(document.querySelector(".app-shell")).toHaveAttribute("data-project-revision", "0");
+    expect(document.querySelector(".app-shell")).toHaveAttribute("data-project-dirty", "false");
+    expect(startup).toEqual(original);
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+  });
+
 });
