@@ -57,20 +57,23 @@ export interface SetBoundaryTransitionInput extends BoundaryCommandExpectation {
 export function createSetBoundaryTransitionCommand(
   input: SetBoundaryTransitionInput,
 ): ProjectCommand {
+  // Snapshot the directed pair together with the validated transition. The
+  // caller may reuse or mutate its input before CommandEngine applies it.
+  const { fromTrackId, toTrackId } = input;
   const transition =
     input.transition === undefined
       ? undefined
       : visualBoundaryTransitionSchema.parse(structuredClone(input.transition));
   if (
     transition !== undefined &&
-    (transition.fromTrackId !== input.fromTrackId ||
-      transition.toTrackId !== input.toTrackId)
+    (transition.fromTrackId !== fromTrackId ||
+      transition.toTrackId !== toTrackId)
   ) {
     throw new Error("Boundary transition must match its directed track pair.");
   }
   return {
     kind: "boundary.set-transition",
-    label: `Atur transisi ${input.fromTrackId} → ${input.toTrackId}`,
+    label: `Atur transisi ${fromTrackId} → ${toTrackId}`,
     origin: "manual",
     ...(input.expectedBaseRevision === undefined
       ? {}
@@ -80,15 +83,15 @@ export function createSetBoundaryTransitionCommand(
       : { expectedStateToken: input.expectedStateToken }),
     apply: (project) => {
       if (
-        !isEditableBoundaryPair(project, input.fromTrackId, input.toTrackId)
+        !isEditableBoundaryPair(project, fromTrackId, toTrackId)
       ) {
         throw new Error("Boundary is no longer adjacent, enabled and ready.");
       }
       const entries = (project.boundaryTransitions ?? []).filter(
         (entry) =>
           !(
-            entry.fromTrackId === input.fromTrackId &&
-            entry.toTrackId === input.toTrackId
+            entry.fromTrackId === fromTrackId &&
+            entry.toTrackId === toTrackId
           ),
       );
       if (transition !== undefined) entries.push(structuredClone(transition));
