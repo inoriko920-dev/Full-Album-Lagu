@@ -3,7 +3,7 @@
 **Purpose:** Strengthen W11-07 AC08/AC09 evidence from React unit/component checks to a real packaged Windows Electron UI sequence. Existing functionality and owner-approved 29-state UI are unchanged.
 
 The source-only changes are in:
-- `src/main/verification/w11-06-editor-ui-probe.ts`: before audio playback, import real fixture WAVs, apply the existing frozen template, click a real adjacent timeline boundary, select the existing Crossfade preset in the existing left Inspector, confirm the actual two-track Preview at deterministic 50% progress, Undo, Redo, then Undo once more. Assert the original project revision, dirty flag, track count, Gemini rail and album timeline survive unchanged.
+- `src/main/verification/w11-06-editor-ui-probe.ts`: before audio playback, import real fixture WAVs, apply the existing frozen template, click a real adjacent timeline boundary, select the existing Crossfade preset in the existing left Inspector, confirm the actual two-track Preview at deterministic 50% progress, Undo, Redo, then Undo once more. Assert the original semantic boundary content and dirty flag return, while the CommandEngine revision continues increasing monotonically as designed; preserve track count, Gemini rail and album timeline.
 - `scripts/run-w06-packaged-editor-controls.mjs`: require the new proof flags for **both 3-track and 128-track** executable runs, and retain them in the UI evidence summary.
 - `scripts/run-w07-t07-acceptance.mjs`: make the real packaged 3+128 evidence a required W11-07 audit input, without modifying the existing eight PASS_AUTOMATED / four PARTIAL_AUTOMATED classification.
 
