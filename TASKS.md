@@ -1,5 +1,14 @@
 # TASK LEDGER
 
+## 2026-10-10 — SOL W11-07 T06 boundary Inspector and Preview (Draft PR #72)
+
+- Previous T01..T05 merged; latest `main@429951da`, postmerge Windows CI #837 SUCCESS.
+- **T11-W07-06 IMPLEMENTED / EXACT-HEAD FINAL CI PENDING** in [PR #72](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/72). Uses approved UI-IMG-002D, existing left Inspector + Album Timeline boundary picker, official boundary set/remove CommandEngine with Undo/Redo and stale/disabled/reordered/missing media checks. Eight pre-approved type presets, duration, easing, artwork and title/artist handoffs; Preview uses T04 visual frames and the original album clock.
+- Tests cover real AppShell boundary metadata/UI, Preview with two tracks, editing and Undo/Redo, 128 songs/127 transitions, legacy persistence, state safety. No new UI images or Gemini relocation.
+- Windows CI [#841 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38034265340) used temporary diagnostic Prettier stage. Exact runner formatting applied to 8 files, temporary stage removed and workflow restored. **Normal exact-head CI must PASS before merge** and postmerge CI on main before T07.
+- **W11-06 speaker sound, hardware Suspend/Resume, 25 OS picker interactions, multihour resource plateau NOT_TESTED.** No final release/MP4; T07 drift audit and hardware QA remain.
+
+
 ## 2026-10-10 — W11-07 T04 canonical boundary visuals, Draft PR #70
 
 - Previous T01..T03 merged, `main@fb14b3f2` postmerge Windows CI #814 SUCCESS.

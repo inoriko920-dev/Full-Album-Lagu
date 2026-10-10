@@ -1142,3 +1142,145 @@ describe("T11-W05-07 frozen remediation: editor-hosted Trial, scoped Save and ca
     ).toBeInTheDocument();
   });
 });
+
+describe("T11-W07-06 real AppShell boundary Inspector and Preview", () => {
+  function arrangeTwoSongs() {
+    getStartupProjectMock.mockResolvedValue({
+      status: "loaded",
+      project: {
+        schemaVersion: 1,
+        projectId: "real-boundary-editor",
+        name: "Album boundary",
+        revision: 0,
+        tracks: [
+          {
+            id: "song-a",
+            title: "First",
+            sourcePath: "first.wav",
+            audioAssetId: "audio-a",
+          },
+          {
+            id: "song-b",
+            title: "Second",
+            sourcePath: "second.wav",
+            audioAssetId: "audio-b",
+          },
+        ],
+        mediaAssets: [
+          {
+            id: "audio-a",
+            kind: "audio",
+            required: true,
+            sourcePath: "first.wav",
+            fileName: "first.wav",
+            sizeBytes: 300,
+            availability: "ready",
+            metadata: { durationMs: 1000, artist: "Artist A" },
+          },
+          {
+            id: "audio-b",
+            kind: "audio",
+            required: true,
+            sourcePath: "second.wav",
+            fileName: "second.wav",
+            sizeBytes: 300,
+            availability: "ready",
+            metadata: { durationMs: 2000, artist: "Artist B" },
+          },
+        ],
+        visualScene: {
+          sceneVersion: 1,
+          layers: [
+            createStarterLayer("artwork", "artwork"),
+            createStarterLayer("title", "title"),
+            createStarterLayer("artist", "artist"),
+          ],
+        },
+      },
+      location: { kind: "known-path" },
+    });
+  }
+
+  it("selects actual boundary, edits one transition, Undo/Redo and displays two-track Preview", async () => {
+    arrangeTwoSongs();
+    render(<AppShell />);
+    await waitFor(() =>
+      expect(shell()).toHaveAttribute(
+        "data-project-id",
+        "real-boundary-editor",
+      ),
+    );
+    const select = screen.getByRole("button", {
+      name: "Pilih boundary song-a ke song-b",
+    });
+    expect(select).toBeInTheDocument();
+    fireEvent.click(select);
+    expect(screen.getByRole("tab", { name: "Inspector" })).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    expect(screen.getByLabelText("Inspector Boundary")).toHaveTextContent(
+      "First",
+    );
+    expect(screen.getByLabelText("Inspector Boundary")).toHaveTextContent(
+      "Second",
+    );
+    expect(screen.getByLabelText("Jenis Transisi")).toHaveValue("");
+    const revision = shell().getAttribute("data-project-revision");
+    fireEvent.change(screen.getByLabelText("Jenis Transisi"), {
+      target: { value: "crossfade" },
+    });
+    expect(shell()).toHaveAttribute("data-project-dirty", "true");
+    expect(shell().getAttribute("data-project-revision")).not.toBe(revision);
+    expect(screen.getByLabelText("Jenis Transisi")).toHaveValue("crossfade");
+    expect(
+      screen.getByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toHaveAttribute("data-boundary-from", "song-a");
+    expect(
+      screen.getByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toHaveAttribute("data-boundary-to", "song-b");
+    fireEvent.change(screen.getByLabelText("Durasi Transisi"), {
+      target: { value: "0.6" },
+    });
+    expect(screen.getByLabelText("Durasi Transisi")).toHaveValue(0.6);
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(screen.getByLabelText("Durasi Transisi")).toHaveValue(0.8);
+    fireEvent.click(screen.getByRole("button", { name: "Undo" }));
+    expect(screen.getByLabelText("Jenis Transisi")).toHaveValue("");
+    expect(shell()).toHaveAttribute("data-project-dirty", "false");
+    fireEvent.click(screen.getByRole("button", { name: "Redo" }));
+    expect(screen.getByLabelText("Jenis Transisi")).toHaveValue("crossfade");
+    expect(
+      screen.getByRole("complementary", { name: "Gemini Agent" }),
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText("Album Timeline")).toBeInTheDocument();
+  }, 30000);
+
+  it("clears boundary selection when the user selects a track instead", async () => {
+    arrangeTwoSongs();
+    render(<AppShell />);
+    await waitFor(() =>
+      expect(shell()).toHaveAttribute(
+        "data-project-id",
+        "real-boundary-editor",
+      ),
+    );
+    fireEvent.click(
+      screen.getByRole("button", { name: "Pilih boundary song-a ke song-b" }),
+    );
+    expect(screen.getByLabelText("Inspector Boundary")).toBeInTheDocument();
+    const track = document.querySelector(
+      'button[data-timeline-track-id="song-a"]',
+    );
+    expect(track).not.toBeNull();
+    fireEvent.click(track!);
+    expect(
+      screen.queryByLabelText("Inspector Boundary"),
+    ).not.toBeInTheDocument();
+    expect(shell()).toHaveAttribute("data-project-dirty", "false");
+  });
+});

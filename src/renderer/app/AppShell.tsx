@@ -7,6 +7,10 @@ import type { VisualLayerTransform } from "../../core/domain/visual-scene-schema
 import { VisualSelectionSession } from "../state/ui-session/visual-selection-session";
 import { StaticScenePreview } from "../visual/StaticScenePreview";
 import { VisualLayerInspector, VisualLayerPanel } from "./VisualLayerControls";
+import { BoundaryInspector, type SelectedBoundary } from "./BoundaryInspector";
+import { BoundaryVisualPreview } from "./BoundaryVisualPreview";
+import { isEditableBoundaryPair } from "../../core/application/services/project-boundary-commands";
+import { resolveAlbumBoundaryVisualFrame } from "../../core/domain/album-boundary-visual";
 import { TemplateBrowser } from "./TemplateBrowser";
 import {
   isProjectTrackEnabled,
@@ -563,6 +567,9 @@ function SelectedTrackInspector({
 function InspectorPanel({
   projectSession,
   selectedTrackId,
+  selectedBoundary,
+  onPreviewBoundary,
+  previewAvailable,
   visualModel,
   onPreviewTransform,
   onCommitTransform,
@@ -570,11 +577,24 @@ function InspectorPanel({
 }: {
   projectSession: ReturnType<typeof useProjectSession>;
   selectedTrackId: string | null;
+  selectedBoundary: SelectedBoundary | null;
+  onPreviewBoundary: () => void;
+  previewAvailable: boolean;
   visualModel: StaticScenePreviewModel;
   onPreviewTransform: (transform: VisualLayerTransform) => void;
   onCommitTransform: () => void;
   onCancelTransform: () => void;
 }) {
+  if (selectedBoundary !== null) {
+    return (
+      <BoundaryInspector
+        session={projectSession}
+        selection={selectedBoundary}
+        onPreview={onPreviewBoundary}
+        previewAvailable={previewAvailable}
+      />
+    );
+  }
   if (visualModel.selectedLayerId !== null) {
     return (
       <VisualLayerInspector
@@ -626,6 +646,9 @@ function WorkRail({
   onTabChange,
   projectSession,
   selectedTrackId,
+  selectedBoundary,
+  onPreviewBoundary,
+  previewAvailable,
   onSelectTrack,
   visualModel,
   onSelectLayer,
@@ -637,6 +660,9 @@ function WorkRail({
   onTabChange: (tab: WorkRailTab) => void;
   projectSession: ReturnType<typeof useProjectSession>;
   selectedTrackId: string | null;
+  selectedBoundary: SelectedBoundary | null;
+  onPreviewBoundary: () => void;
+  previewAvailable: boolean;
   onSelectTrack: (trackId: string) => void;
   visualModel: StaticScenePreviewModel;
   onSelectLayer: (id: string | null) => void;
@@ -700,6 +726,9 @@ function WorkRail({
           <InspectorPanel
             projectSession={projectSession}
             selectedTrackId={selectedTrackId}
+            selectedBoundary={selectedBoundary}
+            onPreviewBoundary={onPreviewBoundary}
+            previewAvailable={previewAvailable}
             visualModel={visualModel}
             onPreviewTransform={onPreviewTransform}
             onCommitTransform={onCommitTransform}
@@ -716,11 +745,13 @@ function PreviewPanel({
   onSelectLayer,
   playback,
   project,
+  selectedBoundary,
 }: {
   visualModel: StaticScenePreviewModel;
   onSelectLayer: (layerId: string) => void;
   playback: ReturnType<typeof useAlbumPreviewPlayback>;
   project: ReturnType<typeof useProjectSession>["project"];
+  selectedBoundary: SelectedBoundary | null;
 }) {
   const active = playback.available;
   const playing =
@@ -730,6 +761,50 @@ function PreviewPanel({
       item.trackId === playback.clock.activeTrackId &&
       item.status === "resolved",
   );
+  // The live clock owns active transitions; selection-only Preview samples
+  // the same T04 projection at the approved boundary midpoint (no seek side effect).
+  const liveBoundary =
+    playback.available && playback.clock.projectId === project.projectId
+      ? resolveAlbumBoundaryVisualFrame(project, playback.clock.albumTimeMs)
+      : null;
+  const selectedSetting =
+    selectedBoundary === null
+      ? undefined
+      : project.boundaryTransitions?.find(
+          (entry) =>
+            entry.fromTrackId === selectedBoundary.fromTrackId &&
+            entry.toTrackId === selectedBoundary.toTrackId,
+        );
+  const incoming =
+    selectedBoundary === null
+      ? undefined
+      : projectAlbumTimeline(project).items.find(
+          (entry) =>
+            entry.trackId === selectedBoundary.toTrackId &&
+            entry.status === "resolved",
+        );
+  const selectedSample =
+    selectedSetting === undefined ||
+    incoming?.startMs === undefined ||
+    incoming.durationMs === undefined
+      ? null
+      : resolveAlbumBoundaryVisualFrame(
+          project,
+          incoming.startMs +
+            Math.min(
+              Math.floor(
+                Math.min(selectedSetting.durationMs, incoming.durationMs) / 2,
+              ),
+              Math.max(0, incoming.durationMs - 1),
+            ),
+        );
+  const boundaryFrame =
+    liveBoundary?.status === "active"
+      ? liveBoundary
+      : selectedSample?.status === "active"
+        ? selectedSample
+        : null;
+
   const clock = (millis: number) => {
     const seconds = Math.max(0, Math.floor(millis / 1000));
     return [
@@ -746,7 +821,24 @@ function PreviewPanel({
         <div
           className={`preview-frame${visualModel.layers.length > 0 ? " preview-frame--visual" : ""}`}
         >
-          {visualModel.layers.length > 0 ? (
+          {boundaryFrame !== null ? (
+            <BoundaryVisualPreview
+              project={project}
+              frame={boundaryFrame}
+              {...(active
+                ? {
+                    spectrumLevels: playback.spectrum,
+                    progressFraction:
+                      playback.total > 0
+                        ? Math.min(
+                            1,
+                            playback.clock.albumTimeMs / playback.total,
+                          )
+                        : 0,
+                  }
+                : {})}
+            />
+          ) : visualModel.layers.length > 0 ? (
             <StaticScenePreview
               model={visualModel}
               onSelectLayer={onSelectLayer}
@@ -881,6 +973,8 @@ function GeminiRail() {
 function TimelinePanel({
   projectSession,
   selectedTrackId,
+  selectedBoundary,
+  onSelectBoundary,
   onSelectTrack,
   zoom,
   onZoomChange,
@@ -888,6 +982,8 @@ function TimelinePanel({
 }: {
   projectSession: ReturnType<typeof useProjectSession>;
   selectedTrackId: string | null;
+  selectedBoundary: SelectedBoundary | null;
+  onSelectBoundary: (pair: SelectedBoundary) => void;
   onSelectTrack: (trackId: string) => void;
   zoom: number;
   onZoomChange: (zoom: number) => void;
@@ -895,6 +991,9 @@ function TimelinePanel({
 }) {
   const tracks = projectSession.project.tracks;
   const projection = projectAlbumTimeline(projectSession.project);
+  const eligibleItems = projection.items.filter(
+    (item) => item.status === "resolved",
+  );
   const trackWidth = Math.round((150 * zoom) / 100);
   const activeIndex = projection.items.findIndex(
     (item) => item.trackId === playback.clock.activeTrackId,
@@ -1033,6 +1132,42 @@ function TimelinePanel({
                     <strong>{track.title}</strong>
                     <small>{timingLabel}</small>
                   </span>
+                </button>
+              );
+            })}
+            {eligibleItems.slice(1).map((to, index) => {
+              const from = eligibleItems[index]!;
+              if (
+                !isEditableBoundaryPair(
+                  projectSession.project,
+                  from.trackId,
+                  to.trackId,
+                )
+              )
+                return null;
+              const selected =
+                selectedBoundary?.fromTrackId === from.trackId &&
+                selectedBoundary.toTrackId === to.trackId;
+              return (
+                <button
+                  key={`${from.trackId}:${to.trackId}`}
+                  type="button"
+                  className={`timeline-boundary-marker${selected ? " is-selected" : ""}`}
+                  style={{
+                    left: `${18 + to.sourceIndex * (trackWidth + 5) - 2.5}px`,
+                  }}
+                  data-boundary-from={from.trackId}
+                  data-boundary-to={to.trackId}
+                  aria-label={`Pilih boundary ${from.trackId} ke ${to.trackId}`}
+                  aria-pressed={selected}
+                  onClick={() =>
+                    onSelectBoundary({
+                      fromTrackId: from.trackId,
+                      toTrackId: to.trackId,
+                    })
+                  }
+                >
+                  ◆
                 </button>
               );
             })}
@@ -1398,6 +1533,9 @@ export function AppShell() {
     null,
   );
   const [timelineZoom, setTimelineZoom] = useState(100);
+  const [selectedBoundaryState, setSelectedBoundary] = useState<
+    (SelectedBoundary & { projectId: string }) | null
+  >(null);
   const projectSession = useProjectSession();
   const playback = useAlbumPreviewPlayback(
     projectSession.project,
@@ -1560,6 +1698,17 @@ export function AppShell() {
       ? selectedTrackIdState
       : null;
 
+  const selectedBoundary =
+    selectedBoundaryState !== null &&
+    selectedBoundaryState.projectId === projectSession.project.projectId &&
+    isEditableBoundaryPair(
+      projectSession.project,
+      selectedBoundaryState.fromTrackId,
+      selectedBoundaryState.toTrackId,
+    )
+      ? selectedBoundaryState
+      : null;
+
   const showHistoryControls =
     projectSession.project.tracks.length > 0 ||
     projectSession.canUndo ||
@@ -1705,27 +1854,57 @@ export function AppShell() {
           onTabChange={setActiveTab}
           projectSession={projectSession}
           selectedTrackId={selectedTrackId}
+          selectedBoundary={selectedBoundary}
+          previewAvailable={playback.available}
+          onPreviewBoundary={() => {
+            if (selectedBoundary === null || !playback.available) return;
+            const to = projectAlbumTimeline(projectSession.project).items.find(
+              (item) => item.trackId === selectedBoundary.toTrackId,
+            );
+            if (to?.status === "resolved" && to.startMs !== undefined) {
+              playback.seek(to.startMs);
+            }
+          }}
           onSelectTrack={(id) => {
+            setSelectedBoundary(null);
             setSelectedTrackId(id);
             selectLayer(null);
           }}
           visualModel={visualModel}
-          onSelectLayer={(id) => selectLayer(id)}
+          onSelectLayer={(id) => {
+            setSelectedBoundary(null);
+            selectLayer(id);
+          }}
           onPreviewTransform={previewLayerTransform}
           onCommitTransform={commitLayerTransform}
           onCancelTransform={cancelLayerTransform}
         />
         <PreviewPanel
           visualModel={playbackVisualModel}
-          onSelectLayer={(id) => selectLayer(id, true)}
+          onSelectLayer={(id) => {
+            setSelectedBoundary(null);
+            selectLayer(id, true);
+          }}
           playback={playback}
           project={projectSession.project}
+          selectedBoundary={selectedBoundary}
         />
         <GeminiRail />
         <TimelinePanel
           projectSession={projectSession}
           selectedTrackId={selectedTrackId}
+          selectedBoundary={selectedBoundary}
+          onSelectBoundary={(pair) => {
+            setSelectedBoundary({
+              ...pair,
+              projectId: projectSession.project.projectId,
+            });
+            setSelectedTrackId(null);
+            selectLayer(null);
+            setActiveTab("inspector");
+          }}
           onSelectTrack={(id) => {
+            setSelectedBoundary(null);
             setSelectedTrackId(id);
             selectLayer(null);
           }}
