@@ -414,10 +414,7 @@ describe("W11-07 AC10 real React Preview preset output regressions", () => {
   });
 });
 
-
-function withArtworkKeyframes(
-  source: ProjectDocument,
-): ProjectDocument {
+function withArtworkKeyframes(source: ProjectDocument): ProjectDocument {
   return projectDocumentSchema.parse({
     ...source,
     visualScene: {
