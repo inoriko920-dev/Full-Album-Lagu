@@ -41,6 +41,12 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: TEMP AC10 capture exact Windows Prettier diff (remove before merge)
+        shell: pwsh
+        run: |
+          npx prettier --write src/main/verification/w11-06-editor-ui-probe.ts scripts/run-w06-packaged-editor-controls.mjs scripts/run-w07-t07-acceptance.mjs
+          git diff -- src/main/verification/w11-06-editor-ui-probe.ts scripts/run-w06-packaged-editor-controls.mjs scripts/run-w07-t07-acceptance.mjs
+
       - name: Foundation and UI verification
         run: npm run verify
 
