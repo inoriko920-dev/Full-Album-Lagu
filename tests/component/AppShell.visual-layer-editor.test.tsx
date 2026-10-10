@@ -1190,8 +1190,8 @@ describe("T11-W07-06 real AppShell boundary Inspector and Preview", () => {
     expect(shell()).toHaveAttribute("data-project-dirty", "true");
     expect(shell().getAttribute("data-project-revision")).not.toBe(revision);
     expect(screen.getByLabelText("Jenis Transisi")).toHaveValue("crossfade");
-    expect(screen.getByLabelText("Preview Boundary")).toHaveAttribute("data-boundary-from", "song-a");
-    expect(screen.getByLabelText("Preview Boundary")).toHaveAttribute("data-boundary-to", "song-b");
+    expect(screen.getByLabelText("Preview Boundary", { selector: ".boundary-visual-preview" })).toHaveAttribute("data-boundary-from", "song-a");
+    expect(screen.getByLabelText("Preview Boundary", { selector: ".boundary-visual-preview" })).toHaveAttribute("data-boundary-to", "song-b");
     fireEvent.change(screen.getByLabelText("Durasi Transisi"), { target: { value: "0.6" } });
     expect(screen.getByLabelText("Durasi Transisi")).toHaveValue(0.6);
     fireEvent.click(screen.getByRole("button", { name: "Undo" }));
@@ -1205,13 +1205,16 @@ describe("T11-W07-06 real AppShell boundary Inspector and Preview", () => {
     expect(screen.getByLabelText("Album Timeline")).toBeInTheDocument();
   }, 30000);
 
-  it("rejects stale boundary selection after opening a different project", async () => {
+  it("clears boundary selection when the user selects a track instead", async () => {
     arrangeTwoSongs();
     render(<AppShell />);
     await waitFor(() => expect(shell()).toHaveAttribute("data-project-id", "real-boundary-editor"));
     fireEvent.click(screen.getByRole("button", { name: "Pilih boundary song-a ke song-b" }));
     expect(screen.getByLabelText("Inspector Boundary")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Pilih boundary song-a ke song-b" }));
+    const track = document.querySelector('button[data-timeline-track-id="song-a"]');
+    expect(track).not.toBeNull();
+    fireEvent.click(track!);
+    expect(screen.queryByLabelText("Inspector Boundary")).not.toBeInTheDocument();
     expect(shell()).toHaveAttribute("data-project-dirty", "false");
   });
 });
