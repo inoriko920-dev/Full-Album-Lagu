@@ -88,12 +88,131 @@ export const visualTextStyleSchema = z
   })
   .strict();
 
+export const visualAnimationEasingSchema = z.enum([
+  "linear",
+  "ease-in",
+  "ease-out",
+  "ease-in-out",
+]);
+
+const animationDurationMsSchema = z.number().int().min(1).max(120000);
+
+export const visualLayerAnimationSchema = z
+  .object({
+    entrance: z
+      .object({
+        preset: z.enum(["fade-in", "slide-up", "zoom-in"]),
+        durationMs: animationDurationMsSchema,
+        easing: visualAnimationEasingSchema,
+      })
+      .strict()
+      .optional(),
+    exit: z
+      .object({
+        preset: z.enum(["fade-out", "slide", "shrink"]),
+        durationMs: animationDurationMsSchema,
+        easing: visualAnimationEasingSchema,
+      })
+      .strict()
+      .optional(),
+    loop: z
+      .object({
+        preset: z.enum(["slow-zoom", "float", "pulse"]),
+        durationMs: animationDurationMsSchema,
+        enabled: z.boolean(),
+        intensity: z.enum(["subtle", "moderate"]),
+      })
+      .strict()
+      .optional(),
+    keyframes: z
+      .array(
+        z
+          .object({
+            property: z.enum(["x", "y", "scale", "opacity"]),
+            points: z
+              .array(
+                z
+                  .object({
+                    timeMs: z.number().int().min(0).max(3600000),
+                    value: z.number().finite(),
+                  })
+                  .strict(),
+              )
+              .min(1)
+              .max(64),
+          })
+          .strict()
+          .superRefine((track, context) => {
+            track.points.forEach((point, index) => {
+              if (index > 0 && point.timeMs <= track.points[index - 1]!.timeMs) {
+                context.addIssue({
+                  code: "custom",
+                  message: "Keyframe timestamps must be strictly increasing.",
+                  path: ["points", index, "timeMs"],
+                });
+              }
+              const minimum = track.property === "scale" ? 0.01 : track.property === "opacity" ? 0 : -1;
+              const maximum = track.property === "opacity" ? 1 : 2;
+              if (point.value < minimum || point.value > maximum) {
+                context.addIssue({
+                  code: "custom",
+                  message: "Keyframe value is outside the property bounds.",
+                  path: ["points", index, "value"],
+                });
+              }
+            });
+          }),
+      )
+      .max(4)
+      .optional(),
+  })
+  .strict()
+  .superRefine((settings, context) => {
+    const seen = new Set<string>();
+    settings.keyframes?.forEach((track, index) => {
+      if (seen.has(track.property)) {
+        context.addIssue({
+          code: "custom",
+          message: "One keyframe track is allowed per property.",
+          path: ["keyframes", index, "property"],
+        });
+      }
+      seen.add(track.property);
+    });
+  });
+
+export const visualBoundaryTransitionSchema = z
+  .object({
+    fromTrackId: z.string().trim().min(1).max(120),
+    toTrackId: z.string().trim().min(1).max(120),
+    preset: z.enum([
+      "crossfade",
+      "fade-through-black-blur",
+      "slide",
+      "zoom",
+      "dissolve",
+      "light-glitch",
+      "soft-flash",
+      "premium-album-change",
+    ]),
+    durationMs: animationDurationMsSchema,
+    easing: visualAnimationEasingSchema,
+    artworkHandoff: z.enum(["at-boundary", "during-transition"]),
+    titleHandoff: z.enum(["at-boundary", "during-transition"]),
+  })
+  .strict()
+  .refine((transition) => transition.fromTrackId !== transition.toTrackId, {
+    message: "A boundary must connect two distinct tracks.",
+    path: ["toTrackId"],
+  });
+
 const visualLayerBaseShape = {
   id: z.string().trim().min(1).max(120),
   name: z.string().trim().min(1).max(200),
   visible: z.boolean(),
   locked: z.boolean(),
   transform: visualLayerTransformSchema,
+  animation: visualLayerAnimationSchema.optional(),
 };
 
 export const visualBackgroundLayerSchema = z
@@ -186,6 +305,13 @@ export const visualSceneSchema = z
     });
   });
 
+export type VisualLayerAnimation = z.infer<typeof visualLayerAnimationSchema>;
+export type VisualBoundaryTransition = z.infer<
+  typeof visualBoundaryTransitionSchema
+>;
+export type VisualAnimationEasing = z.infer<
+  typeof visualAnimationEasingSchema
+>;
 export type VisualLayerAnchor = z.infer<typeof visualLayerAnchorSchema>;
 export type VisualLayerTransform = z.infer<typeof visualLayerTransformSchema>;
 export type VisualBackgroundFill = z.infer<typeof visualBackgroundFillSchema>;
