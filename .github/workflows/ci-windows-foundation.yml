@@ -41,13 +41,6 @@ jobs:
       - name: Clean install
         run: npm ci
 
-      - name: TEMP W11-07 boundary snapshot formatter diagnostic (REMOVE before merge)
-        shell: pwsh
-        run: |
-          npx prettier --write src/core/application/services/project-boundary-commands.ts tests/unit/project-boundary-commands.test.ts
-          git diff -- src/core/application/services/project-boundary-commands.ts tests/unit/project-boundary-commands.test.ts
-          exit 1
-
       - name: Foundation and UI verification
         run: npm run verify
 
