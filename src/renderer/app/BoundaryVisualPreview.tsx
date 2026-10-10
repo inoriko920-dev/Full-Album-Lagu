@@ -33,7 +33,7 @@ export function BoundaryVisualPreview({
         (layer.kind === "text" && (layer.role === "title" || layer.role === "artist")),
     ).map((layer) => {
       const weights = layer.kind === "artwork" ? frame.artworkHandoff
-        : layer.role === "title" ? frame.titleHandoff : frame.artistHandoff;
+        : layer.kind === "text" && layer.role === "title" ? frame.titleHandoff : frame.artistHandoff;
       const factor = side === "from" ? weights.fromWeight : weights.toWeight;
       return { ...layer, selected: false, transform: {
         ...layer.transform,
