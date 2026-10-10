@@ -1,6 +1,9 @@
 import { z } from "zod";
 import { mediaAssetReferenceSchema } from "./media-asset";
-import { visualSceneSchema } from "./visual-scene-schema";
+import {
+  visualBoundaryTransitionSchema,
+  visualSceneSchema,
+} from "./visual-scene-schema";
 
 export const PROJECT_SCHEMA_VERSION = 1 as const;
 
@@ -39,11 +42,25 @@ export const projectDocumentSchema = z
     revision: z.number().int().nonnegative(),
     albumPresentation: projectAlbumPresentationSchema.optional(),
     visualScene: visualSceneSchema.optional(),
+    boundaryTransitions: z.array(visualBoundaryTransitionSchema).max(2048).optional(),
     tracks: z.array(projectTrackSchema),
     mediaAssets: z.array(mediaAssetReferenceSchema).optional(),
   })
   .passthrough()
   .superRefine((project, context) => {
+    const boundaryPairs = new Set<string>();
+    project.boundaryTransitions?.forEach((transition, index) => {
+      const pair = JSON.stringify([transition.fromTrackId, transition.toTrackId]);
+      if (boundaryPairs.has(pair)) {
+        context.addIssue({
+          code: "custom",
+          message: "Each directed track pair may have only one boundary transition.",
+          path: ["boundaryTransitions", index],
+        });
+      }
+      boundaryPairs.add(pair);
+    });
+
     const assets = project.mediaAssets ?? [];
     const assetsById = new Map(assets.map((asset) => [asset.id, asset]));
 
