@@ -413,3 +413,116 @@ describe("W11-07 AC10 real React Preview preset output regressions", () => {
     expect(project).toEqual(saved);
   });
 });
+
+
+function withArtworkKeyframes(
+  source: ProjectDocument,
+): ProjectDocument {
+  return projectDocumentSchema.parse({
+    ...source,
+    visualScene: {
+      ...source.visualScene,
+      layers: source.visualScene!.layers.map((layer) =>
+        layer.id === "artwork"
+          ? {
+              ...layer,
+              animation: {
+                keyframes: [
+                  {
+                    property: "x",
+                    points: [
+                      { timeMs: 0, value: 0 },
+                      { timeMs: 1000, value: 1 },
+                    ],
+                  },
+                  {
+                    property: "opacity",
+                    points: [
+                      { timeMs: 0, value: 1 },
+                      { timeMs: 1000, value: 0.5 },
+                    ],
+                  },
+                ],
+              },
+            }
+          : layer,
+      ),
+    },
+  });
+}
+
+describe("W11-07 cross-feature animation continuity at album boundaries", () => {
+  it("uses outgoing end-time and incoming local-time keyframes before crossfade alpha", () => {
+    const project = withArtworkKeyframes(album("crossfade"));
+    const original = structuredClone(project);
+    const current = frame(project, 1400);
+    const { container } = render(
+      <BoundaryVisualPreview project={project} frame={current} />,
+    );
+    const { from, to } = parts(container);
+    const outgoing = from.querySelector<HTMLElement>(
+      ".static-scene-preview__layer--artwork",
+    )!;
+    const incoming = to.querySelector<HTMLElement>(
+      ".static-scene-preview__layer--artwork",
+    )!;
+    // The outgoing song lasts 1000ms; the incoming has played 400ms.
+    expect(outgoing).toHaveStyle({ left: "100%", opacity: "0.25" });
+    expect(incoming).toHaveStyle({ left: "40%", opacity: "0.4" });
+    expect(project).toEqual(original);
+  });
+
+  it("preserves at-boundary artwork override after applying incoming opacity keys", () => {
+    const project = withArtworkKeyframes(
+      album("fade-through-black-blur", "at-boundary", "during-transition"),
+    );
+    const { container } = render(
+      <BoundaryVisualPreview project={project} frame={frame(project, 1400)} />,
+    );
+    const { from, to } = parts(container);
+    const outgoing = from.querySelector<HTMLElement>(
+      ".static-scene-preview__layer--artwork",
+    )!;
+    const incoming = to.querySelector<HTMLElement>(
+      ".static-scene-preview__layer--artwork",
+    )!;
+    expect(outgoing).toHaveStyle({ left: "100%", opacity: "0" });
+    expect(incoming).toHaveStyle({ left: "40%", opacity: "0.8" });
+  });
+
+  it("replays identical layer animation and boundary weights after arbitrary seeks", () => {
+    const project = withArtworkKeyframes(album("dissolve"));
+    const original = structuredClone(project);
+    const sampleTimes = [1000, 1400, 1200, 1750, 1400, 1000, 1400];
+    const renderSample = (time: number) => {
+      const { container, unmount } = render(
+        <BoundaryVisualPreview
+          project={project}
+          frame={frame(project, time)}
+        />,
+      );
+      const { from, to } = parts(container);
+      const outgoing = from.querySelector<HTMLElement>(
+        ".static-scene-preview__layer--artwork",
+      )!;
+      const incoming = to.querySelector<HTMLElement>(
+        ".static-scene-preview__layer--artwork",
+      )!;
+      const state = {
+        fromLeft: outgoing.style.left,
+        toLeft: incoming.style.left,
+        fromOpacity: outgoing.style.opacity,
+        toOpacity: incoming.style.opacity,
+      };
+      unmount();
+      return state;
+    };
+    const frames = sampleTimes.map(renderSample);
+    expect(frames[1]).toEqual(frames[4]);
+    expect(frames[1]).toEqual(frames[6]);
+    expect(frames[0]).toEqual(frames[5]);
+    expect(frames[0]?.fromLeft).toBe("100%");
+    expect(frames[0]?.toLeft).toBe("0%");
+    expect(project).toEqual(original);
+  });
+});
