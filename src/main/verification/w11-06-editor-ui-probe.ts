@@ -196,10 +196,64 @@ export async function captureW1106EditorInteractions(
       assert(document.querySelectorAll(".timeline-track").length === expectedTracks,
         "album changed during transport interaction");
 
-      // Resume the real audio after validating Pause and select-last behavior.
-      // Capture a genuine playing visual with active sine-wave bars, while
-      // Inspector still references the manually selected last track.
-      click(button("Putar"), "cannot resume packaged playback for screenshot");
+      // Verify the already-approved timeline card double-click Seek using
+      // the real packaged Electron UI and main-issued WAV decoder. The fixture
+      // uses 4-second WAVs and disables the second song above.
+      const seekSeconds = (expectedTracks - 2) * 4 + 2;
+      const doubleClickAtMiddle = (card) => {
+        assert(card, "timeline seek target is missing");
+        card.scrollIntoView({ block: "nearest", inline: "nearest" });
+        const rect = card.getBoundingClientRect();
+        assert(rect.width > 0 && Number.isFinite(rect.left),
+          "timeline seek target has invalid geometry");
+        card.dispatchEvent(new MouseEvent("dblclick", {
+          bubbles: true,
+          cancelable: true,
+          view: window,
+          clientX: rect.left + rect.width * 0.5,
+          clientY: rect.top + rect.height * 0.5,
+        }));
+      };
+      doubleClickAtMiddle(lastCard);
+      await wait(
+        () => Math.abs(elapsedSeconds() - seekSeconds) <= 1 &&
+          button("Putar") && !button("Putar").disabled,
+        "paused double-click seek did not reach last authorized song", 180,
+      );
+      const seekTime = timecode();
+      await new Promise((done) => setTimeout(done, 200));
+      assert(timecode() === seekTime,
+        "paused timeline Seek unexpectedly resumed audio");
+      assert(shell.getAttribute("data-selected-track-id") ===
+          lastCard?.getAttribute("data-timeline-track-id"),
+        "timeline seek changed selected Inspector track");
+      assert(shell.getAttribute("data-project-revision") === playbackRevision,
+        "timeline seek changed canonical revision");
+      assert(shell.getAttribute("data-project-dirty") === playbackDirty,
+        "timeline seek changed project dirty state");
+
+      // The disabled second song has no playable canonical timeline span.
+      const disabledCard = document.querySelectorAll(".timeline-track")[1];
+      doubleClickAtMiddle(disabledCard);
+      await new Promise((done) => setTimeout(done, 160));
+      assert(timecode() === seekTime,
+        "disabled card incorrectly became a seek destination");
+      assert(shell.getAttribute("data-project-revision") === playbackRevision,
+        "disabled-track seek mutated the project");
+
+      // Resume genuine authorized audio from this paused midpoint, and check
+      // FFT, clock, and screenshot without a synthetic component-only mock.
+      lastCard.scrollIntoView({ block: "nearest", inline: "nearest" });
+      click(button("Putar"), "cannot resume packaged playback after timeline seek");
+      await wait(
+        () => button("Jeda") && visibleBars().length === 32 &&
+          spectrumPeakPercent() > 2,
+        "real waveform not visible when capturing seeked Preview", 180,
+      );
+      await wait(
+        () => elapsedSeconds() >= seekSeconds - 1,
+        "resumed audio lost the timeline seek destination", 180,
+      );
       await wait(
         () => button("Jeda") && visibleBars().length === 32 &&
           spectrumPeakPercent() > 2,
@@ -229,6 +283,10 @@ export async function captureW1106EditorInteractions(
         zoom: shell.getAttribute("data-timeline-zoom"),
         pausedTime,
         lastTrackSelected: true,
+        timelineDoubleClickSeekVerified: true,
+        timelineSeekSeconds: seekSeconds,
+        disabledTimelineSeekRejected: true,
+        seekPreservedProjectRevision: true,
         frozenShellPresent: true,
         controls: ["Play", "Pause", "Previous", "Next", "Mute",
           "Unmute", "Zoom", "Last track selection"],

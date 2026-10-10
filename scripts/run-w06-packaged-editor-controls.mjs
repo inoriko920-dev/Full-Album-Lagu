@@ -119,6 +119,10 @@ async function testAlbum(count) {
     report.imported?.tracks !== count ||
     report.frozenShellPresent !== true ||
     report.lastTrackSelected !== true ||
+    report.timelineDoubleClickSeekVerified !== true ||
+    report.disabledTimelineSeekRejected !== true ||
+    report.seekPreservedProjectRevision !== true ||
+    report.timelineSeekSeconds !== (count - 2) * 4 + 2 ||
     report.seekUiAvailable !== false ||
     report.appliedFrozenSpectrumTemplate !== true ||
     report.liveProgressVerified !== true ||
