@@ -10,7 +10,9 @@ import "./visual-animation-controls.css";
 type EntrancePreset = NonNullable<VisualLayerAnimation["entrance"]>["preset"];
 type ExitPreset = NonNullable<VisualLayerAnimation["exit"]>["preset"];
 type LoopPreset = NonNullable<VisualLayerAnimation["loop"]>["preset"];
-type KeyProperty = NonNullable<VisualLayerAnimation["keyframes"]>[number]["property"];
+type KeyProperty = NonNullable<
+  VisualLayerAnimation["keyframes"]
+>[number]["property"];
 
 const easingOptions: Array<{ value: VisualAnimationEasing; label: string }> = [
   { value: "linear", label: "Linear" },
@@ -64,7 +66,8 @@ function keyframeValue(property: KeyProperty, draft: string): number | null {
   if (draft.trim() === "") return null;
   const value = Number(draft.replace(",", "."));
   if (!Number.isFinite(value)) return null;
-  if (property === "opacity") return value >= 0 && value <= 100 ? value / 100 : null;
+  if (property === "opacity")
+    return value >= 0 && value <= 100 ? value / 100 : null;
   if (property === "scale") return value >= 0.01 && value <= 2 ? value : null;
   return value >= -1 && value <= 2 ? value : null;
 }
@@ -87,7 +90,9 @@ export function VisualAnimationControls({
   const [keyTime, setKeyTime] = useState("2,5");
   const [keyValue, setKeyValue] = useState("85");
   const [inputError, setInputError] = useState<string | null>(null);
-  const propertyTrack = animation.keyframes?.find((track) => track.property === property);
+  const propertyTrack = animation.keyframes?.find(
+    (track) => track.property === property,
+  );
   const allPoints = propertyTrack?.points ?? [];
 
   function save(next: VisualLayerAnimation): void {
@@ -161,11 +166,18 @@ export function VisualAnimationControls({
       setInputError("Maksimal empat properti keyframe.");
       return;
     }
-    if (add && current !== undefined && current.points.length >= 64 && !current.points.some((p) => p.timeMs === atMs)) {
+    if (
+      add &&
+      current !== undefined &&
+      current.points.length >= 64 &&
+      !current.points.some((p) => p.timeMs === atMs)
+    ) {
       setInputError("Maksimal 64 keyframe per properti.");
       return;
     }
-    const points = (current?.points ?? []).filter((point) => point.timeMs !== atMs);
+    const points = (current?.points ?? []).filter(
+      (point) => point.timeMs !== atMs,
+    );
     if (add && value !== null) points.push({ timeMs: atMs, value });
     points.sort((a, b) => a.timeMs - b.timeMs);
     if (!add && points.length === (current?.points.length ?? 0)) {
@@ -173,9 +185,13 @@ export function VisualAnimationControls({
       return;
     }
     const otherTracks = existing.filter((track) => track.property !== property);
-    const nextTracks = points.length > 0 ? [...otherTracks, { property, points }] : otherTracks;
+    const nextTracks =
+      points.length > 0 ? [...otherTracks, { property, points }] : otherTracks;
     const { keyframes: _previous, ...other } = animation;
-    save({ ...other, ...(nextTracks.length > 0 ? { keyframes: nextTracks } : {}) });
+    save({
+      ...other,
+      ...(nextTracks.length > 0 ? { keyframes: nextTracks } : {}),
+    });
     setInputError(null);
   }
 
@@ -184,32 +200,76 @@ export function VisualAnimationControls({
   const loop = animation.loop;
 
   return (
-    <div className="visual-animation-controls" aria-label="Pengaturan animasi layer">
+    <div
+      className="visual-animation-controls"
+      aria-label="Pengaturan animasi layer"
+    >
       <section className="inspector-section visual-animation-group">
-        <div className="inspector-section__header"><strong>Animasi Masuk</strong></div>
+        <div className="inspector-section__header">
+          <strong>Animasi Masuk</strong>
+        </div>
         <label className="inspector-field">
           <span>Preset Masuk</span>
-          <select aria-label="Preset Animasi Masuk" disabled={!editable}
+          <select
+            aria-label="Preset Animasi Masuk"
+            disabled={!editable}
             value={entrance?.preset ?? ""}
-            onChange={(event) => updateEntrance(event.currentTarget.value as EntrancePreset | "")}>
+            onChange={(event) =>
+              updateEntrance(event.currentTarget.value as EntrancePreset | "")
+            }
+          >
             <option value="">Tidak ada</option>
-            {entranceOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            {entranceOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </label>
         {entrance !== undefined ? (
           <div className="visual-animation-pair">
-            <label className="inspector-field"><span>Durasi Masuk (dtk)</span>
-              <input type="number" aria-label="Durasi Masuk (dtk)" min="0.001" max="120" step="0.1"
-                disabled={!editable} value={entrance.durationMs / 1000}
+            <label className="inspector-field">
+              <span>Durasi Masuk (dtk)</span>
+              <input
+                type="number"
+                aria-label="Durasi Masuk (dtk)"
+                min="0.001"
+                max="120"
+                step="0.1"
+                disabled={!editable}
+                value={entrance.durationMs / 1000}
                 onChange={(event) => {
                   const ms = durationMs(event.currentTarget.value);
-                  if (ms !== null) save({ ...animation, entrance: { ...entrance, durationMs: ms } });
-                }} />
+                  if (ms !== null)
+                    save({
+                      ...animation,
+                      entrance: { ...entrance, durationMs: ms },
+                    });
+                }}
+              />
             </label>
-            <label className="inspector-field"><span>Easing Masuk</span>
-              <select aria-label="Easing Masuk" disabled={!editable} value={entrance.easing}
-                onChange={(event) => save({ ...animation, entrance: { ...entrance, easing: event.currentTarget.value as VisualAnimationEasing } })}>
-                {easingOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            <label className="inspector-field">
+              <span>Easing Masuk</span>
+              <select
+                aria-label="Easing Masuk"
+                disabled={!editable}
+                value={entrance.easing}
+                onChange={(event) =>
+                  save({
+                    ...animation,
+                    entrance: {
+                      ...entrance,
+                      easing: event.currentTarget
+                        .value as VisualAnimationEasing,
+                    },
+                  })
+                }
+              >
+                {easingOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
               </select>
             </label>
           </div>
@@ -217,51 +277,106 @@ export function VisualAnimationControls({
       </section>
 
       <section className="inspector-section visual-animation-group">
-        <div className="inspector-section__header"><strong>Animasi Keluar</strong></div>
+        <div className="inspector-section__header">
+          <strong>Animasi Keluar</strong>
+        </div>
         <label className="inspector-field">
           <span>Preset Keluar</span>
-          <select aria-label="Preset Animasi Keluar" disabled={!editable}
+          <select
+            aria-label="Preset Animasi Keluar"
+            disabled={!editable}
             value={exit?.preset ?? ""}
-            onChange={(event) => updateExit(event.currentTarget.value as ExitPreset | "")}>
+            onChange={(event) =>
+              updateExit(event.currentTarget.value as ExitPreset | "")
+            }
+          >
             <option value="">Tidak ada</option>
-            {exitOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            {exitOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </label>
         {exit !== undefined ? (
-          <label className="inspector-field"><span>Durasi Keluar (dtk)</span>
-            <input type="number" aria-label="Durasi Keluar (dtk)" min="0.001" max="120" step="0.1"
-              disabled={!editable} value={exit.durationMs / 1000}
+          <label className="inspector-field">
+            <span>Durasi Keluar (dtk)</span>
+            <input
+              type="number"
+              aria-label="Durasi Keluar (dtk)"
+              min="0.001"
+              max="120"
+              step="0.1"
+              disabled={!editable}
+              value={exit.durationMs / 1000}
               onChange={(event) => {
                 const ms = durationMs(event.currentTarget.value);
-                if (ms !== null) save({ ...animation, exit: { ...exit, durationMs: ms } });
-              }} />
+                if (ms !== null)
+                  save({ ...animation, exit: { ...exit, durationMs: ms } });
+              }}
+            />
           </label>
         ) : null}
       </section>
 
       <section className="inspector-section visual-animation-group">
-        <div className="inspector-section__header"><strong>Animasi Loop</strong></div>
-        <label className="inspector-field"><span>Preset Loop</span>
-          <select aria-label="Preset Animasi Loop" disabled={!editable}
+        <div className="inspector-section__header">
+          <strong>Animasi Loop</strong>
+        </div>
+        <label className="inspector-field">
+          <span>Preset Loop</span>
+          <select
+            aria-label="Preset Animasi Loop"
+            disabled={!editable}
             value={loop?.preset ?? ""}
-            onChange={(event) => updateLoop(event.currentTarget.value as LoopPreset | "")}>
+            onChange={(event) =>
+              updateLoop(event.currentTarget.value as LoopPreset | "")
+            }
+          >
             <option value="">Tidak ada</option>
-            {loopOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+            {loopOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </label>
         {loop !== undefined ? (
           <div className="visual-animation-pair">
             <label className="visual-layer-check">
-              <input type="checkbox" aria-label="Aktifkan Loop" disabled={!editable}
+              <input
+                type="checkbox"
+                aria-label="Aktifkan Loop"
+                disabled={!editable}
                 checked={loop.enabled}
-                onChange={(event) => save({ ...animation, loop: { ...loop, enabled: event.currentTarget.checked } })}/>
+                onChange={(event) =>
+                  save({
+                    ...animation,
+                    loop: { ...loop, enabled: event.currentTarget.checked },
+                  })
+                }
+              />
               Aktif
             </label>
-            <label className="inspector-field"><span>Intensitas Loop</span>
-              <select aria-label="Intensitas Loop" disabled={!editable}
+            <label className="inspector-field">
+              <span>Intensitas Loop</span>
+              <select
+                aria-label="Intensitas Loop"
+                disabled={!editable}
                 value={loop.intensity}
-                onChange={(event) => save({ ...animation, loop: { ...loop, intensity: event.currentTarget.value as "subtle" | "moderate" } })}>
-                <option value="subtle">Halus</option><option value="moderate">Sedang</option>
+                onChange={(event) =>
+                  save({
+                    ...animation,
+                    loop: {
+                      ...loop,
+                      intensity: event.currentTarget.value as
+                        "subtle" | "moderate",
+                    },
+                  })
+                }
+              >
+                <option value="subtle">Halus</option>
+                <option value="moderate">Sedang</option>
               </select>
             </label>
           </div>
@@ -269,50 +384,115 @@ export function VisualAnimationControls({
       </section>
 
       <section className="inspector-section visual-animation-group">
-        <div className="inspector-section__header"><strong>Keyframe Manual</strong></div>
-        <label className="inspector-field"><span>Properti Keyframe</span>
-          <select aria-label="Properti Keyframe" value={property} onChange={(event) => {
-            const next = event.currentTarget.value as KeyProperty;
-            setProperty(next);
-            setKeyValue(next === "opacity" ? "85" : next === "scale" ? "1" : "0,5");
-            setInputError(null);
-          }}>
-            {propertyOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+        <div className="inspector-section__header">
+          <strong>Keyframe Manual</strong>
+        </div>
+        <label className="inspector-field">
+          <span>Properti Keyframe</span>
+          <select
+            aria-label="Properti Keyframe"
+            value={property}
+            onChange={(event) => {
+              const next = event.currentTarget.value as KeyProperty;
+              setProperty(next);
+              setKeyValue(
+                next === "opacity" ? "85" : next === "scale" ? "1" : "0,5",
+              );
+              setInputError(null);
+            }}
+          >
+            {propertyOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </label>
-        <div className="visual-animation-ruler" aria-label="Garis waktu keyframe" role="group">
-          <span className="visual-animation-ruler__line" aria-hidden="true"/>
+        <div
+          className="visual-animation-ruler"
+          aria-label="Garis waktu keyframe"
+          role="group"
+        >
+          <span className="visual-animation-ruler__line" aria-hidden="true" />
           {allPoints.map((point) => (
-            <button key={point.timeMs} type="button" className="visual-animation-ruler__point"
-              style={{ left: `${Math.min(94, Math.max(6, point.timeMs / Math.max(2500, ...allPoints.map((p) => p.timeMs)) * 88 + 6))}%` }}
+            <button
+              key={point.timeMs}
+              type="button"
+              className="visual-animation-ruler__point"
+              style={{
+                left: `${Math.min(94, Math.max(6, (point.timeMs / Math.max(2500, ...allPoints.map((p) => p.timeMs))) * 88 + 6))}%`,
+              }}
               aria-label={`Keyframe ${seconds(point.timeMs)} detik`}
               title={`${seconds(point.timeMs)} dtk`}
               onClick={() => {
                 setKeyTime(String(point.timeMs / 1000));
-                setKeyValue(String(property === "opacity" ? Math.round(point.value * 100) : point.value));
-              }} />
+                setKeyValue(
+                  String(
+                    property === "opacity"
+                      ? Math.round(point.value * 100)
+                      : point.value,
+                  ),
+                );
+              }}
+            />
           ))}
-          {allPoints.length === 0 ? <span className="visual-animation-ruler__empty">Belum ada keyframe</span> : null}
+          {allPoints.length === 0 ? (
+            <span className="visual-animation-ruler__empty">
+              Belum ada keyframe
+            </span>
+          ) : null}
         </div>
         <div className="visual-animation-pair">
-          <label className="inspector-field"><span>Waktu (dtk)</span>
-            <input type="number" min="0" max="3600" step="0.1" aria-label="Waktu Keyframe (dtk)"
-              disabled={!editable} value={keyTime.replace(",", ".")}
-              onChange={(event) => setKeyTime(event.currentTarget.value)}/>
+          <label className="inspector-field">
+            <span>Waktu (dtk)</span>
+            <input
+              type="number"
+              min="0"
+              max="3600"
+              step="0.1"
+              aria-label="Waktu Keyframe (dtk)"
+              disabled={!editable}
+              value={keyTime.replace(",", ".")}
+              onChange={(event) => setKeyTime(event.currentTarget.value)}
+            />
           </label>
-          <label className="inspector-field"><span>{property === "opacity" ? "Nilai (%)" : "Nilai"}</span>
-            <input type="number" aria-label="Nilai Keyframe" step="0.01"
-              disabled={!editable} value={keyValue.replace(",", ".")}
-              onChange={(event) => setKeyValue(event.currentTarget.value)}/>
+          <label className="inspector-field">
+            <span>{property === "opacity" ? "Nilai (%)" : "Nilai"}</span>
+            <input
+              type="number"
+              aria-label="Nilai Keyframe"
+              step="0.01"
+              disabled={!editable}
+              value={keyValue.replace(",", ".")}
+              onChange={(event) => setKeyValue(event.currentTarget.value)}
+            />
           </label>
         </div>
         <div className="visual-animation-actions">
-          <button type="button" disabled={!editable} onClick={() => editKeyframe(true)}>Tambah Keyframe</button>
-          <button type="button" disabled={!editable || allPoints.length === 0}
-            onClick={() => editKeyframe(false)}>Hapus Keyframe</button>
+          <button
+            type="button"
+            disabled={!editable}
+            onClick={() => editKeyframe(true)}
+          >
+            Tambah Keyframe
+          </button>
+          <button
+            type="button"
+            disabled={!editable || allPoints.length === 0}
+            onClick={() => editKeyframe(false)}
+          >
+            Hapus Keyframe
+          </button>
         </div>
         <p className="visual-layer-hint">Posisi, skala, dan opasitas</p>
-        {inputError !== null ? <p className="inspector-feedback inspector-feedback--error" role="alert">{inputError}</p> : null}
+        {inputError !== null ? (
+          <p
+            className="inspector-feedback inspector-feedback--error"
+            role="alert"
+          >
+            {inputError}
+          </p>
+        ) : null}
       </section>
     </div>
   );
