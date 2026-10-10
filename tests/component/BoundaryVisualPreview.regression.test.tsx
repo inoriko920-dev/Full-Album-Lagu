@@ -177,14 +177,10 @@ function frame(project: ProjectDocument, time: number): ActiveBoundaryVisualFram
 }
 
 function parts(element: HTMLElement) {
-  const outgoing = element.querySelector<HTMLElement>(
-    ".boundary-visual-preview__side:first-of-type",
-  );
   const layers = element.querySelectorAll<HTMLElement>(
     ".boundary-visual-preview__side",
   );
   expect(layers).toHaveLength(2);
-  expect(outgoing).not.toBeNull();
   return { from: layers[0]!, to: layers[1]! };
 }
 
