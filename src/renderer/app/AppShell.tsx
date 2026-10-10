@@ -763,32 +763,47 @@ function PreviewPanel({
   );
   // The live clock owns active transitions; selection-only Preview samples
   // the same T04 projection at the approved boundary midpoint (no seek side effect).
-  const liveBoundary = playback.available &&
-    playback.clock.projectId === project.projectId
-    ? resolveAlbumBoundaryVisualFrame(project, playback.clock.albumTimeMs)
-    : null;
-  const selectedSetting = selectedBoundary === null
-    ? undefined
-    : project.boundaryTransitions?.find((entry) =>
-        entry.fromTrackId === selectedBoundary.fromTrackId &&
-        entry.toTrackId === selectedBoundary.toTrackId);
-  const incoming = selectedBoundary === null
-    ? undefined
-    : projectAlbumTimeline(project).items.find((entry) =>
-        entry.trackId === selectedBoundary.toTrackId && entry.status === "resolved");
-  const selectedSample = selectedSetting === undefined ||
-    incoming?.startMs === undefined || incoming.durationMs === undefined
+  const liveBoundary =
+    playback.available && playback.clock.projectId === project.projectId
+      ? resolveAlbumBoundaryVisualFrame(project, playback.clock.albumTimeMs)
+      : null;
+  const selectedSetting =
+    selectedBoundary === null
+      ? undefined
+      : project.boundaryTransitions?.find(
+          (entry) =>
+            entry.fromTrackId === selectedBoundary.fromTrackId &&
+            entry.toTrackId === selectedBoundary.toTrackId,
+        );
+  const incoming =
+    selectedBoundary === null
+      ? undefined
+      : projectAlbumTimeline(project).items.find(
+          (entry) =>
+            entry.trackId === selectedBoundary.toTrackId &&
+            entry.status === "resolved",
+        );
+  const selectedSample =
+    selectedSetting === undefined ||
+    incoming?.startMs === undefined ||
+    incoming.durationMs === undefined
       ? null
       : resolveAlbumBoundaryVisualFrame(
           project,
-          incoming.startMs + Math.min(
-            Math.floor(Math.min(selectedSetting.durationMs, incoming.durationMs) / 2),
-            Math.max(0, incoming.durationMs - 1),
-          ),
+          incoming.startMs +
+            Math.min(
+              Math.floor(
+                Math.min(selectedSetting.durationMs, incoming.durationMs) / 2,
+              ),
+              Math.max(0, incoming.durationMs - 1),
+            ),
         );
-  const boundaryFrame = liveBoundary?.status === "active"
-    ? liveBoundary
-    : selectedSample?.status === "active" ? selectedSample : null;
+  const boundaryFrame =
+    liveBoundary?.status === "active"
+      ? liveBoundary
+      : selectedSample?.status === "active"
+        ? selectedSample
+        : null;
 
   const clock = (millis: number) => {
     const seconds = Math.max(0, Math.floor(millis / 1000));
@@ -810,11 +825,18 @@ function PreviewPanel({
             <BoundaryVisualPreview
               project={project}
               frame={boundaryFrame}
-              {...(active ? {
-                spectrumLevels: playback.spectrum,
-                progressFraction: playback.total > 0
-                  ? Math.min(1, playback.clock.albumTimeMs / playback.total) : 0,
-              } : {})}
+              {...(active
+                ? {
+                    spectrumLevels: playback.spectrum,
+                    progressFraction:
+                      playback.total > 0
+                        ? Math.min(
+                            1,
+                            playback.clock.albumTimeMs / playback.total,
+                          )
+                        : 0,
+                  }
+                : {})}
             />
           ) : visualModel.layers.length > 0 ? (
             <StaticScenePreview
@@ -969,7 +991,9 @@ function TimelinePanel({
 }) {
   const tracks = projectSession.project.tracks;
   const projection = projectAlbumTimeline(projectSession.project);
-  const eligibleItems = projection.items.filter((item) => item.status === "resolved");
+  const eligibleItems = projection.items.filter(
+    (item) => item.status === "resolved",
+  );
   const trackWidth = Math.round((150 * zoom) / 100);
   const activeIndex = projection.items.findIndex(
     (item) => item.trackId === playback.clock.activeTrackId,
@@ -1113,21 +1137,38 @@ function TimelinePanel({
             })}
             {eligibleItems.slice(1).map((to, index) => {
               const from = eligibleItems[index]!;
-              if (!isEditableBoundaryPair(
-                projectSession.project, from.trackId, to.trackId,
-              )) return null;
-              const selected = selectedBoundary?.fromTrackId === from.trackId &&
+              if (
+                !isEditableBoundaryPair(
+                  projectSession.project,
+                  from.trackId,
+                  to.trackId,
+                )
+              )
+                return null;
+              const selected =
+                selectedBoundary?.fromTrackId === from.trackId &&
                 selectedBoundary.toTrackId === to.trackId;
               return (
-                <button key={`${from.trackId}:${to.trackId}`} type="button"
+                <button
+                  key={`${from.trackId}:${to.trackId}`}
+                  type="button"
                   className={`timeline-boundary-marker${selected ? " is-selected" : ""}`}
-                  style={{ left: `${18 + to.sourceIndex * (trackWidth + 5) - 2.5}px` }}
-                  data-boundary-from={from.trackId} data-boundary-to={to.trackId}
+                  style={{
+                    left: `${18 + to.sourceIndex * (trackWidth + 5) - 2.5}px`,
+                  }}
+                  data-boundary-from={from.trackId}
+                  data-boundary-to={to.trackId}
                   aria-label={`Pilih boundary ${from.trackId} ke ${to.trackId}`}
                   aria-pressed={selected}
-                  onClick={() => onSelectBoundary({
-                    fromTrackId: from.trackId, toTrackId: to.trackId,
-                  })}>◆</button>
+                  onClick={() =>
+                    onSelectBoundary({
+                      fromTrackId: from.trackId,
+                      toTrackId: to.trackId,
+                    })
+                  }
+                >
+                  ◆
+                </button>
               );
             })}
           </div>
@@ -1657,13 +1698,16 @@ export function AppShell() {
       ? selectedTrackIdState
       : null;
 
-  const selectedBoundary = selectedBoundaryState !== null &&
+  const selectedBoundary =
+    selectedBoundaryState !== null &&
     selectedBoundaryState.projectId === projectSession.project.projectId &&
     isEditableBoundaryPair(
       projectSession.project,
       selectedBoundaryState.fromTrackId,
       selectedBoundaryState.toTrackId,
-    ) ? selectedBoundaryState : null;
+    )
+      ? selectedBoundaryState
+      : null;
 
   const showHistoryControls =
     projectSession.project.tracks.length > 0 ||
@@ -1845,7 +1889,10 @@ export function AppShell() {
           selectedTrackId={selectedTrackId}
           selectedBoundary={selectedBoundary}
           onSelectBoundary={(pair) => {
-            setSelectedBoundary({ ...pair, projectId: projectSession.project.projectId });
+            setSelectedBoundary({
+              ...pair,
+              projectId: projectSession.project.projectId,
+            });
             setSelectedTrackId(null);
             selectLayer(null);
             setActiveTab("inspector");
