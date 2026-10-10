@@ -1,0 +1,18 @@
+/* Approved UI-IMG-002D: boundary controls reuse existing left Inspector. */
+.boundary-inspector__pair { margin: 7px 0; font-size: 12px; font-weight: 650; color: var(--text-primary); overflow-wrap: anywhere; }
+.boundary-inspector .inspector-field { display: grid; gap: 5px; margin-bottom: 9px; }
+.boundary-inspector .inspector-field > span { font-size: 10.5px; color: var(--text-secondary); }
+.boundary-inspector .inspector-field :is(select,input) { box-sizing: border-box; width: 100%; min-width: 0; padding: 7px 8px; border: 1px solid var(--border); border-radius: var(--control-radius); color: var(--text-primary); background: var(--surface); font-size: 11px; }
+.boundary-inspector :is(select,input,button):disabled { opacity: .5; cursor: not-allowed; }
+.boundary-inspector__preview { display: block; width: 100%; margin-top: 12px; padding: 8px; border: 1px solid #bfdbfe; border-radius: 5px; background: #eff6ff; color: #1d4ed8; font-size: 11px; font-weight: 650; cursor: pointer; }
+.timeline-track-strip { position: relative; }
+.timeline-boundary-marker { position: absolute; z-index: 4; top: 40px; width: 20px; height: 23px; padding: 0; border: 1px solid #94a3b8; border-radius: 5px; background: #fff; color: #475569; font-size: 12px; font-weight: 700; transform: translateX(-50%); cursor: pointer; }
+.timeline-boundary-marker.is-selected, .timeline-boundary-marker:hover { background: #dbeafe; border-color: #2563eb; color: #1d4ed8; }
+.timeline-boundary-marker:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+.boundary-visual-preview { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: #101827; }
+.boundary-visual-preview__foundation,.boundary-visual-preview__side { position: absolute; inset: 0; }
+.boundary-visual-preview__side { pointer-events: none; transform-origin: center; }
+.boundary-visual-preview__side .static-scene-preview { background: transparent; }
+.boundary-visual-preview__overlay { position: absolute; inset: 0; pointer-events: none; }
+.boundary-visual-preview__overlay--black { background: #000; }
+.boundary-visual-preview__overlay--white { background: #fff; }
