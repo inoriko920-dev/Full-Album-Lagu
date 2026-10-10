@@ -2,6 +2,19 @@
 
 This is the mandatory entry point for any AI/session modifying this repository.
 
+## OWNER-MANDATED FEATURE FREEZE — FINAL TRIAL BUILD (2026-10-11 WIB)
+
+**Binding instruction from the repository owner. This rule applies to SOL, ASTRA, all coding agents, PRs, scripts and every subsequent development session.**
+
+- **FEATURE SET IS LOCKED.** Treat the behavior, functions, workflows, UI layout, labels, icons, logos, animations, transitions, presets, interfaces, and scope already approved by the owner as frozen. Do **not** autonomously add, remove, replace, redesign, expand, or silently change any approved feature or behavior.
+- **DEFAULT WORK = MAINTENANCE OF EXISTING FEATURES ONLY.** Permitted work: reproduce/fix verified bugs; correctness and regression repairs; stability, performance and resource-leak fixes; security hardening; compatibility repairs; automated/manual QA; build, packaging and release-candidate preparation; and correcting UI drift against the **existing approved** reference. Changes must preserve user-visible approved behavior and workflow. Add tests/evidence for fixes. Refactoring is allowed only when necessary and behavior-preserving.
+- **EXPLICIT OWNER REQUEST IS THE ONLY WAY TO UNLOCK FEATURE CHANGE.** A new feature, changed feature, removed feature, additional preset, altered UI/UX, or new functional scope requires a **specific, affirmative instruction from the owner identifying the desired change**. Generic prompts such as "lanjutkan", "selesaikan", "perbaiki", "buat final", "build", "cari bug", or "rapikan" are **not** authorization to introduce/change features. Agent suggestions, old roadmaps and its own interpretation are not owner approval.
+- **PREPLANNED BUT NOT YET IMPLEMENTED IS NOT AUTOMATICALLY UNLOCKED.** Do not advance into W11-08/STEP12, new MP4 functionality, or other deferred scopes merely because they exist in planning. Require an explicit new owner instruction **and** previously required QA/Software Factory gates. Keep physical W11-06/W11-07 acceptance marked NOT_TESTED until actual owner-device evidence exists.
+- **UI AND VISUAL ASSET GOVERNANCE STAYS IN FORCE.** Use only owner-approved UI/images and the frozen source-of-truth pack; never autonomously generate, replace, or reinterpret reference images or modify approved logos. If an essential new/revised image is required, supply the prompt to the owner and stop at the established UI gate.
+- **WHEN UNSURE, DO NOT EXPAND SCOPE.** Keep the existing feature unchanged, document the proposed change separately, and require explicit owner authorization before implementing it. A bug fix must not become a new feature disguised as maintenance.
+- **CURRENT RELEASE POSTURE:** prepare/preserve the existing Windows portable build as a **final trial/release candidate for owner testing**, not a certified production-final release. After owner testing, focus on repairing defects found in the already existing features. No final physical PASS claim or production release without real acceptance evidence.
+- A specific later owner instruction may authorize a narrowly defined exception **only for the named change**; all other features remain locked. Any such approval must be documented before implementation and must respect remaining architecture, UI, QA, and release gates.
+
 ## Read before changing anything
 1. `PROJECT_STATE.md`
 2. `docs/handoff/CURRENT_HANDOFF.md`
