@@ -41,6 +41,12 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: TEMP QA capture Prettier output (REMOVE before merge)
+        shell: pwsh
+        run: |
+          npx prettier --write tests/integration/w11-07-boundary-relink-recovery.test.ts
+          git diff -- tests/integration/w11-07-boundary-relink-recovery.test.ts
+
       - name: Foundation and UI verification
         run: npm run verify
 
