@@ -1,0 +1,17 @@
+FULL-ALBUM-LAGU — FILE GATE W11-07
+
+Wajib unggah tiga file berikut ke repository inoriko920-dev/Full-Album-Lagu, branch astra/w11-07-animation-ui-image-gate-20261010 atau branch planning baru berdasarkan main:
+
+1. 07_W11_07_UI_IMG_002G.png -> docs/source-of-truth/ui/07_W11_07_UI_IMG_002G.png
+2. 07_STEP_04_W11_07_UI_REFERENCE_UI_IMG_002G_v1_0_REVIEW.docx -> docs/source-of-truth/ui/07_STEP_04_W11_07_UI_REFERENCE_UI_IMG_002G_v1_0_REVIEW.docx
+3. 16_STEP_11_W11_07_ANIMATION_TRANSITION_CHARTER_v1_0_PRE_GATE.docx -> docs/source-of-truth/planning/current/16_STEP_11_W11_07_ANIMATION_TRANSITION_CHARTER_v1_0_PRE_GATE.docx
+
+Cara unggah: buka repository GitHub -> pilih branch di atas -> masuk folder tujuan -> Add file -> Upload files -> pilih file -> Commit changes. Jika nama target berbeda, gunakan GitHub rename sesudahnya. Jangan overwrite 29 gambar UI frozen.
+
+Verifikasi: buka link berkas GitHub pada branch yang benar, pastikan file DOCX/PNG benar-benar dapat dibaca. Balas 'semua file wajib sudah terunggah' disertai tautan atau nama branch; SOL akan memeriksa sendiri sebelum coding.
+
+Penting: PNG sumber 1586 x 992 px (target 1600 x 1000), SHA-256 2e82582bce81f8d0f5ad344d71968731f4f9593e90b5dea39dd0864b421eb073. Dokumen menandai raster tolerance, bukan menyamarkan selisih atau mengedit PNG.
+
+Jika persetujuan final visual/size tolerance belum diberikan, pemilik dapat menyetujuinya eksplisit setelah review.
+
+STOP — MENUNGGU FILE WAJIB TERUNGGAH KE GITHUB.
