@@ -193,6 +193,7 @@ export function createLayerAddCommand(
   input: AddLayerCommandInput,
 ): ProjectCommand {
   const layer = visualLayerSchema.parse(structuredClone(input.layer));
+  const requestedIndex = input.toIndex;
 
   return {
     kind: "layer.add",
@@ -206,9 +207,9 @@ export function createLayerAddCommand(
       }
 
       const toIndex =
-        input.toIndex === undefined
+        requestedIndex === undefined
           ? layers.length
-          : requireInsertionIndex(input.toIndex, layers.length);
+          : requireInsertionIndex(requestedIndex, layers.length);
 
       const nextLayers = [...layers];
       nextLayers.splice(toIndex, 0, structuredClone(layer));
@@ -220,13 +221,14 @@ export function createLayerAddCommand(
 export function createLayerRemoveCommand(
   input: RemoveLayerCommandInput,
 ): ProjectCommand {
+  const layerId = input.layerId;
   return {
     kind: "layer.remove",
-    label: `Hapus layer ${input.layerId}`,
+    label: `Hapus layer ${layerId}`,
     origin: "manual",
     ...expectationFields(input),
     apply: (project) => {
-      const { layer, index } = findLayer(project, input.layerId);
+      const { layer, index } = findLayer(project, layerId);
       requireUnlocked(layer);
 
       const nextLayers = [...currentLayers(project)];
@@ -239,25 +241,28 @@ export function createLayerRemoveCommand(
 export function createLayerDuplicateCommand(
   input: DuplicateLayerCommandInput,
 ): ProjectCommand {
+  const layerId = input.layerId;
+  const requestedNewLayerId = input.newLayerId;
+  const requestedIndex = input.toIndex;
   return {
     kind: "layer.duplicate",
-    label: `Duplikat layer ${input.layerId}`,
+    label: `Duplikat layer ${layerId}`,
     origin: "manual",
     ...expectationFields(input),
     apply: (project) => {
-      const { layer, index } = findLayer(project, input.layerId);
+      const { layer, index } = findLayer(project, layerId);
       requireUnlocked(layer);
 
-      const newLayerId = requireNonEmpty(input.newLayerId, "New layer ID");
+      const newLayerId = requireNonEmpty(requestedNewLayerId, "New layer ID");
       const layers = currentLayers(project);
       if (layers.some((candidate) => candidate.id === newLayerId)) {
         throw new Error("Duplicate layer ID already exists.");
       }
 
       const toIndex =
-        input.toIndex === undefined
+        requestedIndex === undefined
           ? index + 1
-          : requireInsertionIndex(input.toIndex, layers.length);
+          : requireInsertionIndex(requestedIndex, layers.length);
 
       const duplicated = visualLayerSchema.parse({
         ...structuredClone(layer),
@@ -274,17 +279,19 @@ export function createLayerDuplicateCommand(
 export function createLayerReorderCommand(
   input: ReorderLayerCommandInput,
 ): ProjectCommand {
+  const layerId = input.layerId;
+  const requestedIndex = input.toIndex;
   return {
     kind: "layer.reorder",
-    label: `Pindahkan layer ${input.layerId}`,
+    label: `Pindahkan layer ${layerId}`,
     origin: "manual",
     ...expectationFields(input),
     apply: (project) => {
-      const { layer, index } = findLayer(project, input.layerId);
+      const { layer, index } = findLayer(project, layerId);
       requireUnlocked(layer);
 
       const layers = currentLayers(project);
-      const toIndex = requireReorderIndex(input.toIndex, layers.length);
+      const toIndex = requireReorderIndex(requestedIndex, layers.length);
       if (index === toIndex) return project;
 
       const nextLayers = [...layers];
@@ -301,17 +308,18 @@ export function createLayerReorderCommand(
 export function createLayerSetTransformCommand(
   input: SetLayerTransformCommandInput,
 ): ProjectCommand {
+  const layerId = input.layerId;
   const transform = visualLayerTransformSchema.parse(
     structuredClone(input.transform),
   );
 
   return {
     kind: "layer.set-transform",
-    label: `Ubah transform layer ${input.layerId}`,
+    label: `Ubah transform layer ${layerId}`,
     origin: "manual",
     ...expectationFields(input),
     apply: (project) => {
-      const { layer, index } = findLayer(project, input.layerId);
+      const { layer, index } = findLayer(project, layerId);
       requireUnlocked(layer);
 
       const nextLayers = [...currentLayers(project)];
@@ -366,15 +374,16 @@ export function createLayerSetAnimationCommand(
 export function createLayerSetCommonCommand(
   input: SetLayerCommonCommandInput,
 ): ProjectCommand {
+  const layerId = input.layerId;
   const patch = normalizeCommonPatch(input.patch);
 
   return {
     kind: "layer.set-common",
-    label: `Ubah properti layer ${input.layerId}`,
+    label: `Ubah properti layer ${layerId}`,
     origin: "manual",
     ...expectationFields(input),
     apply: (project) => {
-      const { layer, index } = findLayer(project, input.layerId);
+      const { layer, index } = findLayer(project, layerId);
       const patchKeys = Object.keys(patch);
 
       if (patchKeys.length === 0) return project;
@@ -403,15 +412,16 @@ export function createLayerSetCommonCommand(
 export function createLayerSetTextStyleCommand(
   input: SetLayerTextStyleCommandInput,
 ): ProjectCommand {
+  const layerId = input.layerId;
   const style = visualTextStyleSchema.parse(structuredClone(input.style));
 
   return {
     kind: "layer.set-text-style",
-    label: `Ubah style teks layer ${input.layerId}`,
+    label: `Ubah style teks layer ${layerId}`,
     origin: "manual",
     ...expectationFields(input),
     apply: (project) => {
-      const { layer, index } = findLayer(project, input.layerId);
+      const { layer, index } = findLayer(project, layerId);
       requireUnlocked(layer);
       if (layer.kind !== "text") {
         throw new Error("Layer text style target must be a text layer.");
@@ -431,20 +441,22 @@ export function createLayerSetTextStyleCommand(
 export function createLayerSetStaticTextCommand(
   input: SetLayerStaticTextCommandInput,
 ): ProjectCommand {
+  const layerId = input.layerId;
+  const text = input.text;
   return {
     kind: "layer.set-static-text",
-    label: `Ubah teks layer ${input.layerId}`,
+    label: `Ubah teks layer ${layerId}`,
     origin: "manual",
     ...expectationFields(input),
     apply: (project) => {
-      const { layer, index } = findLayer(project, input.layerId);
+      const { layer, index } = findLayer(project, layerId);
       requireUnlocked(layer);
       if (layer.kind !== "text" || layer.role !== "static") {
         throw new Error("Only a static text layer accepts direct text edits.");
       }
       const nextLayer = visualLayerSchema.parse({
         ...layer,
-        text: input.text,
+        text: text,
       });
       const layers = [...currentLayers(project)];
       layers[index] = nextLayer;
