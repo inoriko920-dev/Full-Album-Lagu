@@ -1,5 +1,6 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import "@testing-library/jest-dom/vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   projectDocumentSchema,
   type ProjectDocument,
@@ -68,6 +69,8 @@ function setup(
   );
   return { ...view, spy };
 }
+
+afterEach(cleanup);
 
 describe("W11-07 T05 Inspector UI-IMG-002G animation controls", () => {
   it("shows four approved groups, all without modifying a legacy layer until edited", () => {
