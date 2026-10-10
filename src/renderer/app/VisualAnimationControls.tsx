@@ -188,7 +188,9 @@ export function VisualAnimationControls({
     const nextTracks =
       points.length > 0 ? [...otherTracks, { property, points }] : otherTracks;
     save({
-      ...(animation.entrance === undefined ? {} : { entrance: animation.entrance }),
+      ...(animation.entrance === undefined
+        ? {}
+        : { entrance: animation.entrance }),
       ...(animation.exit === undefined ? {} : { exit: animation.exit }),
       ...(animation.loop === undefined ? {} : { loop: animation.loop }),
       ...(nextTracks.length > 0 ? { keyframes: nextTracks } : {}),
