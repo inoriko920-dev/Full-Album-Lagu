@@ -41,12 +41,6 @@ jobs:
       - name: Clean install
         run: npm ci
 
-      - name: TEMP T01 capture exact Prettier diff (remove before merge)
-        shell: pwsh
-        run: |
-          npx prettier --write src/core/domain/visual-scene-schema.ts src/core/domain/project-document.ts tests/unit/visual-animation-schema.test.ts
-          git diff -- src/core/domain/visual-scene-schema.ts src/core/domain/project-document.ts tests/unit/visual-animation-schema.test.ts
-
       - name: Foundation and UI verification
         run: npm run verify
 
