@@ -44,8 +44,8 @@ jobs:
       - name: TEMP T06 capture Windows Prettier diff (REMOVE before merge)
         shell: pwsh
         run: |
-          npx prettier --write src/core/application/services/project-boundary-commands.ts src/renderer/app/BoundaryInspector.tsx src/renderer/app/BoundaryVisualPreview.tsx src/renderer/app/AppShell.tsx src/renderer/state/project-session/use-project-session.ts tests/unit/project-boundary-commands.test.ts tests/component/AppShell.visual-layer-editor.test.tsx
-          git diff -- src/core/application/services/project-boundary-commands.ts src/renderer/app/BoundaryInspector.tsx src/renderer/app/BoundaryVisualPreview.tsx src/renderer/app/AppShell.tsx src/renderer/state/project-session/use-project-session.ts tests/unit/project-boundary-commands.test.ts tests/component/AppShell.visual-layer-editor.test.tsx
+          npx prettier --write src/renderer/app/boundary-inspector.css src/core/application/services/project-boundary-commands.ts src/renderer/app/BoundaryInspector.tsx src/renderer/app/BoundaryVisualPreview.tsx src/renderer/app/AppShell.tsx src/renderer/state/project-session/use-project-session.ts tests/unit/project-boundary-commands.test.ts tests/component/AppShell.visual-layer-editor.test.tsx
+          git diff -- src/renderer/app/boundary-inspector.css src/core/application/services/project-boundary-commands.ts src/renderer/app/BoundaryInspector.tsx src/renderer/app/BoundaryVisualPreview.tsx src/renderer/app/AppShell.tsx src/renderer/state/project-session/use-project-session.ts tests/unit/project-boundary-commands.test.ts tests/component/AppShell.visual-layer-editor.test.tsx
 
       - name: Foundation and UI verification
         run: npm run verify
