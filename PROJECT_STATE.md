@@ -1,5 +1,14 @@
 # PROJECT STATE
 
+## 2026-10-10 — W11-07 AC10 Preview regression hardening (Draft PR #74)
+
+- Latest verified baseline: `main@9c29ec52`, Windows [CI #867 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38036191965). All W11-07 T01–T07 code tasks merged; final physical/user acceptance remains open.
+- **QA-only source change** in [Draft PR #74](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/74): added `tests/component/BoundaryVisualPreview.regression.test.tsx` for all **eight approved** preset-specific CSS effects, original/new track title+artist, independent artwork/title timing, single background/spectrum/progress, dissolve-vs-crossfade, glitch contrast, premium zoom/blur and deterministic backward seek. No product UI/feature changes.
+- [Windows CI #869 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38037047421) **diagnostic** run only; exact Prettier output applied to source, formatter step removed, workflow restored byte-for-byte. **Normal exact-head CI PENDING**; do not merge until it passes, and verify postmerge CI.
+- Original W11-07 matrix remains **8 PASS_AUTOMATED / 4 PARTIAL_AUTOMATED**, including AC10 requiring actual pixel-level proof. Additional component tests **do not** certify human visual parity. W11-06 physical speakers, Suspend/Resume, picker clicks and multi-hour resource plateau remain **NOT_TESTED**. Final release **BLOCKED**, no MP4.
+- Evidence: `docs/step11/evidence/W11_07_AC10_PRESET_PREVIEW_REGRESSION_20261010.md`.
+
+
 ## 2026-10-10 — W11-07 T07 Windows automated acceptance audit (Draft PR #73)
 
 - **Previous T01–T06 merged**; T06 [PR #72](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/72) on `main@26a55ad7209b5313cc2278e2d876f4eee47dc8b8`, [postmerge Windows CI #858 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38035108907).
