@@ -18,6 +18,7 @@ import {
 } from "../../core/domain/album-timeline";
 import { useProjectSession } from "../state/project-session/use-project-session";
 import { useAlbumPreviewPlayback } from "../state/use-album-preview-playback";
+import { resolveAuthoritativePreviewPosition } from "../playback/preview-clock-authority";
 import { AppIcon } from "../ui/AppIcon";
 import { ActionButton, IconButton } from "../ui/controls";
 import "./app-shell.css";
@@ -759,14 +760,22 @@ function PreviewPanel({
   // Only playing or paused audio supplies an authoritative visual time.
   // Ready/loading may retain the previous track's timestamp, and an old
   // project can reuse the same track IDs. Neither can animate this project.
-  const followsLiveAudio =
+  // Guard against a torn driver snapshot at the half-open track boundary:
+  // an old activeTrackId must not authorize the incoming track's artwork.
+  const authoritativePosition = resolveAuthoritativePreviewPosition(
+    project,
+    playback.clock,
+    playback.available,
+  );
+  const followsLiveAudio = authoritativePosition !== null;
+  const playbackOwnsVisualTime =
     playback.available &&
     playback.clock.projectId === project.projectId &&
     (playback.clock.phase === "playing" || playback.clock.phase === "paused");
   const animationTrack = followsLiveAudio
     ? projectAlbumTimeline(project).items.find(
         (item) =>
-          item.trackId === playback.clock.activeTrackId &&
+          item.trackId === authoritativePosition?.trackId &&
           item.status === "resolved",
       )
     : undefined;
@@ -812,7 +821,7 @@ function PreviewPanel({
   const boundaryFrame =
     liveBoundary?.status === "active"
       ? liveBoundary
-      : !followsLiveAudio && selectedSample?.status === "active"
+      : !playbackOwnsVisualTime && selectedSample?.status === "active"
         ? selectedSample
         : null;
 
@@ -1592,17 +1601,13 @@ export function AppShell() {
   // Playback uses the ACTUAL active track for dynamic title/artist/artwork.
   // Editor selection still controls the left Inspector and stays session-only.
   const playbackVisualModel = useMemo(() => {
-    const activeTrackId = playback.clock.activeTrackId;
-    if (
-      !playback.available ||
-      playback.clock.projectId !== projectSession.project.projectId ||
-      activeTrackId === null ||
-      !projectSession.project.tracks.some(
-        (track) => track.id === activeTrackId && track.enabled !== false,
-      )
-    ) {
-      return visualModel;
-    }
+    const authoritativePosition = resolveAuthoritativePreviewPosition(
+      projectSession.project,
+      playback.clock,
+      playback.available,
+    );
+    if (authoritativePosition === null) return visualModel;
+    const activeTrackId = authoritativePosition.trackId;
 
     return buildStaticScenePreview(
       projectSession.templateTrialProject ?? projectSession.project,
@@ -1616,8 +1621,7 @@ export function AppShell() {
     );
   }, [
     playback.available,
-    playback.clock.activeTrackId,
-    playback.clock.projectId,
+    playback.clock,
     projectSession.project,
     projectSession.templateTrialProject,
     visualUiState,
