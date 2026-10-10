@@ -47,8 +47,14 @@ function PlaybackHarness({
   batch?: TrustedAudioBatch | null;
 }) {
   const playback = useAlbumPreviewPlayback(project, batch);
-  return <div data-testid="playback" data-available={String(playback.available)}
-    data-phase={playback.clock.phase} data-project-id={playback.clock.projectId} />;
+  return (
+    <div
+      data-testid="playback"
+      data-available={String(playback.available)}
+      data-phase={playback.clock.phase}
+      data-project-id={playback.clock.projectId}
+    />
+  );
 }
 
 beforeEach(() => {
@@ -60,7 +66,9 @@ beforeEach(() => {
       requestAudioPreview: vi.fn().mockResolvedValue({ status: "blocked" }),
       onPlaybackPowerChange: () => {
         subscribeCount += 1;
-        return () => { unsubscribeCount += 1; };
+        return () => {
+          unsubscribeCount += 1;
+        };
       },
     },
   });
@@ -76,24 +84,42 @@ describe("W11-07 audio lifecycle during manual visual editing", () => {
     const { rerender } = render(<PlaybackHarness project={original} />);
     expect(subscribeCount).toBe(1);
     expect(unsubscribeCount).toBe(0);
-    expect(screen.getByTestId("playback")).toHaveAttribute("data-available", "true");
+    expect(screen.getByTestId("playback")).toHaveAttribute(
+      "data-available",
+      "true",
+    );
 
     const animation = projectDocumentSchema.parse({
       ...original,
       revision: 1,
       visualScene: {
         sceneVersion: 1,
-        layers: [{
-          id: "artwork", name: "Artwork", kind: "artwork",
-          visible: true, locked: false, binding: "active-track-artwork",
-          transform: {
-            x: 0.5, y: 0.5, width: 0.4, height: 0.4,
-            rotationDeg: 0, opacity: 1, anchor: "center",
+        layers: [
+          {
+            id: "artwork",
+            name: "Artwork",
+            kind: "artwork",
+            visible: true,
+            locked: false,
+            binding: "active-track-artwork",
+            transform: {
+              x: 0.5,
+              y: 0.5,
+              width: 0.4,
+              height: 0.4,
+              rotationDeg: 0,
+              opacity: 1,
+              anchor: "center",
+            },
+            animation: {
+              entrance: {
+                preset: "zoom-in",
+                durationMs: 800,
+                easing: "ease-out",
+              },
+            },
           },
-          animation: {
-            entrance: { preset: "zoom-in", durationMs: 800, easing: "ease-out" },
-          },
-        }],
+        ],
       },
     });
     await act(async () => rerender(<PlaybackHarness project={animation} />));
@@ -103,25 +129,36 @@ describe("W11-07 audio lifecycle during manual visual editing", () => {
     const boundary = projectDocumentSchema.parse({
       ...animation,
       revision: 2,
-      boundaryTransitions: [{
-        fromTrackId: "track-0", toTrackId: "track-1",
-        preset: "crossfade", durationMs: 800, easing: "linear",
-        artworkHandoff: "during-transition", titleHandoff: "at-boundary",
-      }],
+      boundaryTransitions: [
+        {
+          fromTrackId: "track-0",
+          toTrackId: "track-1",
+          preset: "crossfade",
+          durationMs: 800,
+          easing: "linear",
+          artworkHandoff: "during-transition",
+          titleHandoff: "at-boundary",
+        },
+      ],
     });
     await act(async () => rerender(<PlaybackHarness project={boundary} />));
     expect(subscribeCount).toBe(1);
     expect(unsubscribeCount).toBe(0);
 
     const visualTitle = projectDocumentSchema.parse({
-      ...boundary, revision: 3,
+      ...boundary,
+      revision: 3,
       tracks: boundary.tracks.map((track, i) =>
-        i === 0 ? { ...track, title: "Renamed for visuals" } : track),
+        i === 0 ? { ...track, title: "Renamed for visuals" } : track,
+      ),
     });
     await act(async () => rerender(<PlaybackHarness project={visualTitle} />));
     expect(subscribeCount).toBe(1);
     expect(unsubscribeCount).toBe(0);
-    expect(screen.getByTestId("playback")).toHaveAttribute("data-project-id", original.projectId);
+    expect(screen.getByTestId("playback")).toHaveAttribute(
+      "data-project-id",
+      original.projectId,
+    );
   });
 
   it("revokes the previous media generation when audio track order, source or grant changes", async () => {
@@ -142,7 +179,8 @@ describe("W11-07 audio lifecycle during manual visual editing", () => {
       mediaAssets: reordered.mediaAssets!.map((asset) =>
         asset.id === "audio-0"
           ? { ...asset, sourcePath: "C:/Music/relinked.wav" }
-          : asset),
+          : asset,
+      ),
     });
     await act(async () => rerender(<PlaybackHarness project={relinked} />));
     expect(subscribeCount).toBe(3);
@@ -151,15 +189,24 @@ describe("W11-07 audio lifecycle during manual visual editing", () => {
     const disabled = projectDocumentSchema.parse({
       ...relinked,
       tracks: relinked.tracks.map((track) =>
-        track.id === "track-1" ? { ...track, enabled: false } : track),
+        track.id === "track-1" ? { ...track, enabled: false } : track,
+      ),
     });
     await act(async () => rerender(<PlaybackHarness project={disabled} />));
     expect(subscribeCount).toBe(4);
     expect(unsubscribeCount).toBe(3);
 
-    await act(async () => rerender(<PlaybackHarness project={disabled} batch={{
-      ...trusted, batchId: "new-main-issued-batch",
-    }} />));
+    await act(async () =>
+      rerender(
+        <PlaybackHarness
+          project={disabled}
+          batch={{
+            ...trusted,
+            batchId: "new-main-issued-batch",
+          }}
+        />,
+      ),
+    );
     expect(subscribeCount).toBe(5);
     expect(unsubscribeCount).toBe(4);
   });
@@ -169,10 +216,18 @@ describe("W11-07 audio lifecycle during manual visual editing", () => {
     const { rerender } = render(<PlaybackHarness project={original} />);
     expect(subscribeCount).toBe(1);
     const newProject = album("another-project");
-    await act(async () => rerender(<PlaybackHarness project={newProject} batch={null} />));
+    await act(async () =>
+      rerender(<PlaybackHarness project={newProject} batch={null} />),
+    );
     expect(subscribeCount).toBe(2);
     expect(unsubscribeCount).toBe(1);
-    expect(screen.getByTestId("playback")).toHaveAttribute("data-available", "false");
-    expect(screen.getByTestId("playback")).toHaveAttribute("data-project-id", "another-project");
+    expect(screen.getByTestId("playback")).toHaveAttribute(
+      "data-available",
+      "false",
+    );
+    expect(screen.getByTestId("playback")).toHaveAttribute(
+      "data-project-id",
+      "another-project",
+    );
   });
 });
