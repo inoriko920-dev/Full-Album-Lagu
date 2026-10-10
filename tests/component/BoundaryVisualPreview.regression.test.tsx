@@ -97,15 +97,17 @@ function album(
         },
       },
     ],
-    boundaryTransitions: [{
-      fromTrackId: "track-a",
-      toTrackId: "track-b",
-      preset,
-      durationMs: 800,
-      easing: "linear",
-      artworkHandoff,
-      titleHandoff,
-    }],
+    boundaryTransitions: [
+      {
+        fromTrackId: "track-a",
+        toTrackId: "track-b",
+        preset,
+        durationMs: 800,
+        easing: "linear",
+        artworkHandoff,
+        titleHandoff,
+      },
+    ],
     visualScene: {
       sceneVersion: 1,
       layers: [
@@ -168,10 +170,15 @@ function album(
   });
 }
 
-function frame(project: ProjectDocument, time: number): ActiveBoundaryVisualFrame {
+function frame(
+  project: ProjectDocument,
+  time: number,
+): ActiveBoundaryVisualFrame {
   const projected = resolveAlbumBoundaryVisualFrame(project, time);
   if (projected.status !== "active") {
-    throw new Error(`Expected a real active boundary frame at ${time}ms, found ${projected.status}`);
+    throw new Error(
+      `Expected a real active boundary frame at ${time}ms, found ${projected.status}`,
+    );
   }
   return projected;
 }
@@ -195,59 +202,110 @@ function artworkOpacity(side: HTMLElement): number {
 afterEach(cleanup);
 
 describe("W11-07 AC10 real React Preview preset output regressions", () => {
-  it.each(presets)("renders distinct real CSS effect channels for %s", (preset) => {
-    const project = album(preset);
-    const original = structuredClone(project);
-    const atMidpoint = frame(project, 1400);
-    const { container } = render(
-      <BoundaryVisualPreview project={project} frame={atMidpoint}
-        spectrumLevels={[0.4, 0.7]} progressFraction={0.5}/>,
-    );
-    const preview = container.querySelector<HTMLElement>(".boundary-visual-preview")!;
-    expect(preview).toHaveAttribute("data-boundary-preset", preset);
-    expect(preview).toHaveAttribute("data-boundary-from", "track-a");
-    expect(preview).toHaveAttribute("data-boundary-to", "track-b");
-    expect(preview).toHaveAttribute("data-boundary-progress", "0.500");
+  it.each(presets)(
+    "renders distinct real CSS effect channels for %s",
+    (preset) => {
+      const project = album(preset);
+      const original = structuredClone(project);
+      const atMidpoint = frame(project, 1400);
+      const { container } = render(
+        <BoundaryVisualPreview
+          project={project}
+          frame={atMidpoint}
+          spectrumLevels={[0.4, 0.7]}
+          progressFraction={0.5}
+        />,
+      );
+      const preview = container.querySelector<HTMLElement>(
+        ".boundary-visual-preview",
+      )!;
+      expect(preview).toHaveAttribute("data-boundary-preset", preset);
+      expect(preview).toHaveAttribute("data-boundary-from", "track-a");
+      expect(preview).toHaveAttribute("data-boundary-to", "track-b");
+      expect(preview).toHaveAttribute("data-boundary-progress", "0.500");
 
-    const { from, to } = parts(preview);
-    expect(from.textContent).toContain("First Song");
-    expect(from.textContent).toContain("First Artist");
-    expect(to.textContent).toContain("Second Song");
-    expect(to.textContent).toContain("Second Artist");
-    expect(artworkOpacity(from)).toBeCloseTo(atMidpoint.effect.outgoing.opacity);
-    expect(artworkOpacity(to)).toBeCloseTo(atMidpoint.effect.incoming.opacity);
-    expect(from.style.transform).toBe(
-      `translateX(${atMidpoint.effect.outgoing.offsetX * 100}%) scale(${atMidpoint.effect.outgoing.scale})`,
-    );
-    expect(to.style.transform).toBe(
-      `translateX(${atMidpoint.effect.incoming.offsetX * 100}%) scale(${atMidpoint.effect.incoming.scale})`,
-    );
-    expect(from.style.filter).toContain(`blur(${atMidpoint.effect.outgoing.blur * 12}px)`);
-    expect(to.style.filter).toContain(`blur(${atMidpoint.effect.incoming.blur * 12}px)`);
-    expect(preview.querySelectorAll(".boundary-visual-preview__foundation .static-scene-preview__layer--background")).toHaveLength(1);
-    expect(preview.querySelectorAll(".boundary-visual-preview__foundation .static-scene-preview__spectrum")).toHaveLength(1);
-    expect(preview.querySelectorAll(".boundary-visual-preview__side .static-scene-preview__spectrum")).toHaveLength(0);
-    expect(preview.querySelectorAll(".boundary-visual-preview__foundation .static-scene-preview__progress")).toHaveLength(1);
-    expect(preview.querySelectorAll(".boundary-visual-preview__side .static-scene-preview__progress")).toHaveLength(0);
+      const { from, to } = parts(preview);
+      expect(from.textContent).toContain("First Song");
+      expect(from.textContent).toContain("First Artist");
+      expect(to.textContent).toContain("Second Song");
+      expect(to.textContent).toContain("Second Artist");
+      expect(artworkOpacity(from)).toBeCloseTo(
+        atMidpoint.effect.outgoing.opacity,
+      );
+      expect(artworkOpacity(to)).toBeCloseTo(
+        atMidpoint.effect.incoming.opacity,
+      );
+      expect(from.style.transform).toBe(
+        `translateX(${atMidpoint.effect.outgoing.offsetX * 100}%) scale(${atMidpoint.effect.outgoing.scale})`,
+      );
+      expect(to.style.transform).toBe(
+        `translateX(${atMidpoint.effect.incoming.offsetX * 100}%) scale(${atMidpoint.effect.incoming.scale})`,
+      );
+      expect(from.style.filter).toContain(
+        `blur(${atMidpoint.effect.outgoing.blur * 12}px)`,
+      );
+      expect(to.style.filter).toContain(
+        `blur(${atMidpoint.effect.incoming.blur * 12}px)`,
+      );
+      expect(
+        preview.querySelectorAll(
+          ".boundary-visual-preview__foundation .static-scene-preview__layer--background",
+        ),
+      ).toHaveLength(1);
+      expect(
+        preview.querySelectorAll(
+          ".boundary-visual-preview__foundation .static-scene-preview__spectrum",
+        ),
+      ).toHaveLength(1);
+      expect(
+        preview.querySelectorAll(
+          ".boundary-visual-preview__side .static-scene-preview__spectrum",
+        ),
+      ).toHaveLength(0);
+      expect(
+        preview.querySelectorAll(
+          ".boundary-visual-preview__foundation .static-scene-preview__progress",
+        ),
+      ).toHaveLength(1);
+      expect(
+        preview.querySelectorAll(
+          ".boundary-visual-preview__side .static-scene-preview__progress",
+        ),
+      ).toHaveLength(0);
 
-    const black = preview.querySelector<HTMLElement>(".boundary-visual-preview__overlay--black");
-    const white = preview.querySelector<HTMLElement>(".boundary-visual-preview__overlay--white");
-    expect(black === null ? 0 : Number(black.style.opacity)).toBeCloseTo(atMidpoint.effect.blackOverlayOpacity);
-    expect(white === null ? 0 : Number(white.style.opacity)).toBeCloseTo(atMidpoint.effect.whiteOverlayOpacity);
+      const black = preview.querySelector<HTMLElement>(
+        ".boundary-visual-preview__overlay--black",
+      );
+      const white = preview.querySelector<HTMLElement>(
+        ".boundary-visual-preview__overlay--white",
+      );
+      expect(black === null ? 0 : Number(black.style.opacity)).toBeCloseTo(
+        atMidpoint.effect.blackOverlayOpacity,
+      );
+      expect(white === null ? 0 : Number(white.style.opacity)).toBeCloseTo(
+        atMidpoint.effect.whiteOverlayOpacity,
+      );
 
-    expect(project).toEqual(original);
-    expect(project.revision).toBe(7);
-  });
+      expect(project).toEqual(original);
+      expect(project.revision).toBe(7);
+    },
+  );
 
   it("distinguishes dissolve from crossfade away from the midpoint", () => {
     const crossfade = frame(album("crossfade"), 1200);
     const dissolve = frame(album("dissolve"), 1200);
     expect(crossfade.effect.incoming.opacity).toBeCloseTo(0.25);
     expect(dissolve.effect.incoming.opacity).toBeCloseTo(0.15625);
-    expect(dissolve.effect.incoming.opacity).toBeLessThan(crossfade.effect.incoming.opacity);
+    expect(dissolve.effect.incoming.opacity).toBeLessThan(
+      crossfade.effect.incoming.opacity,
+    );
     const project = album("dissolve");
-    const { container } = render(<BoundaryVisualPreview project={project} frame={frame(project, 1200)}/>);
-    const incoming = container.querySelectorAll<HTMLElement>(".boundary-visual-preview__side")[1]!;
+    const { container } = render(
+      <BoundaryVisualPreview project={project} frame={frame(project, 1200)} />,
+    );
+    const incoming = container.querySelectorAll<HTMLElement>(
+      ".boundary-visual-preview__side",
+    )[1]!;
     expect(artworkOpacity(incoming)).toBeCloseTo(0.15625);
   });
 
@@ -256,7 +314,9 @@ describe("W11-07 AC10 real React Preview preset output regressions", () => {
     const { container } = render(
       <BoundaryVisualPreview project={project} frame={frame(project, 1400)} />,
     );
-    const preview = container.querySelector<HTMLElement>(".boundary-visual-preview")!;
+    const preview = container.querySelector<HTMLElement>(
+      ".boundary-visual-preview",
+    )!;
     const { from, to } = parts(preview);
     for (const role of ["title", "artist"]) {
       const outgoing = from.querySelector<HTMLElement>(
@@ -268,7 +328,9 @@ describe("W11-07 AC10 real React Preview preset output regressions", () => {
       expect(outgoing).toHaveStyle({ opacity: "0" });
       expect(incoming).toHaveStyle({ opacity: "1" });
     }
-    expect(preview.querySelector(".boundary-visual-preview__overlay--black")).not.toBeNull();
+    expect(
+      preview.querySelector(".boundary-visual-preview__overlay--black"),
+    ).not.toBeNull();
   });
 
   it("uses configured at-boundary artwork and during-transition title handoffs", () => {
@@ -279,8 +341,18 @@ describe("W11-07 AC10 real React Preview preset output regressions", () => {
     const { from, to } = parts(container);
     expect(artworkOpacity(from)).toBe(0);
     expect(artworkOpacity(to)).toBe(1);
-    expect(Number(from.querySelector<HTMLElement>('[data-scene-layer-id="title"]')!.style.opacity)).toBeCloseTo(0.75);
-    expect(Number(to.querySelector<HTMLElement>('[data-scene-layer-id="title"]')!.style.opacity)).toBeCloseTo(0.25);
+    expect(
+      Number(
+        from.querySelector<HTMLElement>('[data-scene-layer-id="title"]')!.style
+          .opacity,
+      ),
+    ).toBeCloseTo(0.75);
+    expect(
+      Number(
+        to.querySelector<HTMLElement>('[data-scene-layer-id="title"]')!.style
+          .opacity,
+      ),
+    ).toBeCloseTo(0.25);
   });
 
   it("renders light glitch and premium zoom/blur from the actual preset parameters", () => {
@@ -288,7 +360,7 @@ describe("W11-07 AC10 real React Preview preset output regressions", () => {
       const project = album(preset);
       const snapshot = frame(project, 1400);
       const { container, unmount } = render(
-        <BoundaryVisualPreview project={project} frame={snapshot}/>,
+        <BoundaryVisualPreview project={project} frame={snapshot} />,
       );
       const { from, to } = parts(container);
       if (preset === "light-glitch") {
@@ -300,7 +372,9 @@ describe("W11-07 AC10 real React Preview preset output regressions", () => {
         expect(snapshot.effect.outgoing.blur).toBeGreaterThan(0);
         expect(from.style.filter).not.toContain("blur(0px)");
         expect(from.style.transform).toContain("scale(1.04)");
-        expect(container.querySelector(".boundary-visual-preview__overlay--white")).not.toBeNull();
+        expect(
+          container.querySelector(".boundary-visual-preview__overlay--white"),
+        ).not.toBeNull();
       }
       unmount();
     }
@@ -310,12 +384,14 @@ describe("W11-07 AC10 real React Preview preset output regressions", () => {
     const project = album("slide");
     const saved = structuredClone(project);
     const sampleOrder = [1000, 1400, 1750, 1200, 1400, 1000, 1400];
-    const snapshots = sampleOrder.map(time => {
+    const snapshots = sampleOrder.map((time) => {
       const current = frame(project, time);
       const { container, unmount } = render(
-        <BoundaryVisualPreview project={project} frame={current}/>,
+        <BoundaryVisualPreview project={project} frame={current} />,
       );
-      const preview = container.querySelector<HTMLElement>(".boundary-visual-preview")!;
+      const preview = container.querySelector<HTMLElement>(
+        ".boundary-visual-preview",
+      )!;
       const { from, to } = parts(preview);
       const result = {
         fromTransform: from.style.transform,
