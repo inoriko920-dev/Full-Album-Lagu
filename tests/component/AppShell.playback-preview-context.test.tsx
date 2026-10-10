@@ -471,6 +471,15 @@ describe("T11-W06-05 live preview track context", () => {
 
     // Idle/ready mode may show the chosen boundary's static sample without
     // seeking the audio driver or changing the authoritative album position.
+    previewClock.phase = "loading";
+    rerender(<AppShell />);
+    // Manual selection must remain the midpoint while audio is loading.
+    expect(
+      screen.getByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toHaveAttribute("data-boundary-progress", "0.500");
+
     previewClock.phase = "ready";
     rerender(<AppShell />);
     expect(
@@ -560,6 +569,15 @@ describe("T11-W06-05 live preview track context", () => {
       }),
     ).toBeNull();
 
+    previewClock.phase = "loading";
+    rerender(<AppShell />);
+    // A loading driver has not yet produced an authoritative audio sample.
+    expect(
+      screen.queryByLabelText("Preview Boundary", {
+        selector: ".boundary-visual-preview",
+      }),
+    ).toBeNull();
+
     fireEvent.click(
       screen.getByRole("button", {
         name: "Pilih boundary track-a ke track-b",
@@ -597,6 +615,67 @@ describe("T11-W06-05 live preview track context", () => {
       "false",
     );
     expect(startup).toEqual(unchanged);
+    expect(seekFromTimeline).not.toHaveBeenCalled();
+  });
+
+  it("never applies a retained loading or different-project timestamp to layer animation even when track IDs collide", async () => {
+    startup = structuredClone(album());
+    startup.visualScene!.layers[0]!.animation = {
+      keyframes: [
+        {
+          property: "opacity",
+          points: [
+            { timeMs: 0, value: 1 },
+            { timeMs: 1000, value: 0.25 },
+          ],
+        },
+      ],
+    };
+    const original = structuredClone(startup);
+    const { rerender } = render(<AppShell />);
+    await waitFor(() =>
+      expect(
+        document.querySelector('[data-media-track-id="track-a"]'),
+      ).not.toBeNull(),
+    );
+
+    previewClock.available = true;
+    previewClock.phase = "playing";
+    previewClock.activeTrackId = "track-b";
+    previewClock.albumTimeMs = 3000;
+    previewClock.localTimeMs = 1000;
+    previewClock.projectId = "old-project-with-reused-track-ids";
+    rerender(<AppShell />);
+    const previewTitle = () =>
+      screen
+        .getByLabelText("Preview visual statis")
+        .querySelector<HTMLElement>('[data-scene-layer-id="title"]');
+    expect(previewTitle()).toHaveStyle({ opacity: "1" });
+
+    previewClock.projectId = startup.projectId;
+    rerender(<AppShell />);
+    expect(previewTitle()).toHaveStyle({ opacity: "0.25" });
+
+    previewClock.phase = "loading";
+    rerender(<AppShell />);
+    expect(previewTitle()).toHaveStyle({ opacity: "1" });
+
+    previewClock.phase = "ready";
+    rerender(<AppShell />);
+    expect(previewTitle()).toHaveStyle({ opacity: "1" });
+
+    previewClock.phase = "paused";
+    rerender(<AppShell />);
+    expect(previewTitle()).toHaveStyle({ opacity: "0.25" });
+    expect(startup).toEqual(original);
+    expect(document.querySelector(".app-shell")).toHaveAttribute(
+      "data-project-revision",
+      "0",
+    );
+    expect(document.querySelector(".app-shell")).toHaveAttribute(
+      "data-project-dirty",
+      "false",
+    );
     expect(seekFromTimeline).not.toHaveBeenCalled();
   });
 

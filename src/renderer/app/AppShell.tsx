@@ -756,19 +756,22 @@ function PreviewPanel({
   const active = playback.available;
   const playing =
     playback.clock.phase === "playing" || playback.clock.phase === "loading";
-  const animationTrack = projectAlbumTimeline(project).items.find(
-    (item) =>
-      item.trackId === playback.clock.activeTrackId &&
-      item.status === "resolved",
-  );
-  // The live clock owns active transitions; selection-only Preview samples
-  // the same T04 projection at the approved boundary midpoint (no seek side effect).
-  // A ready/idle driver has no authoritative live sample: its retained
-  // album timestamp must not override an explicitly selected boundary.
+  // Only playing or paused audio supplies an authoritative visual time.
+  // Ready/loading may retain the previous track's timestamp, and an old
+  // project can reuse the same track IDs. Neither can animate this project.
   const followsLiveAudio =
     playback.available &&
     playback.clock.projectId === project.projectId &&
-    (playing || playback.clock.phase === "paused");
+    (playback.clock.phase === "playing" || playback.clock.phase === "paused");
+  const animationTrack = followsLiveAudio
+    ? projectAlbumTimeline(project).items.find(
+        (item) =>
+          item.trackId === playback.clock.activeTrackId &&
+          item.status === "resolved",
+      )
+    : undefined;
+  // Selection-only Preview samples the approved T04 boundary midpoint.
+  // A loading/ready driver never overrides it with retained clock data.
   const liveBoundary = followsLiveAudio
     ? resolveAlbumBoundaryVisualFrame(project, playback.clock.albumTimeMs)
     : null;
