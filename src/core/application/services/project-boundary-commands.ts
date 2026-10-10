@@ -82,17 +82,12 @@ export function createSetBoundaryTransitionCommand(
       ? {}
       : { expectedStateToken: input.expectedStateToken }),
     apply: (project) => {
-      if (
-        !isEditableBoundaryPair(project, fromTrackId, toTrackId)
-      ) {
+      if (!isEditableBoundaryPair(project, fromTrackId, toTrackId)) {
         throw new Error("Boundary is no longer adjacent, enabled and ready.");
       }
       const entries = (project.boundaryTransitions ?? []).filter(
         (entry) =>
-          !(
-            entry.fromTrackId === fromTrackId &&
-            entry.toTrackId === toTrackId
-          ),
+          !(entry.fromTrackId === fromTrackId && entry.toTrackId === toTrackId),
       );
       if (transition !== undefined) entries.push(structuredClone(transition));
       const next = { ...project };
