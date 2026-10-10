@@ -135,13 +135,14 @@ async function testAlbum(count) {
     report.boundaryAllEightPresetPackagedVerified !== true ||
     !Array.isArray(report.boundaryPresetSamples) ||
     report.boundaryPresetSamples.length !== approvedPresets.length ||
-    report.boundaryPresetSamples.some((sample, index) =>
-      sample.preset !== approvedPresets[index] ||
-      sample.progress !== "0.500" ||
-      sample.fromTrackId === sample.toTrackId ||
-      !sample.outgoingTransform?.includes("scale(") ||
-      !sample.incomingFilter?.includes("contrast(") ||
-      sample.foundationSpectrumCount !== 1
+    report.boundaryPresetSamples.some(
+      (sample, index) =>
+        sample.preset !== approvedPresets[index] ||
+        sample.progress !== "0.500" ||
+        sample.fromTrackId === sample.toTrackId ||
+        !sample.outgoingTransform?.includes("scale(") ||
+        !sample.incomingFilter?.includes("contrast(") ||
+        sample.foundationSpectrumCount !== 1,
     ) ||
     report.boundaryUndoRedoPackagedVerified !== true ||
     report.boundaryProjectStateRestored !== true ||
