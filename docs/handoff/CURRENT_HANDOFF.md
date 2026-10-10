@@ -1,5 +1,14 @@
 # CURRENT HANDOFF
 
+## 2026-10-10 — W11-07 AC08 combined real-file QA (Draft PR #76)
+
+- **Main baseline** `e918aeb4`: [Windows CI #883 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38038991012); W11-07 T01–T07 and QA PR #74–75 all merged.
+- [Draft PR #76](https://github.com/inoriko920-dev/Full-Album-Lagu/pull/76) adds only an integration test using actual synthetic MP3 bytes on disk: move into Unicode folder → missing-media blocker → invalid relink rejection → real valid relink → project JSON reopen → deterministic seek → reorder invalidates stale directed pair → Undo restores identical output.
+- Diagnostic [Windows CI #885 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38039625568): 335 unit / 59 contract / 89 component / **44 integration** PASS, packaged Windows regression/ZIP and W11-07 acceptance audit PASS. Source reformatted with exact Windows Prettier output and CI diagnostic step removed, workflow restored byte-identical to main.
+- **Final exact-head CI and post-merge `main` CI still required.** Do not merge on diagnostic results alone. Evidence: `docs/step11/evidence/W11_07_AC08_REAL_FILE_RELINK_RECOVERY_QA_20261010.md`.
+- **Acceptance unchanged:** W11-07 8 PASS_AUTOMATED / 4 PARTIAL_AUTOMATED; physical W11-06 speaker/headphones, Suspend/Resume, 25 native pickers, multi-hour resources and visual owner UI parity remain NOT_TESTED. Release BLOCKED; no MP4 or silent W11-08 advancement.
+
+
 ## 2026-10-10 — W11-07 AC10 Preview regression hardening (Draft PR #74)
 
 - Latest verified baseline: `main@9c29ec52`, Windows [CI #867 SUCCESS](https://github.com/inoriko920-dev/Full-Album-Lagu/actions/runs/38036191965). All W11-07 T01–T07 code tasks merged; final physical/user acceptance remains open.
