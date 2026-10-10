@@ -1,0 +1,111 @@
+/* W11-07 / UI-IMG-002G: only the existing left Inspector gains controls. */
+.visual-animation-controls {
+  display: grid;
+  gap: 3px;
+}
+.visual-animation-group {
+  min-width: 0;
+  padding: 9px 0 11px;
+  border-top: 1px solid var(--border);
+}
+.visual-animation-group .inspector-section__header {
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--text-primary);
+}
+.visual-animation-group .inspector-field {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  margin-bottom: 7px;
+}
+.visual-animation-group .inspector-field > span {
+  font-size: 10.5px;
+  color: var(--text-secondary);
+}
+.visual-animation-group .inspector-field input,
+.visual-animation-group .inspector-field select {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  border-radius: var(--control-radius);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 6px 7px;
+  font: inherit;
+  font-size: 11px;
+  color: var(--text-primary);
+}
+.visual-animation-group :is(input, select, button):disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+.visual-animation-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: 8px;
+}
+.visual-animation-pair .visual-layer-check {
+  margin: 0 0 9px;
+}
+.visual-animation-ruler {
+  position: relative;
+  height: 32px;
+  width: 100%;
+  margin: 7px 0 9px;
+  border-radius: var(--control-radius);
+  background: var(--subtle-surface);
+  overflow: hidden;
+}
+.visual-animation-ruler__line {
+  position: absolute;
+  left: 6%;
+  right: 6%;
+  top: 13px;
+  border-top: 1px solid #94a3b8;
+}
+.visual-animation-ruler__point {
+  position: absolute;
+  top: 8px;
+  transform: translateX(-50%) rotate(45deg);
+  height: 11px;
+  width: 11px;
+  border: 1px solid #1d4ed8;
+  background: #3b82f6;
+  padding: 0;
+  cursor: pointer;
+}
+.visual-animation-ruler__point:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.visual-animation-ruler__empty {
+  position: absolute;
+  inset: 18px 0 0;
+  display: block;
+  text-align: center;
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+.visual-animation-actions {
+  display: flex;
+  gap: 6px;
+}
+.visual-animation-actions button {
+  flex: 1;
+  min-width: 0;
+  padding: 6px 3px;
+  border: 1px solid var(--border);
+  border-radius: var(--control-radius);
+  color: var(--text-primary);
+  background: var(--surface);
+  font-size: 10px;
+  cursor: pointer;
+}
+.visual-animation-actions button:first-child {
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+  background: #eff6ff;
+}

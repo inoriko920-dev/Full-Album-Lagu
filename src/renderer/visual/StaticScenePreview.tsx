@@ -5,8 +5,10 @@ import type {
 } from "../../core/domain/static-scene-preview";
 import type {
   VisualLayerAnchor,
+  VisualLayer,
   VisualLayerTransform,
 } from "../../core/domain/visual-scene-schema";
+import { evaluateVisualLayerAnimation } from "../../core/domain/visual-animation-evaluator";
 import { TemplateArtwork } from "./TemplateArtwork";
 import "./static-scene-preview.css";
 
@@ -17,6 +19,9 @@ export interface StaticScenePreviewProps {
   spectrumLevels?: readonly number[];
   /** Album-wide audio clock; omitted for the approved static illustration. */
   progressFraction?: number;
+  /** Canonical active-track local audio clock for committed layer animations. */
+  animationTimeMs?: number;
+  animationDurationMs?: number;
   /** Local illustrative sample, never a source media asset or encoded in project. */
   templateArtwork?: { templateId: string; category: string } | undefined;
 }
@@ -37,6 +42,40 @@ const anchorOffsets: Record<VisualLayerAnchor, readonly [number, number]> = {
   "bottom-center": [-50, -100],
   "bottom-right": [-100, -100],
 };
+
+/**
+ * Scene projections contain derived UI-only fields which are deliberately
+ * not accepted by the strict persisted VisualLayer schema. Strip them before
+ * calling the already-validated T02 evaluator; never persist derived fields.
+ */
+function persistedLayerForAnimation(layer: StaticSceneLayer): VisualLayer {
+  const base = {
+    id: layer.id,
+    name: layer.name,
+    visible: layer.visible,
+    locked: layer.locked,
+    transform: layer.transform,
+    ...(layer.animation === undefined ? {} : { animation: layer.animation }),
+  };
+  switch (layer.kind) {
+    case "background":
+      return { ...base, kind: "background", fill: layer.fill };
+    case "artwork":
+      return { ...base, kind: "artwork", binding: layer.binding };
+    case "text":
+      return {
+        ...base,
+        kind: "text",
+        role: layer.role,
+        style: layer.style,
+        ...(layer.text === undefined ? {} : { text: layer.text }),
+      };
+    case "spectrum":
+      return { ...base, kind: "spectrum" };
+    case "progress":
+      return { ...base, kind: "progress" };
+  }
+}
 
 function frameStyle(transform: VisualLayerTransform): CSSProperties {
   const [dx, dy] = anchorOffsets[transform.anchor];
@@ -183,6 +222,8 @@ export function StaticScenePreview({
   templateArtwork,
   spectrumLevels,
   progressFraction,
+  animationTimeMs,
+  animationDurationMs,
 }: StaticScenePreviewProps) {
   return (
     <div
@@ -209,7 +250,17 @@ export function StaticScenePreview({
             aria-pressed={layer.selected}
             onClick={() => onSelectLayer?.(layer.id)}
             style={{
-              ...frameStyle(layer.transform),
+              ...frameStyle(
+                animationTimeMs !== undefined &&
+                  animationDurationMs !== undefined &&
+                  animationDurationMs > 0
+                  ? evaluateVisualLayerAnimation(
+                      persistedLayerForAnimation(layer),
+                      animationTimeMs,
+                      animationDurationMs,
+                    )
+                  : layer.transform,
+              ),
               ...(layer.kind === "background" ? backgroundStyle(layer) : {}),
             }}
           >
