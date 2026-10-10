@@ -41,6 +41,12 @@ jobs:
       - name: Clean install
         run: npm ci
 
+      - name: TEMP AC10 capture exact Preview regression formatter diff (REMOVE before merge)
+        shell: pwsh
+        run: |
+          npx prettier --write tests/component/BoundaryVisualPreview.regression.test.tsx
+          git diff -- tests/component/BoundaryVisualPreview.regression.test.tsx
+
       - name: Foundation and UI verification
         run: npm run verify
 
