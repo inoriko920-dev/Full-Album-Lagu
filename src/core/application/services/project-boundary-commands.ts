@@ -1,4 +1,7 @@
-import type { ProjectCommand, ProjectStateToken } from "./project-command-engine";
+import type {
+  ProjectCommand,
+  ProjectStateToken,
+} from "./project-command-engine";
 import { projectAlbumTimeline } from "../../domain/album-timeline";
 import { projectDocumentSchema } from "../../domain/project-document";
 import {
@@ -27,12 +30,14 @@ export function isEditableBoundaryPair(
   if (to.trackId !== toTrackId || from.endMs !== to.startMs) return false;
   return [from, to].every((item) => {
     const track = project.tracks[item.sourceIndex];
-    return project.mediaAssets?.some(
-      (asset) =>
-        asset.id === track?.audioAssetId &&
-        asset.kind === "audio" &&
-        asset.availability === "ready",
-    ) ?? false;
+    return (
+      project.mediaAssets?.some(
+        (asset) =>
+          asset.id === track?.audioAssetId &&
+          asset.kind === "audio" &&
+          asset.availability === "ready",
+      ) ?? false
+    );
   });
 }
 
@@ -52,12 +57,15 @@ export interface SetBoundaryTransitionInput extends BoundaryCommandExpectation {
 export function createSetBoundaryTransitionCommand(
   input: SetBoundaryTransitionInput,
 ): ProjectCommand {
-  const transition = input.transition === undefined
-    ? undefined
-    : visualBoundaryTransitionSchema.parse(structuredClone(input.transition));
-  if (transition !== undefined &&
+  const transition =
+    input.transition === undefined
+      ? undefined
+      : visualBoundaryTransitionSchema.parse(structuredClone(input.transition));
+  if (
+    transition !== undefined &&
     (transition.fromTrackId !== input.fromTrackId ||
-     transition.toTrackId !== input.toTrackId)) {
+      transition.toTrackId !== input.toTrackId)
+  ) {
     throw new Error("Boundary transition must match its directed track pair.");
   }
   return {
@@ -65,16 +73,23 @@ export function createSetBoundaryTransitionCommand(
     label: `Atur transisi ${input.fromTrackId} → ${input.toTrackId}`,
     origin: "manual",
     ...(input.expectedBaseRevision === undefined
-      ? {} : { expectedBaseRevision: input.expectedBaseRevision }),
+      ? {}
+      : { expectedBaseRevision: input.expectedBaseRevision }),
     ...(input.expectedStateToken === undefined
-      ? {} : { expectedStateToken: input.expectedStateToken }),
+      ? {}
+      : { expectedStateToken: input.expectedStateToken }),
     apply: (project) => {
-      if (!isEditableBoundaryPair(project, input.fromTrackId, input.toTrackId)) {
+      if (
+        !isEditableBoundaryPair(project, input.fromTrackId, input.toTrackId)
+      ) {
         throw new Error("Boundary is no longer adjacent, enabled and ready.");
       }
       const entries = (project.boundaryTransitions ?? []).filter(
-        (entry) => !(entry.fromTrackId === input.fromTrackId &&
-          entry.toTrackId === input.toTrackId),
+        (entry) =>
+          !(
+            entry.fromTrackId === input.fromTrackId &&
+            entry.toTrackId === input.toTrackId
+          ),
       );
       if (transition !== undefined) entries.push(structuredClone(transition));
       const next = { ...project };
