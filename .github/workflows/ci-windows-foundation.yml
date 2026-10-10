@@ -297,6 +297,18 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      - name: T11-W07-07 verify animation/transition acceptance, 29 frozen UI references and ZIP
+        run: node scripts/run-w07-t07-acceptance.mjs
+
+      - name: Upload T11-W07-07 Windows acceptance and UI source-integrity evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Lagu-Full-Album-T11-W07-07-Windows-Acceptance
+          path: artifacts/step11/T11-W07-07/evidence/**
+          if-no-files-found: error
+          retention-days: 14
+
       - name: Upload Windows portable artifact
         uses: actions/upload-artifact@v4
         with:
