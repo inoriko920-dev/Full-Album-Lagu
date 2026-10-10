@@ -715,14 +715,19 @@ function PreviewPanel({
   visualModel,
   onSelectLayer,
   playback,
+  project,
 }: {
   visualModel: StaticScenePreviewModel;
   onSelectLayer: (layerId: string) => void;
   playback: ReturnType<typeof useAlbumPreviewPlayback>;
+  project: ReturnType<typeof useProjectSession>["project"];
 }) {
   const active = playback.available;
   const playing =
     playback.clock.phase === "playing" || playback.clock.phase === "loading";
+  const animationTrack = projectAlbumTimeline(project).items.find(
+    (item) => item.trackId === playback.clock.activeTrackId && item.status === "resolved",
+  );
   const clock = (millis: number) => {
     const seconds = Math.max(0, Math.floor(millis / 1000));
     return [
@@ -746,6 +751,12 @@ function PreviewPanel({
               {...(active
                 ? {
                     spectrumLevels: playback.spectrum,
+                    ...(animationTrack?.durationMs === undefined
+                      ? {}
+                      : {
+                          animationTimeMs: playback.clock.localTimeMs,
+                          animationDurationMs: animationTrack.durationMs,
+                        }),
                     progressFraction:
                       playback.total > 0
                         ? Math.min(
@@ -1706,6 +1717,7 @@ export function AppShell() {
           visualModel={playbackVisualModel}
           onSelectLayer={(id) => selectLayer(id, true)}
           playback={playback}
+          project={projectSession.project}
         />
         <GeminiRail />
         <TimelinePanel
