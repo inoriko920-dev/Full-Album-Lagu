@@ -1,0 +1,209 @@
+name: Full Album Lagu Combined Backup Release
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/full-album-combined-backup-release.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: read
+
+jobs:
+  publish:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Create and verify Git Bundle plus source and documents
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          ./scripts/repository-recovery-backup.ps1
+          if ($LASTEXITCODE -ne 0) { throw 'Repository backup failed' }
+
+      - name: Download Windows build and assemble combined ZIP
+        id: pack
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $base = Join-Path $env:RUNNER_TEMP 'complete-recovery'
+          $root = Join-Path $base 'MASTER-BACKUP-FULL-ALBUM-LAGU'
+          $app = Join-Path $root 'APP_001_FULL_ALBUM_LAGU'
+          New-Item -ItemType Directory -Force $app | Out-Null
+          $repoZip = Get-ChildItem 'Full-Album-Lagu-Repository-Backup-*.zip' | Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          if (-not $repoZip) { throw 'Original repository backup missing' }
+          Expand-Archive -LiteralPath $repoZip.FullName -DestinationPath $app -Force
+          $buildPath = Join-Path $base 'github-windows-build'
+          New-Item -ItemType Directory -Force $buildPath | Out-Null
+          gh run download 38070704212 --repo $env:GITHUB_REPOSITORY --name 'Lagu-Full-Album-Windows-x64-Foundation' --dir $buildPath
+          if ($LASTEXITCODE -ne 0) { throw 'Windows GitHub Actions artifact unavailable' }
+          $nBuild = @(Get-ChildItem $buildPath -Recurse -File).Count
+          if ($nBuild -lt 1) { throw 'Windows build empty' }
+          $buildOut = Join-Path $app 'BUILD\Full-Album-Lagu-Windows-x64-Foundation-GitHub-Actions.zip'
+          New-Item -ItemType Directory -Force (Split-Path $buildOut) | Out-Null
+          Compress-Archive -Path (Join-Path $buildPath '*') -DestinationPath $buildOut -CompressionLevel Optimal -Force
+
+          Add-Type -AssemblyName System.IO.Compression
+          $docResults = @()
+          $uiImageCount = 0
+          $docList = @(Get-ChildItem 'docs' -Recurse -File -Filter '*.docx')
+          foreach ($doc in $docList) {
+            $status = 'VALID'
+            try {
+              $docZip = [System.IO.Compression.ZipFile]::OpenRead($doc.FullName)
+              try {
+                if ($doc.Name -eq '06_STEP_04_FINAL_UI_REFERENCE_LAGU_FULL_ALBUM_v1_1_REPO_COMPACT_SMALL.docx') {
+                  $uiOut = Join-Path $app 'UI_IMAGES_EXTRACTED\UI_FINAL'
+                  New-Item -ItemType Directory -Force $uiOut | Out-Null
+                  foreach ($entry in $docZip.Entries) {
+                    if ($entry.FullName.StartsWith('word/media/') -and $entry.Name) {
+                      $target = Join-Path $uiOut $entry.Name
+                      $inputStream = $entry.Open()
+                      $outputStream = [IO.File]::Create($target)
+                      try { $inputStream.CopyTo($outputStream) } finally { $outputStream.Dispose(); $inputStream.Dispose() }
+                      $uiImageCount++
+                    }
+                  }
+                }
+              } finally { $docZip.Dispose() }
+            } catch { $status = 'INVALID_DOCX: ' + $_.Exception.GetType().Name }
+            $docResults += [pscustomobject]@{
+              Path = $doc.FullName.Substring((Get-Location).Path.Length + 1).Replace('\','/')
+              Status = $status
+              SHA256 = (Get-FileHash -Algorithm SHA256 $doc.FullName).Hash.ToLower()
+            }
+          }
+          $uiPng = 'docs/source-of-truth/ui/07_W11_07_UI_IMG_002G.png'
+          if (Test-Path $uiPng) {
+            $uiPngTarget = Join-Path $app 'ASSETS_GITHUB_MAIN\docs\source-of-truth\ui'
+            New-Item -ItemType Directory -Force $uiPngTarget | Out-Null
+            Copy-Item -LiteralPath $uiPng -Destination $uiPngTarget -Force
+          }
+
+          $bundle = Join-Path $app 'GIT\Full-Album-Lagu-COMPLETE-GIT-HISTORY.bundle'
+          git bundle verify $bundle
+          if ($LASTEXITCODE -ne 0) { throw 'Git Bundle verification FAILED' }
+          $branches = @(git for-each-ref --format='%(refname) %(objectname)' refs/heads)
+          $scratch = Join-Path $base 'git-restore-test'
+          git clone --quiet $bundle $scratch
+          if ($LASTEXITCODE -ne 0) { throw 'Git Bundle restore FAILED' }
+          $restoredRefs = @(git -C $scratch for-each-ref --format='%(refname) %(objectname)' refs/remotes/origin)
+          foreach ($line in $branches) {
+            $pair = $line -split ' ',2
+            $branchName = $pair[0].Replace('refs/heads/','')
+            if ($restoredRefs -notcontains "refs/remotes/origin/$branchName $($pair[1])") { throw "Branch not restored: $branchName" }
+          }
+          Remove-Item -Recurse -Force $scratch
+
+          $auditDir = Join-Path $app 'INVENTORY'
+          New-Item -ItemType Directory -Force $auditDir | Out-Null
+          $docResults | ConvertTo-Json -Depth 5 | Set-Content -Encoding utf8 (Join-Path $auditDir 'DOCX_INTEGRITY.json')
+          $mainSHA = (git rev-parse main).Trim()
+          $audit = [ordered]@{
+            Repository = $env:GITHUB_REPOSITORY
+            Source = 'GitHub repository and GitHub Actions Windows build only'
+            MainCommit = $mainSHA
+            BranchCount = $branches.Count
+            TagCount = @(git for-each-ref --format='%(refname)' refs/tags).Count
+            CommitCount = [int](git rev-list --all --count)
+            TrackedMainFiles = @(git ls-tree -r --name-only $mainSHA).Count
+            DocxFiles = $docList.Count
+            InvalidDocx = @($docResults | Where-Object { $_.Status -ne 'VALID' } | ForEach-Object { $_.Path })
+            ExtractedUiImages = $uiImageCount
+            WindowsBuildArtifactFiles = $nBuild
+            WindowsBuildSourceRun = 38070704212
+            Exclusions = 'GitHub account settings, secrets, issue/PR comments, uncommitted local files'
+          }
+          $audit | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 (Join-Path $auditDir 'BACKUP_AUDIT.json')
+          $restoreLines = @(
+            'param([string]$NewRepositoryUrl = "")',
+            '$ErrorActionPreference = "Stop"',
+            '$app = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)',
+            '$bundle = Join-Path $app "GIT\Full-Album-Lagu-COMPLETE-GIT-HISTORY.bundle"',
+            'git bundle verify $bundle',
+            'if ($LASTEXITCODE -ne 0) { throw "Bundle invalid" }',
+            'if (-not $NewRepositoryUrl) { $NewRepositoryUrl = Read-Host "URL repository baru yang KOSONG" }',
+            'if (-not $NewRepositoryUrl) { throw "URL missing" }',
+            '$output = Join-Path (Split-Path -Parent $app) "RESTORED_Full-Album-Lagu.git"',
+            'if (Test-Path $output) { throw "Restore folder already exists" }',
+            'git init --bare $output',
+            'if ($LASTEXITCODE -ne 0) { throw "git init failed" }',
+            'git -C $output fetch $bundle "+refs/heads/*:refs/heads/*" "+refs/tags/*:refs/tags/*"',
+            'if ($LASTEXITCODE -ne 0) { throw "Bundle fetch failed" }',
+            'git -C $output symbolic-ref HEAD refs/heads/main',
+            '$expected = @(Get-Content (Join-Path $app "BRANCHES.txt") | Where-Object { $_.Trim() })',
+            '$actual = @(git -C $output for-each-ref --format="%(refname) %(objectname)" refs/heads)',
+            'if ($expected.Count -ne $actual.Count) { throw "Branch count mismatch" }',
+            '$okay = Read-Host "Ketik PUSH jika ingin mengirim semua branch dan tag ke repo baru"',
+            'if ($okay -ne "PUSH") { Write-Host "Canceled - local restore retained"; exit 0 }',
+            'git -C $output remote add destination $NewRepositoryUrl',
+            'git -C $output push destination --all',
+            'if ($LASTEXITCODE -ne 0) { throw "Branch push failed" }',
+            'git -C $output push destination --tags',
+            'if ($LASTEXITCODE -ne 0) { throw "Tag push failed" }',
+            'Write-Host "ALL BRANCHES AND TAGS RESTORED"'
+          )
+          $restoreLines | Set-Content -Encoding utf8 (Join-Path $app 'RECOVERY\RESTORE_TO_NEW_GITHUB.ps1')
+          @(
+            'Only Full-Album-Lagu from GitHub and GitHub Actions.',
+            'Git Bundle, all branches/commits, source, ASTRA/SOL docs, UI reference, prompt, assets and Windows build included.',
+            'Check INVENTORY/BACKUP_AUDIT.json for file health and limitations.',
+            'Save the ZIP outside GitHub to protect it against account loss.'
+          ) | Set-Content -Encoding utf8 (Join-Path $root '00_README_PERTAMA.txt')
+          $audit | ConvertTo-Json -Depth 8 | Set-Content -Encoding utf8 (Join-Path $root '00_MASTER_MANIFEST.json')
+          $sumFile = Join-Path $app 'SHA256SUMS.txt'
+          $sums = @(Get-ChildItem $app -File -Recurse | Where-Object { $_.FullName -ne $sumFile } | Sort-Object FullName | ForEach-Object {
+            $rel = $_.FullName.Substring($app.Length + 1).Replace('\','/')
+            $h = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLower()
+            "$h  $rel"
+          })
+          $sums | Set-Content -Encoding ascii $sumFile
+          $rootSum = Join-Path $root '00_SHA256SUMS.txt'
+          $sums = @(Get-ChildItem $root -File -Recurse | Where-Object { $_.FullName -ne $rootSum } | Sort-Object FullName | ForEach-Object {
+            $rel = $_.FullName.Substring($root.Length + 1).Replace('\','/')
+            $h = (Get-FileHash -Algorithm SHA256 -LiteralPath $_.FullName).Hash.ToLower()
+            "$h  $rel"
+          })
+          $sums | Set-Content -Encoding ascii $rootSum
+          $tz = [TimeZoneInfo]::FindSystemTimeZoneById('SE Asia Standard Time')
+          $wib = [TimeZoneInfo]::ConvertTimeFromUtc([DateTime]::UtcNow,$tz)
+          $stamp = $wib.ToString('yyyy-MM-dd_HH-mm-ss') + '-WIB'
+          $zipOut = Join-Path $base "MASTER-BACKUP-FULL-ALBUM-LAGU-GITHUB-LENGKAP-$stamp.zip"
+          Compress-Archive -LiteralPath $root -DestinationPath $zipOut -CompressionLevel Optimal
+          if (-not (Test-Path $zipOut)) { throw 'Combined ZIP not created' }
+          $archive = [IO.Compression.ZipFile]::OpenRead($zipOut)
+          try {
+            if ($archive.Entries.Count -lt 10) { throw 'ZIP incomplete' }
+            if (-not @($archive.Entries | Where-Object { $_.FullName -like '*/GIT/*.bundle' }).Count) { throw 'Missing Git Bundle in final ZIP' }
+            if (-not @($archive.Entries | Where-Object { $_.FullName -like '*/BUILD/*.zip' }).Count) { throw 'Missing build in final ZIP' }
+          } finally { $archive.Dispose() }
+          $sha256 = (Get-FileHash -Algorithm SHA256 $zipOut).Hash.ToLower()
+          Write-Host "BACKUP SUCCESS: $zipOut SHA256=$sha256"
+          "file=$zipOut" >> $env:GITHUB_OUTPUT
+          "sha256=$sha256" >> $env:GITHUB_OUTPUT
+
+      - name: Upload temporary Actions artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Full-Album-Lagu-Complete-GitHub-Backup
+          path: ${{ steps.pack.outputs.file }}
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish permanent GitHub Release download
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "full-album-lagu-complete-backup-${{ github.run_id }}"
+          gh release create $tag '${{ steps.pack.outputs.file }}' --repo $env:GITHUB_REPOSITORY --target '${{ github.sha }}' --title 'Full-Album-Lagu GitHub Complete Backup' --notes 'One combined GitHub-only backup ZIP including all branches and Git history, ASTRA/SOL documents, UI assets and prompts, source code, Windows Actions build, audits and recovery scripts. SHA256: ${{ steps.pack.outputs.sha256 }}. One source DOCX was previously invalid; original is retained. Save outside GitHub.'
+          if ($LASTEXITCODE -ne 0) { throw 'GitHub Release publication failed' }
+          gh release view $tag --repo $env:GITHUB_REPOSITORY --json url,assets
